@@ -1,3 +1,4 @@
+
 "use client"
 
 import * as React from "react"
@@ -162,6 +163,7 @@ const Sidebar = React.forwardRef<
     side?: "left" | "right"
     variant?: "sidebar" | "floating" | "inset"
     collapsible?: "offcanvas" | "icon" | "none"
+    defaultOpen?: boolean; // Explicitly define defaultOpen
   }
 >(
   (
@@ -171,7 +173,8 @@ const Sidebar = React.forwardRef<
       collapsible = "offcanvas",
       className,
       children,
-      ...props
+      defaultOpen, // Destructure defaultOpen
+      ...restProps // Collect remaining props
     },
     ref
   ) => {
@@ -185,7 +188,7 @@ const Sidebar = React.forwardRef<
             className
           )}
           ref={ref}
-          {...props}
+          {...restProps}
         >
           {children}
         </div>
@@ -194,7 +197,8 @@ const Sidebar = React.forwardRef<
 
     if (isMobile) {
       return (
-        <Sheet open={openMobile} onOpenChange={setOpenMobile} {...props}>
+        // Pass defaultOpen explicitly to Sheet, and spread restProps
+        <Sheet open={openMobile} onOpenChange={setOpenMobile} defaultOpen={defaultOpen} {...restProps}>
           <SheetContent
             data-sidebar="sidebar"
             data-mobile="true"
@@ -244,7 +248,7 @@ const Sidebar = React.forwardRef<
               : "group-data-[collapsible=icon]:w-[--sidebar-width-icon] group-data-[side=left]:border-r group-data-[side=right]:border-l",
             className
           )}
-          {...props}
+          {...restProps} // Use restProps here
         >
           <div
             data-sidebar="sidebar"
