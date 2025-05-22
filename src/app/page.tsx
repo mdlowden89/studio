@@ -51,7 +51,7 @@ export default function HomePage() {
           {/* Right Column: Image */}
           <div className="relative w-full aspect-square max-w-md mx-auto md:max-w-none">
             <Image
-              src="https://placehold.co/600x600.png"
+              src="/images/067c31aa-c14c-4862-92d9-9bb837ae9a6c.png"
               alt="Map illustration with location pin"
               layout="fill"
               objectFit="contain"
