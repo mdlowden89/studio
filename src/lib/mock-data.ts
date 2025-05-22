@@ -1,0 +1,188 @@
+import type { UserProfile, Moment, ChatConversation, ChatMessage, ProfilePrompt, CrossedPathUser } from './types';
+
+export const MOCK_USER_ID = 'user-123';
+
+export const AVAILABLE_PROMPTS: ProfilePrompt[] = [
+  { id: 'p1', question: 'My most controversial opinion is...' },
+  { id: 'p2', question: 'A shower thought I recently had...' },
+  { id: 'p3', question: 'I\'m looking for...' },
+  { id: 'p4', question: 'Two truths and a lie...' },
+  { id: 'p5', question: 'The way to win me over is...' },
+];
+
+export const MOCK_USERS: UserProfile[] = [
+  {
+    id: 'user-1',
+    name: 'Alex',
+    age: 28,
+    bio: 'Loves hiking, coffee, and indie music. Always up for an adventure or a quiet night in with a good book.',
+    images: [
+      'https://placehold.co/600x800.png?a=1',
+      'https://placehold.co/600x800.png?a=2',
+      'https://placehold.co/600x800.png?a=3',
+    ],
+    vibeTags: ['adventurous', 'bookworm', 'coffee lover', 'calm'],
+    locationPatterns: ['Downtown Cafe', 'Mountain Trails', 'City Park'],
+    prompts: [
+      { promptId: 'p1', answer: 'Pineapple belongs on pizza, fight me.' },
+      { promptId: 'p2', answer: 'If animals could talk, which would be the rudest?' },
+    ],
+  },
+  {
+    id: 'user-2',
+    name: 'Jamie',
+    age: 25,
+    bio: 'Artist, foodie, and travel enthusiast. Exploring new cultures and cuisines is my passion.',
+    images: [
+      'https://placehold.co/600x800.png?b=1',
+      'https://placehold.co/600x800.png?b=2',
+    ],
+    vibeTags: ['creative', 'foodie', 'globetrotter', 'energetic'],
+    locationPatterns: ['Art Gallery', 'International Market', 'Airport Lounge'],
+    prompts: [
+      { promptId: 'p3', answer: 'Someone who appreciates art and isn\'t afraid to try new foods.' },
+      { promptId: 'p5', answer: 'By making me laugh until my stomach hurts.' },
+    ],
+  },
+  {
+    id: 'user-3',
+    name: 'Casey',
+    age: 30,
+    bio: 'Tech geek, gamer, and animal lover. Fluent in sarcasm and Python.',
+    images: [
+      'https://placehold.co/600x800.png?c=1',
+    ],
+    vibeTags: ['techy', 'gamer', 'animal lover', 'witty'],
+    locationPatterns: ['Tech Hub', 'Local Park (dog walking)', 'Gaming Cafe'],
+    prompts: [
+      { promptId: 'p4', answer: 'I\'ve skydived. I own 5 cats. I hate chocolate. (Lie: I hate chocolate)' },
+    ],
+  },
+  {
+    id: MOCK_USER_ID, // Current user
+    name: 'You',
+    age: 27,
+    bio: 'Seeking connections and new experiences. Let\'s see where our paths cross!',
+    images: [
+      'https://placehold.co/600x800.png?you=1',
+      'https://placehold.co/600x800.png?you=2',
+      'https://placehold.co/600x800.png?you=3',
+    ],
+    vibeTags: ['explorer', 'optimist', 'curious', 'friendly'],
+    locationPatterns: ['Local Coffee Shop', 'Bookstore', 'Community Garden'],
+    prompts: [
+      { promptId: 'p1', answer: 'Early bird gets the worm, but the second mouse gets the cheese.' },
+      { promptId: 'p3', answer: 'Someone genuine, kind, and open-minded.' },
+    ],
+  },
+];
+
+export const MOCK_CROSSED_PATHS_USERS: CrossedPathUser[] = MOCK_USERS.filter(u => u.id !== MOCK_USER_ID).map((user, index) => ({
+  ...user,
+  crossedAt: new Date(Date.now() - (index + 1) * 3600000).toISOString(), // Crossed paths in the last few hours
+  location: index % 2 === 0 ? 'Main Street Cafe' : 'City Park Fountain',
+}));
+
+
+export const MOCK_MOMENTS: Moment[] = [
+  {
+    id: 'moment-1',
+    userId: MOCK_USER_ID,
+    placeName: 'The Grind Coffee House',
+    timestamp: new Date(Date.now() - 86400000 * 2).toISOString(), // 2 days ago
+    potentialMatchId: 'user-1',
+  },
+  {
+    id: 'moment-2',
+    userId: MOCK_USER_ID,
+    placeName: 'Riverside Park',
+    timestamp: new Date(Date.now() - 86400000).toISOString(), // 1 day ago
+  },
+  {
+    id: 'moment-3',
+    userId: MOCK_USER_ID,
+    placeName: 'Downtown Bookstore',
+    timestamp: new Date().toISOString(),
+    potentialMatchId: 'user-2',
+  },
+];
+
+export const MOCK_CHAT_CONVERSATIONS: ChatConversation[] = [
+  {
+    id: 'chat-1',
+    participantIds: [MOCK_USER_ID, 'user-1'],
+    participants: [
+        MOCK_USERS.find(u => u.id === MOCK_USER_ID)!,
+        MOCK_USERS.find(u => u.id === 'user-1')!
+    ].map(p => ({id: p.id, name: p.name, images: p.images})),
+    lastMessage: {
+      text: 'Hey! Great to match with you.',
+      timestamp: new Date(Date.now() - 300000).toISOString(),
+      senderId: 'user-1',
+    },
+  },
+  {
+    id: 'chat-2',
+    participantIds: [MOCK_USER_ID, 'user-2'],
+    participants: [
+        MOCK_USERS.find(u => u.id === MOCK_USER_ID)!,
+        MOCK_USERS.find(u => u.id === 'user-2')!
+    ].map(p => ({id: p.id, name: p.name, images: p.images})),
+    lastMessage: {
+      text: 'Loved your profile prompts! :)',
+      timestamp: new Date(Date.now() - 600000).toISOString(),
+      senderId: MOCK_USER_ID,
+    },
+  },
+];
+
+export const MOCK_CHAT_MESSAGES: { [chatId: string]: ChatMessage[] } = {
+  'chat-1': [
+    {
+      id: 'msg-c1-1',
+      chatId: 'chat-1',
+      senderId: 'user-1',
+      receiverId: MOCK_USER_ID,
+      text: 'Hey! Great to match with you.',
+      timestamp: new Date(Date.now() - 300000).toISOString(),
+    },
+    {
+      id: 'msg-c1-2',
+      chatId: 'chat-1',
+      senderId: MOCK_USER_ID,
+      receiverId: 'user-1',
+      text: 'Hi Alex! Likewise. How\'s your day going?',
+      timestamp: new Date(Date.now() - 240000).toISOString(),
+    },
+  ],
+  'chat-2': [
+    {
+      id: 'msg-c2-1',
+      chatId: 'chat-2',
+      senderId: MOCK_USER_ID,
+      receiverId: 'user-2',
+      text: 'Loved your profile prompts! :)',
+      timestamp: new Date(Date.now() - 600000).toISOString(),
+    },
+    {
+      id: 'msg-c2-2',
+      chatId: 'chat-2',
+      senderId: 'user-2',
+      receiverId: MOCK_USER_ID,
+      text: 'Thanks! Yours too. That pineapple on pizza take is bold haha.',
+      timestamp: new Date(Date.now() - 540000).toISOString(),
+    },
+     {
+      id: 'msg-c2-3',
+      chatId: 'chat-2',
+      senderId: MOCK_USER_ID,
+      receiverId: 'user-2',
+      text: 'Haha, gotta stand by it! What kind of art do you do?',
+      timestamp: new Date(Date.now() - 480000).toISOString(),
+    },
+  ],
+};
+
+export const getCurrentUser = (): UserProfile => {
+  return MOCK_USERS.find(user => user.id === MOCK_USER_ID)!;
+};
