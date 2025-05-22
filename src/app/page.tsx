@@ -37,10 +37,10 @@ export default function HomePage() {
           </Link>
           <nav className="flex items-center gap-3">
             <Button variant="outline" asChild>
-              <Link href="#">Login</Link>
+              <Link href="/">Login</Link>
             </Button>
             <Button variant="default" asChild className="bg-primary hover:bg-primary/90 text-primary-foreground">
-              <Link href="#">Sign Up</Link>
+              <Link href="/signup">Sign Up</Link>
             </Button>
           </nav>
         </div>
@@ -62,8 +62,8 @@ export default function HomePage() {
               Crossd helps you find and connect with people you&apos;ve encountered in real life. Turn missed connections into meaningful conversations.
             </p>
             <div className="flex flex-col sm:flex-row gap-4 mt-4 justify-center md:justify-start">
-              <Button size="lg" className="bg-primary hover:bg-primary/90 text-primary-foreground px-8 py-3 text-base">
-                Join Crossd Today
+              <Button size="lg" asChild className="bg-primary hover:bg-primary/90 text-primary-foreground px-8 py-3 text-base">
+                <Link href="/signup">Join Crossd Today</Link>
               </Button>
               <Button variant="outline" size="lg" className="px-8 py-3 text-base">
                 Learn More
