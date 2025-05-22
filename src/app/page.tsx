@@ -15,7 +15,9 @@ export default function HomePage() {
             <span>Crossd</span>
           </Link>
           <nav className="flex items-center gap-3">
-            {/* Login button removed as this is now the root/login page */}
+            <Button variant="outline" asChild>
+              <Link href="#">Login</Link>
+            </Button>
             <Button variant="default" asChild className="bg-primary hover:bg-primary/90 text-primary-foreground">
               <Link href="#">Sign Up</Link>
             </Button>
