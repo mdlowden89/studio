@@ -9,7 +9,7 @@ export default function HomePage() {
     <div className="flex flex-col min-h-screen bg-background text-foreground">
       {/* Header */}
       <header className="py-4 px-6 sm:px-10 md:px-16">
-        <div className="container mx-auto flex justify-between items-center">
+        <div className="w-full flex justify-between items-center">
           <Link href="/" className="flex items-center gap-2 text-xl font-semibold hover:opacity-80 transition-opacity">
             <CrossdLogoIcon className="h-8 w-8 text-primary" />
             <span>Crossd</span>
@@ -26,7 +26,7 @@ export default function HomePage() {
       </header>
 
       {/* Main Content */}
-      <main className="flex-1 flex container mx-auto py-12 px-6 sm:px-10 md:px-16 items-center">
+      <main className="flex-1 flex py-12 px-6 sm:px-10 md:px-16 items-center">
         <div className="grid md:grid-cols-2 gap-12 md:gap-16 items-center w-full">
           {/* Left Column: Text Content */}
           <div className="flex flex-col gap-6 text-center md:text-left">
