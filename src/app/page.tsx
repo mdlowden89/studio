@@ -53,7 +53,7 @@ export default function HomePage() {
           {/* Right Column: Image */}
           <div className="relative w-full aspect-square max-w-md mx-auto md:max-w-none">
             <Image
-              src="/Login-Background-Imagepng.png"
+              src="/login-bg.png"
               alt="Login page background illustration"
               layout="fill"
               objectFit="contain"
