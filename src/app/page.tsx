@@ -51,11 +51,11 @@ export default function HomePage() {
           {/* Right Column: Image */}
           <div className="relative w-full aspect-square max-w-md mx-auto md:max-w-none">
             <Image
-              src="https://placehold.co/600x600.png"
-              alt="App feature illustration"
+              src="/Login-Background-Imagepng.png"
+              alt="Login page background illustration"
               layout="fill"
               objectFit="contain"
-              data-ai-hint="app feature illustration"
+              data-ai-hint="login background"
               className="rounded-lg"
             />
           </div>
