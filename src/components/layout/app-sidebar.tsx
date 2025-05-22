@@ -25,10 +25,10 @@ import { Button } from "@/components/ui/button";
 import { Separator } from "@/components/ui/separator";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { getCurrentUser } from "@/lib/mock-data";
-import { CrossdLogoIcon } from "@/components/icons/crossd-logo"; // Import the logo
+import { CrossdLogoIcon } from "@/components/icons/crossd-logo";
 
 const navItems = [
-  { href: "/", label: "Dashboard", icon: Home },
+  { href: "/dashboard", label: "Dashboard", icon: Home }, // Updated href
   { href: "/ai-matches", label: "Vibe Matches", icon: Sparkles },
   { href: "/moments", label: "Moments", icon: MapPin },
   { href: "/chat", label: "Chats", icon: MessageSquare },
@@ -44,7 +44,7 @@ export function AppSidebar() {
     <Sidebar side="left" variant="sidebar" collapsible="icon" defaultOpen={false}>
       <SidebarHeader className="items-center">
         <div className="flex items-center justify-between w-full">
-          <Link href="/" className="flex items-center gap-2 text-primary hover:text-primary/90 transition-colors">
+          <Link href="/dashboard" className="flex items-center gap-2 text-primary hover:text-primary/90 transition-colors"> {/* Updated href */}
             <CrossdLogoIcon className="h-7 w-7" />
             {state === 'expanded' && <span className="text-xl font-semibold">Crossd</span>}
           </Link>
@@ -58,7 +58,7 @@ export function AppSidebar() {
             <Link href={item.href} passHref legacyBehavior>
               <SidebarMenuButton
                 asChild
-                isActive={pathname === item.href || (item.href !== "/" && pathname.startsWith(item.href))}
+                isActive={pathname === item.href || (item.href !== "/dashboard" && item.href !== "/" && pathname.startsWith(item.href))} // Adjusted active check
                 tooltip={{children: item.label, className: "bg-popover text-popover-foreground border-border shadow-md"}}
                 className="justify-start"
               >
