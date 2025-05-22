@@ -33,7 +33,9 @@ export default function HomePage() {
             <h1 className="text-4xl sm:text-5xl md:text-6xl font-bold tracking-tight">
               Crossed Paths?
               <br />
-              <span className="block">Reconnect <span className="text-primary">Now.</span></span>
+              <span className="block">
+                <span className="text-primary">Reconnect</span> <span className="text-primary">Now.</span>
+              </span>
             </h1>
             <p className="text-lg text-muted-foreground max-w-md mx-auto md:mx-0">
               Crossd helps you find and connect with people you&apos;ve encountered in real life. Turn missed connections into meaningful conversations.
