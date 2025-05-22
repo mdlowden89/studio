@@ -24,7 +24,8 @@ import {
 import { Button } from "@/components/ui/button";
 import { Separator } from "@/components/ui/separator";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
-import { getCurrentUser } from "@/lib/mock-data"; // Assuming you have this
+import { getCurrentUser } from "@/lib/mock-data";
+import { CrossdLogoIcon } from "@/components/icons/crossd-logo"; // Import the logo
 
 const navItems = [
   { href: "/", label: "Dashboard", icon: Home },
@@ -42,8 +43,11 @@ export function AppSidebar() {
   return (
     <Sidebar side="left" variant="sidebar" collapsible="icon" defaultOpen={false}>
       <SidebarHeader className="items-center">
-        <div className="flex items-center gap-2 justify-between w-full">
-         {state === 'expanded' && <Link href="/" className="text-2xl font-bold text-primary">Crossd</Link>}
+        <div className="flex items-center justify-between w-full">
+          <Link href="/" className="flex items-center gap-2 text-primary hover:text-primary/90 transition-colors">
+            <CrossdLogoIcon className="h-7 w-7" />
+            {state === 'expanded' && <span className="text-xl font-semibold">Crossd</span>}
+          </Link>
           <SidebarTrigger />
         </div>
       </SidebarHeader>
