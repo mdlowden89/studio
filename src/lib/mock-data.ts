@@ -66,10 +66,10 @@ export const MOCK_USERS: UserProfile[] = [
     id: MOCK_USER_ID, // Current user
     name: 'You',
     age: 27,
-    email: 'you@example.com', // Added email for current user
+    email: 'you@example.com',
     bio: 'Seeking connections and new experiences. Let\'s see where our paths cross!',
     images: [
-      'https://placehold.co/100x100.png', // Generic placeholder for avatar
+      'https://placehold.co/120x120/E70F72/FFFFFF.png?text=U', // Distinct placeholder for avatar
       'https://placehold.co/600x800.png?you=2',
       'https://placehold.co/600x800.png?you=3',
     ],
