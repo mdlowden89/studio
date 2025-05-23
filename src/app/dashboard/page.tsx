@@ -4,11 +4,11 @@ import { CrossedPathsSection } from "@/components/dashboard/crossed-paths-sectio
 import { SwipeMatchSection } from "@/components/dashboard/swipe-match-section";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Card, CardContent, CardHeader, CardTitle, CardDescription, CardFooter } from "@/components/ui/card";
-import { Swords, Handshake, Sparkles, PlusCircle, ClipboardList, Users, MessageSquare, Route, MapPin } from "lucide-react";
-import { getCurrentUser, MOCK_MOMENTS, MOCK_CROSSED_PATHS_USERS, MOCK_CHAT_CONVERSATIONS, MOCK_USER_ID } from "@/lib/mock-data";
+import { Swords, Handshake, Sparkles, PlusCircle, ClipboardList, Users, MessageSquare, Route, MapPin, CalendarDays, Users2, TrendingUp, Activity, Map } from "lucide-react";
+import { getCurrentUser, MOCK_MOMENTS, MOCK_CROSSED_PATHS_USERS, MOCK_CHAT_CONVERSATIONS, MOCK_USER_ID, MOCK_USERS } from "@/lib/mock-data";
 import { Button } from "@/components/ui/button";
-import { subDays, isAfter, format } from "date-fns";
-import { MomentsMap } from "@/components/dashboard/moments-map"; // Import the new map component
+import { subDays, isAfter, format, getDay } from "date-fns";
+import { MomentsMap } from "@/components/dashboard/moments-map"; 
 
 export default function DashboardPage() {
   const currentUser = getCurrentUser();
@@ -25,8 +25,29 @@ export default function DashboardPage() {
 
   const oneWeekAgo = subDays(new Date(), 7);
   const momentsThisWeek = MOCK_MOMENTS
-    .filter(moment => moment.userId === MOCK_USER_ID && isAfter(new Date(moment.timestamp), oneWeekAgo) && moment.coordinates) // Ensure moments have coordinates
+    .filter(moment => moment.userId === MOCK_USER_ID && isAfter(new Date(moment.timestamp), oneWeekAgo))
     .sort((a, b) => new Date(b.timestamp).getTime() - new Date(a.timestamp).getTime());
+
+  // Weekly Recap Insights
+  const distinctPlacesVisitedCount = new Set(momentsThisWeek.map(m => m.placeName)).size;
+  
+  const dayCounts = momentsThisWeek.reduce((acc, moment) => {
+    const day = getDay(new Date(moment.timestamp)); // 0 for Sunday, 1 for Monday, etc.
+    acc[day] = (acc[day] || 0) + 1;
+    return acc;
+  }, {} as Record<number, number>);
+
+  let mostActiveDayIndex = -1;
+  let maxMomentsOnDay = 0;
+  for (const day in dayCounts) {
+    if (dayCounts[day] > maxMomentsOnDay) {
+      maxMomentsOnDay = dayCounts[day];
+      mostActiveDayIndex = parseInt(day);
+    }
+  }
+  const dayNames = ["Sunday", "Monday", "Tuesday", "Wednesday", "Thursday", "Friday", "Saturday"];
+  const mostActiveDay = mostActiveDayIndex !== -1 ? dayNames[mostActiveDayIndex] : "N/A";
+
 
   return (
     <AppLayout>
@@ -87,8 +108,7 @@ export default function DashboardPage() {
           </CardHeader>
           <CardContent>
             <div className="aspect-[2/1] w-full bg-muted rounded-lg overflow-hidden mb-4 shadow-inner">
-              {/* Replace Image with MomentsMap */}
-              <MomentsMap moments={momentsThisWeek} />
+              <MomentsMap moments={momentsThisWeek.filter(m => m.coordinates)} />
             </div>
             {momentsThisWeek.length > 0 ? (
               <div>
@@ -106,6 +126,72 @@ export default function DashboardPage() {
             ) : (
               <p className="text-muted-foreground text-center py-4">
                 No moments logged in the past week with location data. Go out and explore!
+              </p>
+            )}
+          </CardContent>
+        </Card>
+
+        <Card className="mb-8 bg-card shadow-xl">
+          <CardHeader>
+             <div className="flex items-center gap-3">
+                <Activity className="w-7 h-7 text-primary" />
+                <div>
+                    <CardTitle className="text-xl font-semibold">Your Weekly Recap</CardTitle>
+                    <CardDescription className="text-muted-foreground">
+                    Highlights from your activity this past week on Crossd.
+                    </CardDescription>
+                </div>
+            </div>
+          </CardHeader>
+          <CardContent className="space-y-6">
+            {momentsThisWeek.length > 0 ? (
+              <>
+                <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 mb-6">
+                  <div className="bg-muted/50 p-4 rounded-lg shadow-md flex items-center gap-3">
+                    <Map className="w-8 h-8 text-primary/80" />
+                    <div>
+                      <p className="text-2xl font-bold text-foreground">{distinctPlacesVisitedCount}</p>
+                      <p className="text-sm text-muted-foreground">Distinct Places Visited</p>
+                    </div>
+                  </div>
+                  <div className="bg-muted/50 p-4 rounded-lg shadow-md flex items-center gap-3">
+                    <CalendarDays className="w-8 h-8 text-primary/80" />
+                    <div>
+                      <p className="text-2xl font-bold text-foreground">{mostActiveDay}</p>
+                      <p className="text-sm text-muted-foreground">Your Busiest Day</p>
+                    </div>
+                  </div>
+                </div>
+
+                <div>
+                  <h4 className="text-lg font-semibold mb-3 text-foreground">Places You've Been:</h4>
+                  <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
+                    {momentsThisWeek.map(moment => {
+                      const matchedUser = moment.potentialMatchId ? MOCK_USERS.find(u => u.id === moment.potentialMatchId) : null;
+                      return (
+                        <div key={moment.id} className="bg-muted/30 p-4 rounded-lg shadow hover:shadow-primary/20 transition-shadow">
+                          <div className="flex items-center gap-2 mb-1.5">
+                            <MapPin className="w-5 h-5 text-primary" />
+                            <h5 className="font-semibold text-foreground truncate">{moment.placeName}</h5>
+                          </div>
+                          <p className="text-xs text-muted-foreground mb-2">{format(new Date(moment.timestamp), "EEE, MMM d 'at' p")}</p>
+                          {matchedUser ? (
+                            <div className="flex items-center gap-2 text-xs text-green-400 bg-green-500/10 p-2 rounded-md">
+                              <Users2 className="w-4 h-4" />
+                              <span>Crossed paths with {matchedUser.name}!</span>
+                            </div>
+                          ) : (
+                             <p className="text-xs text-muted-foreground italic">You visited this place.</p>
+                          )}
+                        </div>
+                      );
+                    })}
+                  </div>
+                </div>
+              </>
+            ) : (
+              <p className="text-muted-foreground text-center py-6">
+                Not enough activity this week for a recap. Log some moments!
               </p>
             )}
           </CardContent>
@@ -133,3 +219,4 @@ export default function DashboardPage() {
     </AppLayout>
   );
 }
+
