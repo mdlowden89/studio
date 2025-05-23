@@ -37,7 +37,7 @@ export default function HomePage() {
           </Link>
           <nav className="flex items-center gap-3">
             <Button variant="outline" asChild>
-              <Link href="#">Login</Link>
+              <Link href="/">Login</Link>
             </Button>
             <Button variant="default" asChild className="bg-primary hover:bg-primary/90 text-primary-foreground">
               <Link href="/signup">Sign Up</Link>

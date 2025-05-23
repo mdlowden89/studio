@@ -18,7 +18,7 @@ export default function SignUpPage() {
           </Link>
           <nav className="flex items-center gap-3">
             <Button variant="outline" asChild>
-              <Link href="#">Login</Link>
+              <Link href="/">Login</Link>
             </Button>
             <Button variant="default" asChild className="bg-primary hover:bg-primary/90 text-primary-foreground">
               <Link href="/signup">Sign Up</Link>
@@ -60,7 +60,7 @@ export default function SignUpPage() {
           <CardFooter className="flex justify-center">
             <p className="text-sm text-muted-foreground">
               Already have an account?{' '}
-              <Link href="#" className="font-medium text-primary hover:underline">
+              <Link href="/" className="font-medium text-primary hover:underline">
                 Log in
               </Link>
             </p>
