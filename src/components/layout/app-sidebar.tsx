@@ -49,12 +49,15 @@ export function AppSidebar() {
 
   return (
     <Sidebar side="left" variant="sidebar" collapsible="icon" defaultOpen={false}>
-      <SidebarHeader className="items-center">
-        <div className="flex items-center justify-between w-full">
-          <Link href="/dashboard" className="flex items-center gap-2 text-primary hover:text-primary/90 transition-colors">
-            <CrossdLogoIcon className="h-7 w-7" />
-            {state === 'expanded' && <span className="text-xl font-semibold">Crossd</span>}
-          </Link>
+      <SidebarHeader> {/* SidebarHeader is flex-col with p-2 and gap-2 by default */}
+        {/* Element 1 in flex-col: Logo and App Name */}
+        <Link href="/dashboard" className="flex items-center gap-2 text-primary hover:text-primary/90 transition-colors self-start">
+          <CrossdLogoIcon className="h-7 w-7" />
+          {state === 'expanded' && <span className="text-xl font-semibold">Crossd</span>}
+        </Link>
+        
+        {/* Element 2 in flex-col: Trigger, aligned to the right */}
+        <div className="w-full flex justify-end">
           <SidebarTrigger />
         </div>
       </SidebarHeader>
