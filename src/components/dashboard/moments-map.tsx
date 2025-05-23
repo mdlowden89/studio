@@ -123,7 +123,7 @@ export function MomentsMap({ moments }: MomentsMapProps) {
       <MarkerF
         key={moment.id}
         position={{ lat: moment.coordinates.lat, lng: moment.coordinates.lng }}
-        title={moment.placeName}
+        title={moment.placeName} // Sets the HTML title attribute for hover tooltip
         onClick={() => setSelectedMoment(moment)}
       /> : null
     ))
@@ -145,7 +145,10 @@ export function MomentsMap({ moments }: MomentsMapProps) {
   }
 
   return (
-    <LoadScriptNext googleMapsApiKey={apiKey} loadingElement={<div className="flex items-center justify-center h-full bg-muted rounded-lg"><p>Loading map resources...</p></div>}>
+    <LoadScriptNext 
+        googleMapsApiKey={apiKey} 
+        loadingElement={<div className="flex items-center justify-center h-full bg-muted rounded-lg"><p>Loading map resources...</p></div>}
+    >
       <GoogleMap
         mapContainerStyle={containerStyle}
         center={center}
@@ -188,5 +191,3 @@ export function MomentsMap({ moments }: MomentsMapProps) {
     </LoadScriptNext>
   );
 }
-
-    
