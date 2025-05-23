@@ -92,17 +92,15 @@ export function AppSidebar() {
             {state === 'expanded' && <span className="ml-2 font-medium">{currentUser.name}</span>}
           </Button>
         </Link>
-        <SidebarMenuItem>
-            <SidebarMenuButton
-                onClick={handleLogout}
-                tooltip={{children: "Log Out", className: "bg-popover text-popover-foreground border-border shadow-md"}}
-                className="justify-start w-full"
-                variant="ghost"
-            >
-                <LogOut className="h-5 w-5 text-destructive" />
-                <span className={state === 'expanded' ? 'text-destructive' : 'sr-only'}>Log Out</span>
-            </SidebarMenuButton>
-        </SidebarMenuItem>
+        <SidebarMenuButton
+            onClick={handleLogout}
+            tooltip={{children: "Log Out", className: "bg-popover text-popover-foreground border-border shadow-md"}}
+            className="justify-start w-full"
+            variant="ghost"
+        >
+            <LogOut className="h-5 w-5 text-destructive" />
+            <span className={state === 'expanded' ? 'text-destructive' : 'sr-only'}>Log Out</span>
+        </SidebarMenuButton>
       </SidebarFooter>
     </Sidebar>
   );
