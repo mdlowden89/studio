@@ -5,7 +5,8 @@ import { GoogleMap, LoadScriptNext, MarkerF, InfoWindowF } from '@react-google-m
 import type { Moment } from '@/lib/types';
 import { useMemo, useState, useEffect } from 'react';
 import { format } from 'date-fns';
-import Image from 'next/image'; // Use next/image for optimization
+// Image component is no longer needed here for the InfoWindow
+// import Image from 'next/image'; 
 
 interface MomentsMapProps {
   moments: Moment[];
@@ -23,7 +24,7 @@ const mapStyles = [
   { featureType: 'water', elementType: 'geometry', stylers: [{ color: '#101010' }] },
   { featureType: 'water', elementType: 'labels.text.fill', stylers: [{ color: '#FAFAFA' }] },
   { featureType: 'road', elementType: 'geometry', stylers: [{ color: '#222222' }] },
-  { featureType: 'road', elementType: 'labels.text.fill', stylers: [{ color: '#FAFAFA' }] },
+  { featureType: 'road', elementType: 'labels.text.fill', stylers: [{ color: '#A3A3A3' }] },
   { featureType: 'road.highway', elementType: 'geometry', stylers: [{ color: '#E70F72' }] },
   { featureType: 'poi', elementType: 'labels.text.fill', stylers: [{ color: '#FAFAFA' }] },
   { featureType: 'poi', elementType: 'labels.icon', stylers: [{ "visibility": "on" }, { "color": "#E70F72" }] },
@@ -43,7 +44,6 @@ export function MomentsMap({ moments }: MomentsMapProps) {
 
   useEffect(() => {
     setIsMounted(true);
-    // The Maps API key is still needed for the map itself
     setApiKey(process.env.NEXT_PUBLIC_GOOGLE_MAPS_API_KEY);
   }, []);
 
@@ -117,20 +117,7 @@ export function MomentsMap({ moments }: MomentsMapProps) {
             <div className="p-3 bg-card text-card-foreground rounded-lg shadow-xl max-w-xs w-64">
               <h4 className="font-bold text-md mb-1 text-primary">{selectedMoment.placeName}</h4>
               
-              {selectedMoment.placeImage && (
-                 <div className="my-2 rounded-md overflow-hidden aspect-video relative">
-                  <Image
-                    src={selectedMoment.placeImage}
-                    alt={selectedMoment.placeName}
-                    layout="fill"
-                    objectFit="cover"
-                    data-ai-hint="location landmark"
-                  />
-                </div>
-              )}
-               {!selectedMoment.placeImage && (
-                 <p className="text-xs text-muted-foreground my-2">No photo available for this moment.</p>
-              )}
+              {/* Removed image display section */}
 
               <p className="text-xs text-muted-foreground mb-0.5">
                 {format(new Date(selectedMoment.timestamp), "MMM d, yyyy")}
