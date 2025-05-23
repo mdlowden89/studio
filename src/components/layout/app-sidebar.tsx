@@ -98,8 +98,8 @@ export function AppSidebar() {
             className="justify-start w-full"
             variant="ghost"
         >
-            <LogOut className="h-5 w-5 text-destructive" />
-            <span className={state === 'expanded' ? 'text-destructive' : 'sr-only'}>Log Out</span>
+            <LogOut className="h-5 w-5" />
+            <span className={state === 'expanded' ? '' : 'sr-only'}>Log Out</span>
         </SidebarMenuButton>
       </SidebarFooter>
     </Sidebar>
