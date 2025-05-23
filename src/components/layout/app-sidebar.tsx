@@ -42,20 +42,17 @@ export function AppSidebar() {
   const currentUser = getCurrentUser();
 
   const handleLogout = () => {
-    // In a real app, you'd clear auth tokens, session, etc.
     router.push('/');
   };
 
   return (
     <Sidebar side="left" variant="sidebar" collapsible="none">
-      <SidebarHeader> {/* SidebarHeader is flex-col with p-2 and gap-2 by default */}
-        {/* Element 1 in flex-col: Logo and App Name */}
+      <SidebarHeader>
         <Link href="/dashboard" className="flex items-center gap-2 text-primary hover:text-primary/90 transition-colors self-start">
           <CrossdLogoIcon className="h-7 w-7" />
           {state === 'expanded' && <span className="text-xl font-semibold">Crossd</span>}
         </Link>
         
-        {/* Element 2 in flex-col: Trigger, aligned to the right, hidden on desktop */}
         <div className="w-full flex justify-end md:hidden">
           <SidebarTrigger />
         </div>
@@ -105,7 +102,7 @@ export function AppSidebar() {
             variant="ghost"
         >
             <LogOut className="h-5 w-5" />
-            <span className={state === 'expanded' ? '' : 'sr-only'}>Log Out</span>
+            <span>Log Out</span>
         </SidebarMenuButton>
       </SidebarFooter>
     </Sidebar>

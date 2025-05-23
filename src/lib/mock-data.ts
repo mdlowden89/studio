@@ -69,7 +69,7 @@ export const MOCK_USERS: UserProfile[] = [
     email: 'you@example.com', // Added email for current user
     bio: 'Seeking connections and new experiences. Let\'s see where our paths cross!',
     images: [
-      'https://placehold.co/600x800.png?you=1',
+      'https://placehold.co/100x100.png', // Generic placeholder for avatar
       'https://placehold.co/600x800.png?you=2',
       'https://placehold.co/600x800.png?you=3',
     ],
@@ -191,3 +191,4 @@ export const MOCK_CHAT_MESSAGES: { [chatId: string]: ChatMessage[] } = {
 export const getCurrentUser = (): UserProfile => {
   return MOCK_USERS.find(user => user.id === MOCK_USER_ID)!;
 };
+
