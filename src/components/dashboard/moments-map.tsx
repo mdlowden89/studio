@@ -20,9 +20,9 @@ const mapStyles = [
     elementType: 'geometry',
     stylers: [{ color: '#000000' }] // Pure black for land
   },
-  { // All labels text fill
+  { // All labels text fill - CHANGED TO PINK
     elementType: 'labels.text.fill',
-    stylers: [{ color: '#FAFAFA' }] // Light foreground for readability
+    stylers: [{ color: '#E70F72' }]
   },
   { // All labels text stroke
     elementType: 'labels.text.stroke',
@@ -33,35 +33,35 @@ const mapStyles = [
     elementType: 'geometry',
     stylers: [{ color: '#101010' }] // Very dark grey (like card background)
   },
-  { // Water labels
+  { // Water labels - CHANGED TO PINK
     featureType: 'water',
     elementType: 'labels.text.fill',
-    stylers: [{ color: '#A3A3A3' }] // Muted foreground for water labels
+    stylers: [{ color: '#E70F72' }]
   },
   { // Roads - General
     featureType: 'road',
     elementType: 'geometry',
     stylers: [{ color: '#222222' }] // Dark grey for roads
   },
-  { // Road labels
+  { // Road labels - CHANGED TO PINK
     featureType: 'road',
     elementType: 'labels.text.fill',
-    stylers: [{ color: '#A3A3A3' }] // Muted foreground for road labels
+    stylers: [{ color: '#E70F72' }]
   },
   { // Highways - make them stand out a bit more with primary color
     featureType: 'road.highway',
     elementType: 'geometry',
     stylers: [{ color: '#E70F72' }] // Primary pink for highways
   },
-  { // Points of Interest (POIs) text - ACCENT
+  { // Points of Interest (POIs) text - ALREADY PINK
     featureType: 'poi',
     elementType: 'labels.text.fill',
-    stylers: [{ color: '#E70F72' }] // Primary pink for POI text
+    stylers: [{ color: '#E70F72' }]
   },
-  { // POI icons - ACCENT
+  { // POI icons - ALREADY PINK
     featureType: 'poi',
     elementType: 'labels.icon',
-    stylers: [{ "visibility": "on" }, { "color": "#E70F72" }] // Primary pink for POI icons
+    stylers: [{ "visibility": "on" }, { "color": "#E70F72" }]
   },
   { // POI geometry (the shapes of parks, buildings etc.)
     featureType: 'poi',
@@ -73,20 +73,20 @@ const mapStyles = [
     elementType: 'geometry',
     stylers: [{ color: '#050505' }] // Very dark grey for parks, almost black
   },
-  { // Park labels
+  { // Park labels - CHANGED TO PINK
     featureType: 'poi.park',
     elementType: 'labels.text.fill',
-    stylers: [{ color: '#A3A3A3' }] // Muted foreground for park labels
+    stylers: [{ color: '#E70F72' }]
   },
   { // Administrative boundaries (e.g., country borders)
     featureType: 'administrative',
     elementType: 'geometry.stroke',
     stylers: [{ color: '#444444' }, { weight: 0.5 }] // Medium dark grey for borders
   },
-  { // Locality labels (cities, towns)
+  { // Locality labels (cities, towns) - CHANGED TO PINK
     featureType: 'administrative.locality',
     elementType: 'labels.text.fill',
-    stylers: [{ color: '#FAFAFA' }] // Light foreground for city/town names
+    stylers: [{ color: '#E70F72' }]
   },
   { // Transit lines
     featureType: 'transit',
@@ -168,3 +168,4 @@ export function MomentsMap({ moments }: MomentsMapProps) {
     </LoadScriptNext>
   );
 }
+
