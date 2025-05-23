@@ -5,6 +5,8 @@ import { GoogleMap, LoadScriptNext, MarkerF, InfoWindowF } from '@react-google-m
 import type { Moment } from '@/lib/types';
 import { useMemo, useState, useEffect } from 'react';
 import { format } from 'date-fns';
+import { fetchPlacePhotoAction } from '@/app/actions'; // Import the server action
+import Image from 'next/image'; // Use next/image for optimization
 
 interface MomentsMapProps {
   moments: Moment[];
@@ -12,88 +14,26 @@ interface MomentsMapProps {
 
 const containerStyle = {
   width: '100%',
-  height: '100%', // Will be controlled by parent div aspect ratio
+  height: '100%', 
 };
 
-// Custom map styles emphasizing #000000 (black) and #E70F72 (primary pink accents)
 const mapStyles = [
-  { // Base geometry (land, etc.)
-    elementType: 'geometry',
-    stylers: [{ color: '#000000' }] // Pure black for land
-  },
-  { // All labels text fill - CHANGED TO WHITE
-    elementType: 'labels.text.fill',
-    stylers: [{ color: '#FAFAFA' }]
-  },
-  { // All labels text stroke
-    elementType: 'labels.text.stroke',
-    stylers: [{ color: '#000000' }, { weight: 2 }] // Black stroke for sharp text
-  },
-  { // Water bodies
-    featureType: 'water',
-    elementType: 'geometry',
-    stylers: [{ color: '#101010' }] // Very dark grey (like card background)
-  },
-  { // Water labels - CHANGED TO WHITE
-    featureType: 'water',
-    elementType: 'labels.text.fill',
-    stylers: [{ color: '#FAFAFA' }]
-  },
-  { // Roads - General
-    featureType: 'road',
-    elementType: 'geometry',
-    stylers: [{ color: '#222222' }] // Dark grey for roads
-  },
-  { // Road labels - CHANGED TO WHITE
-    featureType: 'road',
-    elementType: 'labels.text.fill',
-    stylers: [{ color: '#FAFAFA' }]
-  },
-  { // Highways - make them stand out a bit more with primary color
-    featureType: 'road.highway',
-    elementType: 'geometry',
-    stylers: [{ color: '#E70F72' }] // Primary pink for highways
-  },
-  { // Points of Interest (POIs) text - CHANGED TO WHITE
-    featureType: 'poi',
-    elementType: 'labels.text.fill',
-    stylers: [{ color: '#FAFAFA' }]
-  },
-  { // POI icons - RETAIN PINK ACCENT
-    featureType: 'poi',
-    elementType: 'labels.icon',
-    stylers: [{ "visibility": "on" }, { "color": "#E70F72" }]
-  },
-  { // POI geometry (the shapes of parks, buildings etc.)
-    featureType: 'poi',
-    elementType: 'geometry',
-    stylers: [{ color: '#080808' }] // Use app's background dark grey for POI areas
-  },
-  { // Parks (specific POI type)
-    featureType: 'poi.park',
-    elementType: 'geometry',
-    stylers: [{ color: '#050505' }] // Very dark grey for parks, almost black
-  },
-  { // Park labels - CHANGED TO WHITE
-    featureType: 'poi.park',
-    elementType: 'labels.text.fill',
-    stylers: [{ color: '#FAFAFA' }]
-  },
-  { // Administrative boundaries (e.g., country borders)
-    featureType: 'administrative',
-    elementType: 'geometry.stroke',
-    stylers: [{ color: '#444444' }, { weight: 0.5 }] // Medium dark grey for borders
-  },
-  { // Locality labels (cities, towns) - CHANGED TO WHITE
-    featureType: 'administrative.locality',
-    elementType: 'labels.text.fill',
-    stylers: [{ color: '#FAFAFA' }]
-  },
-  { // Transit lines
-    featureType: 'transit',
-    elementType: 'geometry',
-    stylers: [{ color: '#181818' }] // Very dark grey for transit lines
-  }
+  { elementType: 'geometry', stylers: [{ color: '#000000' }] },
+  { elementType: 'labels.text.fill', stylers: [{ color: '#FAFAFA' }] },
+  { elementType: 'labels.text.stroke', stylers: [{ color: '#000000' }, { weight: 2 }] },
+  { featureType: 'water', elementType: 'geometry', stylers: [{ color: '#101010' }] },
+  { featureType: 'water', elementType: 'labels.text.fill', stylers: [{ color: '#FAFAFA' }] },
+  { featureType: 'road', elementType: 'geometry', stylers: [{ color: '#222222' }] },
+  { featureType: 'road', elementType: 'labels.text.fill', stylers: [{ color: '#FAFAFA' }] },
+  { featureType: 'road.highway', elementType: 'geometry', stylers: [{ color: '#E70F72' }] },
+  { featureType: 'poi', elementType: 'labels.text.fill', stylers: [{ color: '#FAFAFA' }] },
+  { featureType: 'poi', elementType: 'labels.icon', stylers: [{ "visibility": "on" }, { "color": "#E70F72" }] },
+  { featureType: 'poi', elementType: 'geometry', stylers: [{ color: '#080808' }] },
+  { featureType: 'poi.park', elementType: 'geometry', stylers: [{ color: '#050505' }] },
+  { featureType: 'poi.park', elementType: 'labels.text.fill', stylers: [{ color: '#FAFAFA' }] },
+  { featureType: 'administrative', elementType: 'geometry.stroke', stylers: [{ color: '#444444' }, { weight: 0.5 }] },
+  { featureType: 'administrative.locality', elementType: 'labels.text.fill', stylers: [{ color: '#FAFAFA' }] },
+  { featureType: 'transit', elementType: 'geometry', stylers: [{ color: '#181818' }] }
 ];
 
 
@@ -101,12 +41,38 @@ export function MomentsMap({ moments }: MomentsMapProps) {
   const [apiKey, setApiKey] = useState<string | undefined>(undefined);
   const [isMounted, setIsMounted] = useState(false);
   const [selectedMoment, setSelectedMoment] = useState<Moment | null>(null);
+  const [fetchedPhotoUrl, setFetchedPhotoUrl] = useState<string | undefined>(undefined);
+  const [fetchedAttribution, setFetchedAttribution] = useState<string | undefined>(undefined);
+  const [isLoadingPhoto, setIsLoadingPhoto] = useState(false);
 
   useEffect(() => {
     setIsMounted(true);
-    // Ensure environment variable is accessed only on client-side
     setApiKey(process.env.NEXT_PUBLIC_GOOGLE_MAPS_API_KEY);
   }, []);
+
+  const handleMarkerClick = async (moment: Moment) => {
+    setSelectedMoment(moment);
+    setFetchedPhotoUrl(undefined); // Clear previous photo
+    setFetchedAttribution(undefined);
+    setIsLoadingPhoto(true);
+    if (moment.placeName && moment.coordinates) {
+      try {
+        const photoData = await fetchPlacePhotoAction({ 
+          placeName: moment.placeName,
+          latitude: moment.coordinates.lat,
+          longitude: moment.coordinates.lng,
+        });
+        setFetchedPhotoUrl(photoData.photoUrl);
+        setFetchedAttribution(photoData.attribution);
+      } catch (error) {
+        console.error("Error fetching place photo:", error);
+      } finally {
+        setIsLoadingPhoto(false);
+      }
+    } else {
+      setIsLoadingPhoto(false);
+    }
+  };
 
   const validMoments = useMemo(() => moments.filter(moment => moment.coordinates), [moments]);
 
@@ -114,7 +80,7 @@ export function MomentsMap({ moments }: MomentsMapProps) {
     if (validMoments.length > 0 && validMoments[0].coordinates) {
       return { lat: validMoments[0].coordinates.lat, lng: validMoments[0].coordinates.lng };
     }
-    return { lat: 40.7128, lng: -74.0060 }; // Default to New York City if no moments
+    return { lat: 40.7128, lng: -74.0060 }; 
   }, [validMoments]);
 
   const markers = useMemo(() =>
@@ -123,14 +89,13 @@ export function MomentsMap({ moments }: MomentsMapProps) {
       <MarkerF
         key={moment.id}
         position={{ lat: moment.coordinates.lat, lng: moment.coordinates.lng }}
-        title={moment.placeName} // Sets the HTML title attribute for hover tooltip
-        onClick={() => setSelectedMoment(moment)}
+        title={moment.placeName}
+        onClick={() => handleMarkerClick(moment)}
       /> : null
     ))
-  , [validMoments, setSelectedMoment]);
+  , [validMoments]); // Removed setSelectedMoment, handleMarkerClick handles selection
 
   if (!isMounted) {
-    // Return a simple loading state or null until mounted to avoid SSR issues with window access
     return <div className="flex items-center justify-center h-full bg-muted rounded-lg"><p>Loading map...</p></div>;
   }
 
@@ -152,38 +117,73 @@ export function MomentsMap({ moments }: MomentsMapProps) {
       <GoogleMap
         mapContainerStyle={containerStyle}
         center={center}
-        zoom={validMoments.length > 0 ? 12 : 5} // Zoom in a bit more for local views
+        zoom={validMoments.length > 0 ? 12 : 5}
         options={{
           streetViewControl: false,
           mapTypeControl: false,
           fullscreenControl: false,
           styles: mapStyles,
         }}
-        onClick={() => setSelectedMoment(null)} // Close info window when map is clicked
+        onClick={() => {
+          setSelectedMoment(null);
+          setFetchedPhotoUrl(undefined);
+          setFetchedAttribution(undefined);
+        }}
       >
         {isMounted && markers}
         {selectedMoment && selectedMoment.coordinates && isMounted && typeof window !== 'undefined' && window.google && (
           <InfoWindowF
             position={{ lat: selectedMoment.coordinates.lat, lng: selectedMoment.coordinates.lng }}
-            onCloseClick={() => setSelectedMoment(null)}
-            options={{ pixelOffset: new window.google.maps.Size(0, -35) }} // Adjust offset to sit above marker
+            onCloseClick={() => {
+              setSelectedMoment(null);
+              setFetchedPhotoUrl(undefined);
+              setFetchedAttribution(undefined);
+            }}
+            options={{ pixelOffset: new window.google.maps.Size(0, -35) }}
           >
-            <div className="p-3 bg-card text-card-foreground rounded-lg shadow-xl max-w-xs">
+            <div className="p-3 bg-card text-card-foreground rounded-lg shadow-xl max-w-xs w-64">
               <h4 className="font-bold text-md mb-1 text-primary">{selectedMoment.placeName}</h4>
-              {selectedMoment.placeImage && (
-                <img
-                  src={selectedMoment.placeImage}
-                  alt={selectedMoment.placeName}
-                  className="my-2 rounded-md object-cover w-full max-h-32"
-                  data-ai-hint="location landmark"
-                />
+              
+              {isLoadingPhoto && <p className="text-xs text-muted-foreground my-2">Loading photo...</p>}
+              
+              {!isLoadingPhoto && fetchedPhotoUrl && (
+                <div className="my-2 rounded-md overflow-hidden aspect-video relative">
+                  <Image
+                    src={fetchedPhotoUrl}
+                    alt={`Photo of ${selectedMoment.placeName}`}
+                    layout="fill"
+                    objectFit="cover"
+                    data-ai-hint="place photo"
+                  />
+                </div>
               )}
+              {!isLoadingPhoto && !fetchedPhotoUrl && selectedMoment.placeImage && ( // Fallback to mock image if fetch fails or returns no URL
+                 <div className="my-2 rounded-md overflow-hidden aspect-video relative">
+                  <Image
+                    src={selectedMoment.placeImage}
+                    alt={selectedMoment.placeName}
+                    layout="fill"
+                    objectFit="cover"
+                    data-ai-hint="location landmark"
+                  />
+                </div>
+              )}
+              {!isLoadingPhoto && !fetchedPhotoUrl && !selectedMoment.placeImage && (
+                 <p className="text-xs text-muted-foreground my-2">No photo available.</p>
+              )}
+
               <p className="text-xs text-muted-foreground mb-0.5">
                 {format(new Date(selectedMoment.timestamp), "MMM d, yyyy")}
               </p>
               <p className="text-xs text-muted-foreground">
-                {format(new Date(selectedMoment.timestamp), "p")} {/* p for localized time */}
+                {format(new Date(selectedMoment.timestamp), "p")}
               </p>
+              {fetchedAttribution && (
+                <div 
+                  className="text-[10px] text-muted-foreground/70 mt-1" 
+                  dangerouslySetInnerHTML={{ __html: fetchedAttribution }} 
+                />
+              )}
             </div>
           </InfoWindowF>
         )}
@@ -191,3 +191,4 @@ export function MomentsMap({ moments }: MomentsMapProps) {
     </LoadScriptNext>
   );
 }
+    
