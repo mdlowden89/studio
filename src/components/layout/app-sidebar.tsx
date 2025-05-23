@@ -2,7 +2,7 @@
 "use client";
 
 import Link from "next/link";
-import { usePathname } from "next/navigation";
+import { usePathname, useRouter } from "next/navigation";
 import {
   HeartHandshake,
   MapPin,
@@ -10,6 +10,7 @@ import {
   UserCircle,
   Sparkles,
   Home,
+  LogOut,
 } from "lucide-react";
 import {
   Sidebar,
@@ -37,8 +38,14 @@ const navItems = [
 
 export function AppSidebar() {
   const pathname = usePathname();
+  const router = useRouter();
   const { state } = useSidebar();
   const currentUser = getCurrentUser();
+
+  const handleLogout = () => {
+    // In a real app, you'd clear auth tokens, session, etc.
+    router.push('/');
+  };
 
   return (
     <Sidebar side="left" variant="sidebar" collapsible="icon" defaultOpen={false}>
@@ -72,7 +79,7 @@ export function AppSidebar() {
         ))}
       </SidebarMenu>
       <Separator className="my-2 bg-sidebar-border" />
-      <SidebarFooter className="p-2">
+      <SidebarFooter className="p-2 space-y-2">
         <Link href="/profile" passHref legacyBehavior>
           <Button variant="ghost" className="w-full justify-start p-2 h-auto">
             <Avatar className="h-8 w-8">
@@ -82,6 +89,17 @@ export function AppSidebar() {
             {state === 'expanded' && <span className="ml-2 font-medium">{currentUser.name}</span>}
           </Button>
         </Link>
+        <SidebarMenuItem>
+            <SidebarMenuButton
+                onClick={handleLogout}
+                tooltip={{children: "Log Out", className: "bg-popover text-popover-foreground border-border shadow-md"}}
+                className="justify-start w-full"
+                variant="ghost"
+            >
+                <LogOut className="h-5 w-5 text-destructive" />
+                <span className={state === 'expanded' ? 'text-destructive' : 'sr-only'}>Log Out</span>
+            </SidebarMenuButton>
+        </SidebarMenuItem>
       </SidebarFooter>
     </Sidebar>
   );
