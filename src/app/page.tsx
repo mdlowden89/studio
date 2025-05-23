@@ -65,8 +65,8 @@ export default function HomePage() {
               <Button size="lg" asChild className="bg-primary hover:bg-primary/90 text-primary-foreground px-8 py-3 text-base">
                 <Link href="/signup">Join Crossd Today</Link>
               </Button>
-              <Button variant="outline" size="lg" className="px-8 py-3 text-base">
-                Learn More
+              <Button variant="outline" size="lg" asChild className="px-8 py-3 text-base">
+                <Link href="#key-features">Learn More</Link>
               </Button>
             </div>
           </div>
@@ -86,7 +86,7 @@ export default function HomePage() {
       </main>
 
       {/* How Crossd Works Section */}
-      <section className="py-16 px-6 sm:px-10 md:px-16 bg-background">
+      <section id="key-features" className="py-16 px-6 sm:px-10 md:px-16 bg-background">
         <div className="container mx-auto text-center">
           <Badge variant="outline" className="border-primary text-primary mb-4 text-sm px-3 py-1">
             Key Features
