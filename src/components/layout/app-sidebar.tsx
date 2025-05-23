@@ -10,6 +10,7 @@ import {
   Sparkles,
   Home,
   LogOut,
+  Search, // Added Search icon
 } from "lucide-react";
 import {
   Sidebar,
@@ -30,6 +31,7 @@ import { CrossdLogoIcon } from "@/components/icons/crossd-logo";
 const navItems = [
   { href: "/dashboard", label: "Dashboard", icon: Home },
   { href: "/ai-matches", label: "Vibe Matches", icon: Sparkles },
+  { href: "/discover", label: "Discover", icon: Search }, // New "Discover" item
   { href: "/moments", label: "Moments", icon: MapPin },
   { href: "/chat", label: "Chats", icon: MessageSquare },
   { href: "/profile", label: "Profile", icon: UserCircle },
