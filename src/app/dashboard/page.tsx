@@ -7,8 +7,8 @@ import { Card, CardContent, CardHeader, CardTitle, CardDescription, CardFooter }
 import { Swords, Handshake, Sparkles, PlusCircle, ClipboardList, Users, MessageSquare, Route, MapPin } from "lucide-react";
 import { getCurrentUser, MOCK_MOMENTS, MOCK_CROSSED_PATHS_USERS, MOCK_CHAT_CONVERSATIONS, MOCK_USER_ID } from "@/lib/mock-data";
 import { Button } from "@/components/ui/button";
-import Image from "next/image";
 import { subDays, isAfter, format } from "date-fns";
+import { MomentsMap } from "@/components/dashboard/moments-map"; // Import the new map component
 
 export default function DashboardPage() {
   const currentUser = getCurrentUser();
@@ -25,7 +25,7 @@ export default function DashboardPage() {
 
   const oneWeekAgo = subDays(new Date(), 7);
   const momentsThisWeek = MOCK_MOMENTS
-    .filter(moment => moment.userId === MOCK_USER_ID && isAfter(new Date(moment.timestamp), oneWeekAgo))
+    .filter(moment => moment.userId === MOCK_USER_ID && isAfter(new Date(moment.timestamp), oneWeekAgo) && moment.coordinates) // Ensure moments have coordinates
     .sort((a, b) => new Date(b.timestamp).getTime() - new Date(a.timestamp).getTime());
 
   return (
@@ -87,14 +87,8 @@ export default function DashboardPage() {
           </CardHeader>
           <CardContent>
             <div className="aspect-[2/1] w-full bg-muted rounded-lg overflow-hidden mb-4 shadow-inner">
-              <Image
-                src="https://placehold.co/800x400.png"
-                alt="Map placeholder showing moments trail"
-                width={800}
-                height={400}
-                className="object-cover w-full h-full"
-                data-ai-hint="abstract map city"
-              />
+              {/* Replace Image with MomentsMap */}
+              <MomentsMap moments={momentsThisWeek} />
             </div>
             {momentsThisWeek.length > 0 ? (
               <div>
@@ -111,7 +105,7 @@ export default function DashboardPage() {
               </div>
             ) : (
               <p className="text-muted-foreground text-center py-4">
-                No moments logged in the past week. Go out and explore!
+                No moments logged in the past week with location data. Go out and explore!
               </p>
             )}
           </CardContent>

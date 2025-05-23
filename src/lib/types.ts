@@ -8,7 +8,7 @@ export interface UserProfile {
   vibeTags: string[];
   locationPatterns?: string[]; // For AI, optional
   prompts: ProfilePromptAnswer[];
-  email?: string; // Added email field
+  email?: string; 
 }
 
 export interface ProfilePrompt {
@@ -27,7 +27,7 @@ export interface Moment {
   potentialMatchId?: string; // If a potential match was nearby
   placeName: string;
   timestamp: string; // ISO date string
-  coordinates?: { lat: number; lng: number }; // Optional
+  coordinates?: { lat: number; lng: number }; 
 }
 
 export interface ChatMessage {

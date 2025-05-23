@@ -69,7 +69,7 @@ export const MOCK_USERS: UserProfile[] = [
     email: 'you@example.com',
     bio: 'Seeking connections and new experiences. Let\'s see where our paths cross!',
     images: [
-      'https://placehold.co/120x120/E70F72/FFFFFF.png?text=U', // Distinct placeholder for avatar
+      'https://placehold.co/120x120/E70F72/FFFFFF.png?text=U', 
       'https://placehold.co/600x800.png?you=2',
       'https://placehold.co/600x800.png?you=3',
     ],
@@ -96,19 +96,29 @@ export const MOCK_MOMENTS: Moment[] = [
     placeName: 'The Grind Coffee House',
     timestamp: new Date(Date.now() - 86400000 * 2).toISOString(), // 2 days ago
     potentialMatchId: 'user-1',
+    coordinates: { lat: 47.6062, lng: -122.3321 }, // Seattle
   },
   {
     id: 'moment-2',
     userId: MOCK_USER_ID,
     placeName: 'Riverside Park',
     timestamp: new Date(Date.now() - 86400000).toISOString(), // 1 day ago
+    coordinates: { lat: 40.785091, lng: -73.968285 }, // NYC (example)
   },
   {
     id: 'moment-3',
     userId: MOCK_USER_ID,
     placeName: 'Downtown Bookstore',
-    timestamp: new Date().toISOString(),
+    timestamp: new Date(Date.now() - 86400000 * 5).toISOString(), // 5 days ago
     potentialMatchId: 'user-2',
+    coordinates: { lat: 34.052235, lng: -118.243683 }, // Los Angeles
+  },
+   {
+    id: 'moment-4',
+    userId: MOCK_USER_ID,
+    placeName: 'Art Museum Steps',
+    timestamp: new Date(Date.now() - 86400000 * 3).toISOString(), // 3 days ago
+    coordinates: { lat: 39.9651_00, lng: -75.1800_00 }, // Philadelphia
   },
 ];
 
@@ -191,4 +201,3 @@ export const MOCK_CHAT_MESSAGES: { [chatId: string]: ChatMessage[] } = {
 export const getCurrentUser = (): UserProfile => {
   return MOCK_USERS.find(user => user.id === MOCK_USER_ID)!;
 };
-
