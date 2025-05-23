@@ -93,33 +93,47 @@ export const MOCK_MOMENTS: Moment[] = [
   {
     id: 'moment-1',
     userId: MOCK_USER_ID,
-    placeName: 'The Grind Coffee House',
+    placeName: 'Montclair Art Museum',
     timestamp: new Date(Date.now() - 86400000 * 2).toISOString(), // 2 days ago
     potentialMatchId: 'user-1',
-    coordinates: { lat: 47.6062, lng: -122.3321 }, // Seattle
+    coordinates: { lat: 40.8137, lng: -74.2097 }, // Montclair, NJ
   },
   {
     id: 'moment-2',
     userId: MOCK_USER_ID,
-    placeName: 'Riverside Park',
-    timestamp: new Date(Date.now() - 86400000).toISOString(), // 1 day ago
-    coordinates: { lat: 40.785091, lng: -73.968285 }, // NYC (example)
+    placeName: 'Van Vleck House & Gardens',
+    timestamp: new Date(Date.now() - 86400000 * 1).toISOString(), // 1 day ago
+    coordinates: { lat: 40.8155, lng: -74.2036 }, // Montclair, NJ
   },
   {
     id: 'moment-3',
     userId: MOCK_USER_ID,
-    placeName: 'Downtown Bookstore',
+    placeName: 'Watchung Booksellers', // Changed from Downtown Bookstore
     timestamp: new Date(Date.now() - 86400000 * 5).toISOString(), // 5 days ago
     potentialMatchId: 'user-2',
-    coordinates: { lat: 34.052235, lng: -118.243683 }, // Los Angeles
+    coordinates: { lat: 40.8073, lng: -74.2036 }, // Watchung Plaza, Montclair, NJ
   },
    {
     id: 'moment-4',
     userId: MOCK_USER_ID,
-    placeName: 'Art Museum Steps',
+    placeName: 'Edgemont Memorial Park',
     timestamp: new Date(Date.now() - 86400000 * 3).toISOString(), // 3 days ago
-    coordinates: { lat: 39.9651_00, lng: -75.1800_00 }, // Philadelphia
+    coordinates: { lat: 40.8197, lng: -74.2052 }, // Montclair, NJ
   },
+  {
+    id: 'moment-5',
+    userId: MOCK_USER_ID,
+    placeName: 'The Clairidge Cinema',
+    timestamp: new Date(Date.now() - 86400000 * 4).toISOString(), // 4 days ago
+    coordinates: { lat: 40.8150, lng: -74.2125 }, // Montclair, NJ
+  },
+  {
+    id: 'moment-6', // Old moment, should not appear if filtered for last 7 days
+    userId: MOCK_USER_ID,
+    placeName: 'Outdated Cafe',
+    timestamp: new Date(Date.now() - 86400000 * 10).toISOString(), // 10 days ago
+    coordinates: { lat: 40.8000, lng: -74.1900 }, // Near Montclair
+  }
 ];
 
 export const MOCK_CHAT_CONVERSATIONS: ChatConversation[] = [
