@@ -107,7 +107,7 @@ export function MomentsMap({ moments }: MomentsMapProps) {
     // Ensure environment variable is accessed only on client-side
     setApiKey(process.env.NEXT_PUBLIC_GOOGLE_MAPS_API_KEY);
   }, []);
-  
+
   const validMoments = useMemo(() => moments.filter(moment => moment.coordinates), [moments]);
 
   const center = useMemo(() => {
@@ -117,7 +117,7 @@ export function MomentsMap({ moments }: MomentsMapProps) {
     return { lat: 40.7128, lng: -74.0060 }; // Default to New York City if no moments
   }, [validMoments]);
 
-  const markers = useMemo(() => 
+  const markers = useMemo(() =>
     validMoments.map((moment) => (
       moment.coordinates ?
       <MarkerF
@@ -125,18 +125,9 @@ export function MomentsMap({ moments }: MomentsMapProps) {
         position={{ lat: moment.coordinates.lat, lng: moment.coordinates.lng }}
         title={moment.placeName}
         onClick={() => setSelectedMoment(moment)}
-        // Custom marker icon (optional, example for a pink marker)
-        // icon={{
-        //   path: typeof window !== 'undefined' && window.google ? window.google.maps.SymbolPath.CIRCLE : '',
-        //   fillColor: '#E70F72', // Primary pink
-        //   fillOpacity: 1,
-        //   strokeColor: '#000000', // Black stroke for contrast
-        //   strokeWeight: 2,
-        //   scale: 8
-        // }}
       /> : null
     ))
-  , [validMoments]);
+  , [validMoments, setSelectedMoment]); // Added setSelectedMoment to dependency array
 
   if (!isMounted) {
     // Return a simple loading state or null until mounted to avoid SSR issues with window access
@@ -163,12 +154,12 @@ export function MomentsMap({ moments }: MomentsMapProps) {
           streetViewControl: false,
           mapTypeControl: false,
           fullscreenControl: false,
-          styles: mapStyles, 
+          styles: mapStyles,
         }}
         onClick={() => setSelectedMoment(null)} // Close info window when map is clicked
       >
         {isMounted && markers}
-        {selectedMoment && selectedMoment.coordinates && isMounted && window.google && (
+        {selectedMoment && selectedMoment.coordinates && isMounted && typeof window !== 'undefined' && window.google && (
           <InfoWindowF
             position={{ lat: selectedMoment.coordinates.lat, lng: selectedMoment.coordinates.lng }}
             onCloseClick={() => setSelectedMoment(null)}
@@ -177,12 +168,12 @@ export function MomentsMap({ moments }: MomentsMapProps) {
             <div className="p-3 bg-card text-card-foreground rounded-lg shadow-xl max-w-xs">
               <h4 className="font-bold text-md mb-1 text-primary">{selectedMoment.placeName}</h4>
               {selectedMoment.placeImage && (
-                <img 
-                  src={selectedMoment.placeImage} 
-                  alt={selectedMoment.placeName} 
+                <img
+                  src={selectedMoment.placeImage}
+                  alt={selectedMoment.placeName}
                   className="my-2 rounded-md object-cover w-full max-h-32"
-                  data-ai-hint="location landmark" 
-                /> 
+                  data-ai-hint="location landmark"
+                />
               )}
               <p className="text-xs text-muted-foreground mb-0.5">
                 {format(new Date(selectedMoment.timestamp), "MMM d, yyyy")}
@@ -197,3 +188,5 @@ export function MomentsMap({ moments }: MomentsMapProps) {
     </LoadScriptNext>
   );
 }
+
+    
