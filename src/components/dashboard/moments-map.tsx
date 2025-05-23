@@ -176,21 +176,20 @@ export function MomentsMap({ moments }: MomentsMapProps) {
           >
             <div className="p-3 bg-card text-card-foreground rounded-lg shadow-xl max-w-xs">
               <h4 className="font-bold text-md mb-1 text-primary">{selectedMoment.placeName}</h4>
+              {selectedMoment.placeImage && (
+                <img 
+                  src={selectedMoment.placeImage} 
+                  alt={selectedMoment.placeName} 
+                  className="my-2 rounded-md object-cover w-full max-h-32"
+                  data-ai-hint="location landmark" 
+                /> 
+              )}
               <p className="text-xs text-muted-foreground mb-0.5">
                 {format(new Date(selectedMoment.timestamp), "MMM d, yyyy")}
               </p>
               <p className="text-xs text-muted-foreground">
                 {format(new Date(selectedMoment.timestamp), "p")} {/* p for localized time */}
               </p>
-              {/* 
-              // Placeholder for a potential image if Moment type is extended
-              <img 
-                src={`https://placehold.co/150x100.png?text=${encodeURIComponent(selectedMoment.placeName)}`} 
-                alt={selectedMoment.placeName} 
-                className="mt-2 rounded-md object-cover w-full"
-                data-ai-hint="location landmark" 
-              /> 
-              */}
             </div>
           </InfoWindowF>
         )}

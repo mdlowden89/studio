@@ -28,6 +28,7 @@ export interface Moment {
   placeName: string;
   timestamp: string; // ISO date string
   coordinates?: { lat: number; lng: number }; 
+  placeImage?: string; // Optional image URL for the place
 }
 
 export interface ChatMessage {
