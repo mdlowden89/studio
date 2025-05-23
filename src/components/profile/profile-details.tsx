@@ -10,6 +10,8 @@ import { Label } from "@/components/ui/label";
 import { Badge } from "@/components/ui/badge";
 import { X as XIcon, PlusCircle } from "lucide-react";
 import { useToast } from "@/hooks/use-toast";
+import { MOCK_USERS, MOCK_USER_ID } from "@/lib/mock-data"; // Import mock data and current user ID
+import { useRouter } from "next/navigation"; // Import useRouter
 
 interface ProfileDetailsProps {
   user: UserProfile;
@@ -22,6 +24,7 @@ export function ProfileDetails({ user }: ProfileDetailsProps) {
   const [vibeTags, setVibeTags] = useState<string[]>(user.vibeTags);
   const [newTag, setNewTag] = useState("");
   const { toast } = useToast();
+  const router = useRouter(); // Get router instance
 
   const handleAddTag = () => {
     if (newTag.trim() !== "" && !vibeTags.includes(newTag.trim().toLowerCase())) {
@@ -38,10 +41,21 @@ export function ProfileDetails({ user }: ProfileDetailsProps) {
     e.preventDefault();
     // Here you would typically send data to a backend
     console.log("Updated profile:", { name, age, bio, vibeTags });
+
+    // Update the mock data
+    const userInMockData = MOCK_USERS.find(u => u.id === MOCK_USER_ID);
+    if (userInMockData) {
+      userInMockData.name = name;
+      // If email were editable, you'd update it here too:
+      // userInMockData.email = emailState; 
+    }
+
     toast({
       title: "Profile Updated",
       description: "Your profile details have been saved.",
     });
+
+    router.refresh(); // Refresh the current route to reflect changes in sidebar
   };
 
   return (
