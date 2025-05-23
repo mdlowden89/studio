@@ -3,9 +3,10 @@ import { AppLayout } from "@/components/layout/app-layout";
 import { CrossedPathsSection } from "@/components/dashboard/crossed-paths-section";
 import { SwipeMatchSection } from "@/components/dashboard/swipe-match-section";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
-import { Card, CardContent, CardHeader, CardTitle, CardDescription } from "@/components/ui/card";
-import { Swords, Handshake, Sparkles } from "lucide-react";
+import { Card, CardContent, CardHeader, CardTitle, CardDescription, CardFooter } from "@/components/ui/card";
+import { Swords, Handshake, Sparkles, PlusCircle } from "lucide-react";
 import { getCurrentUser } from "@/lib/mock-data";
+import { Button } from "@/components/ui/button";
 
 export default function DashboardPage() {
   const currentUser = getCurrentUser();
@@ -27,6 +28,12 @@ export default function DashboardPage() {
               </div>
             </div>
           </CardHeader>
+          <CardFooter className="flex justify-end p-6">
+            <Button className="bg-primary hover:bg-primary/90 text-primary-foreground">
+              <PlusCircle className="mr-2 h-5 w-5" />
+              Log a Crossing/Moment
+            </Button>
+          </CardFooter>
         </Card>
 
         <Tabs defaultValue="crossed-paths" className="w-full">
