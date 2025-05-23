@@ -48,10 +48,10 @@ const mapStyles = [
     elementType: 'labels.text.fill',
     stylers: [{ color: '#A3A3A3' }] // Muted foreground for road labels
   },
-  { // Highways - make them stand out a bit more from regular roads
+  { // Highways - make them stand out a bit more with primary color
     featureType: 'road.highway',
     elementType: 'geometry',
-    stylers: [{ color: '#333333' }] // Slightly lighter dark grey for highways
+    stylers: [{ color: '#E70F72' }] // Primary pink for highways
   },
   { // Points of Interest (POIs) text - ACCENT
     featureType: 'poi',
