@@ -1,9 +1,10 @@
 
 "use client";
 
-import { GoogleMap, LoadScriptNext, MarkerF } from '@react-google-maps/api';
+import { GoogleMap, LoadScriptNext, MarkerF, InfoWindowF } from '@react-google-maps/api';
 import type { Moment } from '@/lib/types';
 import { useMemo, useState, useEffect } from 'react';
+import { format } from 'date-fns';
 
 interface MomentsMapProps {
   moments: Moment[];
@@ -99,6 +100,7 @@ const mapStyles = [
 export function MomentsMap({ moments }: MomentsMapProps) {
   const [apiKey, setApiKey] = useState<string | undefined>(undefined);
   const [isMounted, setIsMounted] = useState(false);
+  const [selectedMoment, setSelectedMoment] = useState<Moment | null>(null);
 
   useEffect(() => {
     setIsMounted(true);
@@ -122,6 +124,7 @@ export function MomentsMap({ moments }: MomentsMapProps) {
         key={moment.id}
         position={{ lat: moment.coordinates.lat, lng: moment.coordinates.lng }}
         title={moment.placeName}
+        onClick={() => setSelectedMoment(moment)}
         // Custom marker icon (optional, example for a pink marker)
         // icon={{
         //   path: typeof window !== 'undefined' && window.google ? window.google.maps.SymbolPath.CIRCLE : '',
@@ -155,17 +158,43 @@ export function MomentsMap({ moments }: MomentsMapProps) {
       <GoogleMap
         mapContainerStyle={containerStyle}
         center={center}
-        zoom={validMoments.length > 0 ? 10 : 5} 
+        zoom={validMoments.length > 0 ? 12 : 5} // Zoom in a bit more for local views
         options={{
           streetViewControl: false,
           mapTypeControl: false,
           fullscreenControl: false,
-          styles: mapStyles, // Apply the new black and pink themed styles
+          styles: mapStyles, 
         }}
+        onClick={() => setSelectedMoment(null)} // Close info window when map is clicked
       >
         {isMounted && markers}
+        {selectedMoment && selectedMoment.coordinates && isMounted && window.google && (
+          <InfoWindowF
+            position={{ lat: selectedMoment.coordinates.lat, lng: selectedMoment.coordinates.lng }}
+            onCloseClick={() => setSelectedMoment(null)}
+            options={{ pixelOffset: new window.google.maps.Size(0, -35) }} // Adjust offset to sit above marker
+          >
+            <div className="p-3 bg-card text-card-foreground rounded-lg shadow-xl max-w-xs">
+              <h4 className="font-bold text-md mb-1 text-primary">{selectedMoment.placeName}</h4>
+              <p className="text-xs text-muted-foreground mb-0.5">
+                {format(new Date(selectedMoment.timestamp), "MMM d, yyyy")}
+              </p>
+              <p className="text-xs text-muted-foreground">
+                {format(new Date(selectedMoment.timestamp), "p")} {/* p for localized time */}
+              </p>
+              {/* 
+              // Placeholder for a potential image if Moment type is extended
+              <img 
+                src={`https://placehold.co/150x100.png?text=${encodeURIComponent(selectedMoment.placeName)}`} 
+                alt={selectedMoment.placeName} 
+                className="mt-2 rounded-md object-cover w-full"
+                data-ai-hint="location landmark" 
+              /> 
+              */}
+            </div>
+          </InfoWindowF>
+        )}
       </GoogleMap>
     </LoadScriptNext>
   );
 }
-
