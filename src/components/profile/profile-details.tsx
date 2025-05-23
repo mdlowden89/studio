@@ -53,7 +53,22 @@ export function ProfileDetails({ user }: ProfileDetailsProps) {
         </div>
         <div>
           <Label htmlFor="age">Age</Label>
-          <Input id="age" type="number" value={age} onChange={(e) => setAge(parseInt(e.target.value))} className="mt-1 bg-input" />
+          <Input
+            id="age"
+            type="number"
+            value={age} // age state is always a number now
+            onChange={(e) => {
+              const rawValue = e.target.value;
+              const parsedAge = parseInt(rawValue, 10);
+              if (rawValue === "" || isNaN(parsedAge)) {
+                // If input is empty or not a number, set age to 0 to prevent NaN state.
+                setAge(0);
+              } else {
+                setAge(parsedAge);
+              }
+            }}
+            className="mt-1 bg-input"
+          />
         </div>
       </div>
       <div>
