@@ -78,7 +78,7 @@ export default function HomePage() {
               alt="Login page background illustration"
               layout="fill"
               objectFit="contain"
-              data-ai-hint="login background"
+              data-ai-hint="map location pin neon grid"
               className="rounded-lg"
             />
           </div>
