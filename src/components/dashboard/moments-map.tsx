@@ -14,89 +14,85 @@ const containerStyle = {
   height: '100%', // Will be controlled by parent div aspect ratio
 };
 
-// Ensure NEXT_PUBLIC_GOOGLE_MAPS_API_KEY is accessed in a way that doesn't cause hydration issues.
-// We'll use a state variable to hold the API key after the component mounts.
-// This also helps in clearly showing an error if the key is missing.
-
-const mapStyles = [ 
-  { elementType: 'geometry', stylers: [{ color: '#242f3e' }] },
-  { elementType: 'labels.text.stroke', stylers: [{ color: '#242f3e' }] },
-  { elementType: 'labels.text.fill', stylers: [{ color: '#746855' }] },
-  {
-    featureType: 'administrative.locality',
-    elementType: 'labels.text.fill',
-    stylers: [{ color: '#d59563' }],
+// Custom map styles featuring #E70F72 (primary pink)
+const mapStyles = [
+  { // Base geometry (land, etc.)
+    elementType: 'geometry',
+    stylers: [{ color: '#101010' }] // Dark base like card background
   },
-  {
+  { // All labels text fill
+    elementType: 'labels.text.fill',
+    stylers: [{ color: '#FAFAFA' }] // Foreground color for readability
+  },
+  { // All labels text stroke
+    elementType: 'labels.text.stroke',
+    stylers: [{ color: '#101010' }, { weight: 2 }] // Dark stroke for readability
+  },
+  { // Water bodies
+    featureType: 'water',
+    elementType: 'geometry',
+    stylers: [{ color: '#5E062E' }] // Darker shade of primary pink
+  },
+  { // Water labels
+    featureType: 'water',
+    elementType: 'labels.text.fill',
+    stylers: [{ color: '#E70F72' }]
+  },
+  { // Roads
+    featureType: 'road',
+    elementType: 'geometry',
+    stylers: [{ color: '#E70F72' }]
+  },
+  { // Roads - attempt to hide road labels by making them blend or very dark
+    featureType: 'road',
+    elementType: 'labels.text.fill',
+    stylers: [{ color: '#181818' }] 
+  },
+  { // Highways - make them stand out a bit more
+    featureType: 'road.highway',
+    elementType: 'geometry',
+    stylers: [{ color: '#FF4DA6' }] // A slightly lighter/brighter pink than primary
+  },
+  { // Points of Interest (POIs) text
     featureType: 'poi',
     elementType: 'labels.text.fill',
-    stylers: [{ color: '#d59563' }],
+    stylers: [{ color: '#E70F72' }]
   },
-  {
+  { // POI icons - attempt to make them pink (might not affect all icons)
+    featureType: 'poi',
+    elementType: 'labels.icon',
+    stylers: [{ "saturation": 100 }, { "lightness": -10 }, { "gamma": 0.9 }, { "hue": "#E70F72" }]
+  },
+  { // POI geometry (the shapes of parks, buildings etc.)
+    featureType: 'poi',
+    elementType: 'geometry',
+    stylers: [{ color: '#2E0414' }] // Dark, muted pink for POI areas
+  },
+  { // Parks
     featureType: 'poi.park',
     elementType: 'geometry',
-    stylers: [{ color: '#263c3f' }],
+    stylers: [{ color: '#400F20' }] // Muted darker pink for parks
   },
-  {
+  { // Park labels
     featureType: 'poi.park',
     elementType: 'labels.text.fill',
-    stylers: [{ color: '#6b9a76' }],
+    stylers: [{ color: '#E70F72' }]
   },
-  {
-    featureType: 'road',
-    elementType: 'geometry',
-    stylers: [{ color: '#38414e' }],
-  },
-  {
-    featureType: 'road',
+  { // Administrative boundaries (e.g., country borders)
+    featureType: 'administrative',
     elementType: 'geometry.stroke',
-    stylers: [{ color: '#212a37' }],
+    stylers: [{ color: '#E70F72' }, { weight: 0.5 }]
   },
-  {
-    featureType: 'road',
+  { // Locality labels (cities, towns)
+    featureType: 'administrative.locality',
     elementType: 'labels.text.fill',
-    stylers: [{ color: '#9ca5b3' }],
+    stylers: [{ color: '#E70F72' }]
   },
-  {
-    featureType: 'road.highway',
-    elementType: 'geometry',
-    stylers: [{ color: '#746855' }],
-  },
-  {
-    featureType: 'road.highway',
-    elementType: 'geometry.stroke',
-    stylers: [{ color: '#1f2835' }],
-  },
-  {
-    featureType: 'road.highway',
-    elementType: 'labels.text.fill',
-    stylers: [{ color: '#f3d19c' }],
-  },
-  {
+  { // Transit lines
     featureType: 'transit',
     elementType: 'geometry',
-    stylers: [{ color: '#2f3948' }],
-  },
-  {
-    featureType: 'transit.station',
-    elementType: 'labels.text.fill',
-    stylers: [{ color: '#d59563' }],
-  },
-  {
-    featureType: 'water',
-    elementType: 'geometry',
-    stylers: [{ color: '#17263c' }],
-  },
-  {
-    featureType: 'water',
-    elementType: 'labels.text.fill',
-    stylers: [{ color: '#515c6d' }],
-  },
-  {
-    featureType: 'water',
-    elementType: 'labels.text.stroke',
-    stylers: [{ color: '#17263c' }],
-  },
+    stylers: [{ color: '#870842' }] // Another shade of pink for transit
+  }
 ];
 
 
@@ -125,7 +121,8 @@ export function MomentsMap({ moments }: MomentsMapProps) {
         key={moment.id}
         position={{ lat: moment.coordinates.lat, lng: moment.coordinates.lng }}
         title={moment.placeName}
-        // You can customize marker icons here if needed
+        // You can customize marker icons here if needed, e.g., make them pink
+        // icon={{ url: '/path/to/pink-marker.svg', scaledSize: new window.google.maps.Size(30,30) }}
       /> : null
     ))
   , [validMoments]);
@@ -155,7 +152,7 @@ export function MomentsMap({ moments }: MomentsMapProps) {
           streetViewControl: false,
           mapTypeControl: false,
           fullscreenControl: false,
-          styles: mapStyles, // Apply dark mode styles
+          styles: mapStyles, // Apply the new pink-themed styles
         }}
       >
         {markers}
@@ -163,3 +160,4 @@ export function MomentsMap({ moments }: MomentsMapProps) {
     </LoadScriptNext>
   );
 }
+
