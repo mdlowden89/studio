@@ -2,7 +2,7 @@
 "use server";
 
 import { suggestMatchesFromVibe, SuggestMatchesInput } from "@/ai/flows/suggest-matches-from-vibe";
-import { getPlacePhoto, type GetPlacePhotoInput, type GetPlacePhotoOutput } from "@/ai/flows/get-place-photo-flow";
+// import { getPlacePhoto, type GetPlacePhotoInput, type GetPlacePhotoOutput } from "@/ai/flows/get-place-photo-flow"; // Removed
 import type { UserProfile } from "@/lib/types";
 import { MOCK_USERS, MOCK_USER_ID } from "@/lib/mock-data"; // For fetching other users
 
@@ -45,13 +45,13 @@ export async function getAiSuggestedMatches(
   }
 }
 
-
-export async function fetchPlacePhotoAction(input: GetPlacePhotoInput): Promise<GetPlacePhotoOutput> {
-  try {
-    return await getPlacePhoto(input);
-  } catch (error) {
-    console.error("Error in fetchPlacePhotoAction:", error);
-    return { photoUrl: undefined, attribution: undefined };
-  }
-}
+// Removed fetchPlacePhotoAction
+// export async function fetchPlacePhotoAction(input: GetPlacePhotoInput): Promise<GetPlacePhotoOutput> {
+//   try {
+//     return await getPlacePhoto(input);
+//   } catch (error) {
+//     console.error("Error in fetchPlacePhotoAction:", error);
+//     return { photoUrl: undefined, attribution: undefined };
+//   }
+// }
     

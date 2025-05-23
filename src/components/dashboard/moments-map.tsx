@@ -5,7 +5,6 @@ import { GoogleMap, LoadScriptNext, MarkerF, InfoWindowF } from '@react-google-m
 import type { Moment } from '@/lib/types';
 import { useMemo, useState, useEffect } from 'react';
 import { format } from 'date-fns';
-import { fetchPlacePhotoAction } from '@/app/actions'; // Import the server action
 import Image from 'next/image'; // Use next/image for optimization
 
 interface MomentsMapProps {
@@ -41,37 +40,15 @@ export function MomentsMap({ moments }: MomentsMapProps) {
   const [apiKey, setApiKey] = useState<string | undefined>(undefined);
   const [isMounted, setIsMounted] = useState(false);
   const [selectedMoment, setSelectedMoment] = useState<Moment | null>(null);
-  const [fetchedPhotoUrl, setFetchedPhotoUrl] = useState<string | undefined>(undefined);
-  const [fetchedAttribution, setFetchedAttribution] = useState<string | undefined>(undefined);
-  const [isLoadingPhoto, setIsLoadingPhoto] = useState(false);
 
   useEffect(() => {
     setIsMounted(true);
+    // The Maps API key is still needed for the map itself
     setApiKey(process.env.NEXT_PUBLIC_GOOGLE_MAPS_API_KEY);
   }, []);
 
-  const handleMarkerClick = async (moment: Moment) => {
+  const handleMarkerClick = (moment: Moment) => {
     setSelectedMoment(moment);
-    setFetchedPhotoUrl(undefined); // Clear previous photo
-    setFetchedAttribution(undefined);
-    setIsLoadingPhoto(true);
-    if (moment.placeName && moment.coordinates) {
-      try {
-        const photoData = await fetchPlacePhotoAction({ 
-          placeName: moment.placeName,
-          latitude: moment.coordinates.lat,
-          longitude: moment.coordinates.lng,
-        });
-        setFetchedPhotoUrl(photoData.photoUrl);
-        setFetchedAttribution(photoData.attribution);
-      } catch (error) {
-        console.error("Error fetching place photo:", error);
-      } finally {
-        setIsLoadingPhoto(false);
-      }
-    } else {
-      setIsLoadingPhoto(false);
-    }
   };
 
   const validMoments = useMemo(() => moments.filter(moment => moment.coordinates), [moments]);
@@ -93,7 +70,7 @@ export function MomentsMap({ moments }: MomentsMapProps) {
         onClick={() => handleMarkerClick(moment)}
       /> : null
     ))
-  , [validMoments]); // Removed setSelectedMoment, handleMarkerClick handles selection
+  , [validMoments]);
 
   if (!isMounted) {
     return <div className="flex items-center justify-center h-full bg-muted rounded-lg"><p>Loading map...</p></div>;
@@ -126,8 +103,6 @@ export function MomentsMap({ moments }: MomentsMapProps) {
         }}
         onClick={() => {
           setSelectedMoment(null);
-          setFetchedPhotoUrl(undefined);
-          setFetchedAttribution(undefined);
         }}
       >
         {isMounted && markers}
@@ -136,28 +111,13 @@ export function MomentsMap({ moments }: MomentsMapProps) {
             position={{ lat: selectedMoment.coordinates.lat, lng: selectedMoment.coordinates.lng }}
             onCloseClick={() => {
               setSelectedMoment(null);
-              setFetchedPhotoUrl(undefined);
-              setFetchedAttribution(undefined);
             }}
             options={{ pixelOffset: new window.google.maps.Size(0, -35) }}
           >
             <div className="p-3 bg-card text-card-foreground rounded-lg shadow-xl max-w-xs w-64">
               <h4 className="font-bold text-md mb-1 text-primary">{selectedMoment.placeName}</h4>
               
-              {isLoadingPhoto && <p className="text-xs text-muted-foreground my-2">Loading photo...</p>}
-              
-              {!isLoadingPhoto && fetchedPhotoUrl && (
-                <div className="my-2 rounded-md overflow-hidden aspect-video relative">
-                  <Image
-                    src={fetchedPhotoUrl}
-                    alt={`Photo of ${selectedMoment.placeName}`}
-                    layout="fill"
-                    objectFit="cover"
-                    data-ai-hint="place photo"
-                  />
-                </div>
-              )}
-              {!isLoadingPhoto && !fetchedPhotoUrl && selectedMoment.placeImage && ( // Fallback to mock image if fetch fails or returns no URL
+              {selectedMoment.placeImage && (
                  <div className="my-2 rounded-md overflow-hidden aspect-video relative">
                   <Image
                     src={selectedMoment.placeImage}
@@ -168,8 +128,8 @@ export function MomentsMap({ moments }: MomentsMapProps) {
                   />
                 </div>
               )}
-              {!isLoadingPhoto && !fetchedPhotoUrl && !selectedMoment.placeImage && (
-                 <p className="text-xs text-muted-foreground my-2">No photo available.</p>
+               {!selectedMoment.placeImage && (
+                 <p className="text-xs text-muted-foreground my-2">No photo available for this moment.</p>
               )}
 
               <p className="text-xs text-muted-foreground mb-0.5">
@@ -178,12 +138,6 @@ export function MomentsMap({ moments }: MomentsMapProps) {
               <p className="text-xs text-muted-foreground">
                 {format(new Date(selectedMoment.timestamp), "p")}
               </p>
-              {fetchedAttribution && (
-                <div 
-                  className="text-[10px] text-muted-foreground/70 mt-1" 
-                  dangerouslySetInnerHTML={{ __html: fetchedAttribution }} 
-                />
-              )}
             </div>
           </InfoWindowF>
         )}
