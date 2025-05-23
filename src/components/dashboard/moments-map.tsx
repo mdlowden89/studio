@@ -127,7 +127,7 @@ export function MomentsMap({ moments }: MomentsMapProps) {
         onClick={() => setSelectedMoment(moment)}
       /> : null
     ))
-  , [validMoments, setSelectedMoment]); // Added setSelectedMoment to dependency array
+  , [validMoments, setSelectedMoment]);
 
   if (!isMounted) {
     // Return a simple loading state or null until mounted to avoid SSR issues with window access
