@@ -4,15 +4,17 @@ import { CrossedPathsSection } from "@/components/dashboard/crossed-paths-sectio
 import { SwipeMatchSection } from "@/components/dashboard/swipe-match-section";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Card, CardContent, CardHeader, CardTitle, CardDescription, CardFooter } from "@/components/ui/card";
-import { Swords, Handshake, Sparkles, PlusCircle, ClipboardList, Users, MessageSquare } from "lucide-react";
+import { Swords, Handshake, Sparkles, PlusCircle, ClipboardList, Users, MessageSquare, Route, MapPin } from "lucide-react";
 import { getCurrentUser, MOCK_MOMENTS, MOCK_CROSSED_PATHS_USERS, MOCK_CHAT_CONVERSATIONS, MOCK_USER_ID } from "@/lib/mock-data";
 import { Button } from "@/components/ui/button";
+import Image from "next/image";
+import { subDays, isAfter, format } from "date-fns";
 
 export default function DashboardPage() {
   const currentUser = getCurrentUser();
 
   const momentsLoggedCount = MOCK_MOMENTS.filter(moment => moment.userId === MOCK_USER_ID).length;
-  const potentialMatchesCount = MOCK_CROSSED_PATHS_USERS.length; // Based on users you've crossed paths with
+  const potentialMatchesCount = MOCK_CROSSED_PATHS_USERS.length; 
   const activeChatsCount = MOCK_CHAT_CONVERSATIONS.length;
 
   const stats = [
@@ -20,6 +22,11 @@ export default function DashboardPage() {
     { title: "Potential Matches", value: potentialMatchesCount, icon: Users, color: "text-green-500" },
     { title: "Active Chats", value: activeChatsCount, icon: MessageSquare, color: "text-purple-500" },
   ];
+
+  const oneWeekAgo = subDays(new Date(), 7);
+  const momentsThisWeek = MOCK_MOMENTS
+    .filter(moment => moment.userId === MOCK_USER_ID && isAfter(new Date(moment.timestamp), oneWeekAgo))
+    .sort((a, b) => new Date(b.timestamp).getTime() - new Date(a.timestamp).getTime());
 
   return (
     <AppLayout>
@@ -63,6 +70,50 @@ export default function DashboardPage() {
                 </div>
               ))}
             </div>
+          </CardContent>
+        </Card>
+
+        <Card className="mb-8 bg-card shadow-xl">
+          <CardHeader>
+            <div className="flex items-center gap-3">
+              <Route className="w-7 h-7 text-primary" />
+              <div>
+                <CardTitle className="text-xl font-semibold">Moments Trail</CardTitle>
+                <CardDescription className="text-muted-foreground">
+                  A map of places you've visited in the last 7 days.
+                </CardDescription>
+              </div>
+            </div>
+          </CardHeader>
+          <CardContent>
+            <div className="aspect-[2/1] w-full bg-muted rounded-lg overflow-hidden mb-4 shadow-inner">
+              <Image
+                src="https://placehold.co/800x400.png"
+                alt="Map placeholder showing moments trail"
+                width={800}
+                height={400}
+                className="object-cover w-full h-full"
+                data-ai-hint="abstract map city"
+              />
+            </div>
+            {momentsThisWeek.length > 0 ? (
+              <div>
+                <h4 className="text-md font-semibold mb-2 text-foreground">Recent Places This Week:</h4>
+                <ul className="space-y-2">
+                  {momentsThisWeek.map(moment => (
+                    <li key={moment.id} className="flex items-center gap-2 p-2 bg-muted/30 rounded-md text-sm">
+                      <MapPin className="w-4 h-4 text-primary/80" />
+                      <span className="flex-grow font-medium text-foreground/90">{moment.placeName}</span>
+                      <span className="text-xs text-muted-foreground">{format(new Date(moment.timestamp), "MMM d, p")}</span>
+                    </li>
+                  ))}
+                </ul>
+              </div>
+            ) : (
+              <p className="text-muted-foreground text-center py-4">
+                No moments logged in the past week. Go out and explore!
+              </p>
+            )}
           </CardContent>
         </Card>
 
