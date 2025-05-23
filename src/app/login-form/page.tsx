@@ -6,7 +6,7 @@ import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { CrossdLogoIcon } from '@/components/icons/crossd-logo';
 
-export default function SignUpPage() {
+export default function LoginFormPage() {
   return (
     <div className="flex flex-col min-h-screen bg-background text-foreground">
       {/* Header */}
@@ -31,15 +31,11 @@ export default function SignUpPage() {
       <main className="flex-1 flex flex-col items-center justify-center py-12 px-4 sm:px-6 lg:px-8">
         <Card className="w-full max-w-md shadow-xl bg-card">
           <CardHeader className="text-center">
-            <CardTitle className="text-3xl font-bold">Create Your Account</CardTitle>
-            <CardDescription>Join Crossd and start making connections.</CardDescription>
+            <CardTitle className="text-3xl font-bold">Welcome Back</CardTitle>
+            <CardDescription>Log in to continue to Crossd.</CardDescription>
           </CardHeader>
           <CardContent className="space-y-6">
             <form className="space-y-4">
-              <div>
-                <Label htmlFor="fullName">Full Name</Label>
-                <Input id="fullName" type="text" placeholder="John Doe" required className="mt-1 bg-input" />
-              </div>
               <div>
                 <Label htmlFor="email">Email Address</Label>
                 <Input id="email" type="email" placeholder="you@example.com" required className="mt-1 bg-input" />
@@ -48,20 +44,19 @@ export default function SignUpPage() {
                 <Label htmlFor="password">Password</Label>
                 <Input id="password" type="password" placeholder="••••••••" required className="mt-1 bg-input" />
               </div>
-              <div>
-                <Label htmlFor="confirmPassword">Confirm Password</Label>
-                <Input id="confirmPassword" type="password" placeholder="••••••••" required className="mt-1 bg-input" />
-              </div>
               <Button type="submit" className="w-full bg-primary hover:bg-primary/90 text-primary-foreground">
-                Sign Up
+                Log In
               </Button>
             </form>
           </CardContent>
-          <CardFooter className="flex justify-center">
+          <CardFooter className="flex flex-col items-center gap-2">
+             <Link href="#" className="text-sm text-muted-foreground hover:text-primary hover:underline">
+                Forgot password?
+              </Link>
             <p className="text-sm text-muted-foreground">
-              Already have an account?{' '}
-              <Link href="/login-form" className="font-medium text-primary hover:underline">
-                Log in
+              Don&apos;t have an account?{' '}
+              <Link href="/signup" className="font-medium text-primary hover:underline">
+                Sign up
               </Link>
             </p>
           </CardFooter>
