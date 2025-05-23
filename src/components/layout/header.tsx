@@ -17,7 +17,7 @@ import { Badge } from '@/components/ui/badge';
 
 // A simple function to get a title from the pathname
 const getTitleFromPathname = (pathname: string): string => {
-  if (pathname === '/') return 'Home'; // Changed from Dashboard to Home as / is now the landing page
+  if (pathname === '/') return 'Home';
   if (pathname === '/dashboard') return 'Dashboard';
   if (pathname.startsWith('/chat/')) return 'Chat';
   if (pathname === '/login-form') return 'Login';
@@ -50,7 +50,12 @@ export function Header() {
       <div className="flex items-center gap-2">
         <DropdownMenu>
           <DropdownMenuTrigger asChild>
-            <Button variant="ghost" size="icon" aria-label="Notifications" className="relative">
+            <Button 
+              variant="ghost" 
+              size="icon" 
+              aria-label="Notifications" 
+              className="relative hover:bg-primary/10"
+            >
               <Bell className="h-5 w-5 text-primary" />
               {unreadNotificationsCount > 0 && (
                 <Badge variant="destructive" className="absolute -top-1 -right-1 h-5 w-5 p-0 flex items-center justify-center text-xs rounded-full">
@@ -90,3 +95,5 @@ export function Header() {
     </header>
   );
 }
+
+    
