@@ -8,6 +8,7 @@ export interface UserProfile {
   vibeTags: string[];
   locationPatterns?: string[]; // For AI, optional
   prompts: ProfilePromptAnswer[];
+  email?: string; // Added email field
 }
 
 export interface ProfilePrompt {

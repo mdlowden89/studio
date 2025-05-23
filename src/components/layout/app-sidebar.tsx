@@ -4,7 +4,6 @@
 import Link from "next/link";
 import { usePathname, useRouter } from "next/navigation";
 import {
-  HeartHandshake,
   MapPin,
   MessageSquare,
   UserCircle,
@@ -84,12 +83,19 @@ export function AppSidebar() {
       <Separator className="my-2 bg-sidebar-border" />
       <SidebarFooter className="p-2 space-y-2">
         <Link href="/profile" passHref legacyBehavior>
-          <Button variant="ghost" className="w-full justify-start p-2 h-auto">
-            <Avatar className="h-8 w-8">
+          <Button variant="ghost" className="w-full justify-start p-2 h-auto items-center">
+            <Avatar className="h-10 w-10 shrink-0">
               <AvatarImage src={currentUser.images[0]} alt={currentUser.name} data-ai-hint="profile photo" />
               <AvatarFallback>{currentUser.name.substring(0, 1)}</AvatarFallback>
             </Avatar>
-            {state === 'expanded' && <span className="ml-2 font-medium">{currentUser.name}</span>}
+            {state === 'expanded' && (
+              <div className="ml-3 flex flex-col items-start text-left">
+                <span className="font-medium text-sm text-sidebar-primary">{currentUser.name}</span>
+                {currentUser.email && (
+                  <span className="text-xs text-sidebar-foreground/70 truncate max-w-[120px]">{currentUser.email}</span>
+                )}
+              </div>
+            )}
           </Button>
         </Link>
         <SidebarMenuButton

@@ -1,3 +1,4 @@
+
 import type { UserProfile, Moment, ChatConversation, ChatMessage, ProfilePrompt, CrossedPathUser } from './types';
 
 export const MOCK_USER_ID = 'user-123';
@@ -15,6 +16,7 @@ export const MOCK_USERS: UserProfile[] = [
     id: 'user-1',
     name: 'Alex',
     age: 28,
+    email: 'alex@example.com',
     bio: 'Loves hiking, coffee, and indie music. Always up for an adventure or a quiet night in with a good book.',
     images: [
       'https://placehold.co/600x800.png?a=1',
@@ -32,6 +34,7 @@ export const MOCK_USERS: UserProfile[] = [
     id: 'user-2',
     name: 'Jamie',
     age: 25,
+    email: 'jamie@example.com',
     bio: 'Artist, foodie, and travel enthusiast. Exploring new cultures and cuisines is my passion.',
     images: [
       'https://placehold.co/600x800.png?b=1',
@@ -48,6 +51,7 @@ export const MOCK_USERS: UserProfile[] = [
     id: 'user-3',
     name: 'Casey',
     age: 30,
+    email: 'casey@example.com',
     bio: 'Tech geek, gamer, and animal lover. Fluent in sarcasm and Python.',
     images: [
       'https://placehold.co/600x800.png?c=1',
@@ -62,6 +66,7 @@ export const MOCK_USERS: UserProfile[] = [
     id: MOCK_USER_ID, // Current user
     name: 'You',
     age: 27,
+    email: 'you@example.com', // Added email for current user
     bio: 'Seeking connections and new experiences. Let\'s see where our paths cross!',
     images: [
       'https://placehold.co/600x800.png?you=1',
