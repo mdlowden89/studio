@@ -19,6 +19,7 @@ interface ProfileDetailsProps {
 
 export function ProfileDetails({ user }: ProfileDetailsProps) {
   const [name, setName] = useState(user.name);
+  const [email, setEmail] = useState(user.email || "");
   const [age, setAge] = useState(user.age);
   const [bio, setBio] = useState(user.bio);
   const [vibeTags, setVibeTags] = useState<string[]>(user.vibeTags);
@@ -40,14 +41,16 @@ export function ProfileDetails({ user }: ProfileDetailsProps) {
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
     // Here you would typically send data to a backend
-    console.log("Updated profile:", { name, age, bio, vibeTags });
+    console.log("Updated profile:", { name, email, age, bio, vibeTags });
 
     // Update the mock data
     const userInMockData = MOCK_USERS.find(u => u.id === MOCK_USER_ID);
     if (userInMockData) {
       userInMockData.name = name;
-      // If email were editable, you'd update it here too:
-      // userInMockData.email = emailState; 
+      userInMockData.email = email;
+      userInMockData.age = age;
+      userInMockData.bio = bio;
+      userInMockData.vibeTags = vibeTags;
     }
 
     toast({
@@ -64,6 +67,10 @@ export function ProfileDetails({ user }: ProfileDetailsProps) {
         <div>
           <Label htmlFor="name">Name</Label>
           <Input id="name" value={name} onChange={(e) => setName(e.target.value)} className="mt-1 bg-input" />
+        </div>
+         <div>
+          <Label htmlFor="email">Email Address</Label>
+          <Input id="email" type="email" value={email} onChange={(e) => setEmail(e.target.value)} className="mt-1 bg-input" />
         </div>
         <div>
           <Label htmlFor="age">Age</Label>
