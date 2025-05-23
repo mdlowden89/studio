@@ -14,7 +14,7 @@ const containerStyle = {
   height: '100%', // Will be controlled by parent div aspect ratio
 };
 
-// Custom map styles emphasizing #000000 (black) and #E70F72 (primary pink)
+// Custom map styles emphasizing #000000 (black) and #E70F72 (primary pink accents)
 const mapStyles = [
   { // Base geometry (land, etc.)
     elementType: 'geometry',
@@ -26,42 +26,42 @@ const mapStyles = [
   },
   { // All labels text stroke
     elementType: 'labels.text.stroke',
-    stylers: [{ color: '#000000' }, { weight: 2 }] // Black stroke for sharp text on light/pink areas
+    stylers: [{ color: '#000000' }, { weight: 2 }] // Black stroke for sharp text
   },
   { // Water bodies
     featureType: 'water',
     elementType: 'geometry',
-    stylers: [{ color: '#E70F72' }] // Primary pink for water
+    stylers: [{ color: '#101010' }] // Very dark grey (like card background)
   },
   { // Water labels
     featureType: 'water',
     elementType: 'labels.text.fill',
-    stylers: [{ color: '#FAFAFA' }] // Light text on pink water for contrast
+    stylers: [{ color: '#A3A3A3' }] // Muted foreground for water labels
   },
-  { // Roads
+  { // Roads - General
     featureType: 'road',
     elementType: 'geometry',
-    stylers: [{ color: '#E70F72' }] // Primary pink for roads
+    stylers: [{ color: '#222222' }] // Dark grey for roads
   },
-  { // Road labels - make them blend or very dark
+  { // Road labels
     featureType: 'road',
     elementType: 'labels.text.fill',
-    stylers: [{ color: '#000000' }] // Black text for roads, subtle on pink
+    stylers: [{ color: '#A3A3A3' }] // Muted foreground for road labels
   },
   { // Highways - make them stand out a bit more from regular roads
     featureType: 'road.highway',
     elementType: 'geometry',
-    stylers: [{ color: '#FF4DA6' }] // A slightly lighter/brighter pink than primary
+    stylers: [{ color: '#333333' }] // Slightly lighter dark grey for highways
   },
-  { // Points of Interest (POIs) text
+  { // Points of Interest (POIs) text - ACCENT
     featureType: 'poi',
     elementType: 'labels.text.fill',
     stylers: [{ color: '#E70F72' }] // Primary pink for POI text
   },
-  { // POI icons - make them pink
+  { // POI icons - ACCENT
     featureType: 'poi',
     elementType: 'labels.icon',
-    stylers: [{ "visibility": "on" }, { "color": "#E70F72" }]
+    stylers: [{ "visibility": "on" }, { "color": "#E70F72" }] // Primary pink for POI icons
   },
   { // POI geometry (the shapes of parks, buildings etc.)
     featureType: 'poi',
@@ -76,22 +76,22 @@ const mapStyles = [
   { // Park labels
     featureType: 'poi.park',
     elementType: 'labels.text.fill',
-    stylers: [{ color: '#E70F72' }] // Primary pink for park labels
+    stylers: [{ color: '#A3A3A3' }] // Muted foreground for park labels
   },
   { // Administrative boundaries (e.g., country borders)
     featureType: 'administrative',
     elementType: 'geometry.stroke',
-    stylers: [{ color: '#E70F72' }, { weight: 0.5 }] // Primary pink for borders
+    stylers: [{ color: '#444444' }, { weight: 0.5 }] // Medium dark grey for borders
   },
   { // Locality labels (cities, towns)
     featureType: 'administrative.locality',
     elementType: 'labels.text.fill',
-    stylers: [{ color: '#E70F72' }] // Primary pink for city/town names
+    stylers: [{ color: '#FAFAFA' }] // Light foreground for city/town names
   },
   { // Transit lines
     featureType: 'transit',
     elementType: 'geometry',
-    stylers: [{ color: '#870842' }] // A darker shade of pink for transit lines
+    stylers: [{ color: '#181818' }] // Very dark grey for transit lines
   }
 ];
 
@@ -124,11 +124,11 @@ export function MomentsMap({ moments }: MomentsMapProps) {
         title={moment.placeName}
         // Custom marker icon (optional, example for a pink marker)
         // icon={{
-        //   path: window.google.maps.SymbolPath.CIRCLE,
-        //   fillColor: '#E70F72',
+        //   path: typeof window !== 'undefined' && window.google ? window.google.maps.SymbolPath.CIRCLE : '',
+        //   fillColor: '#E70F72', // Primary pink
         //   fillOpacity: 1,
-        //   strokeColor: '#FFFFFF',
-        //   strokeWeight: 1,
+        //   strokeColor: '#000000', // Black stroke for contrast
+        //   strokeWeight: 2,
         //   scale: 8
         // }}
       /> : null
@@ -168,4 +168,3 @@ export function MomentsMap({ moments }: MomentsMapProps) {
     </LoadScriptNext>
   );
 }
-
