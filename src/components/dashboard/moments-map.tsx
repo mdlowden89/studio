@@ -20,9 +20,9 @@ const mapStyles = [
     elementType: 'geometry',
     stylers: [{ color: '#000000' }] // Pure black for land
   },
-  { // All labels text fill - CHANGED TO PINK
+  { // All labels text fill - CHANGED TO WHITE
     elementType: 'labels.text.fill',
-    stylers: [{ color: '#E70F72' }]
+    stylers: [{ color: '#FAFAFA' }]
   },
   { // All labels text stroke
     elementType: 'labels.text.stroke',
@@ -33,32 +33,32 @@ const mapStyles = [
     elementType: 'geometry',
     stylers: [{ color: '#101010' }] // Very dark grey (like card background)
   },
-  { // Water labels - CHANGED TO PINK
+  { // Water labels - CHANGED TO WHITE
     featureType: 'water',
     elementType: 'labels.text.fill',
-    stylers: [{ color: '#E70F72' }]
+    stylers: [{ color: '#FAFAFA' }]
   },
   { // Roads - General
     featureType: 'road',
     elementType: 'geometry',
     stylers: [{ color: '#222222' }] // Dark grey for roads
   },
-  { // Road labels - CHANGED TO PINK
+  { // Road labels - CHANGED TO WHITE
     featureType: 'road',
     elementType: 'labels.text.fill',
-    stylers: [{ color: '#E70F72' }]
+    stylers: [{ color: '#FAFAFA' }]
   },
   { // Highways - make them stand out a bit more with primary color
     featureType: 'road.highway',
     elementType: 'geometry',
     stylers: [{ color: '#E70F72' }] // Primary pink for highways
   },
-  { // Points of Interest (POIs) text - ALREADY PINK
+  { // Points of Interest (POIs) text - CHANGED TO WHITE
     featureType: 'poi',
     elementType: 'labels.text.fill',
-    stylers: [{ color: '#E70F72' }]
+    stylers: [{ color: '#FAFAFA' }]
   },
-  { // POI icons - ALREADY PINK
+  { // POI icons - RETAIN PINK ACCENT
     featureType: 'poi',
     elementType: 'labels.icon',
     stylers: [{ "visibility": "on" }, { "color": "#E70F72" }]
@@ -73,20 +73,20 @@ const mapStyles = [
     elementType: 'geometry',
     stylers: [{ color: '#050505' }] // Very dark grey for parks, almost black
   },
-  { // Park labels - CHANGED TO PINK
+  { // Park labels - CHANGED TO WHITE
     featureType: 'poi.park',
     elementType: 'labels.text.fill',
-    stylers: [{ color: '#E70F72' }]
+    stylers: [{ color: '#FAFAFA' }]
   },
   { // Administrative boundaries (e.g., country borders)
     featureType: 'administrative',
     elementType: 'geometry.stroke',
     stylers: [{ color: '#444444' }, { weight: 0.5 }] // Medium dark grey for borders
   },
-  { // Locality labels (cities, towns) - CHANGED TO PINK
+  { // Locality labels (cities, towns) - CHANGED TO WHITE
     featureType: 'administrative.locality',
     elementType: 'labels.text.fill',
-    stylers: [{ color: '#E70F72' }]
+    stylers: [{ color: '#FAFAFA' }]
   },
   { // Transit lines
     featureType: 'transit',
