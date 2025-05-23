@@ -14,6 +14,7 @@ import {
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
 import { Badge } from '@/components/ui/badge';
+import { cn } from '@/lib/utils'; // Import cn
 
 // A simple function to get a title from the pathname
 const getTitleFromPathname = (pathname: string): string => {
@@ -45,7 +46,10 @@ export function Header() {
         <SidebarTrigger />
       </div>
       <div className="flex-1">
-        <h1 className="text-xl font-semibold text-foreground">{title}</h1>
+        <h1 className={cn(
+          "text-xl font-semibold",
+          title === "Dashboard" ? "text-primary" : "text-foreground"
+        )}>{title}</h1>
       </div>
       <div className="flex items-center gap-2">
         <DropdownMenu>
