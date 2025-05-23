@@ -80,7 +80,10 @@ export function AppSidebar() {
       <Separator className="my-2 bg-sidebar-border" />
       <SidebarFooter className="p-2 space-y-2">
         <Link href="/profile" passHref legacyBehavior>
-          <Button variant="ghost" className="w-full justify-start p-2 h-auto items-center">
+          <Button 
+            variant="ghost" 
+            className="w-full justify-start p-2 h-auto items-center hover:bg-sidebar-accent hover:shadow-md hover:shadow-primary/40 transition-all duration-200"
+          >
             <Avatar className="h-10 w-10 shrink-0">
               <AvatarImage src={currentUser.images[0]} alt={currentUser.name} data-ai-hint="profile photo" />
               <AvatarFallback>{currentUser.name.substring(0, 1)}</AvatarFallback>
@@ -99,7 +102,6 @@ export function AppSidebar() {
             onClick={handleLogout}
             tooltip={{children: "Log Out", className: "bg-popover text-popover-foreground border-border shadow-md"}}
             className="justify-start w-full"
-            variant="ghost"
         >
             <LogOut className="h-5 w-5" />
             <span>Log Out</span>
