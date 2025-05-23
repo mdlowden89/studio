@@ -1,5 +1,8 @@
 
+"use client";
+
 import Link from 'next/link';
+import { useRouter } from 'next/navigation';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from '@/components/ui/card';
 import { Input } from '@/components/ui/input';
@@ -7,6 +10,15 @@ import { Label } from '@/components/ui/label';
 import { CrossdLogoIcon } from '@/components/icons/crossd-logo';
 
 export default function SignUpPage() {
+  const router = useRouter();
+
+  const handleSignUp = (e: React.FormEvent) => {
+    e.preventDefault();
+    // In a real app, you'd handle form submission, validation, and API calls here.
+    // For now, we'll just navigate to the dashboard.
+    router.push('/dashboard');
+  };
+
   return (
     <div className="flex flex-col min-h-screen bg-background text-foreground">
       {/* Header */}
@@ -35,7 +47,7 @@ export default function SignUpPage() {
             <CardDescription>Join Crossd and start making connections.</CardDescription>
           </CardHeader>
           <CardContent className="space-y-6">
-            <form className="space-y-4">
+            <form className="space-y-4" onSubmit={handleSignUp}>
               <div>
                 <Label htmlFor="fullName">Full Name</Label>
                 <Input id="fullName" type="text" placeholder="John Doe" required className="mt-1 bg-input" />
