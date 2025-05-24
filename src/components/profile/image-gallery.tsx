@@ -21,10 +21,15 @@ export function ImageGallery({ initialImages }: ImageGalleryProps) {
   const router = useRouter();
 
   const updateMockDataAndRefresh = (updatedLocalImages: string[]) => {
-    const currentUserMock = MOCK_USERS.find(u => u.id === MOCK_USER_ID);
-    if (currentUserMock) {
-      // Update the entire images array in mock data
-      currentUserMock.images = [...updatedLocalImages];
+    const currentUserIndex = MOCK_USERS.findIndex(u => u.id === MOCK_USER_ID);
+    if (currentUserIndex !== -1) {
+      // Create a new user object with the updated images
+      const updatedUser = {
+        ...MOCK_USERS[currentUserIndex],
+        images: [...updatedLocalImages], // Ensure images is a new array reference
+      };
+      // Replace the old user object with the new one in the MOCK_USERS array
+      MOCK_USERS.splice(currentUserIndex, 1, updatedUser);
     }
     router.refresh();
   };
@@ -46,7 +51,13 @@ export function ImageGallery({ initialImages }: ImageGalleryProps) {
         });
       } else { // Adding a new image
         if (images.length < 6) {
-          newImagesArray = [...images, dataUrl];
+          const isFirstImageThePlaceholder = images.length === 1 && images[0].includes('placehold.co') && images[0].includes('?text=U');
+          if (isFirstImageThePlaceholder) {
+            // If the only image is the "U" placeholder, replace it
+            newImagesArray = [dataUrl];
+          } else {
+            newImagesArray = [...images, dataUrl];
+          }
           setImages(newImagesArray);
           updateMockDataAndRefresh(newImagesArray);
           toast({
@@ -75,10 +86,10 @@ export function ImageGallery({ initialImages }: ImageGalleryProps) {
   const handleAddImage = (event: React.ChangeEvent<HTMLInputElement>) => {
     if (event.target.files && event.target.files[0]) {
       const file = event.target.files[0];
-      handleFileSelection(file);
+      handleFileSelection(file); // Pass undefined for index to indicate adding
     }
     if (event.target) {
-      event.target.value = ""; // Clear file input
+      event.target.value = ""; 
     }
   };
 
@@ -88,7 +99,7 @@ export function ImageGallery({ initialImages }: ImageGalleryProps) {
       handleFileSelection(file, index);
     }
     if (event.target) {
-      event.target.value = ""; // Clear file input
+      event.target.value = ""; 
     }
   };
 
@@ -98,7 +109,14 @@ export function ImageGallery({ initialImages }: ImageGalleryProps) {
       setImages(newImagesArray);
       updateMockDataAndRefresh(newImagesArray);
       toast({ title: "Image Removed", description: `Image ${index + 1} has been removed from the preview.` });
-    } else {
+    } else if (images.length === 1 && !(images[0].includes('placehold.co') && images[0].includes('?text=U'))) {
+      // If it's the last "real" image, replace with placeholder "U"
+      const placeholderU = 'https://placehold.co/120x120/E70F72/FFFFFF.png?text=U';
+      setImages([placeholderU]);
+      updateMockDataAndRefresh([placeholderU]);
+      toast({ title: "Image Removed", description: "Reverted to default avatar as it was the last image." });
+    }
+     else {
       toast({ title: "Cannot Remove", description: "You must have at least one profile image.", variant: "destructive" });
     }
   };
@@ -170,7 +188,7 @@ export function ImageGallery({ initialImages }: ImageGalleryProps) {
       <p className="text-xs text-muted-foreground text-center">
         Click on an image to replace or remove it. Click the '+' card to add a new photo.
         <br />
-        Image previews are client-side only. Changes are reflected in the sidebar by updating mock data.
+        Image previews are client-side. Changes are reflected in the sidebar by updating mock data.
       </p>
     </div>
   );
