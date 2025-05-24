@@ -33,6 +33,12 @@ const ethnicityOptions = [
   "Prefer Not to Say",
 ];
 
+const childrenStatusOptions = [
+  "Don't have children",
+  "Have Children",
+  "Prefer Not to Say",
+];
+
 const generateHeightOptions = () => {
   const options = ["Prefer Not to Say"];
   for (let feet = 3; feet <= 7; feet++) {
@@ -75,6 +81,7 @@ export function ProfileDetails({ user }: ProfileDetailsProps) {
   const [jobTitle, setJobTitle] = useState(user.jobTitle || "");
   const [education, setEducation] = useState(user.education || "");
   const [ethnicity, setEthnicity] = useState(user.ethnicity || "Prefer Not to Say");
+  const [childrenStatus, setChildrenStatus] = useState(user.childrenStatus || "Prefer Not to Say");
   const [height, setHeight] = useState(user.height || "Prefer Not to Say");
   
   const [locationAddress, setLocationAddress] = useState(user.locationAddress || "");
@@ -159,6 +166,7 @@ export function ProfileDetails({ user }: ProfileDetailsProps) {
         jobTitle,
         education,
         ethnicity,
+        childrenStatus,
         height,
         locationAddress,
         locationName: currentLocationName || (locationAddress ? locationAddress.split(',')[0] : MOCK_USERS[currentUserIndex].locationName),
@@ -228,6 +236,21 @@ export function ProfileDetails({ user }: ProfileDetailsProps) {
             </SelectTrigger>
             <SelectContent className="bg-popover">
               {ethnicityOptions.map((option) => (
+                <SelectItem key={option} value={option}>
+                  {option}
+                </SelectItem>
+              ))}
+            </SelectContent>
+          </Select>
+        </div>
+        <div>
+          <Label htmlFor="childrenStatus">Children</Label>
+          <Select value={childrenStatus} onValueChange={setChildrenStatus}>
+            <SelectTrigger className="mt-1 bg-input">
+              <SelectValue placeholder="Your children status" />
+            </SelectTrigger>
+            <SelectContent className="bg-popover">
+              {childrenStatusOptions.map((option) => (
                 <SelectItem key={option} value={option}>
                   {option}
                 </SelectItem>

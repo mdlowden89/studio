@@ -13,6 +13,7 @@ export interface UserProfile {
   jobTitle?: string;
   education?: string;
   ethnicity?: string;
+  childrenStatus?: string; // Added
   height?: string;
   locationAddress?: string;
   locationName?: string;
