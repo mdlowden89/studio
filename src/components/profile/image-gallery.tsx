@@ -17,23 +17,39 @@ export function ImageGallery({ initialImages }: ImageGalleryProps) {
   const [images, setImages] = useState(initialImages);
   const { toast } = useToast();
 
-  const handleAddImage = () => {
-    // Simulate adding a new placeholder image
+  const handleAddImage = (event: React.ChangeEvent<HTMLInputElement>) => {
     if (images.length < 6) { // Max 6 images for example
-      const newPlaceholder = `https://placehold.co/600x800.png?new=${Date.now()}`;
+      const newPlaceholder = `https://placehold.co/600x800.png?new=${Date.now()}-${Math.random()}`;
       setImages([...images, newPlaceholder]);
-      toast({ title: "Image Added", description: "A placeholder image has been added."});
+      toast({ 
+        title: "Placeholder Image Added", 
+        description: "A new placeholder image has been added. Actual file upload from your computer is not yet implemented."
+      });
     } else {
-      toast({ title: "Limit Reached", description: "You can upload a maximum of 6 images.", variant: "destructive"});
+      toast({ 
+        title: "Image Limit Reached", 
+        description: "You can have a maximum of 6 images.", 
+        variant: "destructive"
+      });
+    }
+    // Clear the file input value to allow selecting the same file again if needed
+    if (event.target) {
+      event.target.value = "";
     }
   };
 
-  const handleReplaceImage = (index: number) => {
-    // Simulate replacing an image with a new placeholder
+  const handleReplaceImage = (index: number, event: React.ChangeEvent<HTMLInputElement>) => {
     const newImages = [...images];
-    newImages[index] = `https://placehold.co/600x800.png?replaced=${Date.now()}`;
+    newImages[index] = `https://placehold.co/600x800.png?replaced=${Date.now()}-${Math.random()}`;
     setImages(newImages);
-    toast({ title: "Image Replaced", description: `Image ${index + 1} has been replaced with a placeholder.`});
+    toast({ 
+      title: "Placeholder Image Replaced", 
+      description: `Image ${index + 1} has been replaced with a new placeholder. Actual file upload from your computer is not yet implemented.`
+    });
+    // Clear the file input value
+    if (event.target) {
+      event.target.value = "";
+    }
   };
 
   const handleRemoveImage = (index: number) => {
@@ -50,7 +66,7 @@ export function ImageGallery({ initialImages }: ImageGalleryProps) {
     <div className="space-y-6">
       <div className="grid grid-cols-2 sm:grid-cols-3 gap-4">
         {images.map((src, index) => (
-          <Card key={index} className="group relative aspect-[3/4] overflow-hidden bg-muted">
+          <Card key={`${src}-${index}`} className="group relative aspect-[3/4] overflow-hidden bg-muted">
             <Image
               src={src}
               alt={`Profile image ${index + 1}`}
@@ -58,6 +74,7 @@ export function ImageGallery({ initialImages }: ImageGalleryProps) {
               objectFit="cover"
               className="transition-transform duration-300 group-hover:scale-110"
               data-ai-hint="profile lifestyle"
+              unoptimized={src.startsWith('https://placehold.co')} // Useful for placeholder services
             />
             <div className="absolute inset-0 bg-black/30 opacity-0 group-hover:opacity-100 transition-opacity duration-300 flex flex-col items-center justify-center p-2 gap-2">
               <Button
@@ -68,7 +85,13 @@ export function ImageGallery({ initialImages }: ImageGalleryProps) {
               >
                 <Replace className="h-4 w-4 mr-2" /> Replace
               </Button>
-              <Input type="file" id={`replace-input-${index}`} className="hidden" onChange={() => handleReplaceImage(index)} accept="image/*" />
+              <Input 
+                type="file" 
+                id={`replace-input-${index}`} 
+                className="hidden" 
+                onChange={(e) => handleReplaceImage(index, e)} 
+                accept="image/*" 
+              />
               <Button
                 variant="destructive"
                 size="sm"
@@ -93,11 +116,21 @@ export function ImageGallery({ initialImages }: ImageGalleryProps) {
               <p className="text-sm font-medium">Add Photo</p>
               <p className="text-xs">(Max {6 - images.length} remaining)</p>
             </div>
-            <Input type="file" id="add-image-input" className="hidden" onChange={handleAddImage} accept="image/*" />
+            <Input 
+              type="file" 
+              id="add-image-input" 
+              className="hidden" 
+              onChange={handleAddImage} 
+              accept="image/*" 
+            />
           </Card>
         )}
       </div>
-       <p className="text-xs text-muted-foreground text-center">Click on an image to replace or remove it. Click the '+' card to add a new photo.</p>
+       <p className="text-xs text-muted-foreground text-center">
+         Click on an image to replace or remove it. Click the '+' card to add a new photo.
+         <br />
+         Currently, this feature uses placeholder images. Actual file uploads are not yet implemented.
+       </p>
     </div>
   );
 }
