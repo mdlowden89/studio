@@ -40,6 +40,7 @@ export const MOCK_USERS: UserProfile[] = [
     jobTitle: 'Senior Designer',
     education: 'State University - BFA Design',
     ethnicity: 'White/Caucasian',
+    height: "5'11\"",
   },
   {
     id: 'user-2',
@@ -62,6 +63,7 @@ export const MOCK_USERS: UserProfile[] = [
     jobTitle: 'Photographer',
     education: 'Art Institute - Photography',
     ethnicity: 'Hispanic/Latino',
+    height: "5'7\"",
   },
   {
     id: 'user-3',
@@ -83,6 +85,7 @@ export const MOCK_USERS: UserProfile[] = [
     jobTitle: 'Lead Developer',
     education: 'Tech University - BS Computer Science',
     ethnicity: 'East Asian',
+    height: "6'1\"",
   },
   {
     id: MOCK_USER_ID, // Current user
@@ -105,6 +108,7 @@ export const MOCK_USERS: UserProfile[] = [
     jobTitle: 'AI Assistant',
     education: 'Firebase Studio University',
     ethnicity: 'Prefer Not to Say',
+    height: 'Prefer Not to Say',
   },
 ];
 

@@ -12,7 +12,8 @@ export interface UserProfile {
   work?: string;
   jobTitle?: string;
   education?: string;
-  ethnicity?: string; // Added ethnicity
+  ethnicity?: string;
+  height?: string; // Added height
 }
 
 export interface ProfilePrompt {

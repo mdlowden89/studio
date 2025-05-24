@@ -1,7 +1,7 @@
 
 "use client";
 
-import { useState } from "react";
+import { useState, useMemo } from "react"; // Added useMemo
 import type { UserProfile } from "@/lib/types";
 import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
@@ -11,8 +11,8 @@ import { Badge } from "@/components/ui/badge";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { X as XIcon, PlusCircle } from "lucide-react";
 import { useToast } from "@/hooks/use-toast";
-import { MOCK_USERS, MOCK_USER_ID } from "@/lib/mock-data"; // Import mock data and current user ID
-import { useRouter } from "next/navigation"; // Import useRouter
+import { MOCK_USERS, MOCK_USER_ID } from "@/lib/mock-data";
+import { useRouter } from "next/navigation";
 
 interface ProfileDetailsProps {
   user: UserProfile;
@@ -32,6 +32,17 @@ const ethnicityOptions = [
   "Prefer Not to Say",
 ];
 
+const generateHeightOptions = () => {
+  const options = ["Prefer Not to Say"];
+  for (let feet = 3; feet <= 7; feet++) {
+    for (let inches = 0; inches <= 11; inches++) {
+      if (feet === 7 && inches > 0) break;
+      options.push(`${feet}'${inches}"`);
+    }
+  }
+  return options;
+};
+
 export function ProfileDetails({ user }: ProfileDetailsProps) {
   const [name, setName] = useState(user.name);
   const [email, setEmail] = useState(user.email || "");
@@ -43,10 +54,12 @@ export function ProfileDetails({ user }: ProfileDetailsProps) {
   const [jobTitle, setJobTitle] = useState(user.jobTitle || "");
   const [education, setEducation] = useState(user.education || "");
   const [ethnicity, setEthnicity] = useState(user.ethnicity || "Prefer Not to Say");
-
+  const [height, setHeight] = useState(user.height || "Prefer Not to Say"); // Added height state
 
   const { toast } = useToast();
-  const router = useRouter(); // Get router instance
+  const router = useRouter();
+
+  const heightOptions = useMemo(() => generateHeightOptions(), []);
 
   const handleAddTag = () => {
     if (newTag.trim() !== "" && !vibeTags.includes(newTag.trim().toLowerCase())) {
@@ -61,10 +74,6 @@ export function ProfileDetails({ user }: ProfileDetailsProps) {
 
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
-    // Here you would typically send data to a backend
-    console.log("Updated profile:", { name, email, age, bio, vibeTags, work, jobTitle, education, ethnicity });
-
-    // Update the mock data
     const currentUserIndex = MOCK_USERS.findIndex(u => u.id === MOCK_USER_ID);
     if (currentUserIndex !== -1) {
       const updatedUser = {
@@ -78,25 +87,17 @@ export function ProfileDetails({ user }: ProfileDetailsProps) {
         jobTitle,
         education,
         ethnicity,
+        height, // Added height to update
       };
-      // Create a new array for MOCK_USERS to ensure reactivity if components rely on array reference
-      const updatedMockUsers = [...MOCK_USERS];
-      updatedMockUsers[currentUserIndex] = updatedUser;
-      // Note: Directly mutating MOCK_USERS might not trigger re-renders in all scenarios
-      // depending on how it's imported and used. For more robust state management,
-      // consider a state library or React Context.
-      // For now, we'll replace the object in the array.
       MOCK_USERS.splice(currentUserIndex, 1, updatedUser);
-
     }
-
 
     toast({
       title: "Profile Updated",
       description: "Your profile details have been saved.",
     });
 
-    router.refresh(); // Refresh the current route to reflect changes in sidebar
+    router.refresh();
   };
 
   return (
@@ -120,7 +121,7 @@ export function ProfileDetails({ user }: ProfileDetailsProps) {
               const rawValue = e.target.value;
               const parsedAge = parseInt(rawValue, 10);
               if (rawValue === "" || isNaN(parsedAge)) {
-                setAge(0); // Default to 0 or handle as an error/empty state
+                setAge(0); 
               } else {
                 setAge(parsedAge);
               }
@@ -148,6 +149,21 @@ export function ProfileDetails({ user }: ProfileDetailsProps) {
             </SelectTrigger>
             <SelectContent className="bg-popover">
               {ethnicityOptions.map((option) => (
+                <SelectItem key={option} value={option}>
+                  {option}
+                </SelectItem>
+              ))}
+            </SelectContent>
+          </Select>
+        </div>
+        <div>
+          <Label htmlFor="height">Height</Label>
+          <Select value={height} onValueChange={setHeight}>
+            <SelectTrigger className="mt-1 bg-input">
+              <SelectValue placeholder="Select your height" />
+            </SelectTrigger>
+            <SelectContent className="bg-popover">
+              {heightOptions.map((option) => (
                 <SelectItem key={option} value={option}>
                   {option}
                 </SelectItem>
