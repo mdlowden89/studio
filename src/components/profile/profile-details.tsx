@@ -1,7 +1,7 @@
 
 "use client";
 
-import { useState, useMemo } from "react";
+import { useState, useMemo, useRef, useCallback, useEffect } from "react";
 import type { UserProfile } from "@/lib/types";
 import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
@@ -13,6 +13,7 @@ import { X as XIcon, PlusCircle, MapPin } from "lucide-react";
 import { useToast } from "@/hooks/use-toast";
 import { MOCK_USERS, MOCK_USER_ID } from "@/lib/mock-data";
 import { useRouter } from "next/navigation";
+import { GoogleMap, LoadScriptNext, StandaloneSearchBox, MarkerF } from '@react-google-maps/api';
 
 interface ProfileDetailsProps {
   user: UserProfile;
@@ -43,6 +44,26 @@ const generateHeightOptions = () => {
   return options;
 };
 
+const mapStyles = [
+  { elementType: 'geometry', stylers: [{ color: '#000000' }] },
+  { elementType: 'labels.text.fill', stylers: [{ color: '#FAFAFA' }] },
+  { elementType: 'labels.text.stroke', stylers: [{ color: '#000000' }, { weight: 2 }] },
+  { featureType: 'water', elementType: 'geometry', stylers: [{ color: '#101010' }] },
+  { featureType: 'water', elementType: 'labels.text.fill', stylers: [{ color: '#FAFAFA' }] },
+  { featureType: 'road', elementType: 'geometry', stylers: [{ color: '#222222' }] },
+  { featureType: 'road.highway', elementType: 'geometry', stylers: [{ color: '#E70F72' }] },
+  { featureType: 'road', elementType: 'labels.text.fill', stylers: [{ color: '#A3A3A3' }] },
+  { featureType: 'poi', elementType: 'labels.text.fill', stylers: [{ color: '#FAFAFA' }] },
+  { featureType: 'poi', elementType: 'labels.icon', stylers: [{ "visibility": "on" }, { "color": "#E70F72" }] },
+  { featureType: 'poi', elementType: 'geometry', stylers: [{ color: '#080808' }] },
+  { featureType: 'poi.park', elementType: 'geometry', stylers: [{ color: '#050505' }] },
+  { featureType: 'poi.park', elementType: 'labels.text.fill', stylers: [{ color: '#FAFAFA' }] },
+  { featureType: 'administrative', elementType: 'geometry.stroke', stylers: [{ color: '#444444' }, { weight: 0.5 }] },
+  { featureType: 'administrative.locality', elementType: 'labels.text.fill', stylers: [{ color: '#FAFAFA' }] },
+  { featureType: 'transit', elementType: 'geometry', stylers: [{ color: '#181818' }] }
+];
+
+
 export function ProfileDetails({ user }: ProfileDetailsProps) {
   const [name, setName] = useState(user.name);
   const [email, setEmail] = useState(user.email || "");
@@ -55,8 +76,23 @@ export function ProfileDetails({ user }: ProfileDetailsProps) {
   const [education, setEducation] = useState(user.education || "");
   const [ethnicity, setEthnicity] = useState(user.ethnicity || "Prefer Not to Say");
   const [height, setHeight] = useState(user.height || "Prefer Not to Say");
+  
   const [locationAddress, setLocationAddress] = useState(user.locationAddress || "");
+  const [currentLocationName, setCurrentLocationName] = useState<string>(user.locationName || "");
+  const [currentCoordinates, setCurrentCoordinates] = useState<google.maps.LatLngLiteral | null>(user.locationCoordinates || null);
 
+  const [map, setMap] = useState<google.maps.Map | null>(null);
+  const [searchBox, setSearchBox] = useState<google.maps.places.SearchBox | null>(null);
+  const [markerPosition, setMarkerPosition] = useState<google.maps.LatLngLiteral | null>(user.locationCoordinates || null);
+  const [mapCenter, setMapCenter] = useState<google.maps.LatLngLiteral>(user.locationCoordinates || { lat: 40.7128, lng: -74.0060 });
+
+  const [isMounted, setIsMounted] = useState(false);
+  const [mapsApiKey, setMapsApiKey] = useState<string | undefined>(undefined);
+
+  useEffect(() => {
+    setIsMounted(true);
+    setMapsApiKey(process.env.NEXT_PUBLIC_GOOGLE_MAPS_API_KEY);
+  }, []);
 
   const { toast } = useToast();
   const router = useRouter();
@@ -73,6 +109,40 @@ export function ProfileDetails({ user }: ProfileDetailsProps) {
   const handleRemoveTag = (tagToRemove: string) => {
     setVibeTags(vibeTags.filter(tag => tag !== tagToRemove));
   };
+
+  const onLoadSearchBox = useCallback((ref: google.maps.places.SearchBox) => {
+    setSearchBox(ref);
+  }, []);
+
+  const onPlacesChanged = useCallback(() => {
+    if (searchBox) {
+      const places = searchBox.getPlaces();
+      if (places && places.length > 0) {
+        const place = places[0];
+        const newAddr = place.formatted_address || "";
+        const newName = place.name || "";
+        const newCoords = place.geometry?.location
+          ? { lat: place.geometry.location.lat(), lng: place.geometry.location.lng() }
+          : null;
+
+        setLocationAddress(newAddr);
+        setCurrentLocationName(newName);
+        setCurrentCoordinates(newCoords);
+
+        if (newCoords) {
+          setMapCenter(newCoords);
+          setMarkerPosition(newCoords);
+          map?.panTo(newCoords);
+          map?.setZoom(15);
+        }
+      }
+    }
+  }, [searchBox, map]);
+
+  const onMapLoad = useCallback((mapInstance: google.maps.Map) => {
+    setMap(mapInstance);
+  }, []);
+
 
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
@@ -91,8 +161,8 @@ export function ProfileDetails({ user }: ProfileDetailsProps) {
         ethnicity,
         height,
         locationAddress,
-        // For now, locationName and locationCoordinates would be updated via map interaction
-        locationName: locationAddress ? locationAddress.split(',')[0] : MOCK_USERS[currentUserIndex].locationName, // Simple derivation
+        locationName: currentLocationName || (locationAddress ? locationAddress.split(',')[0] : MOCK_USERS[currentUserIndex].locationName),
+        locationCoordinates: currentCoordinates || MOCK_USERS[currentUserIndex].locationCoordinates,
       };
       MOCK_USERS.splice(currentUserIndex, 1, updatedUser);
     }
@@ -104,6 +174,10 @@ export function ProfileDetails({ user }: ProfileDetailsProps) {
 
     router.refresh();
   };
+
+  if (!isMounted) {
+    return <div>Loading location services...</div>; // Or a skeleton loader
+  }
 
   return (
     <form onSubmit={handleSubmit} className="space-y-6">
@@ -180,19 +254,52 @@ export function ProfileDetails({ user }: ProfileDetailsProps) {
 
       <div>
         <Label htmlFor="locationAddress">Location (Address, Area, or Postcode)</Label>
-        <div className="relative mt-1">
-            <MapPin className="absolute left-3 top-1/2 -translate-y-1/2 h-5 w-5 text-muted-foreground" />
-            <Input 
-                id="locationAddress" 
-                value={locationAddress} 
-                onChange={(e) => setLocationAddress(e.target.value)} 
-                className="bg-input pl-10" 
-                placeholder="e.g., 123 Main St, Anytown or Anytown"
-            />
-        </div>
-      </div>
-      <div className="h-48 w-full bg-muted rounded-md flex items-center justify-center text-muted-foreground border border-dashed">
-        Map preview will appear here
+        {!mapsApiKey ? (
+            <div className="mt-1 p-3 bg-destructive text-destructive-foreground rounded-md text-sm">
+                Google Maps API Key is missing or invalid. Location search and map will not work.
+            </div>
+        ) : (
+        <LoadScriptNext 
+            googleMapsApiKey={mapsApiKey} 
+            libraries={['places']}
+            loadingElement={<div className="mt-1 text-muted-foreground">Loading map services...</div>}
+        >
+            <div className="relative mt-1">
+                <MapPin className="absolute left-3 top-1/2 -translate-y-1/2 h-5 w-5 text-muted-foreground z-10" />
+                <StandaloneSearchBox
+                    onLoad={onLoadSearchBox}
+                    onPlacesChanged={onPlacesChanged}
+                >
+                    <Input 
+                        id="locationAddress" 
+                        value={locationAddress} 
+                        onChange={(e) => {
+                            setLocationAddress(e.target.value);
+                            // If user types manually after selecting a place, clear specific place data
+                            if (e.target.value !== currentLocationName) {
+                                setCurrentCoordinates(null);
+                                setMarkerPosition(null);
+                                setCurrentLocationName("");
+                            }
+                        }} 
+                        className="bg-input pl-10" 
+                        placeholder="e.g., 123 Main St, Anytown or Anytown"
+                    />
+                </StandaloneSearchBox>
+            </div>
+            <div className="mt-2 h-72 w-full bg-muted rounded-md overflow-hidden border border-border">
+                 <GoogleMap
+                    mapContainerStyle={{ width: '100%', height: '100%' }}
+                    center={mapCenter}
+                    zoom={markerPosition ? 15 : 8}
+                    onLoad={onMapLoad}
+                    options={{ styles: mapStyles, streetViewControl: false, mapTypeControl: false, fullscreenControl: false }}
+                >
+                    {markerPosition && <MarkerF position={markerPosition} />}
+                </GoogleMap>
+            </div>
+        </LoadScriptNext>
+        )}
       </div>
 
 
