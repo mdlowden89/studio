@@ -4,11 +4,18 @@ import type { UserProfile, Moment, ChatConversation, ChatMessage, ProfilePrompt,
 export const MOCK_USER_ID = 'user-123';
 
 export const AVAILABLE_PROMPTS: ProfilePrompt[] = [
-  { id: 'p1', question: 'My most controversial opinion is...' },
-  { id: 'p2', question: 'A shower thought I recently had...' },
-  { id: 'p3', question: 'I\'m looking for...' },
-  { id: 'p4', question: 'Two truths and a lie...' },
-  { id: 'p5', question: 'The way to win me over is...' },
+  { id: 'p1', question: 'About Me: Unusual Skills' },
+  { id: 'p2', question: 'Typical Sunday' },
+  { id: 'p3', question: 'A Random Fact I love is' },
+  { id: 'p4', question: 'My Greatest Strength' },
+  { id: 'p5', question: 'My Simple Pleasures' },
+  { id: 'p6', question: 'I recently discovered that' },
+  { id: 'p7', question: 'Dating me is like' },
+  { id: 'p8', question: 'My most irrational fear' },
+  { id: 'p9', question: 'This year, I really want to' },
+  { id: 'p10', question: 'The Way to win me over is' },
+  { id: 'p11', question: 'I go crazy for' },
+  { id: 'p12', question: 'A life goal of mine' },
 ];
 
 export const MOCK_USERS: UserProfile[] = [
