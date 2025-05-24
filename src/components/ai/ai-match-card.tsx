@@ -120,7 +120,7 @@ export function AiMatchCard({ user, onLike, onPass }: AiMatchCardProps) {
         </CardFooter>
       </Card>
       
-      <DialogContent className="sm:max-w-lg bg-card text-card-foreground p-0"> {/* Changed sm:max-w-md to sm:max-w-lg */}
+      <DialogContent className="sm:max-w-xl bg-card text-card-foreground p-0"> {/* Changed sm:max-w-lg to sm:max-w-xl */}
         <ScrollArea className="h-[80vh] max-h-[700px]">
           <DialogHeader className="p-6 pb-2 sticky top-0 bg-card z-10">
             <DialogTitle className="text-3xl font-bold text-primary">{user.name}, {user.age}</DialogTitle>
@@ -148,7 +148,7 @@ export function AiMatchCard({ user, onLike, onPass }: AiMatchCardProps) {
                  (detail.value && detail.value !== "N/A") && ( 
                   <div key={index} className="flex flex-col items-center text-center flex-shrink-0 w-24 p-2">
                     <detail.icon className="w-7 h-7 text-primary mb-1.5" />
-                    <p className="text-xs font-medium text-foreground/90 w-full truncate">{detail.label}</p> {/* Added w-full truncate */}
+                    <p className="text-xs font-medium text-foreground/90 w-full truncate">{detail.label}</p>
                     <p className="text-xs text-muted-foreground truncate w-full">{detail.value}</p>
                   </div>
                 )
