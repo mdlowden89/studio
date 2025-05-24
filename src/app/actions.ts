@@ -2,6 +2,7 @@
 "use server";
 
 import { suggestMatchesFromVibe, SuggestMatchesInput } from "@/ai/flows/suggest-matches-from-vibe";
+import { suggestVibeTagsForUser, SuggestVibeTagsInput } from "@/ai/flows/suggest-vibe-tags-flow";
 import type { UserProfile } from "@/lib/types";
 import { MOCK_USERS, MOCK_USER_ID } from "@/lib/mock-data"; // For fetching other users
 
@@ -40,6 +41,27 @@ export async function getAiSuggestedMatches(
     console.error("Error in getAiSuggestedMatches:", error);
     // Depending on the error, you might want to throw it or return an empty array/error state
     // For now, let's return an empty array on error to prevent crashing the client
+    return [];
+  }
+}
+
+
+export async function getAiSuggestedVibeTags(
+  userBio: string,
+  existingTags: string[]
+): Promise<string[]> {
+  try {
+    const input: SuggestVibeTagsInput = {
+      userBio,
+      existingTags,
+    };
+    const result = await suggestVibeTagsForUser(input);
+    // Filter out any tags that might already exist (double safety) and ensure they are lowercase
+    return result.suggestedTags
+      .map(tag => tag.toLowerCase())
+      .filter(tag => !existingTags.includes(tag));
+  } catch (error) {
+    console.error("Error in getAiSuggestedVibeTags:", error);
     return [];
   }
 }
