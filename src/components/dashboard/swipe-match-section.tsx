@@ -1,16 +1,15 @@
 
 "use client";
 
-import { useState } from "react";
+import { useState, useEffect } from "react"; // Added useEffect
 import { MOCK_USERS, MOCK_USER_ID } from "@/lib/mock-data";
 import { MatchCard } from "./match-card";
 import { Button } from "@/components/ui/button";
-import { RefreshCw, Users, Undo2 } from "lucide-react"; // Added Undo2
+import { RefreshCw, Users, Undo2 } from "lucide-react";
 import { useToast } from "@/hooks/use-toast";
 import {
   AlertDialog,
   AlertDialogAction,
-  AlertDialogCancel,
   AlertDialogContent,
   AlertDialogDescription,
   AlertDialogFooter,
@@ -19,14 +18,17 @@ import {
 } from "@/components/ui/alert-dialog";
 
 export function SwipeMatchSection() {
-  // Filter out the current user and shuffle for variety
-  const initialUsers = MOCK_USERS.filter(user => user.id !== MOCK_USER_ID)
-                                  .sort(() => 0.5 - Math.random());
-  const [users, setUsers] = useState(initialUsers);
+  // Initial state with unshuffled users
+  const [users, setUsers] = useState(MOCK_USERS.filter(user => user.id !== MOCK_USER_ID));
   const [currentIndex, setCurrentIndex] = useState(0);
   const { toast } = useToast();
   const [showMatchAnimation, setShowMatchAnimation] = useState(false);
   const [matchedUserName, setMatchedUserName] = useState("");
+
+  // Shuffle users client-side after hydration
+  useEffect(() => {
+    setUsers(prevUsers => [...prevUsers].sort(() => 0.5 - Math.random()));
+  }, []); // Empty dependency array ensures this runs once on mount
 
   const handleAction = (userId: string, action: "like" | "pass") => {
     if (action === "like") {
@@ -58,8 +60,6 @@ export function SwipeMatchSection() {
         title: "That's everyone for now!",
         description: "Check back later for new profiles.",
       });
-      // setUsers([]); // Optionally clear users or show a refresh button
-      // setCurrentIndex(0);
     }
   };
 
@@ -71,6 +71,7 @@ export function SwipeMatchSection() {
   };
 
   const refreshUsers = () => {
+    // Shuffle a fresh copy of the base users list
     setUsers(MOCK_USERS.filter(user => user.id !== MOCK_USER_ID).sort(() => 0.5 - Math.random()));
     setCurrentIndex(0);
     toast({ title: "Profiles Refreshed!", description: "Here are some new faces."});
@@ -99,7 +100,7 @@ export function SwipeMatchSection() {
   return (
     <div className="flex flex-col items-center space-y-6">
       <MatchCard
-        key={currentUser.id}
+        key={currentUser.id} // Ensure key changes if user object changes
         user={currentUser}
         onLike={handleLike}
         onPass={handlePass}
