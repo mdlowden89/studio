@@ -8,8 +8,9 @@ import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import { Heart, X, MapPin, Info } from "lucide-react";
 import { useState } from "react";
-import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogDescription, DialogTrigger } from "@/components/ui/dialog";
+import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger } from "@/components/ui/dialog";
 import { ScrollArea } from "@/components/ui/scroll-area";
+import { Separator } from "@/components/ui/separator";
 import { AVAILABLE_PROMPTS } from "@/lib/mock-data";
 
 interface MatchCardProps {
@@ -23,7 +24,7 @@ export function MatchCard({ user, onLike, onPass, showCrossedPathInfo = false }:
   const [currentImageIndex, setCurrentImageIndex] = useState(0);
 
   const nextImage = (e: React.MouseEvent) => {
-    e.stopPropagation(); // Prevent card click when changing image
+    e.stopPropagation(); 
     setCurrentImageIndex((prevIndex) => (prevIndex + 1) % user.images.length);
   };
 
@@ -33,6 +34,11 @@ export function MatchCard({ user, onLike, onPass, showCrossedPathInfo = false }:
   };
 
   const crossedPathUser = user as CrossedPathUser;
+  const mainImage = user.images.length > 0 ? user.images[0] : "https://placehold.co/600x600.png";
+  const otherImages = user.images.length > 1 ? user.images.slice(1) : [];
+  const firstPrompt = user.prompts.length > 0 ? user.prompts[0] : null;
+  const otherPrompts = user.prompts.length > 1 ? user.prompts.slice(1) : [];
+
 
   return (
     <Dialog>
@@ -46,6 +52,7 @@ export function MatchCard({ user, onLike, onPass, showCrossedPathInfo = false }:
             className="object-cover w-full h-full cursor-pointer"
             data-ai-hint="profile lifestyle"
             onClick={nextImage}
+            unoptimized={user.images[currentImageIndex]?.startsWith('data:') || user.images[currentImageIndex]?.includes('placehold.co')}
           />
           {user.images.length > 1 && (
             <>
@@ -109,44 +116,77 @@ export function MatchCard({ user, onLike, onPass, showCrossedPathInfo = false }:
         </CardFooter>
       </Card>
 
-      <DialogContent className="sm:max-w-[425px] bg-card text-card-foreground">
-        <DialogHeader>
-          <DialogTitle className="text-2xl">{user.name}, {user.age}</DialogTitle>
-           {showCrossedPathInfo && crossedPathUser.location && (
-              <div className="flex items-center text-sm text-muted-foreground mt-1">
-                <MapPin className="w-4 h-4 mr-1" />
-                <span>Crossed paths at {crossedPathUser.location} around {new Date(crossedPathUser.crossedAt).toLocaleTimeString([], {hour: '2-digit', minute:'2-digit'})}</span>
+      <DialogContent className="sm:max-w-md bg-card text-card-foreground p-0">
+        <ScrollArea className="h-[80vh] max-h-[700px]">
+          <DialogHeader className="p-6 pb-2 sticky top-0 bg-card z-10">
+            <DialogTitle className="text-3xl font-bold text-primary">{user.name}, {user.age}</DialogTitle>
+            {showCrossedPathInfo && crossedPathUser.location && (
+                <div className="flex items-center text-sm text-muted-foreground pt-1">
+                  <MapPin className="w-4 h-4 mr-1.5 text-primary/70" />
+                  <span>Crossed paths at {crossedPathUser.location} around {new Date(crossedPathUser.crossedAt).toLocaleTimeString([], {hour: '2-digit', minute:'2-digit'})}</span>
+                </div>
+              )}
+            <Separator className="my-3 bg-border" />
+          </DialogHeader>
+          
+          <div className="px-6 pb-6 space-y-6">
+            <div className="relative w-full aspect-square rounded-lg overflow-hidden shadow-lg">
+              <Image 
+                src={mainImage} 
+                alt={`${user.name}'s main photo`} 
+                layout="fill" 
+                objectFit="cover"
+                data-ai-hint="profile photo"
+                unoptimized={mainImage.startsWith('data:') || mainImage.includes('placehold.co')}
+              />
+            </div>
+
+            {firstPrompt && (
+              <div className="space-y-2">
+                <h3 className="text-lg font-semibold text-primary">{AVAILABLE_PROMPTS.find(p => p.id === firstPrompt.promptId)?.question || "Prompt"}</h3>
+                <p className="text-muted-foreground whitespace-pre-line">{firstPrompt.answer}</p>
               </div>
             )}
-        </DialogHeader>
-        <ScrollArea className="h-[60vh] p-1">
-          <div className="grid gap-4 py-4">
-            <div className="grid grid-cols-2 gap-2">
-              {user.images.map((img, idx) => (
-                <Image key={idx} src={img} alt={`${user.name} profile image ${idx+1}`} width={200} height={300} className="rounded-md object-cover aspect-[3/4]" data-ai-hint="profile lifestyle"/>
-              ))}
+            
+            <div className="space-y-2">
+              <h3 className="text-lg font-semibold text-primary">About {user.name}</h3>
+              <p className="text-muted-foreground whitespace-pre-line">{user.bio}</p>
             </div>
-            <div>
-              <h3 className="font-semibold mb-1">Bio</h3>
-              <p className="text-sm text-muted-foreground">{user.bio}</p>
-            </div>
-            <div>
-              <h3 className="font-semibold mb-1">Vibe Tags</h3>
-              <div className="flex flex-wrap gap-2">
-                {user.vibeTags.map((tag) => (
-                  <Badge key={tag} variant="secondary" className="text-xs capitalize">{tag}</Badge>
-                ))}
+
+            {otherPrompts.length > 0 && (
+              <div className="space-y-4">
+                <h3 className="text-lg font-semibold text-primary">More from {user.name}</h3>
+                {otherPrompts.map(p => {
+                  const promptDetails = AVAILABLE_PROMPTS.find(ap => ap.id === p.promptId);
+                  return promptDetails ? (
+                    <div key={p.promptId} className="bg-muted/30 p-4 rounded-lg">
+                      <h4 className="font-semibold text-foreground/80 mb-1">{promptDetails.question}</h4>
+                      <p className="text-sm text-muted-foreground whitespace-pre-line">{p.answer}</p>
+                    </div>
+                  ) : null;
+                })}
               </div>
-            </div>
-            {user.prompts.map(p => {
-              const promptDetails = AVAILABLE_PROMPTS.find(ap => ap.id === p.promptId);
-              return promptDetails ? (
-                <div key={p.promptId} className="mt-2">
-                  <h4 className="font-semibold text-sm text-foreground/80">{promptDetails.question}</h4>
-                  <p className="text-sm text-muted-foreground">{p.answer}</p>
+            )}
+
+            {otherImages.length > 0 && (
+              <div className="space-y-3">
+                <h3 className="text-lg font-semibold text-primary">More Photos</h3>
+                <div className="grid grid-cols-2 gap-3">
+                  {otherImages.map((img, idx) => (
+                    <div key={idx} className="relative aspect-[4/5] rounded-md overflow-hidden shadow">
+                      <Image 
+                        src={img} 
+                        alt={`${user.name} profile image ${idx + 2}`} 
+                        layout="fill" 
+                        objectFit="cover" 
+                        data-ai-hint="lifestyle photo"
+                        unoptimized={img.startsWith('data:') || img.includes('placehold.co')}
+                      />
+                    </div>
+                  ))}
                 </div>
-              ) : null;
-            })}
+              </div>
+            )}
           </div>
         </ScrollArea>
       </DialogContent>
@@ -192,4 +232,3 @@ function ChevronRightIcon(props: React.SVGProps<SVGSVGElement>) {
     </svg>
   )
 }
-

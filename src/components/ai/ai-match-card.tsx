@@ -7,9 +7,10 @@ import { Card, CardContent, CardFooter, CardHeader, CardTitle, CardDescription }
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import { Heart, X, Info, CheckCircle, Percent } from "lucide-react";
-import { useState } from "react";
+import { useState, useMemo } from "react"; // Added useMemo
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger } from "@/components/ui/dialog";
 import { ScrollArea } from "@/components/ui/scroll-area";
+import { Separator } from "@/components/ui/separator";
 import { AVAILABLE_PROMPTS } from "@/lib/mock-data";
 
 interface AiMatchCardProps {
@@ -20,9 +21,12 @@ interface AiMatchCardProps {
 
 export function AiMatchCard({ user, onLike, onPass }: AiMatchCardProps) {
   const [currentImageIndex, setCurrentImageIndex] = useState(0);
-  // Mock compatibility score
-  const compatibilityScore = Math.floor(Math.random() * (95 - 70 + 1)) + 70;
+  const [compatibilityScore, setCompatibilityScore] = useState(0);
 
+  // Calculate compatibility score once and memoize it
+  useMemo(() => {
+    setCompatibilityScore(Math.floor(Math.random() * (95 - 70 + 1)) + 70);
+  }, [user.id]); // Re-calculate if user changes, for demo purposes
 
   const nextImage = (e: React.MouseEvent) => {
     e.stopPropagation(); 
@@ -33,6 +37,11 @@ export function AiMatchCard({ user, onLike, onPass }: AiMatchCardProps) {
     e.stopPropagation();
     setCurrentImageIndex((prevIndex) => (prevIndex - 1 + user.images.length) % user.images.length);
   };
+
+  const mainImage = user.images.length > 0 ? user.images[0] : "https://placehold.co/600x600.png";
+  const otherImages = user.images.length > 1 ? user.images.slice(1) : [];
+  const firstPrompt = user.prompts.length > 0 ? user.prompts[0] : null;
+  const otherPrompts = user.prompts.length > 1 ? user.prompts.slice(1) : [];
 
   return (
     <Dialog>
@@ -46,6 +55,7 @@ export function AiMatchCard({ user, onLike, onPass }: AiMatchCardProps) {
             className="object-cover w-full h-full cursor-pointer"
             data-ai-hint="profile person"
             onClick={nextImage}
+            unoptimized={user.images[currentImageIndex]?.startsWith('data:') || user.images[currentImageIndex]?.includes('placehold.co')}
           />
           {user.images.length > 1 && (
             <>
@@ -81,15 +91,12 @@ export function AiMatchCard({ user, onLike, onPass }: AiMatchCardProps) {
               <Badge key={tag} variant="outline" className="text-xs capitalize border-primary/50 text-primary/90">{tag}</Badge>
             ))}
           </div>
-           {user.prompts.slice(0,1).map(p => {
-            const promptDetails = AVAILABLE_PROMPTS.find(ap => ap.id === p.promptId);
-            return promptDetails ? (
-              <div key={p.promptId} className="mt-1 p-2.5 bg-muted/50 rounded-md">
-                <p className="text-xs font-medium text-foreground/70">{promptDetails.question}</p>
-                <p className="text-sm text-foreground line-clamp-2">{p.answer}</p>
-              </div>
-            ) : null;
-          })}
+           {firstPrompt && (
+            <div className="mt-1 p-2.5 bg-muted/50 rounded-md">
+              <p className="text-xs font-medium text-foreground/70 line-clamp-1">{AVAILABLE_PROMPTS.find(p => p.id === firstPrompt.promptId)?.question}</p>
+              <p className="text-sm text-foreground line-clamp-2">{firstPrompt.answer}</p>
+            </div>
+          )}
         </CardContent>
         <CardFooter className="flex justify-around p-3 border-t border-border">
           <Button variant="outline" size="lg" className="rounded-full p-3.5 border-destructive text-destructive hover:bg-destructive/10" onClick={() => onPass(user.id)} aria-label="Pass">
@@ -106,42 +113,86 @@ export function AiMatchCard({ user, onLike, onPass }: AiMatchCardProps) {
         </CardFooter>
       </Card>
       
-      <DialogContent className="sm:max-w-[425px] bg-card text-card-foreground">
-        <DialogHeader>
-          <DialogTitle className="text-2xl">{user.name}, {user.age}</DialogTitle>
-            <div className="flex items-center text-sm text-primary mt-1">
-                <CheckCircle className="w-4 h-4 mr-1" />
+      <DialogContent className="sm:max-w-md bg-card text-card-foreground p-0">
+        <ScrollArea className="h-[80vh] max-h-[700px]">
+          <DialogHeader className="p-6 pb-2 sticky top-0 bg-card z-10">
+            <DialogTitle className="text-3xl font-bold text-primary">{user.name}, {user.age}</DialogTitle>
+            <div className="flex items-center text-sm text-primary pt-1">
+                <CheckCircle className="w-4 h-4 mr-1.5" />
                 <span>{compatibilityScore}% Vibe Match (AI Suggestion)</span>
             </div>
-        </DialogHeader>
-        <ScrollArea className="h-[60vh] p-1">
-          <div className="grid gap-4 py-4">
-            <div className="grid grid-cols-2 gap-2">
-              {user.images.map((img, idx) => (
-                <Image key={idx} src={img} alt={`${user.name} profile image ${idx+1}`} width={200} height={300} className="rounded-md object-cover aspect-[3/4]" data-ai-hint="profile photo"/>
-              ))}
+            <Separator className="my-3 bg-border" />
+          </DialogHeader>
+          
+          <div className="px-6 pb-6 space-y-6">
+            <div className="relative w-full aspect-square rounded-lg overflow-hidden shadow-lg">
+              <Image 
+                src={mainImage} 
+                alt={`${user.name}'s main photo`} 
+                layout="fill" 
+                objectFit="cover"
+                data-ai-hint="profile photo"
+                unoptimized={mainImage.startsWith('data:') || mainImage.includes('placehold.co')}
+              />
             </div>
-            <div>
-              <h3 className="font-semibold mb-1">Bio</h3>
-              <p className="text-sm text-muted-foreground">{user.bio}</p>
+
+            {firstPrompt && (
+              <div className="space-y-2">
+                <h3 className="text-lg font-semibold text-primary">{AVAILABLE_PROMPTS.find(p => p.id === firstPrompt.promptId)?.question || "Prompt"}</h3>
+                <p className="text-muted-foreground whitespace-pre-line">{firstPrompt.answer}</p>
+              </div>
+            )}
+            
+            <div className="space-y-2">
+              <h3 className="text-lg font-semibold text-primary">About {user.name}</h3>
+              <p className="text-muted-foreground whitespace-pre-line">{user.bio}</p>
             </div>
-            <div>
-              <h3 className="font-semibold mb-1">Vibe Tags</h3>
+
+            {otherPrompts.length > 0 && (
+              <div className="space-y-4">
+                <h3 className="text-lg font-semibold text-primary">More from {user.name}</h3>
+                {otherPrompts.map(p => {
+                  const promptDetails = AVAILABLE_PROMPTS.find(ap => ap.id === p.promptId);
+                  return promptDetails ? (
+                    <div key={p.promptId} className="bg-muted/30 p-4 rounded-lg">
+                      <h4 className="font-semibold text-foreground/80 mb-1">{promptDetails.question}</h4>
+                      <p className="text-sm text-muted-foreground whitespace-pre-line">{p.answer}</p>
+                    </div>
+                  ) : null;
+                })}
+              </div>
+            )}
+
+            {otherImages.length > 0 && (
+              <div className="space-y-3">
+                <h3 className="text-lg font-semibold text-primary">More Photos</h3>
+                <div className="grid grid-cols-2 gap-3">
+                  {otherImages.map((img, idx) => (
+                    <div key={idx} className="relative aspect-[4/5] rounded-md overflow-hidden shadow">
+                       <Image 
+                        src={img} 
+                        alt={`${user.name} profile image ${idx + 2}`} 
+                        layout="fill" 
+                        objectFit="cover" 
+                        data-ai-hint="lifestyle photo"
+                        unoptimized={img.startsWith('data:') || img.includes('placehold.co')}
+                       />
+                    </div>
+                  ))}
+                </div>
+              </div>
+            )}
+             {/* Vibe Tags - Optional, can be added back if needed */}
+            {/*
+            <div className="space-y-2">
+              <h3 className="text-lg font-semibold text-primary">Vibe Tags</h3>
               <div className="flex flex-wrap gap-2">
                 {user.vibeTags.map((tag) => (
                   <Badge key={tag} variant="secondary" className="text-xs capitalize">{tag}</Badge>
                 ))}
               </div>
             </div>
-            {user.prompts.map(p => {
-              const promptDetails = AVAILABLE_PROMPTS.find(ap => ap.id === p.promptId);
-              return promptDetails ? (
-                <div key={p.promptId} className="mt-2">
-                  <h4 className="font-semibold text-sm text-foreground/80">{promptDetails.question}</h4>
-                  <p className="text-sm text-muted-foreground">{p.answer}</p>
-                </div>
-              ) : null;
-            })}
+            */}
           </div>
         </ScrollArea>
       </DialogContent>
@@ -187,4 +238,3 @@ function ChevronRightIcon(props: React.SVGProps<SVGSVGElement>) {
     </svg>
   )
 }
-
