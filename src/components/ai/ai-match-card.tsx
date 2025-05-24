@@ -23,8 +23,9 @@ export function AiMatchCard({ user, onLike, onPass }: AiMatchCardProps) {
   const [currentImageIndex, setCurrentImageIndex] = useState(0);
   
   const compatibilityScore = useMemo(() => {
+    // This ensures the random score is generated only once per user, not on every render
     return Math.floor(Math.random() * (95 - 70 + 1)) + 70;
-  }, [user.id]); 
+  }, [user.id]); // Depend on user.id
 
   const nextImage = (e: React.MouseEvent) => {
     e.stopPropagation(); 
@@ -131,8 +132,8 @@ export function AiMatchCard({ user, onLike, onPass }: AiMatchCardProps) {
             <Separator className="my-3 bg-border" />
           </DialogHeader>
           
-          <div className="px-6 pb-6 space-y-6">
-            <div className="relative w-full max-w-sm mx-auto aspect-[4/5] rounded-lg overflow-hidden shadow-lg">
+          <div className="px-6 pb-6 flex flex-col items-center space-y-6">
+            <div className="relative w-full max-w-sm aspect-[4/5] rounded-lg overflow-hidden shadow-lg">
               <Image 
                 src={mainImage} 
                 alt={`${user.name}'s main photo`} 
@@ -143,7 +144,7 @@ export function AiMatchCard({ user, onLike, onPass }: AiMatchCardProps) {
               />
             </div>
 
-             <div className="flex overflow-x-auto space-x-4 p-3 bg-muted/30 rounded-lg no-scrollbar scroll-smooth">
+            <div className="w-full flex overflow-x-auto space-x-4 p-3 bg-muted/30 rounded-lg no-scrollbar scroll-smooth">
               {userDetails.map((detail, index) => (
                  (detail.value && detail.value !== "N/A") && ( 
                   <div key={index} className="flex flex-col items-center text-center flex-shrink-0 w-24 p-2">
@@ -156,19 +157,19 @@ export function AiMatchCard({ user, onLike, onPass }: AiMatchCardProps) {
             </div>
 
             {firstPrompt && (
-              <div className="space-y-2">
+              <div className="space-y-2 w-full">
                 <h3 className="text-lg font-semibold text-primary">{AVAILABLE_PROMPTS.find(p => p.id === firstPrompt.promptId)?.question || "Prompt"}</h3>
                 <p className="text-muted-foreground whitespace-pre-line">{firstPrompt.answer}</p>
               </div>
             )}
             
-            <div className="space-y-2">
+            <div className="space-y-2 w-full">
               <h3 className="text-lg font-semibold text-primary">About {user.name}</h3>
               <p className="text-muted-foreground whitespace-pre-line">{user.bio}</p>
             </div>
 
             {otherPrompts.length > 0 && (
-              <div className="space-y-4">
+              <div className="space-y-4 w-full">
                 <h3 className="text-lg font-semibold text-primary">More from {user.name}</h3>
                 {otherPrompts.map(p => {
                   const promptDetails = AVAILABLE_PROMPTS.find(ap => ap.id === p.promptId);
@@ -183,7 +184,7 @@ export function AiMatchCard({ user, onLike, onPass }: AiMatchCardProps) {
             )}
 
             {otherImages.length > 0 && (
-              <div className="space-y-3">
+              <div className="space-y-3 w-full">
                 <h3 className="text-lg font-semibold text-primary">More Photos</h3>
                 <div className="grid grid-cols-2 gap-3">
                   {otherImages.map((img, idx) => (
