@@ -43,7 +43,7 @@ export function MomentCard({ moment, potentialMatchUser }: MomentCardProps) {
               <p className="text-xs text-muted-foreground line-clamp-2">{potentialMatchUser.bio}</p>
             </div>
              {/* Placeholder image representing the place or vibe */}
-            <Image src="https://placehold.co/100x100.png" alt="Place vibe" width={60} height={60} className="rounded-md object-cover ml-auto" data-ai-hint="cafe ambient"/>
+            <Image src="https://placehold.co/600x800.png" alt="Place vibe" width={60} height={80} className="rounded-md object-cover ml-auto" data-ai-hint="cafe ambient"/>
           </div>
         </CardContent>
       )}
