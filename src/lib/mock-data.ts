@@ -26,9 +26,9 @@ export const MOCK_USERS: UserProfile[] = [
     email: 'alex@example.com',
     bio: 'Loves hiking, coffee, and indie music. Always up for an adventure or a quiet night in with a good book.',
     images: [
-      'https://placehold.co/600x800/E70F72/FFFFFF.png?text=Alex+1',
-      'https://placehold.co/600x800/262626/FAFAFA.png?text=Alex+2',
-      'https://placehold.co/600x800/101010/A3A3A3.png?text=Alex+3',
+      'https://placehold.co/600x800/E70F72/FFFFFF.png', // Primary Pink/White
+      'https://placehold.co/600x800/262626/FAFAFA.png', // Secondary Dark/Light
+      'https://placehold.co/600x800/101010/A3A3A3.png', // Card Dark/Muted
     ],
     vibeTags: ['adventurous', 'bookworm', 'coffee lover', 'calm'],
     locationPatterns: ['Downtown Cafe', 'Mountain Trails', 'City Park'],
@@ -44,8 +44,8 @@ export const MOCK_USERS: UserProfile[] = [
     email: 'jamie@example.com',
     bio: 'Artist, foodie, and travel enthusiast. Exploring new cultures and cuisines is my passion.',
     images: [
-      'https://placehold.co/600x800/080808/E70F72.png?text=Jamie+1',
-      'https://placehold.co/600x800/FAFAFA/080808.png?text=Jamie+2',
+      'https://placehold.co/600x800/080808/E70F72.png', // Background Dark/Primary Pink
+      'https://placehold.co/600x800/FAFAFA/080808.png', // Foreground Light/Background Dark
     ],
     vibeTags: ['creative', 'foodie', 'globetrotter', 'energetic'],
     locationPatterns: ['Art Gallery', 'International Market', 'Airport Lounge'],
@@ -61,7 +61,7 @@ export const MOCK_USERS: UserProfile[] = [
     email: 'casey@example.com',
     bio: 'Tech geek, gamer, and animal lover. Fluent in sarcasm and Python.',
     images: [
-      'https://placehold.co/600x800/E70F72/FFFFFF.png?text=Casey+1',
+      'https://placehold.co/600x800/E70F72/080808.png', // Primary Pink/Background Dark
     ],
     vibeTags: ['techy', 'gamer', 'animal lover', 'witty'],
     locationPatterns: ['Tech Hub', 'Local Park (dog walking)', 'Gaming Cafe'],
@@ -76,9 +76,9 @@ export const MOCK_USERS: UserProfile[] = [
     email: 'you@example.com',
     bio: 'Seeking connections and new experiences. Let\'s see where our paths cross!',
     images: [
-      'https://placehold.co/120x120/E70F72/FFFFFF.png?text=U',
-      'https://placehold.co/600x800/101010/FAFAFA.png?text=My+Photo+2',
-      'https://placehold.co/600x800/080808/A3A3A3.png?text=My+Photo+3',
+      'https://placehold.co/120x120/E70F72/FFFFFF.png?text=U', // Specific Avatar for "You"
+      'https://placehold.co/600x800/101010/FAFAFA.png', // Card Dark/Light
+      'https://placehold.co/600x800/080808/A3A3A3.png', // Background Dark/Muted
     ],
     vibeTags: ['explorer', 'optimist', 'curious', 'friendly'],
     locationPatterns: ['Local Coffee Shop', 'Bookstore', 'Community Garden'],
