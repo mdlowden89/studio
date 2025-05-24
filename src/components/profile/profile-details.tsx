@@ -46,6 +46,13 @@ const familyPlansOptions = [
   "Prefer Not to Say",
 ];
 
+const drinkingOptions = [
+  "Yes",
+  "Sometimes",
+  "No",
+  "Prefer Not to Say",
+];
+
 const generateHeightOptions = () => {
   const options = ["Prefer Not to Say"];
   for (let feet = 3; feet <= 7; feet++) {
@@ -91,6 +98,7 @@ export function ProfileDetails({ user }: ProfileDetailsProps) {
   const [childrenStatus, setChildrenStatus] = useState(user.childrenStatus || "Prefer Not to Say");
   const [familyPlans, setFamilyPlans] = useState(user.familyPlans || "Prefer Not to Say");
   const [height, setHeight] = useState(user.height || "Prefer Not to Say");
+  const [drinking, setDrinking] = useState(user.drinking || "Prefer Not to Say");
   
   const [locationAddress, setLocationAddress] = useState(user.locationAddress || "");
   const [currentLocationName, setCurrentLocationName] = useState<string>(user.locationName || "");
@@ -177,6 +185,7 @@ export function ProfileDetails({ user }: ProfileDetailsProps) {
         childrenStatus,
         familyPlans,
         height,
+        drinking,
         locationAddress,
         locationName: currentLocationName || (locationAddress ? locationAddress.split(',')[0] : MOCK_USERS[currentUserIndex].locationName),
         locationCoordinates: currentCoordinates || MOCK_USERS[currentUserIndex].locationCoordinates,
@@ -290,6 +299,21 @@ export function ProfileDetails({ user }: ProfileDetailsProps) {
             </SelectTrigger>
             <SelectContent className="bg-popover">
               {heightOptions.map((option) => (
+                <SelectItem key={option} value={option}>
+                  {option}
+                </SelectItem>
+              ))}
+            </SelectContent>
+          </Select>
+        </div>
+        <div>
+          <Label htmlFor="drinking">Drinking</Label>
+          <Select value={drinking} onValueChange={setDrinking}>
+            <SelectTrigger className="mt-1 bg-input">
+              <SelectValue placeholder="Your drinking habits" />
+            </SelectTrigger>
+            <SelectContent className="bg-popover">
+              {drinkingOptions.map((option) => (
                 <SelectItem key={option} value={option}>
                   {option}
                 </SelectItem>

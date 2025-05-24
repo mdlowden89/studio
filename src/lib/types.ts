@@ -14,11 +14,12 @@ export interface UserProfile {
   education?: string;
   ethnicity?: string;
   childrenStatus?: string;
-  familyPlans?: string; // Added
+  familyPlans?: string; 
   height?: string;
   locationAddress?: string;
   locationName?: string;
   locationCoordinates?: { lat: number; lng: number };
+  drinking?: string; // Added
 }
 
 export interface ProfilePrompt {
