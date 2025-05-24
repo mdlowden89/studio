@@ -233,5 +233,3 @@ export const getCurrentUser = (): UserProfile => {
 };
 
     
-
-    
