@@ -41,6 +41,8 @@ export const MOCK_USERS: UserProfile[] = [
     education: 'State University - BFA Design',
     ethnicity: 'White/Caucasian',
     height: "5'11\"",
+    locationAddress: "123 Main St, Anytown, USA",
+    locationName: "Anytown",
   },
   {
     id: 'user-2',
@@ -64,6 +66,8 @@ export const MOCK_USERS: UserProfile[] = [
     education: 'Art Institute - Photography',
     ethnicity: 'Hispanic/Latino',
     height: "5'7\"",
+    locationAddress: "456 Art Ave, Creative City, USA",
+    locationName: "Creative City",
   },
   {
     id: 'user-3',
@@ -86,6 +90,8 @@ export const MOCK_USERS: UserProfile[] = [
     education: 'Tech University - BS Computer Science',
     ethnicity: 'East Asian',
     height: "6'1\"",
+    locationAddress: "789 Tech Rd, Silicon Valley, USA",
+    locationName: "Silicon Valley",
   },
   {
     id: MOCK_USER_ID, // Current user
@@ -109,6 +115,8 @@ export const MOCK_USERS: UserProfile[] = [
     education: 'Firebase Studio University',
     ethnicity: 'Prefer Not to Say',
     height: 'Prefer Not to Say',
+    locationAddress: '1 Developer Way, Firebase City, FS',
+    locationName: 'Firebase City',
   },
 ];
 
@@ -249,5 +257,26 @@ export const MOCK_CHAT_MESSAGES: { [chatId: string]: ChatMessage[] } = {
 };
 
 export const getCurrentUser = (): UserProfile => {
-  return MOCK_USERS.find(user => user.id === MOCK_USER_ID)!;
+  const user = MOCK_USERS.find(user => user.id === MOCK_USER_ID);
+  if (!user) {
+    // Fallback in case the mock user isn't found, though it should always be.
+    return {
+        id: MOCK_USER_ID,
+        name: "Current User",
+        age: 30,
+        bio: "Default bio.",
+        images: ['https://placehold.co/120x120/E70F72/FFFFFF.png?text=U'],
+        vibeTags: [],
+        prompts: [],
+        email: 'user@example.com',
+        work: 'Unknown',
+        jobTitle: 'Unknown',
+        education: 'Unknown',
+        ethnicity: 'Prefer Not to Say',
+        height: 'Prefer Not to Say',
+        locationAddress: 'Unknown',
+        locationName: 'Unknown',
+    };
+  }
+  return user;
 };

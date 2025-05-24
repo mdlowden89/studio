@@ -1,7 +1,7 @@
 
 "use client";
 
-import { useState, useMemo } from "react"; // Added useMemo
+import { useState, useMemo } from "react";
 import type { UserProfile } from "@/lib/types";
 import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
@@ -9,7 +9,7 @@ import { Button } from "@/components/ui/button";
 import { Label } from "@/components/ui/label";
 import { Badge } from "@/components/ui/badge";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
-import { X as XIcon, PlusCircle } from "lucide-react";
+import { X as XIcon, PlusCircle, MapPin } from "lucide-react";
 import { useToast } from "@/hooks/use-toast";
 import { MOCK_USERS, MOCK_USER_ID } from "@/lib/mock-data";
 import { useRouter } from "next/navigation";
@@ -54,7 +54,9 @@ export function ProfileDetails({ user }: ProfileDetailsProps) {
   const [jobTitle, setJobTitle] = useState(user.jobTitle || "");
   const [education, setEducation] = useState(user.education || "");
   const [ethnicity, setEthnicity] = useState(user.ethnicity || "Prefer Not to Say");
-  const [height, setHeight] = useState(user.height || "Prefer Not to Say"); // Added height state
+  const [height, setHeight] = useState(user.height || "Prefer Not to Say");
+  const [locationAddress, setLocationAddress] = useState(user.locationAddress || "");
+
 
   const { toast } = useToast();
   const router = useRouter();
@@ -87,7 +89,10 @@ export function ProfileDetails({ user }: ProfileDetailsProps) {
         jobTitle,
         education,
         ethnicity,
-        height, // Added height to update
+        height,
+        locationAddress,
+        // For now, locationName and locationCoordinates would be updated via map interaction
+        locationName: locationAddress ? locationAddress.split(',')[0] : MOCK_USERS[currentUserIndex].locationName, // Simple derivation
       };
       MOCK_USERS.splice(currentUserIndex, 1, updatedUser);
     }
@@ -172,6 +177,25 @@ export function ProfileDetails({ user }: ProfileDetailsProps) {
           </Select>
         </div>
       </div>
+
+      <div>
+        <Label htmlFor="locationAddress">Location (Address, Area, or Postcode)</Label>
+        <div className="relative mt-1">
+            <MapPin className="absolute left-3 top-1/2 -translate-y-1/2 h-5 w-5 text-muted-foreground" />
+            <Input 
+                id="locationAddress" 
+                value={locationAddress} 
+                onChange={(e) => setLocationAddress(e.target.value)} 
+                className="bg-input pl-10" 
+                placeholder="e.g., 123 Main St, Anytown or Anytown"
+            />
+        </div>
+      </div>
+      <div className="h-48 w-full bg-muted rounded-md flex items-center justify-center text-muted-foreground border border-dashed">
+        Map preview will appear here
+      </div>
+
+
       <div>
         <Label htmlFor="bio">Bio</Label>
         <Textarea id="bio" value={bio} onChange={(e) => setBio(e.target.value)} rows={4} className="mt-1 bg-input" />

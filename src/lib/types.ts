@@ -13,7 +13,10 @@ export interface UserProfile {
   jobTitle?: string;
   education?: string;
   ethnicity?: string;
-  height?: string; // Added height
+  height?: string;
+  locationAddress?: string;
+  locationName?: string;
+  locationCoordinates?: { lat: number; lng: number };
 }
 
 export interface ProfilePrompt {
