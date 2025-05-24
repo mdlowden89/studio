@@ -6,7 +6,7 @@ import type { UserProfile, CrossedPathUser } from "@/lib/types";
 import { Card, CardContent, CardFooter, CardHeader, CardTitle, CardDescription } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
-import { Heart, X, MapPin, Info } from "lucide-react";
+import { Heart, X, MapPin, Info, Ruler, Users, Baby, ListChecks, Wine } from "lucide-react"; // Added new icons
 import { useState } from "react";
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger } from "@/components/ui/dialog";
 import { ScrollArea } from "@/components/ui/scroll-area";
@@ -34,10 +34,19 @@ export function MatchCard({ user, onLike, onPass, showCrossedPathInfo = false }:
   };
 
   const crossedPathUser = user as CrossedPathUser;
-  const mainImage = user.images.length > 0 ? user.images[0] : "https://placehold.co/600x600.png";
-  const otherImages = user.images.length > 1 ? user.images.slice(1) : [];
+  const mainImage = user.images.length > 0 ? user.images[currentImageIndex] : "https://placehold.co/600x600.png"; // Use currentImageIndex for main image
+  const otherImages = user.images.length > 0 ? user.images.filter((_, idx) => idx !== currentImageIndex) : [];
   const firstPrompt = user.prompts.length > 0 ? user.prompts[0] : null;
   const otherPrompts = user.prompts.length > 1 ? user.prompts.slice(1) : [];
+
+  const userDetails = [
+    { icon: MapPin, label: "Location", value: user.locationName || user.locationAddress?.split(',')[0] || "N/A" },
+    { icon: Ruler, label: "Height", value: user.height && user.height !== "Prefer Not to Say" ? user.height : "N/A" },
+    { icon: Users, label: "Ethnicity", value: user.ethnicity && user.ethnicity !== "Prefer Not to Say" ? user.ethnicity : "N/A" },
+    { icon: Baby, label: "Children", value: user.childrenStatus && user.childrenStatus !== "Prefer Not to Say" ? user.childrenStatus : "N/A" },
+    { icon: ListChecks, label: "Family Plans", value: user.familyPlans && user.familyPlans !== "Prefer Not to Say" ? user.familyPlans : "N/A" },
+    { icon: Wine, label: "Drinking", value: user.drinking && user.drinking !== "Prefer Not to Say" ? user.drinking : "N/A" },
+  ];
 
 
   return (
@@ -141,6 +150,19 @@ export function MatchCard({ user, onLike, onPass, showCrossedPathInfo = false }:
               />
             </div>
 
+            {/* Scrollable Details Section */}
+            <div className="flex overflow-x-auto space-x-4 p-3 bg-muted/30 rounded-lg no-scrollbar scroll-smooth">
+              {userDetails.map((detail, index) => (
+                (detail.value && detail.value !== "N/A") && ( // Only render if value exists and is not "N/A"
+                  <div key={index} className="flex flex-col items-center text-center flex-shrink-0 w-24 p-2">
+                    <detail.icon className="w-7 h-7 text-primary mb-1.5" />
+                    <p className="text-xs font-medium text-foreground/90">{detail.label}</p>
+                    <p className="text-xs text-muted-foreground truncate w-full">{detail.value}</p>
+                  </div>
+                )
+              ))}
+            </div>
+
             {firstPrompt && (
               <div className="space-y-2">
                 <h3 className="text-lg font-semibold text-primary">{AVAILABLE_PROMPTS.find(p => p.id === firstPrompt.promptId)?.question || "Prompt"}</h3>
@@ -176,7 +198,7 @@ export function MatchCard({ user, onLike, onPass, showCrossedPathInfo = false }:
                     <div key={idx} className="relative aspect-[4/5] rounded-md overflow-hidden shadow">
                       <Image 
                         src={img} 
-                        alt={`${user.name} profile image ${idx + 2}`} 
+                        alt={`${user.name} profile image ${idx + 1}`}  // Corrected index for alt text
                         layout="fill" 
                         objectFit="cover" 
                         data-ai-hint="lifestyle photo"
@@ -232,3 +254,8 @@ function ChevronRightIcon(props: React.SVGProps<SVGSVGElement>) {
     </svg>
   )
 }
+
+// Helper style for no-scrollbar (if needed, else remove)
+// Add to globals.css if you want to hide scrollbars more globally
+// .no-scrollbar::-webkit-scrollbar { display: none; }
+// .no-scrollbar { -ms-overflow-style: none; scrollbar-width: none; }
