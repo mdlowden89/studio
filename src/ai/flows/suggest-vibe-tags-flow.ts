@@ -25,7 +25,7 @@ const SuggestVibeTagsOutputSchema = z.object({
   suggestedTags: z
     .array(z.string())
     .describe(
-      'An array of 5-7 new, distinct vibe tag suggestions relevant to the user bio and existing tags, in lowercase.'
+      'An array of 5-7 new, distinct, and diverse vibe tag suggestions relevant to the user bio and existing tags, in lowercase.'
     ),
 });
 export type SuggestVibeTagsOutput = z.infer<
@@ -42,10 +42,13 @@ const prompt = ai.definePrompt({
   name: 'suggestVibeTagsPrompt',
   input: {schema: SuggestVibeTagsInputSchema},
   output: {schema: SuggestVibeTagsOutputSchema},
-  prompt: `You are an expert at understanding user personalities and interests.
-Given a user's biography and their existing vibe tags, suggest 5 to 7 new and distinct vibe tags that would complement their profile.
-The suggested tags should be relevant, concise (1-2 words), and in lowercase.
-Do not suggest any tags that are already in their existing list.
+  prompt: `You are an AI assistant specializing in crafting compelling user profiles. Your task is to suggest new vibe tags.
+Analyze the user's biography and their existing vibe tags. Based on this, generate 5 to 7 *new* and *diverse* vibe tags that offer fresh perspectives or highlight unstated but implied interests or personality traits.
+The suggested tags must be:
+- Relevant to the user's bio and existing tags.
+- Concise (ideally 1-2 words).
+- In lowercase.
+- **Crucially, they must NOT be present in the user's existing vibe tags list.**
 
 User Bio:
 "{{userBio}}"
@@ -59,7 +62,7 @@ Existing Vibe Tags:
 None
 {{/if}}
 
-Based on this, provide your suggestions in the 'suggestedTags' field.
+Provide your distinct suggestions in the 'suggestedTags' output field. Focus on creativity and expanding the user's self-representation.
 `,
 });
 
@@ -70,9 +73,8 @@ const suggestVibeTagsFlow = ai.defineFlow(
     outputSchema: SuggestVibeTagsOutputSchema,
   },
   async input => {
-    // In a real scenario, you might add more complex logic here,
-    // like fetching more user data or calling other services.
     const {output} = await prompt(input);
     return output!;
   }
 );
+
