@@ -26,9 +26,9 @@ export const MOCK_USERS: UserProfile[] = [
     email: 'alex@example.com',
     bio: 'Loves hiking, coffee, and indie music. Always up for an adventure or a quiet night in with a good book.',
     images: [
-      'https://placehold.co/600x800/E70F72/FFFFFF.png', 
-      'https://placehold.co/800x600/262626/FAFAFA.png', 
-      'https://placehold.co/700x700/A3A3A3/080808.png', 
+      'https://placehold.co/600x800/E70F72/FFFFFF.png',
+      'https://placehold.co/800x600/262626/FAFAFA.png',
+      'https://placehold.co/700x700/A3A3A3/080808.png',
     ],
     vibeTags: ['adventurous', 'bookworm', 'coffee lover', 'calm'],
     locationPatterns: ['Downtown Cafe', 'Mountain Trails', 'City Park'],
@@ -39,6 +39,7 @@ export const MOCK_USERS: UserProfile[] = [
     work: 'Graphic Designer',
     jobTitle: 'Senior Designer',
     education: 'State University - BFA Design',
+    ethnicity: 'White/Caucasian',
   },
   {
     id: 'user-2',
@@ -47,9 +48,9 @@ export const MOCK_USERS: UserProfile[] = [
     email: 'jamie@example.com',
     bio: 'Artist, foodie, and travel enthusiast. Exploring new cultures and cuisines is my passion.',
     images: [
-      'https://placehold.co/600x800/080808/E70F72.png', 
-      'https://placehold.co/800x600/FAFAFA/262626.png', 
-      'https://placehold.co/600x900/E70F72/0D0D0D.png', 
+      'https://placehold.co/600x800/080808/E70F72.png',
+      'https://placehold.co/800x600/FAFAFA/262626.png',
+      'https://placehold.co/600x900/E70F72/0D0D0D.png',
     ],
     vibeTags: ['creative', 'foodie', 'globetrotter', 'energetic'],
     locationPatterns: ['Art Gallery', 'International Market', 'Airport Lounge'],
@@ -60,6 +61,7 @@ export const MOCK_USERS: UserProfile[] = [
     work: 'Freelance Photographer',
     jobTitle: 'Photographer',
     education: 'Art Institute - Photography',
+    ethnicity: 'Hispanic/Latino',
   },
   {
     id: 'user-3',
@@ -68,9 +70,9 @@ export const MOCK_USERS: UserProfile[] = [
     email: 'casey@example.com',
     bio: 'Tech geek, gamer, and animal lover. Fluent in sarcasm and Python.',
     images: [
-      'https://placehold.co/600x800/E70F72/080808.png', 
-      'https://placehold.co/700x700/101010/FAFAFA.png', 
-      'https://placehold.co/800x500/222222/FFFFFF.png', 
+      'https://placehold.co/600x800/E70F72/080808.png',
+      'https://placehold.co/700x700/101010/FAFAFA.png',
+      'https://placehold.co/800x500/222222/FFFFFF.png',
     ],
     vibeTags: ['techy', 'gamer', 'animal lover', 'witty'],
     locationPatterns: ['Tech Hub', 'Local Park (dog walking)', 'Gaming Cafe'],
@@ -80,6 +82,7 @@ export const MOCK_USERS: UserProfile[] = [
     work: 'Software Engineer',
     jobTitle: 'Lead Developer',
     education: 'Tech University - BS Computer Science',
+    ethnicity: 'East Asian',
   },
   {
     id: MOCK_USER_ID, // Current user
@@ -88,9 +91,9 @@ export const MOCK_USERS: UserProfile[] = [
     email: 'you@example.com',
     bio: 'Seeking connections and new experiences. Let\'s see where our paths cross!',
     images: [
-      'https://placehold.co/120x120/E70F72/FFFFFF.png?text=U', 
-      'https://placehold.co/600x800/101010/FAFAFA.png', 
-      'https://placehold.co/800x600/080808/A3A3A3.png', 
+      'https://placehold.co/120x120/E70F72/FFFFFF.png?text=U',
+      'https://placehold.co/600x800/101010/FAFAFA.png',
+      'https://placehold.co/800x600/080808/A3A3A3.png',
     ],
     vibeTags: ['explorer', 'optimist', 'curious', 'friendly'],
     locationPatterns: ['Local Coffee Shop', 'Bookstore', 'Community Garden'],
@@ -101,6 +104,7 @@ export const MOCK_USERS: UserProfile[] = [
     work: 'App Prototyper Inc.',
     jobTitle: 'AI Assistant',
     education: 'Firebase Studio University',
+    ethnicity: 'Prefer Not to Say',
   },
 ];
 
