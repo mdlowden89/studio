@@ -53,6 +53,13 @@ const drinkingOptions = [
   "Prefer Not to Say",
 ];
 
+const smokingOptions = [ // Added
+  "Yes",
+  "Sometimes",
+  "No",
+  "Prefer Not to Say",
+];
+
 const generateHeightOptions = () => {
   const options = ["Prefer Not to Say"];
   for (let feet = 3; feet <= 7; feet++) {
@@ -99,7 +106,8 @@ export function ProfileDetails({ user }: ProfileDetailsProps) {
   const [familyPlans, setFamilyPlans] = useState(user.familyPlans || "Prefer Not to Say");
   const [height, setHeight] = useState(user.height || "Prefer Not to Say");
   const [drinking, setDrinking] = useState(user.drinking || "Prefer Not to Say");
-  
+  const [smoking, setSmoking] = useState(user.smoking || "Prefer Not to Say"); // Added
+
   const [locationAddress, setLocationAddress] = useState(user.locationAddress || "");
   const [currentLocationName, setCurrentLocationName] = useState<string>(user.locationName || "");
   const [currentCoordinates, setCurrentCoordinates] = useState<google.maps.LatLngLiteral | null>(user.locationCoordinates || null);
@@ -186,6 +194,7 @@ export function ProfileDetails({ user }: ProfileDetailsProps) {
         familyPlans,
         height,
         drinking,
+        smoking, // Added
         locationAddress,
         locationName: currentLocationName || (locationAddress ? locationAddress.split(',')[0] : MOCK_USERS[currentUserIndex].locationName),
         locationCoordinates: currentCoordinates || MOCK_USERS[currentUserIndex].locationCoordinates,
@@ -221,17 +230,18 @@ export function ProfileDetails({ user }: ProfileDetailsProps) {
           <Input
             id="age"
             type="number"
-            value={age}
+            value={age === 0 && !name ? '' : age} // Show empty if age is 0 and name is also empty (initial state), otherwise show age
             onChange={(e) => {
               const rawValue = e.target.value;
               const parsedAge = parseInt(rawValue, 10);
               if (rawValue === "" || isNaN(parsedAge)) {
-                setAge(0); 
+                setAge(0);
               } else {
-                setAge(parsedAge);
+                setAge(parsedAge < 0 ? 0 : parsedAge); // Prevent negative age
               }
             }}
             className="mt-1 bg-input"
+            min="0"
           />
         </div>
         <div>
@@ -321,6 +331,21 @@ export function ProfileDetails({ user }: ProfileDetailsProps) {
             </SelectContent>
           </Select>
         </div>
+        <div>
+          <Label htmlFor="smoking">Smoking</Label>
+          <Select value={smoking} onValueChange={setSmoking}>
+            <SelectTrigger className="mt-1 bg-input">
+              <SelectValue placeholder="Your smoking habits" />
+            </SelectTrigger>
+            <SelectContent className="bg-popover">
+              {smokingOptions.map((option) => (
+                <SelectItem key={option} value={option}>
+                  {option}
+                </SelectItem>
+              ))}
+            </SelectContent>
+          </Select>
+        </div>
       </div>
 
       <div>
@@ -330,8 +355,8 @@ export function ProfileDetails({ user }: ProfileDetailsProps) {
                 Google Maps API Key is missing or invalid. Location search and map will not work.
             </div>
         ) : (
-        <LoadScriptNext 
-            googleMapsApiKey={mapsApiKey} 
+        <LoadScriptNext
+            googleMapsApiKey={mapsApiKey}
             libraries={['places']}
             loadingElement={<div className="mt-1 text-muted-foreground">Loading map services...</div>}
         >
@@ -341,19 +366,18 @@ export function ProfileDetails({ user }: ProfileDetailsProps) {
                     onLoad={onLoadSearchBox}
                     onPlacesChanged={onPlacesChanged}
                 >
-                    <Input 
-                        id="locationAddress" 
-                        value={locationAddress} 
+                    <Input
+                        id="locationAddress"
+                        value={locationAddress}
                         onChange={(e) => {
                             setLocationAddress(e.target.value);
-                            // If user types manually after selecting a place, clear specific place data
                             if (e.target.value !== currentLocationName) {
                                 setCurrentCoordinates(null);
                                 setMarkerPosition(null);
                                 setCurrentLocationName("");
                             }
-                        }} 
-                        className="bg-input pl-10" 
+                        }}
+                        className="bg-input pl-10"
                         placeholder="e.g., 123 Main St, Anytown or Anytown"
                     />
                 </StandaloneSearchBox>

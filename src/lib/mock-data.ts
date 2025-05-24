@@ -47,6 +47,7 @@ export const MOCK_USERS: UserProfile[] = [
     locationName: "Anytown",
     locationCoordinates: { lat: 40.7128, lng: -74.0060 },
     drinking: "Sometimes",
+    smoking: "No",
   },
   {
     id: 'user-2',
@@ -76,6 +77,7 @@ export const MOCK_USERS: UserProfile[] = [
     locationName: "Creative City",
     locationCoordinates: { lat: 34.0522, lng: -118.2437 },
     drinking: "Yes",
+    smoking: "Sometimes",
   },
   {
     id: 'user-3',
@@ -104,6 +106,7 @@ export const MOCK_USERS: UserProfile[] = [
     locationName: "Silicon Valley",
     locationCoordinates: { lat: 37.3875, lng: -122.0575 },
     drinking: "No",
+    smoking: "Prefer Not to Say",
   },
   {
     id: MOCK_USER_ID, // Current user
@@ -129,10 +132,11 @@ export const MOCK_USERS: UserProfile[] = [
     childrenStatus: 'Prefer Not to Say',
     familyPlans: 'Prefer Not to Say',
     height: 'Prefer Not to Say',
+    drinking: 'Prefer Not to Say',
+    smoking: 'Prefer Not to Say', // Added for current user
     locationAddress: '1 Developer Way, Firebase City, FS',
     locationName: 'Firebase City',
     locationCoordinates: { lat: 37.7749, lng: -122.4194 },
-    drinking: 'Prefer Not to Say',
   },
 ];
 
@@ -293,6 +297,7 @@ export const getCurrentUser = (): UserProfile => {
         familyPlans: 'Prefer Not to Say',
         height: 'Prefer Not to Say',
         drinking: 'Prefer Not to Say',
+        smoking: 'Prefer Not to Say',
         locationAddress: 'Unknown',
         locationName: 'Unknown',
     };
