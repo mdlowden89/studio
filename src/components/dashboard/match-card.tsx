@@ -6,7 +6,7 @@ import type { UserProfile, CrossedPathUser } from "@/lib/types";
 import { Card, CardContent, CardFooter, CardHeader, CardTitle, CardDescription } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
-import { Heart, X, MapPin, Info, Ruler, Users, Baby, ListChecks, Wine } from "lucide-react"; 
+import { Heart, X, MapPin, Info, Ruler, Users, Baby, ListChecks, Wine } from "lucide-react";
 import { useState } from "react";
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger } from "@/components/ui/dialog";
 import { ScrollArea } from "@/components/ui/scroll-area";
@@ -24,7 +24,7 @@ export function MatchCard({ user, onLike, onPass, showCrossedPathInfo = false }:
   const [currentImageIndex, setCurrentImageIndex] = useState(0);
 
   const nextImage = (e: React.MouseEvent) => {
-    e.stopPropagation(); 
+    e.stopPropagation();
     setCurrentImageIndex((prevIndex) => (prevIndex + 1) % user.images.length);
   };
 
@@ -34,7 +34,7 @@ export function MatchCard({ user, onLike, onPass, showCrossedPathInfo = false }:
   };
 
   const crossedPathUser = user as CrossedPathUser;
-  const mainImage = user.images.length > 0 ? user.images[currentImageIndex] : "https://placehold.co/600x600.png"; 
+  const mainImage = user.images.length > 0 ? user.images[currentImageIndex] : "https://placehold.co/600x800.png";
   const otherImages = user.images.length > 0 ? user.images.filter((_, idx) => idx !== currentImageIndex) : [];
   const firstPrompt = user.prompts.length > 0 ? user.prompts[0] : null;
   const otherPrompts = user.prompts.length > 1 ? user.prompts.slice(1) : [];
@@ -52,7 +52,7 @@ export function MatchCard({ user, onLike, onPass, showCrossedPathInfo = false }:
   return (
     <Dialog>
       <Card className="w-full max-w-sm mx-auto overflow-hidden shadow-2xl transform transition-all duration-300 hover:scale-105 bg-card flex flex-col h-[650px]">
-        <CardHeader className="p-0 relative h-[55%]"> 
+        <CardHeader className="p-0 relative h-[55%]">
           <Image
             src={user.images[currentImageIndex]}
             alt={user.name}
@@ -137,22 +137,22 @@ export function MatchCard({ user, onLike, onPass, showCrossedPathInfo = false }:
               )}
             <Separator className="my-3 bg-border" />
           </DialogHeader>
-          
+
           <div className="px-6 pb-6 flex flex-col items-center space-y-6">
             <div className="relative w-full max-w-sm aspect-[4/5] rounded-lg overflow-hidden shadow-lg">
-              <Image 
-                src={mainImage} 
-                alt={`${user.name}'s main photo`} 
-                layout="fill" 
+              <Image
+                src={mainImage}
+                alt={`${user.name}'s main photo`}
+                layout="fill"
                 objectFit="cover"
                 data-ai-hint="profile photo"
                 unoptimized={mainImage.startsWith('data:') || mainImage.includes('placehold.co')}
               />
             </div>
 
-            <div className="w-full flex overflow-x-auto space-x-4 p-3 bg-muted/30 rounded-lg scroll-smooth">
+            <div className="w-full flex overflow-x-auto space-x-4 p-3 bg-muted/30 rounded-lg">
               {userDetails.map((detail, index) => (
-                 (detail.value && detail.value !== "N/A") && ( 
+                 (detail.value && detail.value !== "N/A") && (
                   <div key={index} className="flex flex-col items-center text-center flex-shrink-0 w-24 p-2">
                     <detail.icon className="w-7 h-7 text-primary mb-1.5" />
                     <p className="text-xs font-medium text-foreground/90 w-full truncate">{detail.label}</p>
@@ -168,7 +168,7 @@ export function MatchCard({ user, onLike, onPass, showCrossedPathInfo = false }:
                 <p className="text-muted-foreground whitespace-pre-line">{firstPrompt.answer}</p>
               </div>
             )}
-            
+
             <div className="space-y-2 w-full">
               <h3 className="text-lg font-semibold text-primary">About {user.name}</h3>
               <p className="text-muted-foreground whitespace-pre-line">{user.bio}</p>
@@ -195,11 +195,11 @@ export function MatchCard({ user, onLike, onPass, showCrossedPathInfo = false }:
                 <div className="grid grid-cols-2 gap-3">
                   {otherImages.map((img, idx) => (
                     <div key={idx} className="relative aspect-[4/5] rounded-md overflow-hidden shadow">
-                      <Image 
-                        src={img} 
-                        alt={`${user.name} profile image ${idx + 1}`}  
-                        layout="fill" 
-                        objectFit="cover" 
+                      <Image
+                        src={img}
+                        alt={`${user.name} profile image ${idx + 1}`}
+                        layout="fill"
+                        objectFit="cover"
                         data-ai-hint="lifestyle photo"
                         unoptimized={img.startsWith('data:') || img.includes('placehold.co')}
                       />
@@ -253,7 +253,3 @@ function ChevronRightIcon(props: React.SVGProps<SVGSVGElement>) {
     </svg>
   )
 }
-
-    
-
-    
