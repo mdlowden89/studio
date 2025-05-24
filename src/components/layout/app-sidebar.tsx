@@ -91,7 +91,6 @@ export function AppSidebar() {
                 src={currentUser.images[0]} 
                 alt={currentUser.name} 
                 data-ai-hint="profile photo"
-                unoptimized={currentUser.images[0]?.startsWith('data:') || currentUser.images[0]?.startsWith('https://placehold.co')}
               />
               <AvatarFallback>{currentUser.name.substring(0, 1)}</AvatarFallback>
             </Avatar>
