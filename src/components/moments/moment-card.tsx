@@ -34,16 +34,23 @@ export function MomentCard({ moment, potentialMatchUser }: MomentCardProps) {
             You crossed paths with {potentialMatchUser.name} here!
           </CardDescription>
           <div className="flex items-center gap-3 p-3 bg-muted rounded-lg">
-            <Avatar className="h-12 w-12">
+            <Avatar className="h-12 w-12 flex-shrink-0">
               <AvatarImage src={potentialMatchUser.images[0]} alt={potentialMatchUser.name} data-ai-hint="profile person" />
               <AvatarFallback>{potentialMatchUser.name.substring(0,1)}</AvatarFallback>
             </Avatar>
-            <div>
-              <p className="font-semibold text-foreground">{potentialMatchUser.name}</p>
+            <div className="flex-grow min-w-0">
+              <p className="font-semibold text-foreground truncate">{potentialMatchUser.name}</p>
               <p className="text-xs text-muted-foreground line-clamp-2">{potentialMatchUser.bio}</p>
             </div>
-             {/* Placeholder image representing the place or vibe */}
-            <Image src="https://placehold.co/600x800.png" alt="Place vibe" width={60} height={80} className="rounded-md object-cover ml-auto" data-ai-hint="cafe ambient"/>
+            {/* Placeholder image representing the place or vibe */}
+            <Image 
+              src="https://placehold.co/600x800.png" 
+              alt="Place vibe" 
+              width={60} 
+              height={80} 
+              className="rounded-md object-cover flex-shrink-0"
+              data-ai-hint="cafe ambient"
+            />
           </div>
         </CardContent>
       )}
