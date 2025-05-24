@@ -5,7 +5,7 @@ import { useState } from "react";
 import { MOCK_USERS, MOCK_USER_ID } from "@/lib/mock-data";
 import { MatchCard } from "./match-card";
 import { Button } from "@/components/ui/button";
-import { RefreshCw, Users } from "lucide-react";
+import { RefreshCw, Users, Undo2 } from "lucide-react"; // Added Undo2
 import { useToast } from "@/hooks/use-toast";
 import {
   AlertDialog,
@@ -65,6 +65,10 @@ export function SwipeMatchSection() {
 
   const handleLike = (userId: string) => handleAction(userId, "like");
   const handlePass = (userId: string) => handleAction(userId, "pass");
+  const handleUndo = () => {
+    // Placeholder for undo functionality
+    toast({ title: "Undo Clicked", description: "Undo functionality not yet implemented." });
+  };
 
   const refreshUsers = () => {
     setUsers(MOCK_USERS.filter(user => user.id !== MOCK_USER_ID).sort(() => 0.5 - Math.random()));
@@ -78,9 +82,14 @@ export function SwipeMatchSection() {
         <Users className="w-16 h-16 text-muted-foreground mb-4" />
         <h3 className="text-xl font-semibold mb-2">No More Profiles</h3>
         <p className="text-muted-foreground mb-4">You've seen everyone for now. Try refreshing or check back later.</p>
-        <Button onClick={refreshUsers}>
-          <RefreshCw className="mr-2 h-4 w-4" /> Refresh Profiles
-        </Button>
+        <div className="flex gap-2 mt-4">
+            <Button onClick={handleUndo} variant="outline">
+                <Undo2 className="mr-2 h-4 w-4" /> Undo
+            </Button>
+            <Button onClick={refreshUsers} variant="outline">
+                <RefreshCw className="mr-2 h-4 w-4" /> Refresh Profiles
+            </Button>
+        </div>
       </div>
     );
   }
@@ -95,9 +104,14 @@ export function SwipeMatchSection() {
         onLike={handleLike}
         onPass={handlePass}
       />
-      <Button onClick={refreshUsers} variant="outline" className="mt-4">
-        <RefreshCw className="mr-2 h-4 w-4" /> Refresh
-      </Button>
+      <div className="flex gap-2 mt-4">
+        <Button onClick={handleUndo} variant="outline">
+          <Undo2 className="mr-2 h-4 w-4" /> Undo
+        </Button>
+        <Button onClick={refreshUsers} variant="outline">
+          <RefreshCw className="mr-2 h-4 w-4" /> Refresh
+        </Button>
+      </div>
 
       <AlertDialog open={showMatchAnimation} onOpenChange={setShowMatchAnimation}>
         <AlertDialogContent className="bg-card text-card-foreground border-primary shadow-lg rounded-xl">
@@ -111,7 +125,7 @@ export function SwipeMatchSection() {
             </AlertDialogDescription>
           </AlertDialogHeader>
           <AlertDialogFooter className="sm:justify-center">
-            <AlertDialogAction 
+            <AlertDialogAction
               onClick={() => {
                 setShowMatchAnimation(false);
                  toast({
