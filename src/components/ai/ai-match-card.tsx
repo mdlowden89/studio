@@ -54,7 +54,7 @@ export function AiMatchCard({ user, onLike, onPass }: AiMatchCardProps) {
   return (
     <Dialog>
       <Card className="w-full max-w-sm mx-auto overflow-hidden shadow-xl transform transition-all duration-300 hover:shadow-primary/30 hover:scale-[1.02] bg-card flex flex-col h-[600px]">
-        <CardHeader className="p-0 relative h-[55%]">
+        <CardHeader className="p-0 relative h-[50%]"> {/* Changed from 55% to 50% */}
           <Image
             src={user.images[currentImageIndex]}
             alt={user.name}
