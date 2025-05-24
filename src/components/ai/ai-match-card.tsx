@@ -6,7 +6,7 @@ import type { UserProfile } from "@/lib/types";
 import { Card, CardContent, CardFooter, CardHeader, CardTitle, CardDescription } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
-import { Heart, X, Info, CheckCircle, Percent, MapPin, Ruler, Users, Baby, ListChecks, Wine } from "lucide-react"; // Added new icons
+import { Heart, X, Info, CheckCircle, Percent, MapPin, Ruler, Users, Baby, ListChecks, Wine } from "lucide-react"; 
 import { useState, useMemo } from "react";
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger } from "@/components/ui/dialog";
 import { ScrollArea } from "@/components/ui/scroll-area";
@@ -23,9 +23,8 @@ export function AiMatchCard({ user, onLike, onPass }: AiMatchCardProps) {
   const [currentImageIndex, setCurrentImageIndex] = useState(0);
   
   const compatibilityScore = useMemo(() => {
-    // Calculate compatibility score once and memoize it
     return Math.floor(Math.random() * (95 - 70 + 1)) + 70;
-  }, [user.id]); // Re-calculate if user changes
+  }, [user.id]); 
 
   const nextImage = (e: React.MouseEvent) => {
     e.stopPropagation(); 
@@ -37,7 +36,7 @@ export function AiMatchCard({ user, onLike, onPass }: AiMatchCardProps) {
     setCurrentImageIndex((prevIndex) => (prevIndex - 1 + user.images.length) % user.images.length);
   };
 
-  const mainImage = user.images.length > 0 ? user.images[currentImageIndex] : "https://placehold.co/600x600.png"; // Use currentImageIndex
+  const mainImage = user.images.length > 0 ? user.images[currentImageIndex] : "https://placehold.co/600x600.png"; 
   const otherImages = user.images.length > 0 ? user.images.filter((_, idx) => idx !== currentImageIndex) : [];
   const firstPrompt = user.prompts.length > 0 ? user.prompts[0] : null;
   const otherPrompts = user.prompts.length > 1 ? user.prompts.slice(1) : [];
@@ -54,7 +53,7 @@ export function AiMatchCard({ user, onLike, onPass }: AiMatchCardProps) {
   return (
     <Dialog>
       <Card className="w-full max-w-sm mx-auto overflow-hidden shadow-xl transform transition-all duration-300 hover:shadow-primary/30 hover:scale-[1.02] bg-card flex flex-col h-[600px]">
-        <CardHeader className="p-0 relative h-[50%]"> {/* Changed from 55% to 50% */}
+        <CardHeader className="p-0 relative h-[50%]"> 
           <Image
             src={user.images[currentImageIndex]}
             alt={user.name}
@@ -121,7 +120,7 @@ export function AiMatchCard({ user, onLike, onPass }: AiMatchCardProps) {
         </CardFooter>
       </Card>
       
-      <DialogContent className="sm:max-w-md bg-card text-card-foreground p-0">
+      <DialogContent className="sm:max-w-lg bg-card text-card-foreground p-0"> {/* Changed sm:max-w-md to sm:max-w-lg */}
         <ScrollArea className="h-[80vh] max-h-[700px]">
           <DialogHeader className="p-6 pb-2 sticky top-0 bg-card z-10">
             <DialogTitle className="text-3xl font-bold text-primary">{user.name}, {user.age}</DialogTitle>
@@ -144,13 +143,12 @@ export function AiMatchCard({ user, onLike, onPass }: AiMatchCardProps) {
               />
             </div>
 
-             {/* Scrollable Details Section */}
              <div className="flex overflow-x-auto space-x-4 p-3 bg-muted/30 rounded-lg no-scrollbar scroll-smooth">
               {userDetails.map((detail, index) => (
-                 (detail.value && detail.value !== "N/A") && ( // Only render if value exists and is not "N/A"
+                 (detail.value && detail.value !== "N/A") && ( 
                   <div key={index} className="flex flex-col items-center text-center flex-shrink-0 w-24 p-2">
                     <detail.icon className="w-7 h-7 text-primary mb-1.5" />
-                    <p className="text-xs font-medium text-foreground/90">{detail.label}</p>
+                    <p className="text-xs font-medium text-foreground/90 w-full truncate">{detail.label}</p> {/* Added w-full truncate */}
                     <p className="text-xs text-muted-foreground truncate w-full">{detail.value}</p>
                   </div>
                 )
@@ -192,7 +190,7 @@ export function AiMatchCard({ user, onLike, onPass }: AiMatchCardProps) {
                     <div key={idx} className="relative aspect-[4/5] rounded-md overflow-hidden shadow">
                        <Image 
                         src={img} 
-                        alt={`${user.name} profile image ${idx + 1}`} // Corrected index for alt text
+                        alt={`${user.name} profile image ${idx + 1}`} 
                         layout="fill" 
                         objectFit="cover" 
                         data-ai-hint="lifestyle photo"
@@ -248,8 +246,3 @@ function ChevronRightIcon(props: React.SVGProps<SVGSVGElement>) {
     </svg>
   )
 }
-
-// Helper style for no-scrollbar (if needed, else remove)
-// Add to globals.css if you want to hide scrollbars more globally
-// .no-scrollbar::-webkit-scrollbar { display: none; }
-// .no-scrollbar { -ms-overflow-style: none; scrollbar-width: none; }
