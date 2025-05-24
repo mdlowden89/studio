@@ -26,7 +26,7 @@ export const MOCK_USERS: UserProfile[] = [
     email: 'alex@example.com',
     bio: 'Loves hiking, coffee, and indie music. Always up for an adventure or a quiet night in with a good book.',
     images: [
-      'https://placehold.co/600x800/E70F72/FFFFFF.png',
+      'https://placehold.co/600x800/E70F72/080808.png',
       'https://placehold.co/800x600/262626/FAFAFA.png',
       'https://placehold.co/700x700/A3A3A3/080808.png',
     ],
@@ -41,9 +41,11 @@ export const MOCK_USERS: UserProfile[] = [
     education: 'State University - BFA Design',
     ethnicity: 'White/Caucasian',
     childrenStatus: "Don't have children",
+    familyPlans: "Not Sure",
     height: "5'11\"",
     locationAddress: "123 Main St, Anytown, USA",
     locationName: "Anytown",
+    locationCoordinates: { lat: 40.7128, lng: -74.0060 }
   },
   {
     id: 'user-2',
@@ -67,9 +69,11 @@ export const MOCK_USERS: UserProfile[] = [
     education: 'Art Institute - Photography',
     ethnicity: 'Hispanic/Latino',
     childrenStatus: "Have Children",
+    familyPlans: "Want children",
     height: "5'7\"",
     locationAddress: "456 Art Ave, Creative City, USA",
     locationName: "Creative City",
+    locationCoordinates: { lat: 34.0522, lng: -118.2437 }
   },
   {
     id: 'user-3',
@@ -92,9 +96,11 @@ export const MOCK_USERS: UserProfile[] = [
     education: 'Tech University - BS Computer Science',
     ethnicity: 'East Asian',
     childrenStatus: "Prefer Not to Say",
+    familyPlans: "Don't want children",
     height: "6'1\"",
     locationAddress: "789 Tech Rd, Silicon Valley, USA",
     locationName: "Silicon Valley",
+    locationCoordinates: { lat: 37.3875, lng: -122.0575 }
   },
   {
     id: MOCK_USER_ID, // Current user
@@ -104,8 +110,8 @@ export const MOCK_USERS: UserProfile[] = [
     bio: 'Seeking connections and new experiences. Let\'s see where our paths cross!',
     images: [
       'https://placehold.co/120x120/E70F72/FFFFFF.png?text=U',
-      'https://placehold.co/600x800/101010/FAFAFA.png',
-      'https://placehold.co/800x600/080808/A3A3A3.png',
+      'https://placehold.co/600x800.png',
+      'https://placehold.co/800x600.png',
     ],
     vibeTags: ['explorer', 'optimist', 'curious', 'friendly'],
     locationPatterns: ['Local Coffee Shop', 'Bookstore', 'Community Garden'],
@@ -118,9 +124,11 @@ export const MOCK_USERS: UserProfile[] = [
     education: 'Firebase Studio University',
     ethnicity: 'Prefer Not to Say',
     childrenStatus: 'Prefer Not to Say',
+    familyPlans: 'Prefer Not to Say',
     height: 'Prefer Not to Say',
     locationAddress: '1 Developer Way, Firebase City, FS',
     locationName: 'Firebase City',
+    locationCoordinates: { lat: 37.7749, lng: -122.4194 }
   },
 ];
 
@@ -278,6 +286,7 @@ export const getCurrentUser = (): UserProfile => {
         education: 'Unknown',
         ethnicity: 'Prefer Not to Say',
         childrenStatus: 'Prefer Not to Say',
+        familyPlans: 'Prefer Not to Say',
         height: 'Prefer Not to Say',
         locationAddress: 'Unknown',
         locationName: 'Unknown',
