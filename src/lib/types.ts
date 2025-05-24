@@ -9,6 +9,9 @@ export interface UserProfile {
   locationPatterns?: string[]; // For AI, optional
   prompts: ProfilePromptAnswer[];
   email?: string; 
+  work?: string;
+  jobTitle?: string;
+  education?: string;
 }
 
 export interface ProfilePrompt {

@@ -24,6 +24,10 @@ export function ProfileDetails({ user }: ProfileDetailsProps) {
   const [bio, setBio] = useState(user.bio);
   const [vibeTags, setVibeTags] = useState<string[]>(user.vibeTags);
   const [newTag, setNewTag] = useState("");
+  const [work, setWork] = useState(user.work || "");
+  const [jobTitle, setJobTitle] = useState(user.jobTitle || "");
+  const [education, setEducation] = useState(user.education || "");
+
   const { toast } = useToast();
   const router = useRouter(); // Get router instance
 
@@ -41,17 +45,25 @@ export function ProfileDetails({ user }: ProfileDetailsProps) {
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
     // Here you would typically send data to a backend
-    console.log("Updated profile:", { name, email, age, bio, vibeTags });
+    console.log("Updated profile:", { name, email, age, bio, vibeTags, work, jobTitle, education });
 
     // Update the mock data
-    const userInMockData = MOCK_USERS.find(u => u.id === MOCK_USER_ID);
-    if (userInMockData) {
-      userInMockData.name = name;
-      userInMockData.email = email;
-      userInMockData.age = age;
-      userInMockData.bio = bio;
-      userInMockData.vibeTags = vibeTags;
+    const currentUserIndex = MOCK_USERS.findIndex(u => u.id === MOCK_USER_ID);
+    if (currentUserIndex !== -1) {
+      const updatedUser = {
+        ...MOCK_USERS[currentUserIndex],
+        name,
+        email,
+        age,
+        bio,
+        vibeTags,
+        work,
+        jobTitle,
+        education,
+      };
+      MOCK_USERS.splice(currentUserIndex, 1, updatedUser);
     }
+
 
     toast({
       title: "Profile Updated",
@@ -77,12 +89,11 @@ export function ProfileDetails({ user }: ProfileDetailsProps) {
           <Input
             id="age"
             type="number"
-            value={age} // age state is always a number now
+            value={age} 
             onChange={(e) => {
               const rawValue = e.target.value;
               const parsedAge = parseInt(rawValue, 10);
               if (rawValue === "" || isNaN(parsedAge)) {
-                // If input is empty or not a number, set age to 0 to prevent NaN state.
                 setAge(0);
               } else {
                 setAge(parsedAge);
@@ -90,6 +101,18 @@ export function ProfileDetails({ user }: ProfileDetailsProps) {
             }}
             className="mt-1 bg-input"
           />
+        </div>
+        <div>
+          <Label htmlFor="work">Work</Label>
+          <Input id="work" value={work} onChange={(e) => setWork(e.target.value)} className="mt-1 bg-input" placeholder="e.g., Company Name" />
+        </div>
+        <div>
+          <Label htmlFor="jobTitle">Job Title</Label>
+          <Input id="jobTitle" value={jobTitle} onChange={(e) => setJobTitle(e.target.value)} className="mt-1 bg-input" placeholder="e.g., Software Engineer" />
+        </div>
+        <div>
+          <Label htmlFor="education">College/University</Label>
+          <Input id="education" value={education} onChange={(e) => setEducation(e.target.value)} className="mt-1 bg-input" placeholder="e.g., State University" />
         </div>
       </div>
       <div>

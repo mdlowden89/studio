@@ -26,9 +26,9 @@ export const MOCK_USERS: UserProfile[] = [
     email: 'alex@example.com',
     bio: 'Loves hiking, coffee, and indie music. Always up for an adventure or a quiet night in with a good book.',
     images: [
-      'https://placehold.co/600x800/E70F72/FFFFFF.png', // Primary Pink/White - portrait
-      'https://placehold.co/800x600/262626/FAFAFA.png', // Secondary Dark/Light - landscape
-      'https://placehold.co/700x700/A3A3A3/080808.png', // Muted/Background Dark - square
+      'https://placehold.co/600x800/E70F72/FFFFFF.png', 
+      'https://placehold.co/800x600/262626/FAFAFA.png', 
+      'https://placehold.co/700x700/A3A3A3/080808.png', 
     ],
     vibeTags: ['adventurous', 'bookworm', 'coffee lover', 'calm'],
     locationPatterns: ['Downtown Cafe', 'Mountain Trails', 'City Park'],
@@ -36,6 +36,9 @@ export const MOCK_USERS: UserProfile[] = [
       { promptId: 'p1', answer: 'Pineapple belongs on pizza, fight me.' },
       { promptId: 'p2', answer: 'If animals could talk, which would be the rudest?' },
     ],
+    work: 'Graphic Designer',
+    jobTitle: 'Senior Designer',
+    education: 'State University - BFA Design',
   },
   {
     id: 'user-2',
@@ -44,9 +47,9 @@ export const MOCK_USERS: UserProfile[] = [
     email: 'jamie@example.com',
     bio: 'Artist, foodie, and travel enthusiast. Exploring new cultures and cuisines is my passion.',
     images: [
-      'https://placehold.co/600x800/080808/E70F72.png', // Background Dark/Primary Pink - portrait
-      'https://placehold.co/800x600/FAFAFA/262626.png', // Foreground Light/Secondary Dark - landscape
-      'https://placehold.co/600x900/E70F72/0D0D0D.png', // Primary Pink/Popover Dark - tall portrait
+      'https://placehold.co/600x800/080808/E70F72.png', 
+      'https://placehold.co/800x600/FAFAFA/262626.png', 
+      'https://placehold.co/600x900/E70F72/0D0D0D.png', 
     ],
     vibeTags: ['creative', 'foodie', 'globetrotter', 'energetic'],
     locationPatterns: ['Art Gallery', 'International Market', 'Airport Lounge'],
@@ -54,6 +57,9 @@ export const MOCK_USERS: UserProfile[] = [
       { promptId: 'p3', answer: 'Someone who appreciates art and isn\'t afraid to try new foods.' },
       { promptId: 'p5', answer: 'By making me laugh until my stomach hurts.' },
     ],
+    work: 'Freelance Photographer',
+    jobTitle: 'Photographer',
+    education: 'Art Institute - Photography',
   },
   {
     id: 'user-3',
@@ -62,15 +68,18 @@ export const MOCK_USERS: UserProfile[] = [
     email: 'casey@example.com',
     bio: 'Tech geek, gamer, and animal lover. Fluent in sarcasm and Python.',
     images: [
-      'https://placehold.co/600x800/E70F72/080808.png', // Primary Pink/Background Dark - portrait
-      'https://placehold.co/700x700/101010/FAFAFA.png', // Card Dark/Light - square
-      'https://placehold.co/800x500/222222/FFFFFF.png', // Border/White - wide landscape
+      'https://placehold.co/600x800/E70F72/080808.png', 
+      'https://placehold.co/700x700/101010/FAFAFA.png', 
+      'https://placehold.co/800x500/222222/FFFFFF.png', 
     ],
     vibeTags: ['techy', 'gamer', 'animal lover', 'witty'],
     locationPatterns: ['Tech Hub', 'Local Park (dog walking)', 'Gaming Cafe'],
     prompts: [
       { promptId: 'p4', answer: 'I\'ve skydived. I own 5 cats. I hate chocolate. (Lie: I hate chocolate)' },
     ],
+    work: 'Software Engineer',
+    jobTitle: 'Lead Developer',
+    education: 'Tech University - BS Computer Science',
   },
   {
     id: MOCK_USER_ID, // Current user
@@ -79,9 +88,9 @@ export const MOCK_USERS: UserProfile[] = [
     email: 'you@example.com',
     bio: 'Seeking connections and new experiences. Let\'s see where our paths cross!',
     images: [
-      'https://placehold.co/120x120/E70F72/FFFFFF.png?text=U', // Specific Avatar for "You"
-      'https://placehold.co/600x800/101010/FAFAFA.png', // Card Dark/Light - portrait
-      'https://placehold.co/800x600/080808/A3A3A3.png', // Background Dark/Muted - landscape
+      'https://placehold.co/120x120/E70F72/FFFFFF.png?text=U', 
+      'https://placehold.co/600x800/101010/FAFAFA.png', 
+      'https://placehold.co/800x600/080808/A3A3A3.png', 
     ],
     vibeTags: ['explorer', 'optimist', 'curious', 'friendly'],
     locationPatterns: ['Local Coffee Shop', 'Bookstore', 'Community Garden'],
@@ -89,6 +98,9 @@ export const MOCK_USERS: UserProfile[] = [
       { promptId: 'p1', answer: 'Early bird gets the worm, but the second mouse gets the cheese.' },
       { promptId: 'p3', answer: 'Someone genuine, kind, and open-minded.' },
     ],
+    work: 'App Prototyper Inc.',
+    jobTitle: 'AI Assistant',
+    education: 'Firebase Studio University',
   },
 ];
 
@@ -231,5 +243,3 @@ export const MOCK_CHAT_MESSAGES: { [chatId: string]: ChatMessage[] } = {
 export const getCurrentUser = (): UserProfile => {
   return MOCK_USERS.find(user => user.id === MOCK_USER_ID)!;
 };
-
-    
