@@ -4,10 +4,12 @@
 import { useState } from "react";
 import Image from "next/image";
 import { Button } from "@/components/ui/button";
-import { Input } from "@/components/ui/input"; // For file input
-import { Card } from "@/components/ui/card"; // Removed CardContent as it's not used directly for wrapping
+import { Input } from "@/components/ui/input";
+import { Card } from "@/components/ui/card";
 import { Trash2, UploadCloud, Replace } from "lucide-react";
 import { useToast } from "@/hooks/use-toast";
+import { MOCK_USERS, MOCK_USER_ID } from "@/lib/mock-data";
+import { useRouter } from "next/navigation";
 
 interface ImageGalleryProps {
   initialImages: string[];
@@ -16,25 +18,40 @@ interface ImageGalleryProps {
 export function ImageGallery({ initialImages }: ImageGalleryProps) {
   const [images, setImages] = useState<string[]>(initialImages);
   const { toast } = useToast();
+  const router = useRouter();
+
+  const updateMockDataAndRefresh = (updatedLocalImages: string[]) => {
+    const currentUserMock = MOCK_USERS.find(u => u.id === MOCK_USER_ID);
+    if (currentUserMock) {
+      // Update the entire images array in mock data
+      currentUserMock.images = [...updatedLocalImages];
+    }
+    router.refresh();
+  };
 
   const handleFileSelection = (file: File, index?: number) => {
     const reader = new FileReader();
     reader.onloadend = () => {
       const dataUrl = reader.result as string;
+      let newImagesArray: string[];
+
       if (typeof index === 'number') { // Replacing an existing image
-        const newImages = [...images];
-        newImages[index] = dataUrl;
-        setImages(newImages);
+        newImagesArray = [...images];
+        newImagesArray[index] = dataUrl;
+        setImages(newImagesArray);
+        updateMockDataAndRefresh(newImagesArray);
         toast({
           title: "Image Preview Updated",
-          description: `Image ${index + 1} preview has been updated with your selected file.`,
+          description: `Image ${index + 1} preview has been updated with your selected file. This is a client-side preview.`,
         });
       } else { // Adding a new image
         if (images.length < 6) {
-          setImages([...images, dataUrl]);
+          newImagesArray = [...images, dataUrl];
+          setImages(newImagesArray);
+          updateMockDataAndRefresh(newImagesArray);
           toast({
             title: "Image Preview Added",
-            description: "Your selected file is now shown as a preview.",
+            description: "Your selected file is now shown as a preview. This is a client-side preview.",
           });
         } else {
           toast({
@@ -60,9 +77,8 @@ export function ImageGallery({ initialImages }: ImageGalleryProps) {
       const file = event.target.files[0];
       handleFileSelection(file);
     }
-    // Clear the file input value to allow selecting the same file again if needed
     if (event.target) {
-      event.target.value = "";
+      event.target.value = ""; // Clear file input
     }
   };
 
@@ -71,16 +87,16 @@ export function ImageGallery({ initialImages }: ImageGalleryProps) {
       const file = event.target.files[0];
       handleFileSelection(file, index);
     }
-    // Clear the file input value
     if (event.target) {
-      event.target.value = "";
+      event.target.value = ""; // Clear file input
     }
   };
 
   const handleRemoveImage = (index: number) => {
-    if (images.length > 1) { // Keep at least one image
-      const newImages = images.filter((_, i) => i !== index);
-      setImages(newImages);
+    if (images.length > 1) {
+      const newImagesArray = images.filter((_, i) => i !== index);
+      setImages(newImagesArray);
+      updateMockDataAndRefresh(newImagesArray);
       toast({ title: "Image Removed", description: `Image ${index + 1} has been removed from the preview.` });
     } else {
       toast({ title: "Cannot Remove", description: "You must have at least one profile image.", variant: "destructive" });
@@ -99,7 +115,7 @@ export function ImageGallery({ initialImages }: ImageGalleryProps) {
               objectFit="cover"
               className="transition-transform duration-300 group-hover:scale-110"
               data-ai-hint="profile lifestyle"
-              unoptimized={src.startsWith('data:') || src.startsWith('https://placehold.co')} // Unoptimize Data URLs and placeholders
+              unoptimized={src.startsWith('data:') || src.startsWith('https://placehold.co')}
             />
             <div className="absolute inset-0 bg-black/30 opacity-0 group-hover:opacity-100 transition-opacity duration-300 flex flex-col items-center justify-center p-2 gap-2">
               <Button
@@ -154,7 +170,7 @@ export function ImageGallery({ initialImages }: ImageGalleryProps) {
       <p className="text-xs text-muted-foreground text-center">
         Click on an image to replace or remove it. Click the '+' card to add a new photo.
         <br />
-        Image previews are client-side only and not saved to a server.
+        Image previews are client-side only. Changes are reflected in the sidebar by updating mock data.
       </p>
     </div>
   );

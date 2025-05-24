@@ -10,7 +10,7 @@ import {
   Sparkles,
   Home,
   LogOut,
-  Search, // Added Search icon
+  Search,
 } from "lucide-react";
 import {
   Sidebar,
@@ -31,7 +31,7 @@ import { CrossdLogoIcon } from "@/components/icons/crossd-logo";
 const navItems = [
   { href: "/dashboard", label: "Dashboard", icon: Home },
   { href: "/ai-matches", label: "Vibe Matches", icon: Sparkles },
-  { href: "/discover", label: "Discover", icon: Search }, // New "Discover" item
+  { href: "/discover", label: "Discover", icon: Search },
   { href: "/moments", label: "Moments", icon: MapPin },
   { href: "/chat", label: "Chats", icon: MessageSquare },
   { href: "/profile", label: "Profile", icon: UserCircle },
@@ -87,7 +87,12 @@ export function AppSidebar() {
             className="w-full justify-start p-2 h-auto items-center hover:bg-sidebar-accent hover:shadow-md hover:shadow-primary/40 transition-all duration-200"
           >
             <Avatar className="h-10 w-10 shrink-0">
-              <AvatarImage src={currentUser.images[0]} alt={currentUser.name} data-ai-hint="profile photo" />
+              <AvatarImage 
+                src={currentUser.images[0]} 
+                alt={currentUser.name} 
+                data-ai-hint="profile photo"
+                unoptimized={currentUser.images[0]?.startsWith('data:') || currentUser.images[0]?.startsWith('https://placehold.co')}
+              />
               <AvatarFallback>{currentUser.name.substring(0, 1)}</AvatarFallback>
             </Avatar>
             {state === 'expanded' && (
