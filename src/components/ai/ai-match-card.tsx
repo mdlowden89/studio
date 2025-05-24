@@ -132,7 +132,7 @@ export function AiMatchCard({ user, onLike, onPass }: AiMatchCardProps) {
           </DialogHeader>
           
           <div className="px-6 pb-6 space-y-6">
-            <div className="relative w-full aspect-[4/5] rounded-lg overflow-hidden shadow-lg">
+            <div className="relative w-full max-w-sm mx-auto aspect-[4/5] rounded-lg overflow-hidden shadow-lg">
               <Image 
                 src={mainImage} 
                 alt={`${user.name}'s main photo`} 
