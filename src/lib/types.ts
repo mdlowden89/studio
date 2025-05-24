@@ -20,7 +20,8 @@ export interface UserProfile {
   locationName?: string;
   locationCoordinates?: { lat: number; lng: number };
   drinking?: string;
-  smoking?: string; // Added
+  smoking?: string;
+  zodiacSign?: string; // Added
 }
 
 export interface ProfilePrompt {

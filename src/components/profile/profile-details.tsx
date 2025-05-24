@@ -53,11 +53,17 @@ const drinkingOptions = [
   "Prefer Not to Say",
 ];
 
-const smokingOptions = [ // Added
+const smokingOptions = [
   "Yes",
   "Sometimes",
   "No",
   "Prefer Not to Say",
+];
+
+const zodiacSignOptions = [ // Added
+  "Aries", "Taurus", "Gemini", "Cancer", "Leo", "Virgo", 
+  "Libra", "Scorpio", "Sagittarius", "Capricorn", "Aquarius", "Pisces",
+  "Prefer Not to Say"
 ];
 
 const generateHeightOptions = () => {
@@ -106,7 +112,8 @@ export function ProfileDetails({ user }: ProfileDetailsProps) {
   const [familyPlans, setFamilyPlans] = useState(user.familyPlans || "Prefer Not to Say");
   const [height, setHeight] = useState(user.height || "Prefer Not to Say");
   const [drinking, setDrinking] = useState(user.drinking || "Prefer Not to Say");
-  const [smoking, setSmoking] = useState(user.smoking || "Prefer Not to Say"); // Added
+  const [smoking, setSmoking] = useState(user.smoking || "Prefer Not to Say");
+  const [zodiacSign, setZodiacSign] = useState(user.zodiacSign || "Prefer Not to Say"); // Added
 
   const [locationAddress, setLocationAddress] = useState(user.locationAddress || "");
   const [currentLocationName, setCurrentLocationName] = useState<string>(user.locationName || "");
@@ -194,7 +201,8 @@ export function ProfileDetails({ user }: ProfileDetailsProps) {
         familyPlans,
         height,
         drinking,
-        smoking, // Added
+        smoking,
+        zodiacSign, // Added
         locationAddress,
         locationName: currentLocationName || (locationAddress ? locationAddress.split(',')[0] : MOCK_USERS[currentUserIndex].locationName),
         locationCoordinates: currentCoordinates || MOCK_USERS[currentUserIndex].locationCoordinates,
@@ -230,14 +238,14 @@ export function ProfileDetails({ user }: ProfileDetailsProps) {
           <Input
             id="age"
             type="number"
-            value={age === 0 && !name ? '' : age} // Show empty if age is 0 and name is also empty (initial state), otherwise show age
+            value={age === 0 && !name ? '' : age} 
             onChange={(e) => {
               const rawValue = e.target.value;
               const parsedAge = parseInt(rawValue, 10);
               if (rawValue === "" || isNaN(parsedAge)) {
                 setAge(0);
               } else {
-                setAge(parsedAge < 0 ? 0 : parsedAge); // Prevent negative age
+                setAge(parsedAge < 0 ? 0 : parsedAge); 
               }
             }}
             className="mt-1 bg-input"
@@ -339,6 +347,21 @@ export function ProfileDetails({ user }: ProfileDetailsProps) {
             </SelectTrigger>
             <SelectContent className="bg-popover">
               {smokingOptions.map((option) => (
+                <SelectItem key={option} value={option}>
+                  {option}
+                </SelectItem>
+              ))}
+            </SelectContent>
+          </Select>
+        </div>
+        <div>
+          <Label htmlFor="zodiacSign">Zodiac Sign</Label>
+          <Select value={zodiacSign} onValueChange={setZodiacSign}>
+            <SelectTrigger className="mt-1 bg-input">
+              <SelectValue placeholder="Your zodiac sign" />
+            </SelectTrigger>
+            <SelectContent className="bg-popover">
+              {zodiacSignOptions.map((option) => (
                 <SelectItem key={option} value={option}>
                   {option}
                 </SelectItem>
