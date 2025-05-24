@@ -26,9 +26,9 @@ export const MOCK_USERS: UserProfile[] = [
     email: 'alex@example.com',
     bio: 'Loves hiking, coffee, and indie music. Always up for an adventure or a quiet night in with a good book.',
     images: [
-      'https://placehold.co/600x800.png?a=1',
-      'https://placehold.co/600x800.png?a=2',
-      'https://placehold.co/600x800.png?a=3',
+      'https://placehold.co/600x800/E70F72/FFFFFF.png?text=Alex+1',
+      'https://placehold.co/600x800/262626/FAFAFA.png?text=Alex+2',
+      'https://placehold.co/600x800/101010/A3A3A3.png?text=Alex+3',
     ],
     vibeTags: ['adventurous', 'bookworm', 'coffee lover', 'calm'],
     locationPatterns: ['Downtown Cafe', 'Mountain Trails', 'City Park'],
@@ -44,8 +44,8 @@ export const MOCK_USERS: UserProfile[] = [
     email: 'jamie@example.com',
     bio: 'Artist, foodie, and travel enthusiast. Exploring new cultures and cuisines is my passion.',
     images: [
-      'https://placehold.co/600x800.png?b=1',
-      'https://placehold.co/600x800.png?b=2',
+      'https://placehold.co/600x800/080808/E70F72.png?text=Jamie+1',
+      'https://placehold.co/600x800/FAFAFA/080808.png?text=Jamie+2',
     ],
     vibeTags: ['creative', 'foodie', 'globetrotter', 'energetic'],
     locationPatterns: ['Art Gallery', 'International Market', 'Airport Lounge'],
@@ -61,7 +61,7 @@ export const MOCK_USERS: UserProfile[] = [
     email: 'casey@example.com',
     bio: 'Tech geek, gamer, and animal lover. Fluent in sarcasm and Python.',
     images: [
-      'https://placehold.co/600x800.png?c=1',
+      'https://placehold.co/600x800/E70F72/FFFFFF.png?text=Casey+1',
     ],
     vibeTags: ['techy', 'gamer', 'animal lover', 'witty'],
     locationPatterns: ['Tech Hub', 'Local Park (dog walking)', 'Gaming Cafe'],
@@ -77,8 +77,8 @@ export const MOCK_USERS: UserProfile[] = [
     bio: 'Seeking connections and new experiences. Let\'s see where our paths cross!',
     images: [
       'https://placehold.co/120x120/E70F72/FFFFFF.png?text=U',
-      'https://placehold.co/600x800.png?you=2',
-      'https://placehold.co/600x800.png?you=3',
+      'https://placehold.co/600x800/101010/FAFAFA.png?text=My+Photo+2',
+      'https://placehold.co/600x800/080808/A3A3A3.png?text=My+Photo+3',
     ],
     vibeTags: ['explorer', 'optimist', 'curious', 'friendly'],
     locationPatterns: ['Local Coffee Shop', 'Bookstore', 'Community Garden'],
@@ -112,7 +112,7 @@ export const MOCK_MOMENTS: Moment[] = [
     placeName: 'Van Vleck House & Gardens',
     timestamp: new Date(Date.now() - 86400000 * 1).toISOString(), // 1 day ago
     coordinates: { lat: 40.8155, lng: -74.2036 }, // Montclair, NJ
-    placeImage: 'https://placehold.co/200x150/7F7F7F/FFFFFF.png?text=Gardens'
+    placeImage: 'https://placehold.co/200x150/6A6A6A/FFFFFF.png?text=Gardens'
   },
   {
     id: 'moment-3',
@@ -121,7 +121,7 @@ export const MOCK_MOMENTS: Moment[] = [
     timestamp: new Date(Date.now() - 86400000 * 5).toISOString(), // 5 days ago
     potentialMatchId: 'user-2',
     coordinates: { lat: 40.8073, lng: -74.2036 }, // Watchung Plaza, Montclair, NJ
-    placeImage: 'https://placehold.co/200x150/7F7F7F/FFFFFF.png?text=Booksellers'
+    placeImage: 'https://placehold.co/200x150/5C5C5C/FFFFFF.png?text=Booksellers'
   },
    {
     id: 'moment-4',
@@ -129,7 +129,7 @@ export const MOCK_MOMENTS: Moment[] = [
     placeName: 'Edgemont Memorial Park',
     timestamp: new Date(Date.now() - 86400000 * 3).toISOString(), // 3 days ago
     coordinates: { lat: 40.8197, lng: -74.2052 }, // Montclair, NJ
-    placeImage: 'https://placehold.co/200x150/7F7F7F/FFFFFF.png?text=Park'
+    placeImage: 'https://placehold.co/200x150/8D8D8D/FFFFFF.png?text=Park'
   },
   {
     id: 'moment-5',
@@ -137,7 +137,7 @@ export const MOCK_MOMENTS: Moment[] = [
     placeName: 'The Clairidge Cinema',
     timestamp: new Date(Date.now() - 86400000 * 4).toISOString(), // 4 days ago
     coordinates: { lat: 40.8150, lng: -74.2125 }, // Montclair, NJ
-    placeImage: 'https://placehold.co/200x150/7F7F7F/FFFFFF.png?text=Cinema'
+    placeImage: 'https://placehold.co/200x150/9B9B9B/FFFFFF.png?text=Cinema'
   },
   {
     id: 'moment-6', // Old moment, should not appear if filtered for last 7 days
@@ -145,7 +145,7 @@ export const MOCK_MOMENTS: Moment[] = [
     placeName: 'Outdated Cafe',
     timestamp: new Date(Date.now() - 86400000 * 10).toISOString(), // 10 days ago
     coordinates: { lat: 40.8000, lng: -74.1900 }, // Near Montclair
-    placeImage: 'https://placehold.co/200x150/7F7F7F/FFFFFF.png?text=Old+Cafe'
+    placeImage: 'https://placehold.co/200x150/4A4A4A/FFFFFF.png?text=Old+Cafe'
   }
 ];
 

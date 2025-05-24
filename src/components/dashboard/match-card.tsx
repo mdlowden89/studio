@@ -44,7 +44,7 @@ export function MatchCard({ user, onLike, onPass, showCrossedPathInfo = false }:
             width={600}
             height={800}
             className="object-cover w-full h-full cursor-pointer"
-            data-ai-hint="profile fashion"
+            data-ai-hint="profile lifestyle"
             onClick={nextImage}
           />
           {user.images.length > 1 && (
@@ -192,3 +192,4 @@ function ChevronRightIcon(props: React.SVGProps<SVGSVGElement>) {
     </svg>
   )
 }
+
