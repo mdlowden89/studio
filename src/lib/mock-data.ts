@@ -144,9 +144,13 @@ export const MOCK_USERS: UserProfile[] = [
   },
 ];
 
+// Fixed timestamps to avoid hydration errors
+const baseDate = new Date('2024-05-24T12:00:00.000Z'); // A fixed point in time
+const daysAgo = (days: number) => new Date(baseDate.getTime() - days * 24 * 60 * 60 * 1000).toISOString();
+
 export const MOCK_CROSSED_PATHS_USERS: CrossedPathUser[] = MOCK_USERS.filter(u => u.id !== MOCK_USER_ID).map((user, index) => ({
   ...user,
-  crossedAt: new Date(Date.now() - (index + 1) * 3600000).toISOString(), // Crossed paths in the last few hours
+  crossedAt: daysAgo(index + 0.1), // Slightly varied recent times
   location: index % 2 === 0 ? 'Main Street Cafe' : 'City Park Fountain',
 }));
 
@@ -156,7 +160,7 @@ export const MOCK_MOMENTS: Moment[] = [
     id: 'moment-1',
     userId: MOCK_USER_ID,
     placeName: 'Montclair Art Museum',
-    timestamp: new Date(Date.now() - 86400000 * 2).toISOString(), // 2 days ago
+    timestamp: daysAgo(2), // 2 days ago
     potentialMatchId: 'user-1',
     coordinates: { lat: 40.8137, lng: -74.2097 }, // Montclair, NJ
     placeImage: 'https://placehold.co/200x150/7F7F7F/FFFFFF.png?text=Art+Museum'
@@ -165,7 +169,7 @@ export const MOCK_MOMENTS: Moment[] = [
     id: 'moment-2',
     userId: MOCK_USER_ID,
     placeName: 'Van Vleck House & Gardens',
-    timestamp: new Date(Date.now() - 86400000 * 1).toISOString(), // 1 day ago
+    timestamp: daysAgo(1), // 1 day ago
     coordinates: { lat: 40.8155, lng: -74.2036 }, // Montclair, NJ
     placeImage: 'https://placehold.co/200x150/6A6A6A/FFFFFF.png?text=Gardens'
   },
@@ -173,7 +177,7 @@ export const MOCK_MOMENTS: Moment[] = [
     id: 'moment-3',
     userId: MOCK_USER_ID,
     placeName: 'Watchung Booksellers',
-    timestamp: new Date(Date.now() - 86400000 * 5).toISOString(), // 5 days ago
+    timestamp: daysAgo(5), // 5 days ago
     potentialMatchId: 'user-2',
     coordinates: { lat: 40.8073, lng: -74.2036 }, // Watchung Plaza, Montclair, NJ
     placeImage: 'https://placehold.co/200x150/5C5C5C/FFFFFF.png?text=Booksellers'
@@ -182,7 +186,7 @@ export const MOCK_MOMENTS: Moment[] = [
     id: 'moment-4',
     userId: MOCK_USER_ID,
     placeName: 'Edgemont Memorial Park',
-    timestamp: new Date(Date.now() - 86400000 * 3).toISOString(), // 3 days ago
+    timestamp: daysAgo(3), // 3 days ago
     coordinates: { lat: 40.8197, lng: -74.2052 }, // Montclair, NJ
     placeImage: 'https://placehold.co/200x150/8D8D8D/FFFFFF.png?text=Park'
   },
@@ -190,7 +194,7 @@ export const MOCK_MOMENTS: Moment[] = [
     id: 'moment-5',
     userId: MOCK_USER_ID,
     placeName: 'The Clairidge Cinema',
-    timestamp: new Date(Date.now() - 86400000 * 4).toISOString(), // 4 days ago
+    timestamp: daysAgo(4), // 4 days ago
     coordinates: { lat: 40.8150, lng: -74.2125 }, // Montclair, NJ
     placeImage: 'https://placehold.co/200x150/9B9B9B/FFFFFF.png?text=Cinema'
   },
@@ -198,7 +202,7 @@ export const MOCK_MOMENTS: Moment[] = [
     id: 'moment-6', // Old moment, should not appear if filtered for last 7 days
     userId: MOCK_USER_ID,
     placeName: 'Outdated Cafe',
-    timestamp: new Date(Date.now() - 86400000 * 10).toISOString(), // 10 days ago
+    timestamp: daysAgo(10), // 10 days ago
     coordinates: { lat: 40.8000, lng: -74.1900 }, // Near Montclair
     placeImage: 'https://placehold.co/200x150/4A4A4A/FFFFFF.png?text=Old+Cafe'
   }
@@ -214,7 +218,7 @@ export const MOCK_CHAT_CONVERSATIONS: ChatConversation[] = [
     ].map(p => ({id: p.id, name: p.name, images: p.images})),
     lastMessage: {
       text: 'Hey! Great to match with you.',
-      timestamp: new Date(Date.now() - 300000).toISOString(),
+      timestamp: daysAgo(0.02), // Very recent
       senderId: 'user-1',
     },
   },
@@ -227,7 +231,7 @@ export const MOCK_CHAT_CONVERSATIONS: ChatConversation[] = [
     ].map(p => ({id: p.id, name: p.name, images: p.images})),
     lastMessage: {
       text: 'Loved your profile prompts! :)',
-      timestamp: new Date(Date.now() - 600000).toISOString(),
+      timestamp: daysAgo(0.04), // Very recent
       senderId: MOCK_USER_ID,
     },
   },
@@ -241,7 +245,7 @@ export const MOCK_CHAT_MESSAGES: { [chatId: string]: ChatMessage[] } = {
       senderId: 'user-1',
       receiverId: MOCK_USER_ID,
       text: 'Hey! Great to match with you.',
-      timestamp: new Date(Date.now() - 300000).toISOString(),
+      timestamp: daysAgo(0.021),
     },
     {
       id: 'msg-c1-2',
@@ -249,7 +253,7 @@ export const MOCK_CHAT_MESSAGES: { [chatId: string]: ChatMessage[] } = {
       senderId: MOCK_USER_ID,
       receiverId: 'user-1',
       text: 'Hi Alex! Likewise. How\'s your day going?',
-      timestamp: new Date(Date.now() - 240000).toISOString(),
+      timestamp: daysAgo(0.02),
     },
   ],
   'chat-2': [
@@ -259,7 +263,7 @@ export const MOCK_CHAT_MESSAGES: { [chatId: string]: ChatMessage[] } = {
       senderId: MOCK_USER_ID,
       receiverId: 'user-2',
       text: 'Loved your profile prompts! :)',
-      timestamp: new Date(Date.now() - 600000).toISOString(),
+      timestamp: daysAgo(0.041),
     },
     {
       id: 'msg-c2-2',
@@ -267,7 +271,7 @@ export const MOCK_CHAT_MESSAGES: { [chatId: string]: ChatMessage[] } = {
       senderId: 'user-2',
       receiverId: MOCK_USER_ID,
       text: 'Thanks! Yours too. That pineapple on pizza take is bold haha.',
-      timestamp: new Date(Date.now() - 540000).toISOString(),
+      timestamp: daysAgo(0.04),
     },
      {
       id: 'msg-c2-3',
@@ -275,7 +279,7 @@ export const MOCK_CHAT_MESSAGES: { [chatId: string]: ChatMessage[] } = {
       senderId: MOCK_USER_ID,
       receiverId: 'user-2',
       text: 'Haha, gotta stand by it! What kind of art do you do?',
-      timestamp: new Date(Date.now() - 480000).toISOString(),
+      timestamp: daysAgo(0.039),
     },
   ],
 };
@@ -309,3 +313,4 @@ export const getCurrentUser = (): UserProfile => {
   }
   return user;
 };
+
