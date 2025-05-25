@@ -149,7 +149,7 @@ export function AiMatchCard({ user, onLike, onPass }: AiMatchCardProps) {
               />
             </div>
             
-            <div className="w-full flex flex-nowrap overflow-x-auto space-x-4 p-3 bg-muted/30 rounded-lg">
+            <div className="w-full flex flex-nowrap justify-around overflow-x-auto p-3 bg-muted/30 rounded-lg">
               {userDetails.map((detail, index) => (
                  (detail.value && detail.value !== "N/A") && (
                   <div key={index} className="flex flex-col items-center text-center flex-shrink-0 w-24 p-2">
@@ -252,4 +252,3 @@ function ChevronRightIcon(props: React.SVGProps<SVGSVGElement>) {
     </svg>
   )
 }
-
