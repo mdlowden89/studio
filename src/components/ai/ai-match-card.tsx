@@ -7,7 +7,7 @@ import { Card, CardContent, CardFooter, CardHeader, CardTitle, CardDescription }
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import { Heart, X, Info, CheckCircle, Percent, MapPin, Ruler, Users, Baby, ListChecks, Wine } from "lucide-react";
-import { useState, useMemo, useEffect } from "react";
+import { useState, useEffect } from "react";
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger } from "@/components/ui/dialog";
 import { ScrollArea } from "@/components/ui/scroll-area";
 import { Separator } from "@/components/ui/separator";
@@ -137,9 +137,9 @@ export function AiMatchCard({ user, onLike, onPass }: AiMatchCardProps) {
             <Separator className="my-3 bg-border" />
           </DialogHeader>
 
-          <div className="px-6 pb-6 flex flex-col items-center space-y-6">
-            <div className="relative w-full max-w-sm aspect-[4/5] rounded-lg overflow-hidden shadow-lg">
-              <Image
+          <div className="px-6 pb-6 flex flex-col space-y-6"> {/* Removed items-center */}
+            <div className="relative w-full max-w-sm mx-auto aspect-[4/5] rounded-lg overflow-hidden shadow-lg"> {/* Added mx-auto */}
+               <Image
                 src={mainImage}
                 alt={`${user.name}'s main photo`}
                 layout="fill"
@@ -148,9 +148,7 @@ export function AiMatchCard({ user, onLike, onPass }: AiMatchCardProps) {
                 unoptimized={mainImage.startsWith('data:') || mainImage.includes('placehold.co')}
               />
             </div>
-
-            {/* Ensure this div enables horizontal scroll if content overflows. 
-                Scrollbar visibility may depend on OS/browser settings. */}
+            
             <div className="w-full flex overflow-x-auto space-x-4 p-3 bg-muted/30 rounded-lg">
               {userDetails.map((detail, index) => (
                  (detail.value && detail.value !== "N/A") && (
@@ -254,3 +252,5 @@ function ChevronRightIcon(props: React.SVGProps<SVGSVGElement>) {
     </svg>
   )
 }
+
+    
