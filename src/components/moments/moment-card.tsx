@@ -4,6 +4,7 @@ import { Card, CardHeader, CardTitle, CardDescription, CardContent } from "@/com
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { MapPin, Users, CalendarDays } from "lucide-react";
 import Image from "next/image";
+import { format } from "date-fns";
 
 interface MomentCardProps {
   moment: MomentType;
@@ -23,7 +24,7 @@ export function MomentCard({ moment, potentialMatchUser }: MomentCardProps) {
           </CardTitle>
           <div className="text-xs text-muted-foreground flex items-center gap-1">
             <CalendarDays className="w-3 h-3"/>
-            {momentDate.toLocaleDateString()} - {momentDate.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })}
+            {format(momentDate, "MMM d, yyyy")} - {format(momentDate, "p")}
           </div>
         </div>
       </CardHeader>
@@ -42,7 +43,6 @@ export function MomentCard({ moment, potentialMatchUser }: MomentCardProps) {
               <p className="font-semibold text-foreground truncate">{potentialMatchUser.name}</p>
               <p className="text-xs text-muted-foreground line-clamp-2">{potentialMatchUser.bio}</p>
             </div>
-            {/* Placeholder image representing the place or vibe */}
             <Image 
               src="https://placehold.co/600x800.png" 
               alt="Place vibe" 
