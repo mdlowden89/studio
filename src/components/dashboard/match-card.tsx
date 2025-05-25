@@ -138,8 +138,8 @@ export function MatchCard({ user, onLike, onPass, showCrossedPathInfo = false }:
             <Separator className="my-3 bg-border" />
           </DialogHeader>
 
-          <div className="px-6 pb-6 flex flex-col space-y-6"> {/* Removed items-center */}
-            <div className="relative w-full max-w-sm mx-auto aspect-[4/5] rounded-lg overflow-hidden shadow-lg"> {/* Added mx-auto */}
+          <div className="px-6 pb-6 flex flex-col space-y-6">
+            <div className="relative w-full max-w-sm mx-auto aspect-[4/5] rounded-lg overflow-hidden shadow-lg">
               <Image
                 src={mainImage}
                 alt={`${user.name}'s main photo`}
@@ -150,7 +150,7 @@ export function MatchCard({ user, onLike, onPass, showCrossedPathInfo = false }:
               />
             </div>
 
-            <div className="w-full flex overflow-x-auto space-x-4 p-3 bg-muted/30 rounded-lg">
+            <div className="w-full flex flex-nowrap overflow-x-auto space-x-4 p-3 bg-muted/30 rounded-lg">
               {userDetails.map((detail, index) => (
                  (detail.value && detail.value !== "N/A") && (
                   <div key={index} className="flex flex-col items-center text-center flex-shrink-0 w-24 p-2">
@@ -253,5 +253,3 @@ function ChevronRightIcon(props: React.SVGProps<SVGSVGElement>) {
     </svg>
   )
 }
-
-    
