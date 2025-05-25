@@ -88,7 +88,7 @@ export const MOCK_USERS: UserProfile[] = [
     email: 'casey@example.com',
     bio: 'Tech geek, gamer, and animal lover. Fluent in sarcasm and Python.',
     images: [
-      'https://placehold.co/600x800/E70F72/080808.png',
+      'https://placehold.co/600x800.png',
       'https://placehold.co/700x700/101010/FAFAFA.png',
       'https://placehold.co/800x500/222222/FFFFFF.png',
     ],
@@ -141,6 +141,99 @@ export const MOCK_USERS: UserProfile[] = [
     locationAddress: '1 Developer Way, Firebase City, FS',
     locationName: 'Firebase City',
     locationCoordinates: { lat: 37.7749, lng: -122.4194 },
+  },
+  {
+    id: 'user-4',
+    name: 'Riley',
+    age: 26,
+    email: 'riley.dev@example.com',
+    bio: 'Software developer by day, nature explorer by weekend. Love strategy board games and finding hidden trails. Looking for someone to share adventures with.',
+    images: [
+      'https://placehold.co/600x800/3B82F6/FFFFFF.png', // Blueish placeholder
+      'https://placehold.co/700x500/10B981/FFFFFF.png', // Greenish placeholder
+      'https://placehold.co/650x750/F59E0B/FFFFFF.png', // Amber placeholder
+    ],
+    vibeTags: ['tech enthusiast', 'nature lover', 'board games', 'hiking', 'problem solver', 'craft beer', 'stargazing'],
+    locationPatterns: ['National Parks', 'Board Game Cafes', 'Tech Meetups', 'Local Breweries', 'Scenic Overlooks'],
+    prompts: [
+      { promptId: 'p6', answer: 'That otters hold hands when they sleep so they don\'t float away from each other.' },
+      { promptId: 'p9', answer: 'Learn a new programming language and visit a new national park.' },
+    ],
+    work: 'Code Crafters Ltd.',
+    jobTitle: 'Full Stack Developer',
+    education: 'MIT',
+    ethnicity: 'Other',
+    childrenStatus: "Don't have children",
+    familyPlans: "Want children",
+    height: "5'10\"",
+    locationAddress: "101 Binary Blvd, Techtopia, USA",
+    locationName: "Techtopia",
+    locationCoordinates: { lat: 37.4220, lng: -122.0841 }, // Near Googleplex
+    drinking: "Sometimes",
+    smoking: "No",
+    zodiacSign: "Aquarius",
+  },
+  {
+    id: 'user-5',
+    name: 'Morgan',
+    age: 29,
+    email: 'morgan.art@example.com',
+    bio: 'Painter and musician. I find beauty in everyday chaos. Often found at farmers markets or sketching in a park. My ideal date involves live music and good conversation.',
+    images: [
+      'https://placehold.co/600x800/EC4899/FFFFFF.png', // Pinkish placeholder
+      'https://placehold.co/800x600/8B5CF6/FFFFFF.png', // Violet placeholder
+      'https://placehold.co/500x700/D97706/FFFFFF.png', // Orange placeholder
+    ],
+    vibeTags: ['artist', 'musician', 'farmers market regular', 'live music aficionado', 'sketchbook always', 'vintage lover', 'deep conversations'],
+    locationPatterns: ['Art Supply Stores', 'Live Music Venues', 'Local Farmers Markets', 'Botanical Gardens', 'Indie Cinemas'],
+    prompts: [
+      { promptId: 'p2', answer: 'A long brunch, followed by a stroll through a flea market, and ending with some live jazz.' },
+      { promptId: 'p7', answer: 'A collaborative art project that sometimes gets a little messy but is always beautiful.' },
+    ],
+    work: 'Self-Employed Artist',
+    jobTitle: 'Painter & Illustrator',
+    education: 'Rhode Island School of Design',
+    ethnicity: 'Black/African Descent',
+    childrenStatus: "Don't have children",
+    familyPlans: "Not Sure",
+    height: "5'6\"",
+    locationAddress: "23 Palette Place, Artville, USA",
+    locationName: "Artville",
+    locationCoordinates: { lat: 41.8240, lng: -71.4128 }, // Providence, RI
+    drinking: "Sometimes",
+    smoking: "No",
+    zodiacSign: "Pisces",
+  },
+  {
+    id: 'user-6',
+    name: 'Jordan',
+    age: 31,
+    email: 'jordan.fit@example.com',
+    bio: 'Fitness enthusiast and world traveler. Always planning the next trip or the next workout. Looking for a partner in crime for adventures and gym sessions.',
+    images: [
+      'https://placehold.co/600x800/EF4444/FFFFFF.png', // Reddish placeholder
+      'https://placehold.co/750x550/22C55E/FFFFFF.png', // Green placeholder
+      'https://placehold.co/600x900/6366F1/FFFFFF.png', // Indigo placeholder
+    ],
+    vibeTags: ['fitness junkie', 'travel bug', 'adventure seeker', 'gym regular', 'mountain climber', 'foodie (healthy)', 'optimistic'],
+    locationPatterns: ['Gyms & Fitness Studios', 'Hiking Trails', 'Airports', 'Healthy Eateries', 'Rock Climbing Centers'],
+    prompts: [
+      { promptId: 'p4', answer: 'My resilience and ability to make friends anywhere.' },
+      { promptId: 'p12', answer: 'To visit every continent and run a marathon in at least three of them.' },
+    ],
+    work: 'Global Adventures Inc.',
+    jobTitle: 'Travel Consultant & Fitness Coach',
+    education: 'University of Colorado Boulder',
+    ethnicity: 'White/Caucasian',
+    childrenStatus: "Have Children",
+    familyPlans: "Want children",
+    height: "6'0\"",
+    locationAddress: "7 Summit Street, Adventure Bay, USA",
+    locationName: "Adventure Bay",
+    locationCoordinates: { lat: 39.7392, lng: -104.9903 }, // Denver, CO
+    drinking: "Yes",
+    smoking: "No",
+    zodiacSign: "Sagittarius",
   },
 ];
 
@@ -313,5 +406,7 @@ export const getCurrentUser = (): UserProfile => {
   }
   return user;
 };
+
+    
 
     

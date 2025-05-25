@@ -78,7 +78,8 @@ export async function getAiSuggestedBio(
     };
     const result = await suggestBioForUser(input);
     return result.suggestedBio;
-  } catch (error) {
+  } catch (error)
+     {
     console.error("Error in getAiSuggestedBio:", error);
     return currentBio || "Could not generate a bio suggestion at this time. Please try again.";
   }
@@ -92,11 +93,21 @@ export async function getAiDetailedMatchSuggestions(): Promise<DetailedMatchSugg
       return [];
     }
 
-    const otherUsers = MOCK_USERS.filter(user => user.id !== MOCK_USER_ID);
+    // Specifically select the three new users for the "Weekly Vibe Signals" demo
+    const newDemoUserIds = ['user-4', 'user-5', 'user-6'];
+    const otherUsersForDemo = MOCK_USERS.filter(user => newDemoUserIds.includes(user.id));
+
+    if (otherUsersForDemo.length < 3) {
+        console.warn("Not enough new demo users found for Weekly Vibe Signals. Ensure user-4, user-5, and user-6 exist.");
+        // Fallback to general users if specific demo users are not found
+        const fallbackUsers = MOCK_USERS.filter(user => user.id !== MOCK_USER_ID && !newDemoUserIds.includes(user.id)).slice(0, 3 - otherUsersForDemo.length);
+        otherUsersForDemo.push(...fallbackUsers);
+    }
+
 
     // Sanitize profiles to match the Zod schema expected by the flow
-    const sanitizedCurrentUserProfile = sanitizeUserProfileForPrompt(currentUser);
-    const sanitizedOtherUserProfiles = otherUsers.map(sanitizeUserProfileForPrompt);
+    const sanitizedCurrentUserProfile = await sanitizeUserProfileForPrompt(currentUser);
+    const sanitizedOtherUserProfiles = await Promise.all(otherUsersForDemo.map(user => sanitizeUserProfileForPrompt(user)));
     
     const input: SuggestDetailedMatchesInput = {
       currentUserProfile: sanitizedCurrentUserProfile,
@@ -105,16 +116,11 @@ export async function getAiDetailedMatchSuggestions(): Promise<DetailedMatchSugg
 
     const result = await suggestDetailedMatches(input);
     
-    // The flow now returns UserProfile objects directly (or should)
-    // Need to cast back to UserProfile type for the application if schema subset was used.
-    // The sanitizeUserProfileForPrompt is for input, the output DetailedMatchSuggestionSchema uses UserProfileForPromptSchema.
-    // We need to map the output user back to the full UserProfile.
     return result.detailedMatches.map(detailedMatch => {
-      // Find the full profile from MOCK_USERS to ensure all fields are present
       const fullUserProfile = MOCK_USERS.find(u => u.id === detailedMatch.user.id);
       return {
         ...detailedMatch,
-        user: fullUserProfile || (detailedMatch.user as UserProfile), // Cast if full profile not found
+        user: fullUserProfile || (detailedMatch.user as UserProfile), 
       };
     });
 
@@ -123,3 +129,6 @@ export async function getAiDetailedMatchSuggestions(): Promise<DetailedMatchSugg
     return [];
   }
 }
+
+
+    
