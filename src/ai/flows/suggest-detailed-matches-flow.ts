@@ -139,6 +139,6 @@ const suggestDetailedMatchesFlow = ai.defineFlow(
 
 // Helper function to make UserProfile compatible with UserProfileForPromptSchema
 // This is necessary because Zod schemas can be strict about extra fields.
-export function sanitizeUserProfileForPrompt(user: UserProfile): z.infer<typeof UserProfileForPromptSchema> {
+export async function sanitizeUserProfileForPrompt(user: UserProfile): Promise<z.infer<typeof UserProfileForPromptSchema>> {
     return UserProfileForPromptSchema.parse(user);
 }
