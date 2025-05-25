@@ -74,3 +74,11 @@ export interface Match {
   matchedAt: string; // ISO date string
   type: MatchType;
 }
+
+export interface DetailedMatchSuggestion {
+  user: UserProfile;
+  matchScore: number;
+  sharedInterestReason: string;
+  sharedLocationReason: string;
+  sharedVibeTags: string[];
+}

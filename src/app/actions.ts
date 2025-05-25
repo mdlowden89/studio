@@ -3,20 +3,24 @@
 
 import { suggestMatchesFromVibe, SuggestMatchesInput } from "@/ai/flows/suggest-matches-from-vibe";
 import { suggestVibeTagsForUser, SuggestVibeTagsInput } from "@/ai/flows/suggest-vibe-tags-flow";
-import { suggestBioForUser, SuggestBioInput } from "@/ai/flows/suggest-bio-flow"; // Added
+import { suggestBioForUser, SuggestBioInput } from "@/ai/flows/suggest-bio-flow";
+import { 
+  suggestDetailedMatches, 
+  SuggestDetailedMatchesInput,
+  DetailedMatchSuggestion,
+  sanitizeUserProfileForPrompt
+} from "@/ai/flows/suggest-detailed-matches-flow";
 import type { UserProfile } from "@/lib/types";
-import { MOCK_USERS, MOCK_USER_ID } from "@/lib/mock-data"; // For fetching other users
+import { MOCK_USERS, MOCK_USER_ID } from "@/lib/mock-data"; 
 
 export async function getAiSuggestedMatches(
   userVibeTags: string[],
-  userLocationPatterns: string[] // Typically, this would come from the user's actual data
+  userLocationPatterns: string[] 
 ): Promise<UserProfile[]> {
   try {
-    // For this scaffold, we'll use mock data for "otherUserProfiles"
-    // In a real app, you'd fetch this from your database, excluding the current user
     const otherUserProfiles = MOCK_USERS
-      .filter(user => user.id !== MOCK_USER_ID) // Exclude the current user
-      .map(user => JSON.stringify(user)); // Stringify each profile as per AI flow input
+      .filter(user => user.id !== MOCK_USER_ID) 
+      .map(user => JSON.stringify(user)); 
 
     const input: SuggestMatchesInput = {
       userVibeTags,
@@ -26,7 +30,6 @@ export async function getAiSuggestedMatches(
 
     const result = await suggestMatchesFromVibe(input);
     
-    // The AI returns stringified JSON objects, so we need to parse them
     const suggestedMatches: UserProfile[] = result.suggestedMatches.map(profileString => {
       try {
         return JSON.parse(profileString) as UserProfile;
@@ -40,8 +43,6 @@ export async function getAiSuggestedMatches(
 
   } catch (error) {
     console.error("Error in getAiSuggestedMatches:", error);
-    // Depending on the error, you might want to throw it or return an empty array/error state
-    // For now, let's return an empty array on error to prevent crashing the client
     return [];
   }
 }
@@ -57,7 +58,6 @@ export async function getAiSuggestedVibeTags(
       existingTags,
     };
     const result = await suggestVibeTagsForUser(input);
-    // Filter out any tags that might already exist (double safety) and ensure they are lowercase
     return result.suggestedTags
       .map(tag => tag.toLowerCase())
       .filter(tag => !existingTags.includes(tag));
@@ -73,14 +73,53 @@ export async function getAiSuggestedBio(
 ): Promise<string> {
   try {
     const input: SuggestBioInput = {
-      currentBio: currentBio || undefined, // Send undefined if bio is empty
+      currentBio: currentBio || undefined, 
       vibeTags: vibeTags.length > 0 ? vibeTags : undefined,
     };
     const result = await suggestBioForUser(input);
     return result.suggestedBio;
   } catch (error) {
     console.error("Error in getAiSuggestedBio:", error);
-    // Return current bio or an empty string if AI fails
     return currentBio || "Could not generate a bio suggestion at this time. Please try again.";
+  }
+}
+
+export async function getAiDetailedMatchSuggestions(): Promise<DetailedMatchSuggestion[]> {
+  try {
+    const currentUser = MOCK_USERS.find(user => user.id === MOCK_USER_ID);
+    if (!currentUser) {
+      console.error("Current user not found for detailed match suggestions.");
+      return [];
+    }
+
+    const otherUsers = MOCK_USERS.filter(user => user.id !== MOCK_USER_ID);
+
+    // Sanitize profiles to match the Zod schema expected by the flow
+    const sanitizedCurrentUserProfile = sanitizeUserProfileForPrompt(currentUser);
+    const sanitizedOtherUserProfiles = otherUsers.map(sanitizeUserProfileForPrompt);
+    
+    const input: SuggestDetailedMatchesInput = {
+      currentUserProfile: sanitizedCurrentUserProfile,
+      otherUserProfiles: sanitizedOtherUserProfiles,
+    };
+
+    const result = await suggestDetailedMatches(input);
+    
+    // The flow now returns UserProfile objects directly (or should)
+    // Need to cast back to UserProfile type for the application if schema subset was used.
+    // The sanitizeUserProfileForPrompt is for input, the output DetailedMatchSuggestionSchema uses UserProfileForPromptSchema.
+    // We need to map the output user back to the full UserProfile.
+    return result.detailedMatches.map(detailedMatch => {
+      // Find the full profile from MOCK_USERS to ensure all fields are present
+      const fullUserProfile = MOCK_USERS.find(u => u.id === detailedMatch.user.id);
+      return {
+        ...detailedMatch,
+        user: fullUserProfile || (detailedMatch.user as UserProfile), // Cast if full profile not found
+      };
+    });
+
+  } catch (error) {
+    console.error("Error in getAiDetailedMatchSuggestions:", error);
+    return [];
   }
 }
