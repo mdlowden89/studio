@@ -48,7 +48,7 @@ export type SuggestDetailedMatchesInput = z.infer<typeof SuggestDetailedMatchesI
 
 const DetailedMatchSuggestionSchema = z.object({
   user: UserProfileForPromptSchema.describe("The suggested user profile."),
-  matchScore: z.number().min(60).max(99).describe('A compatibility score between 60 and 99.'),
+  matchScore: z.number().min(0).max(100).describe('A compatibility score between 0 and 100.'), // Changed min from 60 to 0
   sharedInterestReason: z.string().describe('A concise reason based on shared interests or vibe tags (e.g., "You both enjoy creative pursuits and art."). Finish with a period.'),
   sharedLocationReason: z.string().describe('A concise reason based on shared location patterns or types (e.g., "You both frequent similar spots like coffee shops and parks."). Finish with a period.'),
   sharedVibeTags: z.array(z.string()).describe('A list of 2-3 key vibe tags common between the users.'),
@@ -80,7 +80,7 @@ Analyze these profiles to find the 3 most compatible matches for the current use
 
 For each of the top 3 matches, you MUST provide:
 1.  The matched user's profile object.
-2.  A 'matchScore': A numerical compatibility score between 60 and 99. Higher is better.
+2.  A 'matchScore': A numerical compatibility score between 0 and 100. Higher is better.
 3.  A 'sharedInterestReason': A concise, compelling sentence (ending with a period) explaining a key shared interest or vibe. Example: "You both share a passion for adventure and exploring new trails." or "You both appreciate cozy nights in and captivating books."
 4.  A 'sharedLocationReason': A concise, compelling sentence (ending with a period) explaining a similarity in frequented locations or types of places. Example: "You both tend to visit artistic spots like galleries and indie cinemas." or "It seems you both enjoy the energy of live music venues."
 5.  'sharedVibeTags': An array of 2-3 specific vibe tags that both users share. These tags should be directly from their profiles.
@@ -142,3 +142,4 @@ const suggestDetailedMatchesFlow = ai.defineFlow(
 export async function sanitizeUserProfileForPrompt(user: UserProfile): Promise<z.infer<typeof UserProfileForPromptSchema>> {
     return UserProfileForPromptSchema.parse(user);
 }
+
