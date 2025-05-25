@@ -9,11 +9,12 @@ import { Button } from "@/components/ui/button";
 import { Label } from "@/components/ui/label";
 import { Badge } from "@/components/ui/badge";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
-import { X as XIcon, PlusCircle, MapPin } from "lucide-react";
+import { X as XIcon, PlusCircle, MapPin, Lightbulb, Loader2 } from "lucide-react";
 import { useToast } from "@/hooks/use-toast";
 import { MOCK_USERS, MOCK_USER_ID } from "@/lib/mock-data";
 import { useRouter } from "next/navigation";
 import { GoogleMap, LoadScriptNext, StandaloneSearchBox, MarkerF } from '@react-google-maps/api';
+import { getAiSuggestedVibeTags } from "@/app/actions"; // Import AI suggestion action
 
 interface ProfileDetailsProps {
   user: UserProfile;
@@ -60,8 +61,8 @@ const smokingOptions = [
   "Prefer Not to Say",
 ];
 
-const zodiacSignOptions = [ // Added
-  "Aries", "Taurus", "Gemini", "Cancer", "Leo", "Virgo", 
+const zodiacSignOptions = [
+  "Aries", "Taurus", "Gemini", "Cancer", "Leo", "Virgo",
   "Libra", "Scorpio", "Sagittarius", "Capricorn", "Aquarius", "Pisces",
   "Prefer Not to Say"
 ];
@@ -113,7 +114,7 @@ export function ProfileDetails({ user }: ProfileDetailsProps) {
   const [height, setHeight] = useState(user.height || "Prefer Not to Say");
   const [drinking, setDrinking] = useState(user.drinking || "Prefer Not to Say");
   const [smoking, setSmoking] = useState(user.smoking || "Prefer Not to Say");
-  const [zodiacSign, setZodiacSign] = useState(user.zodiacSign || "Prefer Not to Say"); // Added
+  const [zodiacSign, setZodiacSign] = useState(user.zodiacSign || "Prefer Not to Say");
 
   const [locationAddress, setLocationAddress] = useState(user.locationAddress || "");
   const [currentLocationName, setCurrentLocationName] = useState<string>(user.locationName || "");
@@ -127,6 +128,9 @@ export function ProfileDetails({ user }: ProfileDetailsProps) {
   const [isMounted, setIsMounted] = useState(false);
   const [mapsApiKey, setMapsApiKey] = useState<string | undefined>(undefined);
 
+  const [aiSuggestedTags, setAiSuggestedTags] = useState<string[]>([]);
+  const [isSuggestingTags, setIsSuggestingTags] = useState(false);
+
   useEffect(() => {
     setIsMounted(true);
     setMapsApiKey(process.env.NEXT_PUBLIC_GOOGLE_MAPS_API_KEY);
@@ -137,9 +141,10 @@ export function ProfileDetails({ user }: ProfileDetailsProps) {
 
   const heightOptions = useMemo(() => generateHeightOptions(), []);
 
-  const handleAddTag = () => {
-    if (newTag.trim() !== "" && !vibeTags.includes(newTag.trim().toLowerCase())) {
-      setVibeTags([...vibeTags, newTag.trim().toLowerCase()]);
+  const handleAddTagManually = () => {
+    const tagToAdd = newTag.trim().toLowerCase();
+    if (tagToAdd !== "" && !vibeTags.includes(tagToAdd)) {
+      setVibeTags([...vibeTags, tagToAdd]);
       setNewTag("");
     }
   };
@@ -147,6 +152,39 @@ export function ProfileDetails({ user }: ProfileDetailsProps) {
   const handleRemoveTag = (tagToRemove: string) => {
     setVibeTags(vibeTags.filter(tag => tag !== tagToRemove));
   };
+
+  const handleSuggestTags = async () => {
+    setIsSuggestingTags(true);
+    setAiSuggestedTags([]);
+    try {
+      // Use the current bio from the state, not directly from `user` prop
+      const suggestions = await getAiSuggestedVibeTags(bio, vibeTags);
+      setAiSuggestedTags(suggestions.filter(s => !vibeTags.includes(s)));
+      if (suggestions.length === 0) {
+        toast({
+          title: "No New Tag Suggestions",
+          description: "The AI couldn't find new tags for you right now. Try adding some manually or refining your bio!",
+        });
+      }
+    } catch (error) {
+      console.error("Failed to get AI tag suggestions:", error);
+      toast({
+        title: "Error Suggesting Tags",
+        description: "Something went wrong. Please try again.",
+        variant: "destructive",
+      });
+    } finally {
+      setIsSuggestingTags(false);
+    }
+  };
+
+  const handleAddSuggestedTag = (tag: string) => {
+    if (!vibeTags.includes(tag)) {
+      setVibeTags([...vibeTags, tag]);
+    }
+    setAiSuggestedTags(aiSuggestedTags.filter(s => s !== tag));
+  };
+
 
   const onLoadSearchBox = useCallback((ref: google.maps.places.SearchBox) => {
     setSearchBox(ref);
@@ -202,7 +240,7 @@ export function ProfileDetails({ user }: ProfileDetailsProps) {
         height,
         drinking,
         smoking,
-        zodiacSign, // Added
+        zodiacSign,
         locationAddress,
         locationName: currentLocationName || (locationAddress ? locationAddress.split(',')[0] : MOCK_USERS[currentUserIndex].locationName),
         locationCoordinates: currentCoordinates || MOCK_USERS[currentUserIndex].locationCoordinates,
@@ -218,8 +256,8 @@ export function ProfileDetails({ user }: ProfileDetailsProps) {
     router.refresh();
   };
 
-  if (!isMounted) {
-    return <div>Loading location services...</div>; // Or a skeleton loader
+  if (!isMounted && mapsApiKey) { // Show loading only if API key is present and not yet mounted
+    return <div>Loading location services...</div>;
   }
 
   return (
@@ -238,14 +276,14 @@ export function ProfileDetails({ user }: ProfileDetailsProps) {
           <Input
             id="age"
             type="number"
-            value={age === 0 && !name ? '' : age} 
+            value={age === 0 && !name ? '' : age}
             onChange={(e) => {
               const rawValue = e.target.value;
               const parsedAge = parseInt(rawValue, 10);
               if (rawValue === "" || isNaN(parsedAge)) {
                 setAge(0);
               } else {
-                setAge(parsedAge < 0 ? 0 : parsedAge); 
+                setAge(parsedAge < 0 ? 0 : parsedAge);
               }
             }}
             className="mt-1 bg-input"
@@ -373,50 +411,60 @@ export function ProfileDetails({ user }: ProfileDetailsProps) {
 
       <div>
         <Label htmlFor="locationAddress">Location (Address, Area, or Postcode)</Label>
-        {!mapsApiKey ? (
+        {!mapsApiKey && isMounted ? (
             <div className="mt-1 p-3 bg-destructive text-destructive-foreground rounded-md text-sm">
                 Google Maps API Key is missing or invalid. Location search and map will not work.
             </div>
         ) : (
-        <LoadScriptNext
-            googleMapsApiKey={mapsApiKey}
-            libraries={['places']}
-            loadingElement={<div className="mt-1 text-muted-foreground">Loading map services...</div>}
-        >
-            <div className="relative mt-1">
-                <MapPin className="absolute left-3 top-1/2 -translate-y-1/2 h-5 w-5 text-muted-foreground z-10" />
-                <StandaloneSearchBox
-                    onLoad={onLoadSearchBox}
-                    onPlacesChanged={onPlacesChanged}
-                >
-                    <Input
-                        id="locationAddress"
-                        value={locationAddress}
-                        onChange={(e) => {
-                            setLocationAddress(e.target.value);
-                            if (e.target.value !== currentLocationName) {
-                                setCurrentCoordinates(null);
-                                setMarkerPosition(null);
-                                setCurrentLocationName("");
-                            }
-                        }}
-                        className="bg-input pl-10"
-                        placeholder="e.g., 123 Main St, Anytown or Anytown"
-                    />
-                </StandaloneSearchBox>
+        isMounted && mapsApiKey && ( // Only render LoadScriptNext if API key is present and component is mounted
+          <LoadScriptNext
+              googleMapsApiKey={mapsApiKey}
+              libraries={['places']}
+              loadingElement={<div className="mt-1 text-muted-foreground">Loading map services...</div>}
+          >
+              <div className="relative mt-1">
+                  <MapPin className="absolute left-3 top-1/2 -translate-y-1/2 h-5 w-5 text-muted-foreground z-10" />
+                  <StandaloneSearchBox
+                      onLoad={onLoadSearchBox}
+                      onPlacesChanged={onPlacesChanged}
+                  >
+                      <Input
+                          id="locationAddress"
+                          value={locationAddress}
+                          onChange={(e) => {
+                              setLocationAddress(e.target.value);
+                              if (e.target.value !== currentLocationName) {
+                                  setCurrentCoordinates(null);
+                                  setMarkerPosition(null);
+                                  setCurrentLocationName("");
+                              }
+                          }}
+                          className="bg-input pl-10"
+                          placeholder="e.g., 123 Main St, Anytown or Anytown"
+                      />
+                  </StandaloneSearchBox>
+              </div>
+              <div className="mt-2 h-72 w-full bg-muted rounded-md overflow-hidden border border-border">
+                   <GoogleMap
+                      mapContainerStyle={{ width: '100%', height: '100%' }}
+                      center={mapCenter}
+                      zoom={markerPosition ? 15 : 8}
+                      onLoad={onMapLoad}
+                      options={{ styles: mapStyles, streetViewControl: false, mapTypeControl: false, fullscreenControl: false }}
+                  >
+                      {markerPosition && <MarkerF position={markerPosition} />}
+                  </GoogleMap>
+              </div>
+          </LoadScriptNext>
+          )
+        )}
+         {isMounted && !mapsApiKey && ( // If mounted but no API key, show message
+            <div className="mt-1 p-3 bg-destructive/80 text-destructive-foreground rounded-md text-sm">
+                Google Maps API Key is missing. Location features disabled.
             </div>
-            <div className="mt-2 h-72 w-full bg-muted rounded-md overflow-hidden border border-border">
-                 <GoogleMap
-                    mapContainerStyle={{ width: '100%', height: '100%' }}
-                    center={mapCenter}
-                    zoom={markerPosition ? 15 : 8}
-                    onLoad={onMapLoad}
-                    options={{ styles: mapStyles, streetViewControl: false, mapTypeControl: false, fullscreenControl: false }}
-                >
-                    {markerPosition && <MarkerF position={markerPosition} />}
-                </GoogleMap>
-            </div>
-        </LoadScriptNext>
+        )}
+        {!isMounted && ( // If not mounted, show a generic loading state
+            <div className="mt-1 text-muted-foreground">Loading location input...</div>
         )}
       </div>
 
@@ -425,6 +473,7 @@ export function ProfileDetails({ user }: ProfileDetailsProps) {
         <Label htmlFor="bio">Bio</Label>
         <Textarea id="bio" value={bio} onChange={(e) => setBio(e.target.value)} rows={4} className="mt-1 bg-input" />
       </div>
+
       <div>
         <Label>Vibe Tags</Label>
         <div className="flex flex-wrap gap-2 mt-2 mb-2">
@@ -447,16 +496,50 @@ export function ProfileDetails({ user }: ProfileDetailsProps) {
             placeholder="Add a vibe tag (e.g., foodie)"
             value={newTag}
             onChange={(e) => setNewTag(e.target.value)}
-            onKeyPress={(e) => { if (e.key === 'Enter') { e.preventDefault(); handleAddTag(); }}}
+            onKeyPress={(e) => { if (e.key === 'Enter') { e.preventDefault(); handleAddTagManually(); }}}
             className="bg-input flex-grow"
           />
-          <Button type="button" onClick={handleAddTag} variant="outline" size="icon">
+          <Button type="button" onClick={handleAddTagManually} variant="outline" size="icon" aria-label="Add Tag Manually">
             <PlusCircle className="h-5 w-5" />
           </Button>
+          <Button type="button" onClick={handleSuggestTags} variant="outline" size="icon" aria-label="Suggest Tags with AI" disabled={isSuggestingTags}>
+            {isSuggestingTags ? <Loader2 className="h-5 w-5 animate-spin" /> : <Lightbulb className="h-5 w-5" />}
+          </Button>
         </div>
-        <p className="text-xs text-muted-foreground mt-1">Press Enter or click '+' to add a tag.</p>
+        <p className="text-xs text-muted-foreground mt-1">Press Enter or click '+' to add a tag manually, or click the lightbulb for AI suggestions.</p>
+
+        {isSuggestingTags && (
+          <div className="text-sm text-muted-foreground flex items-center my-2">
+            <Loader2 className="mr-2 h-4 w-4 animate-spin" />
+            AI is thinking of some cool tags for you...
+          </div>
+        )}
+
+        {aiSuggestedTags.length > 0 && !isSuggestingTags && (
+          <div className="my-3">
+            <p className="text-sm font-medium text-foreground mb-1.5">AI Suggestions (click to add):</p>
+            <div className="flex flex-wrap gap-2">
+              {aiSuggestedTags.map(tag => (
+                <Badge
+                  key={tag}
+                  variant="outline"
+                  className="text-sm capitalize cursor-pointer hover:bg-primary/20 border-primary/50 text-primary/90"
+                  onClick={() => handleAddSuggestedTag(tag)}
+                  role="button"
+                  tabIndex={0}
+                  onKeyDown={(e) => { if (e.key === 'Enter' || e.key === ' ') handleAddSuggestedTag(tag);}}
+                >
+                  {tag}
+                </Badge>
+              ))}
+            </div>
+          </div>
+        )}
       </div>
+
       <Button type="submit" className="w-full md:w-auto bg-primary hover:bg-primary/90 text-primary-foreground">Save Changes</Button>
     </form>
   );
 }
+
+    
