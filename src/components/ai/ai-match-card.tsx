@@ -7,7 +7,7 @@ import { Card, CardContent, CardFooter, CardHeader, CardTitle, CardDescription }
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import { Heart, X, Info, CheckCircle, Percent, MapPin, Ruler, Users, Baby, ListChecks, Wine } from "lucide-react";
-import { useState, useMemo } from "react";
+import { useState, useMemo, useEffect } from "react";
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger } from "@/components/ui/dialog";
 import { ScrollArea } from "@/components/ui/scroll-area";
 import { Separator } from "@/components/ui/separator";
@@ -21,11 +21,12 @@ interface AiMatchCardProps {
 
 export function AiMatchCard({ user, onLike, onPass }: AiMatchCardProps) {
   const [currentImageIndex, setCurrentImageIndex] = useState(0);
+  const [compatibilityScore, setCompatibilityScore] = useState<number | null>(null);
 
-  const compatibilityScore = useMemo(() => {
-    // This ensures the random score is generated only once per user, not on every render
-    return Math.floor(Math.random() * (95 - 70 + 1)) + 70;
-  }, [user.id]); // Depend on user.id
+  useEffect(() => {
+    // Generate compatibility score only on the client, after hydration
+    setCompatibilityScore(Math.floor(Math.random() * (95 - 70 + 1)) + 70);
+  }, [user.id]); // Re-calculate if user changes
 
   const nextImage = (e: React.MouseEvent) => {
     e.stopPropagation();
@@ -85,9 +86,11 @@ export function AiMatchCard({ user, onLike, onPass }: AiMatchCardProps) {
               </Button>
             </>
           )}
-          <div className="absolute top-2 right-2 bg-primary/80 text-primary-foreground px-3 py-1.5 rounded-full text-sm font-semibold flex items-center shadow-lg">
-             <Percent className="w-4 h-4 mr-1.5" /> {compatibilityScore}% Vibe Match
-          </div>
+          {compatibilityScore !== null && (
+            <div className="absolute top-2 right-2 bg-primary/80 text-primary-foreground px-3 py-1.5 rounded-full text-sm font-semibold flex items-center shadow-lg">
+              <Percent className="w-4 h-4 mr-1.5" /> {compatibilityScore}% Vibe Match
+            </div>
+          )}
           <div className="absolute bottom-0 left-0 right-0 p-4 bg-gradient-to-t from-black/80 via-black/40 to-transparent">
             <CardTitle className="text-2xl font-bold text-white">{user.name}, {user.age}</CardTitle>
           </div>
@@ -125,10 +128,12 @@ export function AiMatchCard({ user, onLike, onPass }: AiMatchCardProps) {
         <ScrollArea className="h-[80vh] max-h-[700px]">
           <DialogHeader className="p-6 pb-2 sticky top-0 bg-card z-10">
             <DialogTitle className="text-3xl font-bold text-primary">{user.name}, {user.age}</DialogTitle>
-            <div className="flex items-center text-sm text-primary pt-1">
-                <CheckCircle className="w-4 h-4 mr-1.5" />
-                <span>{compatibilityScore}% Vibe Match (AI Suggestion)</span>
-            </div>
+            {compatibilityScore !== null && (
+              <div className="flex items-center text-sm text-primary pt-1">
+                  <CheckCircle className="w-4 h-4 mr-1.5" />
+                  <span>{compatibilityScore}% Vibe Match (AI Suggestion)</span>
+              </div>
+            )}
             <Separator className="my-3 bg-border" />
           </DialogHeader>
 
@@ -144,6 +149,8 @@ export function AiMatchCard({ user, onLike, onPass }: AiMatchCardProps) {
               />
             </div>
 
+            {/* Ensure this div enables horizontal scroll if content overflows. 
+                Scrollbar visibility may depend on OS/browser settings. */}
             <div className="w-full flex overflow-x-auto space-x-4 p-3 bg-muted/30 rounded-lg">
               {userDetails.map((detail, index) => (
                  (detail.value && detail.value !== "N/A") && (

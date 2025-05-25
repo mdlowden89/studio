@@ -150,6 +150,8 @@ export function MatchCard({ user, onLike, onPass, showCrossedPathInfo = false }:
               />
             </div>
 
+            {/* Ensure this div enables horizontal scroll if content overflows. 
+                Scrollbar visibility may depend on OS/browser settings. */}
             <div className="w-full flex overflow-x-auto space-x-4 p-3 bg-muted/30 rounded-lg">
               {userDetails.map((detail, index) => (
                  (detail.value && detail.value !== "N/A") && (
