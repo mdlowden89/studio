@@ -3,6 +3,7 @@
 
 import { suggestMatchesFromVibe, SuggestMatchesInput } from "@/ai/flows/suggest-matches-from-vibe";
 import { suggestVibeTagsForUser, SuggestVibeTagsInput } from "@/ai/flows/suggest-vibe-tags-flow";
+import { suggestBioForUser, SuggestBioInput } from "@/ai/flows/suggest-bio-flow"; // Added
 import type { UserProfile } from "@/lib/types";
 import { MOCK_USERS, MOCK_USER_ID } from "@/lib/mock-data"; // For fetching other users
 
@@ -63,5 +64,23 @@ export async function getAiSuggestedVibeTags(
   } catch (error) {
     console.error("Error in getAiSuggestedVibeTags:", error);
     return [];
+  }
+}
+
+export async function getAiSuggestedBio(
+  currentBio: string,
+  vibeTags: string[]
+): Promise<string> {
+  try {
+    const input: SuggestBioInput = {
+      currentBio: currentBio || undefined, // Send undefined if bio is empty
+      vibeTags: vibeTags.length > 0 ? vibeTags : undefined,
+    };
+    const result = await suggestBioForUser(input);
+    return result.suggestedBio;
+  } catch (error) {
+    console.error("Error in getAiSuggestedBio:", error);
+    // Return current bio or an empty string if AI fails
+    return currentBio || "Could not generate a bio suggestion at this time. Please try again.";
   }
 }

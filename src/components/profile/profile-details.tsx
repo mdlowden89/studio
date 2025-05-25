@@ -9,12 +9,12 @@ import { Button } from "@/components/ui/button";
 import { Label } from "@/components/ui/label";
 import { Badge } from "@/components/ui/badge";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
-import { X as XIcon, PlusCircle, MapPin, Lightbulb, Loader2 } from "lucide-react";
+import { X as XIcon, PlusCircle, MapPin, Lightbulb, Loader2, Sparkles } from "lucide-react";
 import { useToast } from "@/hooks/use-toast";
 import { MOCK_USERS, MOCK_USER_ID } from "@/lib/mock-data";
 import { useRouter } from "next/navigation";
 import { GoogleMap, LoadScriptNext, StandaloneSearchBox, MarkerF } from '@react-google-maps/api';
-import { getAiSuggestedVibeTags } from "@/app/actions"; // Import AI suggestion action
+import { getAiSuggestedVibeTags, getAiSuggestedBio } from "@/app/actions"; 
 
 interface ProfileDetailsProps {
   user: UserProfile;
@@ -130,6 +130,7 @@ export function ProfileDetails({ user }: ProfileDetailsProps) {
 
   const [aiSuggestedTags, setAiSuggestedTags] = useState<string[]>([]);
   const [isSuggestingTags, setIsSuggestingTags] = useState(false);
+  const [isLoadingBioSuggestion, setIsLoadingBioSuggestion] = useState(false);
 
   useEffect(() => {
     setIsMounted(true);
@@ -153,17 +154,16 @@ export function ProfileDetails({ user }: ProfileDetailsProps) {
     setVibeTags(vibeTags.filter(tag => tag !== tagToRemove));
   };
 
-  const handleSuggestTags = async () => {
+  const handleSuggestVibeTags = async () => {
     setIsSuggestingTags(true);
     setAiSuggestedTags([]);
     try {
-      // Use the current bio from the state, not directly from `user` prop
       const suggestions = await getAiSuggestedVibeTags(bio, vibeTags);
       setAiSuggestedTags(suggestions.filter(s => !vibeTags.includes(s)));
-      if (suggestions.length === 0) {
+      if (suggestions.length === 0 && vibeTags.length > 0) { // Only show if they already have tags
         toast({
           title: "No New Tag Suggestions",
-          description: "The AI couldn't find new tags for you right now. Try adding some manually or refining your bio!",
+          description: "The AI couldn't find new tags for you right now. Your current tags might be comprehensive!",
         });
       }
     } catch (error) {
@@ -183,6 +183,27 @@ export function ProfileDetails({ user }: ProfileDetailsProps) {
       setVibeTags([...vibeTags, tag]);
     }
     setAiSuggestedTags(aiSuggestedTags.filter(s => s !== tag));
+  };
+
+  const handleSuggestBio = async () => {
+    setIsLoadingBioSuggestion(true);
+    try {
+      const suggested = await getAiSuggestedBio(bio, vibeTags);
+      setBio(suggested);
+      toast({
+        title: "AI Bio Suggestion Applied!",
+        description: "The AI's bio suggestion has been added to the editor.",
+      });
+    } catch (error) {
+      console.error("Failed to get AI bio suggestion:", error);
+      toast({
+        title: "Error Suggesting Bio",
+        description: "Something went wrong with the AI bio suggestion. Please try again.",
+        variant: "destructive",
+      });
+    } finally {
+      setIsLoadingBioSuggestion(false);
+    }
   };
 
 
@@ -224,7 +245,7 @@ export function ProfileDetails({ user }: ProfileDetailsProps) {
     e.preventDefault();
     const currentUserIndex = MOCK_USERS.findIndex(u => u.id === MOCK_USER_ID);
     if (currentUserIndex !== -1) {
-      const updatedUser = {
+      const updatedUser: UserProfile = {
         ...MOCK_USERS[currentUserIndex],
         name,
         email,
@@ -256,12 +277,8 @@ export function ProfileDetails({ user }: ProfileDetailsProps) {
     router.refresh();
   };
 
-  if (!isMounted && mapsApiKey) { // Show loading only if API key is present and not yet mounted
-    return <div>Loading location services...</div>;
-  }
-
   return (
-    <form onSubmit={handleSubmit} className="space-y-6">
+    <form onSubmit={handleSubmit} className="space-y-8">
       <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
         <div>
           <Label htmlFor="name">Name</Label>
@@ -276,14 +293,14 @@ export function ProfileDetails({ user }: ProfileDetailsProps) {
           <Input
             id="age"
             type="number"
-            value={age === 0 && !name ? '' : age}
+            value={age === 0 && !name ? '' : age} // Handle initial empty state if age is 0 and name is not set (new profile)
             onChange={(e) => {
               const rawValue = e.target.value;
-              const parsedAge = parseInt(rawValue, 10);
-              if (rawValue === "" || isNaN(parsedAge)) {
-                setAge(0);
+              if (rawValue === "") {
+                setAge(0); // Or user.age if you prefer to revert to original on empty
               } else {
-                setAge(parsedAge < 0 ? 0 : parsedAge);
+                const parsedAge = parseInt(rawValue, 10);
+                setAge(isNaN(parsedAge) || parsedAge < 0 ? 0 : parsedAge);
               }
             }}
             className="mt-1 bg-input"
@@ -353,7 +370,7 @@ export function ProfileDetails({ user }: ProfileDetailsProps) {
             <SelectTrigger className="mt-1 bg-input">
               <SelectValue placeholder="Select your height" />
             </SelectTrigger>
-            <SelectContent className="bg-popover">
+            <SelectContent className="bg-popover max-h-60">
               {heightOptions.map((option) => (
                 <SelectItem key={option} value={option}>
                   {option}
@@ -411,12 +428,12 @@ export function ProfileDetails({ user }: ProfileDetailsProps) {
 
       <div>
         <Label htmlFor="locationAddress">Location (Address, Area, or Postcode)</Label>
-        {!mapsApiKey && isMounted ? (
+        {isMounted && !mapsApiKey ? (
             <div className="mt-1 p-3 bg-destructive text-destructive-foreground rounded-md text-sm">
-                Google Maps API Key is missing or invalid. Location search and map will not work.
+                Google Maps API Key is missing or invalid. Location search and map will not work. Add NEXT_PUBLIC_GOOGLE_MAPS_API_KEY to your .env file.
             </div>
         ) : (
-        isMounted && mapsApiKey && ( // Only render LoadScriptNext if API key is present and component is mounted
+        isMounted && mapsApiKey && (
           <LoadScriptNext
               googleMapsApiKey={mapsApiKey}
               libraries={['places']}
@@ -433,7 +450,7 @@ export function ProfileDetails({ user }: ProfileDetailsProps) {
                           value={locationAddress}
                           onChange={(e) => {
                               setLocationAddress(e.target.value);
-                              if (e.target.value !== currentLocationName) {
+                              if (e.target.value !== currentLocationName && e.target.value !== user.locationAddress) { // Prevent clearing if user clicks away then back
                                   setCurrentCoordinates(null);
                                   setMarkerPosition(null);
                                   setCurrentLocationName("");
@@ -458,19 +475,31 @@ export function ProfileDetails({ user }: ProfileDetailsProps) {
           </LoadScriptNext>
           )
         )}
-         {isMounted && !mapsApiKey && ( // If mounted but no API key, show message
-            <div className="mt-1 p-3 bg-destructive/80 text-destructive-foreground rounded-md text-sm">
-                Google Maps API Key is missing. Location features disabled.
-            </div>
-        )}
-        {!isMounted && ( // If not mounted, show a generic loading state
+        {!isMounted && mapsApiKey && ( // If not mounted but API key exists, show loading
             <div className="mt-1 text-muted-foreground">Loading location input...</div>
         )}
       </div>
 
 
       <div>
-        <Label htmlFor="bio">Bio</Label>
+        <div className="flex items-center justify-between mb-1">
+          <Label htmlFor="bio">Bio</Label>
+          <Button 
+            type="button" 
+            onClick={handleSuggestBio} 
+            variant="outline" 
+            size="sm" 
+            disabled={isLoadingBioSuggestion}
+            className="text-xs"
+          >
+            {isLoadingBioSuggestion ? (
+              <Loader2 className="mr-1.5 h-3.5 w-3.5 animate-spin" />
+            ) : (
+              <Sparkles className="mr-1.5 h-3.5 w-3.5" />
+            )}
+            Suggest with AI
+          </Button>
+        </div>
         <Textarea id="bio" value={bio} onChange={(e) => setBio(e.target.value)} rows={4} className="mt-1 bg-input" />
       </div>
 
@@ -502,7 +531,7 @@ export function ProfileDetails({ user }: ProfileDetailsProps) {
           <Button type="button" onClick={handleAddTagManually} variant="outline" size="icon" aria-label="Add Tag Manually">
             <PlusCircle className="h-5 w-5" />
           </Button>
-          <Button type="button" onClick={handleSuggestTags} variant="outline" size="icon" aria-label="Suggest Tags with AI" disabled={isSuggestingTags}>
+          <Button type="button" onClick={handleSuggestVibeTags} variant="outline" size="icon" aria-label="Suggest Tags with AI" disabled={isSuggestingTags}>
             {isSuggestingTags ? <Loader2 className="h-5 w-5 animate-spin" /> : <Lightbulb className="h-5 w-5" />}
           </Button>
         </div>
@@ -541,5 +570,3 @@ export function ProfileDetails({ user }: ProfileDetailsProps) {
     </form>
   );
 }
-
-    
