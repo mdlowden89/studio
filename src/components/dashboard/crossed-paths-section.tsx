@@ -16,7 +16,6 @@ import {
   AlertDialogFooter,
   AlertDialogHeader,
   AlertDialogTitle,
-  AlertDialogTrigger,
 } from "@/components/ui/alert-dialog";
 
 export function CrossedPathsSection() {
@@ -28,42 +27,35 @@ export function CrossedPathsSection() {
 
 
   const handleAction = (userId: string, action: "like" | "pass") => {
-    // Simulate matching logic
+    const actionUser = users.find(u => u.id === userId);
+    if (!actionUser) return;
+
     if (action === "like") {
-      // For demo, 1 in 3 chance of a mutual match
       const isMutualMatch = Math.random() < 0.33;
       if (isMutualMatch) {
-        const matchedUser = users.find(u => u.id === userId);
-        if (matchedUser) {
-            setMatchedUserName(matchedUser.name);
-            setShowMatchAnimation(true);
-        }
+        setMatchedUserName(actionUser.name);
+        setShowMatchAnimation(true);
       } else {
          toast({
-            title: "Sent!",
-            description: `You've expressed interest. If they feel the same, it's a match!`,
+            title: "Interest Sent!",
+            description: `You've expressed interest in ${actionUser.name}. If they feel the same, it's a match!`,
         });
       }
     } else {
         toast({
             title: "Passed",
-            description: `You've passed on this connection.`,
+            description: `You've passed on ${actionUser.name}.`,
             variant: "default",
         });
     }
     
-    // Move to next card or show empty state
     if (currentIndex < users.length - 1) {
       setCurrentIndex(currentIndex + 1);
     } else {
-      // No more users, could show an empty state or refresh
       toast({
         title: "All caught up!",
         description: "You've seen all recent crossed paths.",
       });
-      // Optionally reset or fetch new users
-      // setUsers([]); 
-      // setCurrentIndex(0);
     }
   };
 
@@ -89,13 +81,13 @@ export function CrossedPathsSection() {
     );
   }
 
-  const currentUser = users[currentIndex];
+  const currentUserToDisplay = users[currentIndex];
 
   return (
     <div className="flex flex-col items-center space-y-6">
       <MatchCard
-        key={currentUser.id}
-        user={currentUser}
+        key={currentUserToDisplay.id}
+        user={currentUserToDisplay}
         onLike={handleLike}
         onPass={handlePass}
         showCrossedPathInfo={true}
@@ -104,23 +96,27 @@ export function CrossedPathsSection() {
         <RefreshCw className="mr-2 h-4 w-4" /> Load More
       </Button>
 
-      {/* Match Animation Dialog */}
        <AlertDialog open={showMatchAnimation} onOpenChange={setShowMatchAnimation}>
         <AlertDialogContent className="bg-card text-card-foreground border-primary shadow-lg rounded-xl">
           <AlertDialogHeader>
             <div className="mx-auto flex h-20 w-20 items-center justify-center rounded-full bg-primary mb-4 animate-pulse">
               <HeartHandshakeIcon className="h-10 w-10 text-primary-foreground" />
             </div>
-            <AlertDialogTitle className="text-center text-2xl font-bold text-primary">It's a Match!</AlertDialogTitle>
+            <AlertDialogTitle className="text-center text-2xl font-bold text-primary">Connection Sparked!</AlertDialogTitle>
             <AlertDialogDescription className="text-center text-muted-foreground text-lg">
-              You and {matchedUserName} have crossed paths and both swiped right!
+              You and {matchedUserName} have both shown interest in each other!
             </AlertDialogDescription>
           </AlertDialogHeader>
-          <AlertDialogFooter className="sm:justify-center">
+          <AlertDialogFooter className="sm:justify-center gap-2">
+            <AlertDialogCancel 
+              onClick={() => setShowMatchAnimation(false)}
+              className="w-full sm:w-auto"
+            >
+              Keep Exploring
+            </AlertDialogCancel>
             <AlertDialogAction 
               onClick={() => {
                 setShowMatchAnimation(false);
-                // Potentially navigate to chat or show another toast
                 toast({
                   title: `Chat with ${matchedUserName}!`,
                   description: "You can now start a conversation.",

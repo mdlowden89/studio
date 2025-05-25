@@ -1,7 +1,7 @@
 
 "use client";
 
-import { useState, useEffect } from "react"; // Added useEffect
+import { useState, useEffect } from "react"; 
 import { MOCK_USERS, MOCK_USER_ID } from "@/lib/mock-data";
 import { MatchCard } from "./match-card";
 import { Button } from "@/components/ui/button";
@@ -10,6 +10,7 @@ import { useToast } from "@/hooks/use-toast";
 import {
   AlertDialog,
   AlertDialogAction,
+  AlertDialogCancel,
   AlertDialogContent,
   AlertDialogDescription,
   AlertDialogFooter,
@@ -18,37 +19,36 @@ import {
 } from "@/components/ui/alert-dialog";
 
 export function SwipeMatchSection() {
-  // Initial state with unshuffled users
-  const [users, setUsers] = useState(MOCK_USERS.filter(user => user.id !== MOCK_USER_ID));
+  const [initialUsers, setInitialUsers] = useState(MOCK_USERS.filter(user => user.id !== MOCK_USER_ID));
+  const [users, setUsers] = useState(initialUsers);
   const [currentIndex, setCurrentIndex] = useState(0);
   const { toast } = useToast();
   const [showMatchAnimation, setShowMatchAnimation] = useState(false);
   const [matchedUserName, setMatchedUserName] = useState("");
 
-  // Shuffle users client-side after hydration
   useEffect(() => {
     setUsers(prevUsers => [...prevUsers].sort(() => 0.5 - Math.random()));
-  }, []); // Empty dependency array ensures this runs once on mount
+  }, []); 
 
   const handleAction = (userId: string, action: "like" | "pass") => {
+    const actionUser = users.find(u => u.id === userId);
+    if (!actionUser) return;
+
     if (action === "like") {
-      const isMutualMatch = Math.random() < 0.4; // Slightly higher chance for swipe
+      const isMutualMatch = Math.random() < 0.4; 
       if (isMutualMatch) {
-        const matchedUser = users.find(u => u.id === userId);
-         if (matchedUser) {
-            setMatchedUserName(matchedUser.name);
-            setShowMatchAnimation(true);
-        }
+        setMatchedUserName(actionUser.name);
+        setShowMatchAnimation(true);
       } else {
         toast({
             title: "Liked!",
-            description: `Let's see if ${users.find(u => u.id === userId)?.name} likes you back!`,
+            description: `Let's see if ${actionUser.name} likes you back!`,
         });
       }
     } else {
         toast({
             title: "Passed",
-            description: `You've passed on this profile.`,
+            description: `You've passed on ${actionUser.name}.`,
             variant: "default"
         });
     }
@@ -66,13 +66,13 @@ export function SwipeMatchSection() {
   const handleLike = (userId: string) => handleAction(userId, "like");
   const handlePass = (userId: string) => handleAction(userId, "pass");
   const handleUndo = () => {
-    // Placeholder for undo functionality
     toast({ title: "Undo Clicked", description: "Undo functionality not yet implemented." });
   };
 
   const refreshUsers = () => {
-    // Shuffle a fresh copy of the base users list
-    setUsers(MOCK_USERS.filter(user => user.id !== MOCK_USER_ID).sort(() => 0.5 - Math.random()));
+    const newInitialUsers = MOCK_USERS.filter(user => user.id !== MOCK_USER_ID);
+    setInitialUsers(newInitialUsers);
+    setUsers([...newInitialUsers].sort(() => 0.5 - Math.random()));
     setCurrentIndex(0);
     toast({ title: "Profiles Refreshed!", description: "Here are some new faces."});
   };
@@ -95,13 +95,13 @@ export function SwipeMatchSection() {
     );
   }
 
-  const currentUser = users[currentIndex];
+  const currentUserToDisplay = users[currentIndex];
 
   return (
     <div className="flex flex-col items-center space-y-6">
       <MatchCard
-        key={currentUser.id} // Ensure key changes if user object changes
-        user={currentUser}
+        key={currentUserToDisplay.id} 
+        user={currentUserToDisplay}
         onLike={handleLike}
         onPass={handlePass}
       />
@@ -120,12 +120,18 @@ export function SwipeMatchSection() {
             <div className="mx-auto flex h-20 w-20 items-center justify-center rounded-full bg-primary mb-4 animate-pulse">
               <HeartHandshakeIcon className="h-10 w-10 text-primary-foreground" />
             </div>
-            <AlertDialogTitle className="text-center text-2xl font-bold text-primary">It's a Match!</AlertDialogTitle>
+            <AlertDialogTitle className="text-center text-2xl font-bold text-primary">Connection Sparked!</AlertDialogTitle>
             <AlertDialogDescription className="text-center text-muted-foreground text-lg">
               You and {matchedUserName} both liked each other!
             </AlertDialogDescription>
           </AlertDialogHeader>
-          <AlertDialogFooter className="sm:justify-center">
+          <AlertDialogFooter className="sm:justify-center gap-2">
+             <AlertDialogCancel 
+              onClick={() => setShowMatchAnimation(false)}
+              className="w-full sm:w-auto"
+            >
+              Keep Exploring
+            </AlertDialogCancel>
             <AlertDialogAction
               onClick={() => {
                 setShowMatchAnimation(false);
@@ -136,7 +142,7 @@ export function SwipeMatchSection() {
               }}
               className="bg-primary hover:bg-primary/90 text-primary-foreground w-full sm:w-auto"
             >
-              Say Hello
+              Send a Message
             </AlertDialogAction>
           </AlertDialogFooter>
         </AlertDialogContent>
