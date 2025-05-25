@@ -125,7 +125,7 @@ export function MatchCard({ user, onLike, onPass, showCrossedPathInfo = false }:
         </CardFooter>
       </Card>
 
-      <DialogContent className="sm:max-w-xl bg-card text-card-foreground p-0">
+      <DialogContent className="sm:max-w-2xl bg-card text-card-foreground p-0">
         <ScrollArea className="h-[80vh] max-h-[700px]">
           <DialogHeader className="p-6 pb-2 sticky top-0 bg-card z-10">
             <DialogTitle className="text-3xl font-bold text-primary">{user.name}, {user.age}</DialogTitle>
@@ -139,7 +139,7 @@ export function MatchCard({ user, onLike, onPass, showCrossedPathInfo = false }:
           </DialogHeader>
 
           <div className="px-6 pb-6 flex flex-col space-y-6">
-            <div className="relative w-full max-w-sm mx-auto aspect-[4/5] rounded-lg overflow-hidden shadow-lg">
+            <div className="relative w-full max-w-sm aspect-[4/5] rounded-lg overflow-hidden shadow-lg mx-auto">
               <Image
                 src={mainImage}
                 alt={`${user.name}'s main photo`}
@@ -253,3 +253,4 @@ function ChevronRightIcon(props: React.SVGProps<SVGSVGElement>) {
     </svg>
   )
 }
+
