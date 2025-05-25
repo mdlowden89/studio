@@ -113,16 +113,16 @@ export const MOCK_USERS: UserProfile[] = [
   },
   {
     id: MOCK_USER_ID, // Current user
-    name: 'You',
+    name: 'Dev User',
     age: 27,
-    email: 'you@example.com',
-    bio: 'Seeking connections and new experiences. Let\'s see where our paths cross!',
+    email: 'dev@example.com',
+    bio: 'Seeking connections and new experiences. Love exploring local cafes and parks. My vibe tags are usually "explorer", "optimist", "curious", and "friendly". Let\'s see where our paths cross!',
     images: [
-      'https://placehold.co/120x120/E70F72/FFFFFF.png?text=U',
+      'https://placehold.co/120x120/E70F72/FFFFFF.png?text=D', // Updated to 'D' for Dev User
       'https://placehold.co/600x800.png',
       'https://placehold.co/800x600.png',
     ],
-    vibeTags: ['explorer', 'optimist', 'curious', 'friendly', 'weekend wanderer'],
+    vibeTags: ['explorer', 'optimist', 'curious', 'friendly', 'coffee enthusiast', 'park lover'],
     locationPatterns: ['Local Coffee Shop', 'Bookstore', 'Community Garden', 'Farmers Market', 'Museums'],
     prompts: [
       { promptId: 'p1', answer: 'Early bird gets the worm, but the second mouse gets the cheese.' },
@@ -149,9 +149,9 @@ export const MOCK_USERS: UserProfile[] = [
     email: 'riley.dev@example.com',
     bio: 'Software developer by day, nature explorer by weekend. Love strategy board games and finding hidden trails. Looking for someone to share adventures with.',
     images: [
-      'https://placehold.co/600x800/3B82F6/FFFFFF.png', // Blueish placeholder
-      'https://placehold.co/700x500/10B981/FFFFFF.png', // Greenish placeholder
-      'https://placehold.co/650x750/F59E0B/FFFFFF.png', // Amber placeholder
+      'https://placehold.co/600x800/3B82F6/FFFFFF.png', 
+      'https://placehold.co/700x500/10B981/FFFFFF.png', 
+      'https://placehold.co/650x750/F59E0B/FFFFFF.png', 
     ],
     vibeTags: ['tech enthusiast', 'nature lover', 'board games', 'hiking', 'problem solver', 'craft beer', 'stargazing'],
     locationPatterns: ['National Parks', 'Board Game Cafes', 'Tech Meetups', 'Local Breweries', 'Scenic Overlooks'],
@@ -168,7 +168,7 @@ export const MOCK_USERS: UserProfile[] = [
     height: "5'10\"",
     locationAddress: "101 Binary Blvd, Techtopia, USA",
     locationName: "Techtopia",
-    locationCoordinates: { lat: 37.4220, lng: -122.0841 }, // Near Googleplex
+    locationCoordinates: { lat: 37.4220, lng: -122.0841 }, 
     drinking: "Sometimes",
     smoking: "No",
     zodiacSign: "Aquarius",
@@ -180,9 +180,9 @@ export const MOCK_USERS: UserProfile[] = [
     email: 'morgan.art@example.com',
     bio: 'Painter and musician. I find beauty in everyday chaos. Often found at farmers markets or sketching in a park. My ideal date involves live music and good conversation.',
     images: [
-      'https://placehold.co/600x800/EC4899/FFFFFF.png', // Pinkish placeholder
-      'https://placehold.co/800x600/8B5CF6/FFFFFF.png', // Violet placeholder
-      'https://placehold.co/500x700/D97706/FFFFFF.png', // Orange placeholder
+      'https://placehold.co/600x800/EC4899/FFFFFF.png', 
+      'https://placehold.co/800x600/8B5CF6/FFFFFF.png', 
+      'https://placehold.co/500x700/D97706/FFFFFF.png', 
     ],
     vibeTags: ['artist', 'musician', 'farmers market regular', 'live music aficionado', 'sketchbook always', 'vintage lover', 'deep conversations'],
     locationPatterns: ['Art Supply Stores', 'Live Music Venues', 'Local Farmers Markets', 'Botanical Gardens', 'Indie Cinemas'],
@@ -199,7 +199,7 @@ export const MOCK_USERS: UserProfile[] = [
     height: "5'6\"",
     locationAddress: "23 Palette Place, Artville, USA",
     locationName: "Artville",
-    locationCoordinates: { lat: 41.8240, lng: -71.4128 }, // Providence, RI
+    locationCoordinates: { lat: 41.8240, lng: -71.4128 }, 
     drinking: "Sometimes",
     smoking: "No",
     zodiacSign: "Pisces",
@@ -211,9 +211,9 @@ export const MOCK_USERS: UserProfile[] = [
     email: 'jordan.fit@example.com',
     bio: 'Fitness enthusiast and world traveler. Always planning the next trip or the next workout. Looking for a partner in crime for adventures and gym sessions.',
     images: [
-      'https://placehold.co/600x800/EF4444/FFFFFF.png', // Reddish placeholder
-      'https://placehold.co/750x550/22C55E/FFFFFF.png', // Green placeholder
-      'https://placehold.co/600x900/6366F1/FFFFFF.png', // Indigo placeholder
+      'https://placehold.co/600x800/EF4444/FFFFFF.png', 
+      'https://placehold.co/750x550/22C55E/FFFFFF.png', 
+      'https://placehold.co/600x900/6366F1/FFFFFF.png', 
     ],
     vibeTags: ['fitness junkie', 'travel bug', 'adventure seeker', 'gym regular', 'mountain climber', 'foodie (healthy)', 'optimistic'],
     locationPatterns: ['Gyms & Fitness Studios', 'Hiking Trails', 'Airports', 'Healthy Eateries', 'Rock Climbing Centers'],
@@ -230,15 +230,14 @@ export const MOCK_USERS: UserProfile[] = [
     height: "6'0\"",
     locationAddress: "7 Summit Street, Adventure Bay, USA",
     locationName: "Adventure Bay",
-    locationCoordinates: { lat: 39.7392, lng: -104.9903 }, // Denver, CO
+    locationCoordinates: { lat: 39.7392, lng: -104.9903 }, 
     drinking: "Yes",
     smoking: "No",
     zodiacSign: "Sagittarius",
   },
 ];
 
-// Fixed timestamps to avoid hydration errors
-const baseDate = new Date('2024-05-24T12:00:00.000Z'); // A fixed point in time
+export const baseDate = new Date('2024-05-24T12:00:00.000Z'); 
 const daysAgo = (days: number, hours = 0, minutes = 0) => new Date(baseDate.getTime() - days * 24 * 60 * 60 * 1000 - hours * 60 * 60 * 1000 - minutes * 60 * 1000).toISOString();
 
 export const MOCK_CROSSED_PATHS_USERS: CrossedPathUser[] = MOCK_USERS.filter(u => u.id !== MOCK_USER_ID).map((user, index) => ({
@@ -253,46 +252,71 @@ export const MOCK_MOMENTS: Moment[] = [
     id: 'moment-1',
     userId: MOCK_USER_ID,
     placeName: 'Montclair Art Museum',
-    timestamp: daysAgo(2), // 2 days ago
-    potentialMatchId: 'user-1',
-    coordinates: { lat: 40.8137, lng: -74.2097 }, // Montclair, NJ
+    timestamp: daysAgo(2, 3, 30), // Wed, May 22nd, 8:30 AM
+    potentialMatchId: 'user-1', 
+    coordinates: { lat: 40.8137, lng: -74.2097 }, 
     placeImage: 'https://placehold.co/200x150/7F7F7F/FFFFFF.png?text=Art+Museum'
   },
   {
     id: 'moment-2',
     userId: MOCK_USER_ID,
     placeName: 'Van Vleck House & Gardens',
-    timestamp: daysAgo(1), // 1 day ago
-    coordinates: { lat: 40.8155, lng: -74.2036 }, // Montclair, NJ
+    timestamp: daysAgo(1, 1, 15), // Thu, May 23rd, 10:45 AM
+    coordinates: { lat: 40.8155, lng: -74.2036 }, 
     placeImage: 'https://placehold.co/200x150/6A6A6A/FFFFFF.png?text=Gardens'
   },
   {
     id: 'moment-3',
     userId: MOCK_USER_ID,
     placeName: 'Watchung Booksellers',
-    timestamp: daysAgo(5), // 5 days ago
-    potentialMatchId: 'user-2',
-    coordinates: { lat: 40.8073, lng: -74.2036 }, // Watchung Plaza, Montclair, NJ
+    timestamp: daysAgo(5, 0, 0), // Sun, May 19th, 12:00 PM
+    potentialMatchId: 'user-2', 
+    coordinates: { lat: 40.8073, lng: -74.2036 }, 
     placeImage: 'https://placehold.co/200x150/5C5C5C/FFFFFF.png?text=Booksellers'
   },
    {
     id: 'moment-4',
     userId: MOCK_USER_ID,
     placeName: 'Edgemont Memorial Park',
-    timestamp: daysAgo(3), // 3 days ago
-    coordinates: { lat: 40.8197, lng: -74.2052 }, // Montclair, NJ
+    timestamp: daysAgo(3, 5, 0), // Tue, May 21st, 7:00 AM
+    coordinates: { lat: 40.8197, lng: -74.2052 }, 
     placeImage: 'https://placehold.co/200x150/8D8D8D/FFFFFF.png?text=Park'
   },
   {
     id: 'moment-5',
     userId: MOCK_USER_ID,
     placeName: 'The Clairidge Cinema',
-    timestamp: daysAgo(4), // 4 days ago
-    coordinates: { lat: 40.8150, lng: -74.2125 }, // Montclair, NJ
+    timestamp: daysAgo(4, -8, 0), // Mon, May 20th, 8:00 PM
+    coordinates: { lat: 40.8150, lng: -74.2125 }, 
     placeImage: 'https://placehold.co/200x150/9B9B9B/FFFFFF.png?text=Cinema'
   },
   {
-    id: 'moment-6', 
+    id: 'moment-added-1',
+    userId: MOCK_USER_ID,
+    placeName: 'Trend Coffee & Tea House',
+    timestamp: daysAgo(2, -3, 0), // Wed, May 22nd, 3:00 PM
+    potentialMatchId: 'user-3', 
+    coordinates: { lat: 40.8125, lng: -74.2120 }, 
+    placeImage: 'https://placehold.co/200x150/E70F72/FFFFFF.png?text=Trend+Coffee'
+  },
+  {
+    id: 'moment-added-2',
+    userId: MOCK_USER_ID,
+    placeName: 'Montclair Art Museum', // Repeated visit
+    timestamp: daysAgo(1, 6, 0), // Thu, May 23rd, 6:00 AM
+    coordinates: { lat: 40.8137, lng: -74.2097 }, 
+    placeImage: 'https://placehold.co/200x150/7F7F7F/FFFFFF.png?text=Art+Museum+Visit+2'
+  },
+  {
+    id: 'moment-added-3',
+    userId: MOCK_USER_ID,
+    placeName: 'Whole Foods Market',
+    timestamp: daysAgo(0, 2, 0), // Fri, May 24th, 10:00 AM (Current day)
+    coordinates: { lat: 40.8180, lng: -74.2100 }, 
+    placeImage: 'https://placehold.co/200x150/262626/FFFFFF.png?text=Whole+Foods'
+  },
+  {
+    id: 'moment-6', // Older moment, should not appear in recap
     userId: MOCK_USER_ID,
     placeName: 'Outdated Cafe',
     timestamp: daysAgo(10), 
@@ -311,7 +335,7 @@ export const MOCK_CHAT_CONVERSATIONS: ChatConversation[] = [
     ].map(p => ({id: p.id, name: p.name, images: p.images})),
     lastMessage: {
       text: 'Hey! Great to match with you.',
-      timestamp: daysAgo(0, 0, 5), // 5 minutes ago from baseDate
+      timestamp: daysAgo(0, 0, 5), 
       senderId: 'user-1',
     },
   },
@@ -324,7 +348,7 @@ export const MOCK_CHAT_CONVERSATIONS: ChatConversation[] = [
     ].map(p => ({id: p.id, name: p.name, images: p.images})),
     lastMessage: {
       text: 'Loved your profile prompts! :)',
-      timestamp: daysAgo(0, 0, 10), // 10 minutes ago from baseDate
+      timestamp: daysAgo(0, 0, 10), 
       senderId: MOCK_USER_ID,
     },
   },
@@ -380,7 +404,6 @@ export const MOCK_CHAT_MESSAGES: { [chatId: string]: ChatMessage[] } = {
 export const getCurrentUser = (): UserProfile => {
   const user = MOCK_USERS.find(user => user.id === MOCK_USER_ID);
   if (!user) {
-    // Fallback in case the mock user isn't found, though it should always be.
     return {
         id: MOCK_USER_ID,
         name: "Current User",
@@ -406,7 +429,3 @@ export const getCurrentUser = (): UserProfile => {
   }
   return user;
 };
-
-    
-
-    

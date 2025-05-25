@@ -2,7 +2,7 @@
 import { AppLayout } from "@/components/layout/app-layout";
 import { Card, CardContent, CardHeader, CardTitle, CardDescription, CardFooter } from "@/components/ui/card";
 import { Sparkles, PlusCircle, ClipboardList, Users, MessageSquare, Route, MapPin, CalendarDays, Users2, TrendingUp, Activity, Map } from "lucide-react";
-import { getCurrentUser, MOCK_MOMENTS, MOCK_CROSSED_PATHS_USERS, MOCK_CHAT_CONVERSATIONS, MOCK_USER_ID, MOCK_USERS } from "@/lib/mock-data";
+import { getCurrentUser, MOCK_MOMENTS, MOCK_CROSSED_PATHS_USERS, MOCK_CHAT_CONVERSATIONS, MOCK_USER_ID, MOCK_USERS, baseDate } from "@/lib/mock-data";
 import { Button } from "@/components/ui/button";
 import { subDays, isAfter, format, getDay } from "date-fns";
 import { MomentsMap } from "@/components/dashboard/moments-map"; 
@@ -20,7 +20,8 @@ export default function DashboardPage() {
     { title: "Active Chats", value: activeChatsCount, icon: MessageSquare, color: "text-purple-500" },
   ];
 
-  const oneWeekAgo = subDays(new Date(), 7);
+  // Use baseDate from mock-data for consistent weekly recap calculation
+  const oneWeekAgo = subDays(baseDate, 7);
   const momentsThisWeek = MOCK_MOMENTS
     .filter(moment => moment.userId === MOCK_USER_ID && isAfter(new Date(moment.timestamp), oneWeekAgo))
     .sort((a, b) => new Date(b.timestamp).getTime() - new Date(a.timestamp).getTime());
@@ -161,7 +162,7 @@ export default function DashboardPage() {
                 </div>
 
                 <div>
-                  <h4 className="text-lg font-semibold mb-3 text-foreground">Places You've Been:</h4>
+                  <h4 className="text-lg font-semibold mb-3 text-foreground">Places You've Been This Week:</h4>
                   <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
                     {momentsThisWeek.map(moment => {
                       const matchedUser = moment.potentialMatchId ? MOCK_USERS.find(u => u.id === moment.potentialMatchId) : null;
