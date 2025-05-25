@@ -97,15 +97,19 @@ export async function getAiDetailedMatchSuggestions(): Promise<DetailedMatchSugg
     const newDemoUserIds = ['user-4', 'user-5', 'user-6'];
     const otherUsersForDemo = MOCK_USERS.filter(user => newDemoUserIds.includes(user.id));
 
-    if (otherUsersForDemo.length < 3) {
-        console.warn("Not enough new demo users found for Weekly Vibe Signals. Ensure user-4, user-5, and user-6 exist.");
-        // Fallback to general users if specific demo users are not found
-        const fallbackUsers = MOCK_USERS.filter(user => user.id !== MOCK_USER_ID && !newDemoUserIds.includes(user.id)).slice(0, 3 - otherUsersForDemo.length);
-        otherUsersForDemo.push(...fallbackUsers);
+    if (otherUsersForDemo.length === 0) {
+        console.warn("None of the specified demo users (user-4, user-5, user-6) were found in MOCK_USERS. 'Weekly Vibe Signals' will be empty.");
+    } else if (otherUsersForDemo.length < 3) {
+        console.warn(`Found only ${otherUsersForDemo.length} of the 3 specified demo users (user-4, user-5, user-6). Proceeding with available ones.`);
     }
 
 
     // Sanitize profiles to match the Zod schema expected by the flow
+    // Only proceed if there are users to sanitize and suggest
+    if (otherUsersForDemo.length === 0) {
+      return [];
+    }
+
     const sanitizedCurrentUserProfile = await sanitizeUserProfileForPrompt(currentUser);
     const sanitizedOtherUserProfiles = await Promise.all(otherUsersForDemo.map(user => sanitizeUserProfileForPrompt(user)));
     
@@ -117,9 +121,11 @@ export async function getAiDetailedMatchSuggestions(): Promise<DetailedMatchSugg
     const result = await suggestDetailedMatches(input);
     
     return result.detailedMatches.map(detailedMatch => {
+      // Find the full user profile from the original MOCK_USERS list to ensure all data is present
       const fullUserProfile = MOCK_USERS.find(u => u.id === detailedMatch.user.id);
       return {
         ...detailedMatch,
+        // Ensure the user object in the result is the full UserProfile, not just the Zod schema subset
         user: fullUserProfile || (detailedMatch.user as UserProfile), 
       };
     });
