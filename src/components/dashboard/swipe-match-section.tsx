@@ -3,6 +3,7 @@
 
 import { useState, useEffect } from "react"; 
 import { MOCK_USERS, MOCK_USER_ID } from "@/lib/mock-data";
+import type { UserProfile } from "@/lib/types"; // Added UserProfile type import
 import { MatchCard } from "./match-card";
 import { Button } from "@/components/ui/button";
 import { RefreshCw, Users, Undo2 } from "lucide-react";
@@ -19,20 +20,28 @@ import {
 } from "@/components/ui/alert-dialog";
 
 export function SwipeMatchSection() {
-  const [initialUsers, setInitialUsers] = useState(MOCK_USERS.filter(user => user.id !== MOCK_USER_ID));
-  const [users, setUsers] = useState(initialUsers);
+  const [initialUsers, setInitialUsers] = useState<UserProfile[]>([]);
+  const [users, setUsers] = useState<UserProfile[]>([]);
   const [currentIndex, setCurrentIndex] = useState(0);
+  const [previousIndex, setPreviousIndex] = useState<number | null>(null); // For undo
   const { toast } = useToast();
   const [showMatchAnimation, setShowMatchAnimation] = useState(false);
   const [matchedUserName, setMatchedUserName] = useState("");
 
   useEffect(() => {
-    setUsers(prevUsers => [...prevUsers].sort(() => 0.5 - Math.random()));
+    // Filter and shuffle users only on the client-side
+    const filtered = MOCK_USERS.filter(user => user.id !== MOCK_USER_ID);
+    setInitialUsers(filtered);
+    setUsers([...filtered].sort(() => 0.5 - Math.random()));
+    setCurrentIndex(0);
+    setPreviousIndex(null); // Reset undo state on refresh/initial load
   }, []); 
 
   const handleAction = (userId: string, action: "like" | "pass") => {
     const actionUser = users.find(u => u.id === userId);
     if (!actionUser) return;
+
+    setPreviousIndex(currentIndex); // Store current index for potential undo
 
     if (action === "like") {
       const isMutualMatch = Math.random() < 0.4; 
@@ -60,23 +69,43 @@ export function SwipeMatchSection() {
         title: "That's everyone for now!",
         description: "Check back later for new profiles.",
       });
+      // Optionally, keep current index at users.length to show the "No More Profiles" screen
+      // Or loop back / show a specific "end of stack" UI
     }
   };
 
   const handleLike = (userId: string) => handleAction(userId, "like");
   const handlePass = (userId: string) => handleAction(userId, "pass");
+
   const handleUndo = () => {
-    toast({ title: "Undo Clicked", description: "Undo functionality not yet implemented." });
+    if (previousIndex !== null && previousIndex < users.length) {
+      const lastUser = users[previousIndex];
+      setCurrentIndex(previousIndex);
+      setPreviousIndex(null); // Clear previous index after undoing
+      toast({ title: "Undo Successful", description: `You are now viewing ${lastUser?.name}'s profile again.` });
+    } else {
+      toast({ title: "Nothing to Undo", description: "You haven't swiped anyone yet or already undid.", variant: "destructive" });
+    }
   };
 
   const refreshUsers = () => {
-    const newInitialUsers = MOCK_USERS.filter(user => user.id !== MOCK_USER_ID);
-    setInitialUsers(newInitialUsers);
-    setUsers([...newInitialUsers].sort(() => 0.5 - Math.random()));
+    const newFilteredUsers = MOCK_USERS.filter(user => user.id !== MOCK_USER_ID);
+    setInitialUsers(newFilteredUsers); // Update initialUsers if needed for other logic
+    setUsers([...newFilteredUsers].sort(() => 0.5 - Math.random()));
     setCurrentIndex(0);
+    setPreviousIndex(null); // Reset undo state
     toast({ title: "Profiles Refreshed!", description: "Here are some new faces."});
   };
 
+  if (users.length === 0 && initialUsers.length === 0) { // Handles initial loading state before useEffect runs
+    return (
+      <div className="text-center py-10 flex flex-col items-center">
+        <Users className="w-16 h-16 text-muted-foreground mb-4 animate-pulse" />
+        <h3 className="text-xl font-semibold mb-2">Loading Profiles...</h3>
+      </div>
+    );
+  }
+  
   if (users.length === 0 || currentIndex >= users.length) {
     return (
       <div className="text-center py-10 flex flex-col items-center">
@@ -84,7 +113,7 @@ export function SwipeMatchSection() {
         <h3 className="text-xl font-semibold mb-2">No More Profiles</h3>
         <p className="text-muted-foreground mb-4">You've seen everyone for now. Try refreshing or check back later.</p>
         <div className="flex gap-2 mt-4">
-            <Button onClick={handleUndo} variant="outline">
+            <Button onClick={handleUndo} variant="outline" disabled={previousIndex === null}>
                 <Undo2 className="mr-2 h-4 w-4" /> Undo
             </Button>
             <Button onClick={refreshUsers} variant="outline">
@@ -106,7 +135,7 @@ export function SwipeMatchSection() {
         onPass={handlePass}
       />
       <div className="flex gap-2 mt-4">
-        <Button onClick={handleUndo} variant="outline">
+        <Button onClick={handleUndo} variant="outline" disabled={previousIndex === null}>
           <Undo2 className="mr-2 h-4 w-4" /> Undo
         </Button>
         <Button onClick={refreshUsers} variant="outline">
@@ -172,3 +201,4 @@ function HeartHandshakeIcon(props: React.SVGProps<SVGSVGElement>) {
     </svg>
   )
 }
+
