@@ -9,7 +9,8 @@ import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Textarea } from "@/components/ui/textarea";
 import { Badge } from "@/components/ui/badge";
-import { Feather, MapPin, Clock, CheckCircle, Search, ArrowLeft, MessageSquare, Smile, UserCheck } from "lucide-react";
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
+import { Feather, MapPin, Clock, CheckCircle, Search, ArrowLeft, MessageSquare, Smile, UserCheck, Palette, UsersIcon } from "lucide-react";
 import { format } from "date-fns";
 import { useToast } from "@/hooks/use-toast";
 import { GoogleMap, LoadScriptNext, StandaloneSearchBox, MarkerF } from '@react-google-maps/api';
@@ -42,6 +43,24 @@ const mapStyles = [
 const libraries: ("places")[] = ['places'];
 const emotionTagsOptions = ["Excited", "Curious", "Fleeting", "Didn't get to say hi", "Hopeful", "Nostalgic"];
 
+const ethnicityOptions = [
+  "White/Caucasian",
+  "Black/African Descent",
+  "East Asian",
+  "Hispanic/Latino",
+  "Middle Eastern",
+  "Native American",
+  "Pacific Islander",
+  "South Asian",
+  "Southeast Asian",
+  "Other",
+  "Prefer not to describe",
+];
+
+const hairColourOptions = [
+  "Black", "Brown", "Blonde", "Red", "Grey", "White", "Other", "Bald", "Prefer not to describe"
+];
+
 
 export default function LogMomentPage() {
   const [currentStep, setCurrentStep] = useState(1);
@@ -58,8 +77,10 @@ export default function LogMomentPage() {
   
   // Step 2 State
   const [momentDescription, setMomentDescription] = useState("");
-  const [selectedEmotionTags, setSelectedEmotionTags] = useState<string[]>([]); // For actual selection logic later
+  const [selectedEmotionTags, setSelectedEmotionTags] = useState<string[]>([]);
   const [personDescription, setPersonDescription] = useState("");
+  const [matchEthnicity, setMatchEthnicity] = useState<string>("Prefer not to describe");
+  const [matchHairColour, setMatchHairColour] = useState<string>("Prefer not to describe");
 
 
   const { toast } = useToast();
@@ -121,7 +142,7 @@ export default function LogMomentPage() {
       const newCoords = { lat: e.latLng.lat(), lng: e.latLng.lng() };
       setCoordinates(newCoords);
       setLocationName("Pinned Location"); 
-      setLocationAddress(`Lat: ${newCoords.lat.toFixed(4)}, Lng: ${newCoords.lng.toFixed(4)}`); 
+      setLocationAddress(`Lat: ${newCoords.lat.toFixed(4)}, Lng: ${newCoords.lng.toFixed(4)}`);
       if (mapRef.current) {
         mapRef.current.panTo(newCoords);
       }
@@ -150,6 +171,18 @@ export default function LogMomentPage() {
         });
         return;
     }
+    console.log("Moment Saved:", {
+      locationName,
+      locationAddress,
+      coordinates,
+      timestamp: new Date().toISOString(),
+      momentDescription,
+      selectedEmotionTags,
+      matchEthnicity,
+      matchHairColour,
+      personDescription,
+      userId: MOCK_USER_ID,
+    });
     toast({
       title: "Moment Details Logged!",
       description: `Location: ${locationName}. Description: ${momentDescription.substring(0,30)}... Next: Visual feedback (Coming soon)`,
@@ -160,6 +193,8 @@ export default function LogMomentPage() {
     // setMomentDescription(""); 
     // setPersonDescription("");
     // setSelectedEmotionTags([]);
+    // setMatchEthnicity("Prefer not to describe");
+    // setMatchHairColour("Prefer not to describe");
   };
 
   const characterLimit = 300;
@@ -280,6 +315,49 @@ export default function LogMomentPage() {
             <>
               <CardContent className="space-y-6 py-6">
                 <div className="text-center mb-4">
+                    <h3 className="text-lg font-semibold text-primary/90">Did anyone catch your eye? (Optional)</h3>
+                </div>
+
+                <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                    <div>
+                        <Label htmlFor="matchEthnicity" className="flex items-center gap-1.5 mb-1.5">
+                            <UsersIcon className="w-4 h-4 text-muted-foreground" />
+                            Their Ethnicity
+                        </Label>
+                        <Select value={matchEthnicity} onValueChange={setMatchEthnicity}>
+                            <SelectTrigger className="mt-1 bg-input">
+                                <SelectValue placeholder="Select ethnicity" />
+                            </SelectTrigger>
+                            <SelectContent className="bg-popover">
+                                {ethnicityOptions.map((option) => (
+                                <SelectItem key={option} value={option}>
+                                    {option}
+                                </SelectItem>
+                                ))}
+                            </SelectContent>
+                        </Select>
+                    </div>
+                    <div>
+                        <Label htmlFor="matchHairColour" className="flex items-center gap-1.5 mb-1.5">
+                            <Palette className="w-4 h-4 text-muted-foreground" />
+                            Their Hair Colour
+                        </Label>
+                        <Select value={matchHairColour} onValueChange={setMatchHairColour}>
+                            <SelectTrigger className="mt-1 bg-input">
+                                <SelectValue placeholder="Select hair colour" />
+                            </SelectTrigger>
+                            <SelectContent className="bg-popover">
+                                {hairColourOptions.map((option) => (
+                                <SelectItem key={option} value={option}>
+                                    {option}
+                                </SelectItem>
+                                ))}
+                            </SelectContent>
+                        </Select>
+                    </div>
+                </div>
+
+                <div className="text-center mt-6 mb-2">
                     <h3 className="text-xl font-semibold text-primary">What was the moment like?</h3>
                 </div>
 
@@ -327,17 +405,17 @@ export default function LogMomentPage() {
                 <div>
                   <Label htmlFor="personDescription" className="flex items-center gap-1.5 mb-1.5">
                      <UserCheck className="w-4 h-4 text-muted-foreground" />
-                    Noticed someone? (Optional)
+                    More details about them? (Optional)
                   </Label>
                   <Textarea
                     id="personDescription"
                     value={personDescription}
                     onChange={(e) => setPersonDescription(e.target.value)}
-                    placeholder="e.g., They had curly hair and a navy hoodie."
+                    placeholder="e.g., They had curly hair and a navy hoodie. Or, they were reading a book I love."
                     rows={3}
                     className="bg-input"
                   />
-                   <p className="text-xs text-muted-foreground mt-1">Describe anyone who stood out, if applicable.</p>
+                   <p className="text-xs text-muted-foreground mt-1">Any other notable details about the person or the interaction.</p>
                 </div>
 
               </CardContent>
@@ -364,3 +442,8 @@ export default function LogMomentPage() {
     </AppLayout>
   );
 }
+    
+
+    
+
+    
