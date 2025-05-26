@@ -89,7 +89,6 @@ export function AppSidebar() {
                 src={currentUser.images[0]} 
                 alt={currentUser.name} 
                 data-ai-hint="profile photo"
-                unoptimized={currentUser.images[0]?.startsWith('data:')}
               />
               <AvatarFallback>{currentUser.name.substring(0, 1)}</AvatarFallback>
             </Avatar>
