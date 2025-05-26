@@ -25,7 +25,7 @@ const SuggestVibeTagsOutputSchema = z.object({
   suggestedTags: z
     .array(z.string())
     .describe(
-      'An array of 5-7 new, distinct, and diverse vibe tag suggestions relevant to the user bio and existing tags, in lowercase.'
+      'An array of up to 7 new, distinct, and diverse vibe tag suggestions relevant to the user bio and existing tags, in lowercase. Quality over quantity.'
     ),
 });
 export type SuggestVibeTagsOutput = z.infer<
@@ -43,7 +43,7 @@ const prompt = ai.definePrompt({
   input: {schema: SuggestVibeTagsInputSchema},
   output: {schema: SuggestVibeTagsOutputSchema},
   prompt: `You are an AI assistant specializing in crafting compelling user profiles. Your task is to suggest new vibe tags.
-Analyze the user's biography and their existing vibe tags. Based on this, generate 5 to 7 *new* and *diverse* vibe tags that offer fresh perspectives or highlight unstated but implied interests or personality traits.
+Analyze the user's biography and their existing vibe tags. Based on this, generate a list of new and diverse vibe tags (aim for around 5, but fewer high-quality, distinct tags are acceptable) that offer fresh perspectives or highlight unstated but implied interests or personality traits.
 The suggested tags must be:
 - Relevant to the user's bio and existing tags.
 - Concise (ideally 1-2 words).
@@ -62,7 +62,7 @@ Existing Vibe Tags:
 None
 {{/if}}
 
-Provide your distinct suggestions in the 'suggestedTags' output field. Focus on creativity and expanding the user's self-representation.
+Provide your distinct suggestions in the 'suggestedTags' output field. Focus on creativity and expanding the user's self-representation. Ensure suggested tags are genuinely new and not just slight variations of existing ones.
 `,
 });
 
