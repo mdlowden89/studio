@@ -42,18 +42,19 @@ const prompt = ai.definePrompt({
   name: 'suggestVibeTagsPrompt',
   input: {schema: SuggestVibeTagsInputSchema},
   output: {schema: SuggestVibeTagsOutputSchema},
-  prompt: `You are an AI assistant specializing in crafting compelling user profiles. Your task is to suggest new vibe tags.
-Analyze the user's biography and their existing vibe tags. Based on this, generate a list of new and diverse vibe tags (aim for around 5, but fewer high-quality, distinct tags are acceptable) that offer fresh perspectives or highlight unstated but implied interests or personality traits.
+  prompt: `You are an AI assistant specializing in crafting compelling user profiles. Your task is to suggest vibe tags.
+Analyze the user's biography and their existing vibe tags for context.
+Based on this, generate a list of diverse vibe tags (aim for around 5, but fewer high-quality, distinct tags are acceptable) that offer fresh perspectives or highlight unstated but implied interests or personality traits reflected in their bio.
+
 The suggested tags must be:
-- Relevant to the user's bio and existing tags.
+- Relevant to the user's bio.
 - Concise (ideally 1-2 words).
 - In lowercase.
-- **Crucially, they must NOT be present in the user's existing vibe tags list.**
 
 User Bio:
 "{{userBio}}"
 
-Existing Vibe Tags:
+Existing Vibe Tags (for context, try to offer something different):
 {{#if existingTags}}
 {{#each existingTags}}
 - {{this}}
@@ -62,7 +63,7 @@ Existing Vibe Tags:
 None
 {{/if}}
 
-Provide your distinct suggestions in the 'suggestedTags' output field. Focus on creativity and expanding the user's self-representation. Ensure suggested tags are genuinely new and not just slight variations of existing ones.
+Provide your suggestions in the 'suggestedTags' output field. Focus on creativity and identifying new aspects from the bio that might not be fully covered by existing tags.
 `,
 });
 
