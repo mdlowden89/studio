@@ -1,4 +1,7 @@
 
+"use client";
+
+import { useState, useEffect } from 'react';
 import type { Moment as MomentType, UserProfile } from "@/lib/types";
 import { Card, CardHeader, CardTitle, CardDescription, CardContent } from "@/components/ui/card";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
@@ -12,6 +15,15 @@ interface MomentCardProps {
 }
 
 export function MomentCard({ moment, potentialMatchUser }: MomentCardProps) {
+  const [formattedTime, setFormattedTime] = useState<string>("..."); // Initial placeholder for time
+
+  useEffect(() => {
+    // This effect runs only on the client after hydration
+    const date = new Date(moment.timestamp);
+    setFormattedTime(format(date, "p")); // "p" is for localized time, e.g., 2:30 PM
+  }, [moment.timestamp]); // Re-run if the moment timestamp changes
+
+  // Calculate momentDate directly, as date formatting like "MMM d, yyyy" is less sensitive to hydration issues
   const momentDate = new Date(moment.timestamp);
 
   return (
@@ -24,7 +36,7 @@ export function MomentCard({ moment, potentialMatchUser }: MomentCardProps) {
           </CardTitle>
           <div className="text-xs text-muted-foreground flex items-center gap-1">
             <CalendarDays className="w-3 h-3"/>
-            {format(momentDate, "MMM d, yyyy")} - {format(momentDate, "p")}
+            {format(momentDate, "MMM d, yyyy")} - {formattedTime}
           </div>
         </div>
       </CardHeader>
@@ -44,7 +56,7 @@ export function MomentCard({ moment, potentialMatchUser }: MomentCardProps) {
               <p className="text-xs text-muted-foreground line-clamp-2">{potentialMatchUser.bio}</p>
             </div>
             <Image 
-              src="https://placehold.co/600x800.png" 
+              src="https://placehold.co/60x80.png" 
               alt="Place vibe" 
               width={60} 
               height={80} 
