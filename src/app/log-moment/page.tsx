@@ -10,11 +10,12 @@ import { Label } from "@/components/ui/label";
 import { Textarea } from "@/components/ui/textarea";
 import { Badge } from "@/components/ui/badge";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
-import { Feather, MapPin, Clock, CheckCircle, Search, ArrowLeft, MessageSquare, Smile, UserCheck, Palette, UsersIcon } from "lucide-react";
+import { Feather, MapPin, Clock, CheckCircle, Search, ArrowLeft, MessageSquare, Smile, UserCheck, Palette, UsersIcon, Sparkles, LogOut } from "lucide-react";
 import { format } from "date-fns";
 import { useToast } from "@/hooks/use-toast";
 import { GoogleMap, LoadScriptNext, StandaloneSearchBox, MarkerF } from '@react-google-maps/api';
 import { MOCK_USER_ID, getCurrentUser } from "@/lib/mock-data";
+import Link from "next/link";
 
 const mapContainerStyle = {
   width: '100%',
@@ -61,14 +62,24 @@ const hairColourOptions = [
   "Black", "Brown", "Blonde", "Red", "Grey", "White", "Other", "Bald", "Prefer not to describe"
 ];
 
+const initialLocationName = "";
+const initialLocationAddress = "";
+const initialCoordinates = null;
+const initialMomentDescription = "";
+const initialSelectedEmotionTags: string[] = [];
+const initialPersonDescription = "";
+const initialMatchEthnicity = "Prefer not to describe";
+const initialMatchHairColour = "Prefer not to describe";
+
 
 export default function LogMomentPage() {
   const [currentStep, setCurrentStep] = useState(1);
 
   // Step 1 State
-  const [locationName, setLocationName] = useState<string>("");
-  const [locationAddress, setLocationAddress] = useState<string>("");
-  const [coordinates, setCoordinates] = useState<{ lat: number; lng: number } | null>(null);
+  const [locationName, setLocationName] = useState<string>(initialLocationName);
+  const [locationAddress, setLocationAddress] = useState<string>(initialLocationAddress);
+  const [coordinates, setCoordinates] = useState<{ lat: number; lng: number } | null>(initialCoordinates);
+  const [markerPosition, setMarkerPosition] = useState<{ lat: number; lng: number } | null>(initialCoordinates);
   const [formattedTimestamp, setFormattedTimestamp] = useState<string | null>(null);
   const [mapsApiKey, setMapsApiKey] = useState<string | undefined>(undefined);
   const [isMounted, setIsMounted] = useState(false);
@@ -76,11 +87,11 @@ export default function LogMomentPage() {
   const mapRef = useRef<google.maps.Map | null>(null);
   
   // Step 2 State
-  const [momentDescription, setMomentDescription] = useState("");
-  const [selectedEmotionTags, setSelectedEmotionTags] = useState<string[]>([]);
-  const [personDescription, setPersonDescription] = useState("");
-  const [matchEthnicity, setMatchEthnicity] = useState<string>("Prefer not to describe");
-  const [matchHairColour, setMatchHairColour] = useState<string>("Prefer not to describe");
+  const [momentDescription, setMomentDescription] = useState(initialMomentDescription);
+  const [selectedEmotionTags, setSelectedEmotionTags] = useState<string[]>(initialSelectedEmotionTags);
+  const [personDescription, setPersonDescription] = useState(initialPersonDescription);
+  const [matchEthnicity, setMatchEthnicity] = useState<string>(initialMatchEthnicity);
+  const [matchHairColour, setMatchHairColour] = useState<string>(initialMatchHairColour);
 
 
   const { toast } = useToast();
@@ -94,12 +105,17 @@ export default function LogMomentPage() {
     const now = new Date();
     setFormattedTimestamp(format(now, "h:mm bbb, EEEE"));
 
-    if (currentUser.locationName && currentUser.locationCoordinates && currentStep === 1) {
+    if (currentStep === 1 && !locationName && currentUser.locationName && currentUser.locationCoordinates) {
       setLocationName(currentUser.locationName);
       setLocationAddress(currentUser.locationAddress || currentUser.locationName);
       setCoordinates(currentUser.locationCoordinates);
+      setMarkerPosition(currentUser.locationCoordinates);
+      if (mapRef.current) {
+          mapRef.current.panTo(currentUser.locationCoordinates);
+          mapRef.current.setZoom(15);
+      }
     }
-  }, [currentUser, currentStep]);
+  }, [currentUser, currentStep, locationName]);
 
 
   const onLoadSearchBox = useCallback((ref: google.maps.places.SearchBox) => {
@@ -120,6 +136,7 @@ export default function LogMomentPage() {
         setLocationAddress(newAddr); 
         setLocationName(newName);    
         setCoordinates(newCoords);
+        setMarkerPosition(newCoords);
 
         if (newCoords && mapRef.current) {
           mapRef.current.panTo(newCoords);
@@ -141,6 +158,7 @@ export default function LogMomentPage() {
     if (e.latLng) {
       const newCoords = { lat: e.latLng.lat(), lng: e.latLng.lng() };
       setCoordinates(newCoords);
+      setMarkerPosition(newCoords);
       setLocationName("Pinned Location"); 
       setLocationAddress(`Lat: ${newCoords.lat.toFixed(4)}, Lng: ${newCoords.lng.toFixed(4)}`);
       if (mapRef.current) {
@@ -162,7 +180,6 @@ export default function LogMomentPage() {
   };
 
   const handleSaveMoment = () => {
-    // Basic validation for Step 2
     if (momentDescription.trim() === "") {
         toast({
             title: "Description Missing",
@@ -185,16 +202,30 @@ export default function LogMomentPage() {
     });
     toast({
       title: "Moment Details Logged!",
-      description: `Location: ${locationName}. Description: ${momentDescription.substring(0,30)}... Next: Visual feedback (Coming soon)`,
+      description: `Location: ${locationName}. Description: ${momentDescription.substring(0,30)}...`,
     });
-    // Proceed to Step 3 in the future
-    // For now, perhaps reset or navigate:
-    // setCurrentStep(1); 
-    // setMomentDescription(""); 
-    // setPersonDescription("");
-    // setSelectedEmotionTags([]);
-    // setMatchEthnicity("Prefer not to describe");
-    // setMatchHairColour("Prefer not to describe");
+    setCurrentStep(3);
+  };
+
+  const handleLogAnother = () => {
+    setLocationName(initialLocationName);
+    setLocationAddress(initialLocationAddress);
+    setCoordinates(initialCoordinates);
+    setMarkerPosition(initialCoordinates);
+    if (mapRef.current) {
+      mapRef.current.panTo(initialMapCenter);
+      mapRef.current.setZoom(10);
+    }
+
+    setMomentDescription(initialMomentDescription);
+    setSelectedEmotionTags(initialSelectedEmotionTags);
+    setPersonDescription(initialPersonDescription);
+    setMatchEthnicity(initialMatchEthnicity);
+    setMatchHairColour(initialMatchHairColour);
+    
+    const now = new Date();
+    setFormattedTimestamp(format(now, "h:mm bbb, EEEE"));
+    setCurrentStep(1);
   };
 
   const characterLimit = 300;
@@ -218,10 +249,14 @@ export default function LogMomentPage() {
               <Feather className="w-8 h-8 text-primary" />
               <div>
                 <CardTitle className="text-3xl font-bold">
-                  {currentStep === 1 ? "Log a Crossing or Moment" : "Describe the Moment"}
+                  {currentStep === 1 && "Log a Crossing or Moment"}
+                  {currentStep === 2 && "Describe the Moment"}
+                  {currentStep === 3 && "Moment Logged Successfully!"}
                 </CardTitle>
                 <CardDescription className="text-muted-foreground">
-                  {currentStep === 1 ? "Step 1: Set Your Location" : "Step 2: Add Details"}
+                  {currentStep === 1 && "Step 1: Set Your Location"}
+                  {currentStep === 2 && "Step 2: Add Details"}
+                  {currentStep === 3 && "Your moment is saved."}
                 </CardDescription>
               </div>
             </div>
@@ -265,12 +300,12 @@ export default function LogMomentPage() {
                         <GoogleMap
                           mapContainerStyle={mapContainerStyle}
                           center={initialMapCenter}
-                          zoom={coordinates ? 15 : 10}
+                          zoom={markerPosition ? 15 : 10}
                           onLoad={onMapLoad}
                           onClick={onMapClick}
                           options={{ styles: mapStyles, streetViewControl: false, mapTypeControl: false, fullscreenControl: false, gestureHandling: 'greedy' }}
                         >
-                          {coordinates && <MarkerF position={coordinates} />}
+                          {markerPosition && <MarkerF position={markerPosition} />}
                         </GoogleMap>
                       </div>
                     </div>
@@ -437,13 +472,40 @@ export default function LogMomentPage() {
               </CardFooter>
             </>
           )}
+
+           {currentStep === 3 && (
+            <>
+              <CardContent className="space-y-6 py-10 text-center flex flex-col items-center">
+                <Sparkles className="w-16 h-16 text-primary animate-pulse mb-4" />
+                <p className="text-lg text-foreground">
+                  Moment saved. If someone else remembers this moment too… we’ll reconnect you.
+                </p>
+              </CardContent>
+              <CardFooter className="border-t pt-6 flex flex-col sm:flex-row gap-3">
+                <Button 
+                  onClick={handleLogAnother} 
+                  variant="outline"
+                  className="w-full sm:w-auto"
+                >
+                  <Feather className="mr-2 h-5 w-5" />
+                  Log Another Moment
+                </Button>
+                <Link href="/moments" passHref className="w-full sm:w-auto">
+                  <Button 
+                    className="w-full bg-primary hover:bg-primary/90 text-primary-foreground"
+                  >
+                    <LogOut className="mr-2 h-5 w-5 transform rotate-90" /> {/* Using LogOut rotated for "trail" icon */}
+                    View Your Trail
+                  </Button>
+                </Link>
+              </CardFooter>
+            </>
+          )}
         </Card>
       </div>
     </AppLayout>
   );
 }
-    
-
     
 
     
