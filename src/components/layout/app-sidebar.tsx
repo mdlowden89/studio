@@ -7,7 +7,6 @@ import {
   MapPin,
   MessageSquare,
   UserCircle,
-  Sparkles,
   Home,
   LogOut,
   Search,
@@ -30,7 +29,6 @@ import { CrossdLogoIcon } from "@/components/icons/crossd-logo";
 
 const navItems = [
   { href: "/dashboard", label: "Dashboard", icon: Home },
-  { href: "/ai-matches", label: "Vibe Matches", icon: Sparkles },
   { href: "/discover", label: "Discover", icon: Search },
   { href: "/moments", label: "Moments", icon: MapPin },
   { href: "/chat", label: "Chats", icon: MessageSquare },
@@ -91,6 +89,7 @@ export function AppSidebar() {
                 src={currentUser.images[0]} 
                 alt={currentUser.name} 
                 data-ai-hint="profile photo"
+                unoptimized={currentUser.images[0]?.startsWith('data:')}
               />
               <AvatarFallback>{currentUser.name.substring(0, 1)}</AvatarFallback>
             </Avatar>
