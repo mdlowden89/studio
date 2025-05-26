@@ -5,13 +5,14 @@ import { Sparkles, PlusCircle, ClipboardList, Users, MessageSquare, Route, MapPi
 import { getCurrentUser, MOCK_MOMENTS, MOCK_CROSSED_PATHS_USERS, MOCK_CHAT_CONVERSATIONS, MOCK_USER_ID, MOCK_USERS, baseDate } from "@/lib/mock-data";
 import { Button } from "@/components/ui/button";
 import { subDays, isAfter, format, getDay } from "date-fns";
-import { MomentsMap } from "@/components/dashboard/moments-map"; 
+import { MomentsMap } from "@/components/dashboard/moments-map";
+import Link from "next/link";
 
 export default function DashboardPage() {
   const currentUser = getCurrentUser();
 
   const momentsLoggedCount = MOCK_MOMENTS.filter(moment => moment.userId === MOCK_USER_ID).length;
-  const potentialMatchesCount = MOCK_CROSSED_PATHS_USERS.length; 
+  const potentialMatchesCount = MOCK_CROSSED_PATHS_USERS.length;
   const activeChatsCount = MOCK_CHAT_CONVERSATIONS.length;
 
   const stats = [
@@ -28,7 +29,7 @@ export default function DashboardPage() {
 
   // Weekly Recap Insights
   const distinctPlacesVisitedCount = new Set(momentsThisWeek.map(m => m.placeName)).size;
-  
+
   const dayCounts = momentsThisWeek.reduce((acc, moment) => {
     const day = getDay(new Date(moment.timestamp)); // 0 for Sunday, 1 for Monday, etc.
     acc[day] = (acc[day] || 0) + 1;
@@ -65,10 +66,12 @@ export default function DashboardPage() {
             </div>
           </CardHeader>
           <CardFooter className="flex justify-end p-6">
-            <Button className="bg-primary hover:bg-primary/90 text-primary-foreground">
-              <PlusCircle className="mr-2 h-5 w-5" />
-              Log a Crossing/Moment
-            </Button>
+            <Link href="/log-moment" passHref>
+              <Button className="bg-primary hover:bg-primary/90 text-primary-foreground">
+                <PlusCircle className="mr-2 h-5 w-5" />
+                Log a Crossing/Moment
+              </Button>
+            </Link>
           </CardFooter>
         </Card>
 
@@ -198,5 +201,3 @@ export default function DashboardPage() {
     </AppLayout>
   );
 }
-
-    
