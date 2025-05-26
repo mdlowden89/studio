@@ -11,7 +11,7 @@ import { CheckCircle, HelpCircle, Sparkles, ThumbsUp, ThumbsDown, MapPin, Clock,
 import { useParams, useRouter } from "next/navigation";
 import Link from "next/link";
 import { Avatar, AvatarImage, AvatarFallback } from "@/components/ui/avatar";
-import { format } from "date-fns"; // Import format from date-fns
+import { format } from "date-fns";
 
 // Mock data for the moment User A logged about User B (the current user)
 // In a real app, this would be fetched based on params.momentId
@@ -33,19 +33,19 @@ export default function ConfirmMomentPage() {
   const { toast } = useToast();
   const currentUserB = getCurrentUser(); // This is User B for this demo
 
-  // Simulate fetching moment details based on params.momentId
   const momentId = params.momentId as string;
   const loggedMoment = MOCK_LOGGED_MOMENT_DETAILS; 
   const userA = MOCK_USERS.find(u => u.id === loggedMoment.userA_id);
 
   const handleConfirmMatch = () => {
+    if (!userA) return;
     toast({
       title: "Match Confirmed!",
-      description: `Great! You can now connect with ${userA?.name || 'them'}.`,
-      duration: 5000,
+      description: `Great! You and ${userA.name} both acknowledged this moment.`,
+      duration: 3000,
     });
-    // In a real app, this would trigger backend logic and potentially navigate to a chat
-    router.push("/dashboard"); // For now, navigate to dashboard
+    // Navigate to the match confirmed page, passing userA's ID
+    router.push(`/match-confirmed/${userA.id}`);
   };
 
   const handleDenyMatch = () => {
@@ -58,11 +58,10 @@ export default function ConfirmMomentPage() {
   };
 
   if (!userA) {
-    // Handle case where User A might not be found, though unlikely with mock data
     return (
         <AppLayout>
             <div className="container mx-auto py-8 text-center">
-                <p>Error: Could not load moment details.</p>
+                <p>Error: Could not load moment details. User A not found.</p>
             </div>
         </AppLayout>
     );
@@ -162,3 +161,5 @@ export default function ConfirmMomentPage() {
     </AppLayout>
   );
 }
+
+    
