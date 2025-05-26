@@ -11,6 +11,7 @@ import { CheckCircle, HelpCircle, Sparkles, ThumbsUp, ThumbsDown, MapPin, Clock,
 import { useParams, useRouter } from "next/navigation";
 import Link from "next/link";
 import { Avatar, AvatarImage, AvatarFallback } from "@/components/ui/avatar";
+import { format } from "date-fns"; // Import format from date-fns
 
 // Mock data for the moment User A logged about User B (the current user)
 // In a real app, this would be fetched based on params.momentId
@@ -67,6 +68,8 @@ export default function ConfirmMomentPage() {
     );
   }
 
+  const momentDate = new Date(loggedMoment.timestamp);
+
   return (
     <AppLayout>
       <div className="container mx-auto py-8 max-w-2xl">
@@ -96,7 +99,7 @@ export default function ConfirmMomentPage() {
               </div>
               <div className="flex items-center gap-2">
                 <Clock className="w-5 h-5 text-primary" />
-                <p><span className="font-semibold text-foreground">When:</span> Around {new Date(loggedMoment.timestamp).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })} on {new Date(loggedMoment.timestamp).toLocaleDateString([], { weekday: 'long', month: 'short', day: 'numeric' })}</p>
+                <p><span className="font-semibold text-foreground">When:</span> Around {format(momentDate, 'p')} on {format(momentDate, 'EEEE, MMM d')}</p>
               </div>
             </div>
             
@@ -159,5 +162,3 @@ export default function ConfirmMomentPage() {
     </AppLayout>
   );
 }
-
-    
