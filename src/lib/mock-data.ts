@@ -118,7 +118,7 @@ export const MOCK_USERS: UserProfile[] = [
     email: 'dev@example.com',
     bio: 'Seeking connections and new experiences. Love exploring local cafes and parks. My vibe tags are usually "explorer", "optimist", "curious", and "friendly". Let\'s see where our paths cross!',
     images: [
-      'https://placehold.co/120x120/E70F72/FFFFFF.png?text=D', // Updated to 'D' for Dev User
+      'https://placehold.co/120x120/E70F72/FFFFFF.png?text=D',
       'https://placehold.co/600x800.png',
       'https://placehold.co/800x600.png',
     ],
@@ -237,8 +237,12 @@ export const MOCK_USERS: UserProfile[] = [
   },
 ];
 
-export const baseDate = new Date('2024-05-24T12:00:00.000Z'); 
-const daysAgo = (days: number, hours = 0, minutes = 0) => new Date(baseDate.getTime() - days * 24 * 60 * 60 * 1000 - hours * 60 * 60 * 1000 - minutes * 60 * 1000).toISOString();
+// Base date for consistent "days ago" calculations
+export const baseDate = new Date('2024-05-24T12:00:00.000Z'); // Example: Friday, May 24, 2024, 12:00 PM UTC
+
+// Helper to create past dates relative to baseDate
+const daysAgo = (days: number, hours = 0, minutes = 0) => 
+  new Date(baseDate.getTime() - (days * 24 * 60 * 60 * 1000) - (hours * 60 * 60 * 1000) - (minutes * 60 * 1000)).toISOString();
 
 export const MOCK_CROSSED_PATHS_USERS: CrossedPathUser[] = MOCK_USERS.filter(u => u.id !== MOCK_USER_ID).map((user, index) => ({
   ...user,
@@ -248,82 +252,87 @@ export const MOCK_CROSSED_PATHS_USERS: CrossedPathUser[] = MOCK_USERS.filter(u =
 
 
 export const MOCK_MOMENTS: Moment[] = [
+  // Moments for MOCK_USER_ID within the last week (relative to baseDate)
+  {
+    id: 'moment-recap-1',
+    userId: MOCK_USER_ID,
+    placeName: 'Montclair Art Museum',
+    timestamp: daysAgo(1, 2, 30), // Thursday, May 23rd
+    potentialMatchId: 'user-1',
+    coordinates: { lat: 40.8137, lng: -74.2097 },
+    placeImage: 'https://placehold.co/200x150.png?text=Art+Museum'
+  },
+  {
+    id: 'moment-recap-2',
+    userId: MOCK_USER_ID,
+    placeName: 'Van Vleck House & Gardens',
+    timestamp: daysAgo(2, 5, 15), // Wednesday, May 22nd
+    coordinates: { lat: 40.8155, lng: -74.2036 },
+    placeImage: 'https://placehold.co/200x150.png?text=Gardens'
+  },
+  {
+    id: 'moment-recap-3',
+    userId: MOCK_USER_ID,
+    placeName: 'Watchung Booksellers',
+    timestamp: daysAgo(3, 1, 0), // Tuesday, May 21st
+    potentialMatchId: 'user-2',
+    coordinates: { lat: 40.8073, lng: -74.2036 },
+    placeImage: 'https://placehold.co/200x150.png?text=Bookstore'
+  },
+  {
+    id: 'moment-recap-4',
+    userId: MOCK_USER_ID,
+    placeName: 'Edgemont Memorial Park',
+    timestamp: daysAgo(4, 7, 0), // Monday, May 20th
+    coordinates: { lat: 40.8197, lng: -74.2052 },
+    placeImage: 'https://placehold.co/200x150.png?text=Park'
+  },
+  {
+    id: 'moment-recap-5',
+    userId: MOCK_USER_ID,
+    placeName: 'The Clairidge Cinema',
+    timestamp: daysAgo(5, -6, 0), // Sunday, May 19th (evening)
+    potentialMatchId: 'user-3',
+    coordinates: { lat: 40.8150, lng: -74.2125 },
+    placeImage: 'https://placehold.co/200x150.png?text=Cinema'
+  },
+  {
+    id: 'moment-recap-6',
+    userId: MOCK_USER_ID,
+    placeName: 'Trend Coffee & Tea House',
+    timestamp: daysAgo(0, 3, 0), // Friday, May 24th (today, relative to baseDate)
+    coordinates: { lat: 40.8125, lng: -74.2120 },
+    placeImage: 'https://placehold.co/200x150.png?text=Coffee+House'
+  },
+  {
+    id: 'moment-recap-7',
+    userId: MOCK_USER_ID,
+    placeName: 'Montclair Art Museum', // Repeated visit
+    timestamp: daysAgo(6, 4, 0), // Saturday, May 18th
+    coordinates: { lat: 40.8137, lng: -74.2097 },
+    placeImage: 'https://placehold.co/200x150.png?text=Art+Museum+Again'
+  },
+  // Older moment, should NOT appear in recap
+  {
+    id: 'moment-old-1',
+    userId: MOCK_USER_ID,
+    placeName: 'Outdated Cafe',
+    timestamp: daysAgo(10), 
+    coordinates: { lat: 40.8000, lng: -74.1900 },
+    placeImage: 'https://placehold.co/200x150/4A4A4A/FFFFFF.png?text=Old+Cafe'
+  },
+  // Original moments (some might be older than 7 days from baseDate now)
   {
     id: 'moment-1',
     userId: MOCK_USER_ID,
-    placeName: 'Montclair Art Museum',
-    timestamp: daysAgo(2, 3, 30), // Wed, May 22nd, 8:30 AM
+    placeName: 'Original Montclair Art Museum',
+    timestamp: daysAgo(8, 3, 30), // Older than 7 days
     potentialMatchId: 'user-1', 
     coordinates: { lat: 40.8137, lng: -74.2097 }, 
     placeImage: 'https://placehold.co/200x150/7F7F7F/FFFFFF.png?text=Art+Museum'
   },
-  {
-    id: 'moment-2',
-    userId: MOCK_USER_ID,
-    placeName: 'Van Vleck House & Gardens',
-    timestamp: daysAgo(1, 1, 15), // Thu, May 23rd, 10:45 AM
-    coordinates: { lat: 40.8155, lng: -74.2036 }, 
-    placeImage: 'https://placehold.co/200x150/6A6A6A/FFFFFF.png?text=Gardens'
-  },
-  {
-    id: 'moment-3',
-    userId: MOCK_USER_ID,
-    placeName: 'Watchung Booksellers',
-    timestamp: daysAgo(5, 0, 0), // Sun, May 19th, 12:00 PM
-    potentialMatchId: 'user-2', 
-    coordinates: { lat: 40.8073, lng: -74.2036 }, 
-    placeImage: 'https://placehold.co/200x150/5C5C5C/FFFFFF.png?text=Booksellers'
-  },
-   {
-    id: 'moment-4',
-    userId: MOCK_USER_ID,
-    placeName: 'Edgemont Memorial Park',
-    timestamp: daysAgo(3, 5, 0), // Tue, May 21st, 7:00 AM
-    coordinates: { lat: 40.8197, lng: -74.2052 }, 
-    placeImage: 'https://placehold.co/200x150/8D8D8D/FFFFFF.png?text=Park'
-  },
-  {
-    id: 'moment-5',
-    userId: MOCK_USER_ID,
-    placeName: 'The Clairidge Cinema',
-    timestamp: daysAgo(4, -8, 0), // Mon, May 20th, 8:00 PM
-    coordinates: { lat: 40.8150, lng: -74.2125 }, 
-    placeImage: 'https://placehold.co/200x150/9B9B9B/FFFFFF.png?text=Cinema'
-  },
-  {
-    id: 'moment-added-1',
-    userId: MOCK_USER_ID,
-    placeName: 'Trend Coffee & Tea House',
-    timestamp: daysAgo(2, -3, 0), // Wed, May 22nd, 3:00 PM
-    potentialMatchId: 'user-3', 
-    coordinates: { lat: 40.8125, lng: -74.2120 }, 
-    placeImage: 'https://placehold.co/200x150/E70F72/FFFFFF.png?text=Trend+Coffee'
-  },
-  {
-    id: 'moment-added-2',
-    userId: MOCK_USER_ID,
-    placeName: 'Montclair Art Museum', // Repeated visit
-    timestamp: daysAgo(1, 6, 0), // Thu, May 23rd, 6:00 AM
-    coordinates: { lat: 40.8137, lng: -74.2097 }, 
-    placeImage: 'https://placehold.co/200x150/7F7F7F/FFFFFF.png?text=Art+Museum+Visit+2'
-  },
-  {
-    id: 'moment-added-3',
-    userId: MOCK_USER_ID,
-    placeName: 'Whole Foods Market',
-    timestamp: daysAgo(0, 2, 0), // Fri, May 24th, 10:00 AM (Current day)
-    coordinates: { lat: 40.8180, lng: -74.2100 }, 
-    placeImage: 'https://placehold.co/200x150/262626/FFFFFF.png?text=Whole+Foods'
-  },
-  {
-    id: 'moment-6', // Older moment, should not appear in recap
-    userId: MOCK_USER_ID,
-    placeName: 'Outdated Cafe',
-    timestamp: daysAgo(10), 
-    coordinates: { lat: 40.8000, lng: -74.1900 }, 
-    placeImage: 'https://placehold.co/200x150/4A4A4A/FFFFFF.png?text=Old+Cafe'
-  }
 ];
+
 
 export const MOCK_CHAT_CONVERSATIONS: ChatConversation[] = [
   {
@@ -404,18 +413,19 @@ export const MOCK_CHAT_MESSAGES: { [chatId: string]: ChatMessage[] } = {
 export const getCurrentUser = (): UserProfile => {
   const user = MOCK_USERS.find(user => user.id === MOCK_USER_ID);
   if (!user) {
+    // Fallback default user if MOCK_USER_ID not found (should not happen in normal flow)
     return {
         id: MOCK_USER_ID,
         name: "Current User",
         age: 30,
-        bio: "Default bio.",
+        bio: "Default bio for a user not found in mock data.",
         images: ['https://placehold.co/120x120/E70F72/FFFFFF.png?text=U'],
-        vibeTags: [],
+        vibeTags: ["default", "user"],
         prompts: [],
         email: 'user@example.com',
-        work: 'Unknown',
-        jobTitle: 'Unknown',
-        education: 'Unknown',
+        work: 'Unknown Inc.',
+        jobTitle: 'Default Position',
+        education: 'University of Defaults',
         ethnicity: 'Prefer Not to Say',
         childrenStatus: 'Prefer Not to Say',
         familyPlans: 'Prefer Not to Say',
@@ -423,9 +433,12 @@ export const getCurrentUser = (): UserProfile => {
         drinking: 'Prefer Not to Say',
         smoking: 'Prefer Not to Say',
         zodiacSign: 'Prefer Not to Say',
-        locationAddress: 'Unknown',
-        locationName: 'Unknown',
+        locationAddress: '123 Default Street, Default City',
+        locationName: 'Default City',
+        locationCoordinates: { lat: 0, lng: 0 },
     };
   }
   return user;
 };
+
+    
