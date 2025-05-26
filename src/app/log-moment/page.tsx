@@ -188,16 +188,17 @@ export default function LogMomentPage() {
         });
         return;
     }
+    // In a real app, this data would be sent to a backend.
     console.log("Moment Saved:", {
       locationName,
       locationAddress,
       coordinates,
       timestamp: new Date().toISOString(),
       momentDescription,
-      selectedEmotionTags,
-      matchEthnicity,
-      matchHairColour,
-      personDescription,
+      selectedEmotionTags, // Not interactive yet, but logged
+      matchEthnicity,       // Logged
+      matchHairColour,      // Logged
+      personDescription,    // Logged
       userId: MOCK_USER_ID,
     });
     toast({
@@ -475,10 +476,17 @@ export default function LogMomentPage() {
 
            {currentStep === 3 && (
             <>
-              <CardContent className="space-y-6 py-10 text-center flex flex-col items-center">
+              <CardContent className="space-y-3 py-10 text-center flex flex-col items-center">
                 <Sparkles className="w-16 h-16 text-primary animate-pulse mb-4" />
-                <p className="text-lg text-foreground">
-                  Moment saved. If someone else remembers this moment too… we’ll reconnect you.
+                <p className="text-lg text-foreground font-semibold">
+                  Your moment at <span className="text-primary">{locationName}</span> is saved!
+                </p>
+                 <p className="text-sm text-muted-foreground max-w-md mx-auto">
+                  The details you provided (e.g., ethnicity: <span className="font-medium text-foreground/80">{matchEthnicity}</span>, 
+                  hair: <span className="font-medium text-foreground/80">{matchHairColour}</span>) will help our Vibe Signal Engine try to find them.
+                </p>
+                <p className="text-sm text-muted-foreground max-w-md mx-auto mt-1">
+                  If they also remember this moment and log it, we’ll reconnect you!
                 </p>
               </CardContent>
               <CardFooter className="border-t pt-6 flex flex-col sm:flex-row gap-3">
@@ -509,3 +517,4 @@ export default function LogMomentPage() {
     
 
     
+
