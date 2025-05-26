@@ -6,22 +6,23 @@ import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from "@/components/ui/card";
 import { Separator } from "@/components/ui/separator";
 import { useToast } from "@/hooks/use-toast";
-import { getCurrentUser, MOCK_USERS } from "@/lib/mock-data"; // Assuming MOCK_USER_ID is User B for this demo
-import { CheckCircle, HelpCircle, Sparkles, ThumbsUp, ThumbsDown, MapPin, Clock, Palette, Users as UsersIcon } from "lucide-react";
+import { getCurrentUser, MOCK_USERS, MOCK_USER_ID } from "@/lib/mock-data"; 
+import { CheckCircle, HelpCircle, Sparkles, ThumbsUp, ThumbsDown, MapPin, Clock, Palette, Users as UsersIcon, User as UserIcon } from "lucide-react";
 import { useParams, useRouter } from "next/navigation";
 import Link from "next/link";
+import { Avatar, AvatarImage, AvatarFallback } from "@/components/ui/avatar";
 
 // Mock data for the moment User A logged about User B (the current user)
 // In a real app, this would be fetched based on params.momentId
 const MOCK_LOGGED_MOMENT_DETAILS = {
   placeName: "The Alchemist's Cafe",
   timestamp: new Date(Date.now() - 2 * 60 * 60 * 1000).toISOString(), // Approx 2 hours ago
-  userADescriptionOfUserB: {
-    ethnicity: "White/Caucasian", // Example: User A saw someone they thought was White/Caucasian
-    hairColour: "Brown",        // Example: User A saw someone with brown hair
+  userADescriptionOfUserB: { // What User A observed about User B
+    ethnicity: "White/Caucasian", 
+    hairColour: "Brown",        
     otherDetails: "They were reading 'The Midnight Library' and had a friendly smile.",
   },
-  userA_momentDescription: "It was a cozy evening, and I noticed someone interesting by the window.",
+  userA_momentDescription: "It was a cozy evening, and I noticed someone interesting by the window.", // User A's general comment about the moment
   userA_id: "user-1" // ID of user A who logged the moment
 };
 
@@ -33,17 +34,17 @@ export default function ConfirmMomentPage() {
 
   // Simulate fetching moment details based on params.momentId
   const momentId = params.momentId as string;
-  const loggedMoment = MOCK_LOGGED_MOMENT_DETAILS; // Use mock data
+  const loggedMoment = MOCK_LOGGED_MOMENT_DETAILS; 
+  const userA = MOCK_USERS.find(u => u.id === loggedMoment.userA_id);
 
   const handleConfirmMatch = () => {
     toast({
       title: "Match Confirmed!",
-      description: `Great! You can now connect with ${MOCK_USERS.find(u => u.id === loggedMoment.userA_id)?.name || 'them'}.`,
+      description: `Great! You can now connect with ${userA?.name || 'them'}.`,
       duration: 5000,
     });
     // In a real app, this would trigger backend logic and potentially navigate to a chat
-    // For now, let's navigate to the dashboard.
-    router.push("/dashboard");
+    router.push("/dashboard"); // For now, navigate to dashboard
   };
 
   const handleDenyMatch = () => {
@@ -55,33 +56,57 @@ export default function ConfirmMomentPage() {
     router.push("/dashboard");
   };
 
+  if (!userA) {
+    // Handle case where User A might not be found, though unlikely with mock data
+    return (
+        <AppLayout>
+            <div className="container mx-auto py-8 text-center">
+                <p>Error: Could not load moment details.</p>
+            </div>
+        </AppLayout>
+    );
+  }
+
   return (
     <AppLayout>
       <div className="container mx-auto py-8 max-w-2xl">
         <Card className="bg-card shadow-xl">
-          <CardHeader className="text-center">
-            <Sparkles className="w-12 h-12 text-primary mx-auto mb-3 animate-pulse" />
+          <CardHeader className="text-center border-b pb-4">
+            <Sparkles className="w-10 h-10 text-primary mx-auto mb-2 animate-pulse" />
             <CardTitle className="text-3xl font-bold">Did Your Paths Cross?</CardTitle>
-            <CardDescription className="text-muted-foreground text-lg">
+            <CardDescription className="text-muted-foreground text-lg mt-1">
               Someone noticed you! Review the details below.
             </CardDescription>
           </CardHeader>
-          <CardContent className="space-y-6">
-            <div className="p-4 border border-border rounded-lg bg-muted/30 space-y-3">
+          <CardContent className="space-y-6 pt-6">
+            <div className="flex flex-col items-center space-y-3 p-4 bg-muted/30 rounded-lg shadow-sm">
+                <Avatar className="h-20 w-20 border-2 border-primary">
+                    <AvatarImage src={userA.images[0]} alt={userA.name} data-ai-hint="profile avatar"/>
+                    <AvatarFallback>{userA.name.substring(0,1)}</AvatarFallback>
+                </Avatar>
+                <p className="text-lg text-foreground text-center">
+                    <span className="font-semibold text-primary">{userA.name}</span> is wondering if you crossed paths at:
+                </p>
+            </div>
+            
+            <div className="p-4 border border-border rounded-lg bg-card/50 space-y-3">
               <div className="flex items-center gap-2">
                 <MapPin className="w-5 h-5 text-primary" />
                 <p><span className="font-semibold text-foreground">Place:</span> {loggedMoment.placeName}</p>
               </div>
               <div className="flex items-center gap-2">
                 <Clock className="w-5 h-5 text-primary" />
-                <p><span className="font-semibold text-foreground">When:</span> Around {new Date(loggedMoment.timestamp).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })} on {new Date(loggedMoment.timestamp).toLocaleDateString([], { weekday: 'long' })}</p>
+                <p><span className="font-semibold text-foreground">When:</span> Around {new Date(loggedMoment.timestamp).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })} on {new Date(loggedMoment.timestamp).toLocaleDateString([], { weekday: 'long', month: 'short', day: 'numeric' })}</p>
               </div>
             </div>
             
             <Separator />
 
             <div>
-              <h3 className="text-xl font-semibold mb-2 text-primary">How they described you:</h3>
+              <h3 className="text-xl font-semibold mb-2 text-primary flex items-center gap-2">
+                <UserIcon className="w-5 h-5" />
+                How {userA.name} described you:
+              </h3>
               <ul className="space-y-2 list-disc list-inside text-muted-foreground pl-2">
                 {loggedMoment.userADescriptionOfUserB.ethnicity && (
                   <li className="flex items-start gap-2">
@@ -106,15 +131,18 @@ export default function ConfirmMomentPage() {
 
             {loggedMoment.userA_momentDescription && (
               <div>
-                <h3 className="text-xl font-semibold mb-2 text-primary">Their experience:</h3>
+                <h3 className="text-xl font-semibold mb-2 text-primary flex items-center gap-2">
+                    <Sparkles className="w-5 h-5" /> 
+                    {userA.name}'s Reflection:
+                </h3>
                 <p className="text-muted-foreground italic bg-muted/30 p-3 rounded-md">
                   &quot;{loggedMoment.userA_momentDescription}&quot;
                 </p>
               </div>
             )}
 
-            <p className="text-sm text-center text-muted-foreground pt-2">
-              Does this sound like a moment you experienced? Your profile details will only be shared if you confirm.
+            <p className="text-sm text-center text-muted-foreground pt-4">
+              Does this sound like a moment you experienced? Your profile details will only be fully shared with {userA.name} if you confirm.
             </p>
 
           </CardContent>
@@ -131,3 +159,5 @@ export default function ConfirmMomentPage() {
     </AppLayout>
   );
 }
+
+    
