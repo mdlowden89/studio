@@ -482,11 +482,11 @@ export default function LogMomentPage() {
                   Your moment at <span className="text-primary">{locationName}</span> is saved!
                 </p>
                  <p className="text-sm text-muted-foreground max-w-md mx-auto">
-                  The details you provided (e.g., ethnicity: <span className="font-medium text-foreground/80">{matchEthnicity}</span>, 
-                  hair: <span className="font-medium text-foreground/80">{matchHairColour}</span>) will help our Vibe Signal Engine try to find them.
+                   We'll try to find the person you saw! The details you provided (like their ethnicity: <span className="font-medium text-foreground/80">{matchEthnicity}</span>,
+                   and hair colour: <span className="font-medium text-foreground/80">{matchHairColour}</span>) are key.
                 </p>
                 <p className="text-sm text-muted-foreground max-w-md mx-auto mt-1">
-                  If they also remember this moment and log it, we’ll reconnect you!
+                  If someone whose profile matches your description was also here, and they also log this moment or express interest, we'll notify you both of a potential match!
                 </p>
               </CardContent>
               <CardFooter className="border-t pt-6 flex flex-col sm:flex-row gap-3">
@@ -518,3 +518,6 @@ export default function LogMomentPage() {
 
     
 
+
+
+    
