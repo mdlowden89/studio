@@ -116,14 +116,14 @@ export const MOCK_USERS: UserProfile[] = [
     name: 'Dev User',
     age: 27,
     email: 'dev@example.com',
-    bio: 'Full-stack developer by day, aspiring chef by night! I love experimenting with new recipes, especially Italian and Thai. Weekends are for long bike rides, discovering hidden city gems, and maybe a bit of retro gaming. Seeking connections and new experiences. Love exploring local cafes and parks. My vibe tags are usually "explorer", "optimist", "curious", and "friendly". Let\'s see where our paths cross!',
+    bio: "Full-stack developer by day, aspiring chef by night! I love experimenting with new recipes, especially Italian and Thai. Weekends are for long bike rides, discovering hidden city gems, and maybe a bit of retro gaming. Seeking connections and new experiences. Love exploring local cafes and parks. My vibe tags are usually \"explorer\", \"optimist\", \"curious\", and \"friendly\". Let's see where our paths cross!",
     images: [
       'https://placehold.co/120x120/E70F72/FFFFFF.png?text=U',
       'https://placehold.co/600x800.png',
       'https://placehold.co/800x600.png',
     ],
     vibeTags: ['explorer', 'optimist', 'curious', 'friendly', 'coffee enthusiast', 'park lover'],
-    locationPatterns: ['Local Coffee Shop', 'Bookstore', 'Community Garden', 'Farmers Market', 'Museums'],
+    locationPatterns: ['Local Coffee Shop', 'Bookstore', 'Community Garden', 'Farmers Market', 'Museums', 'Culinary Schools', 'Bike Paths', 'Retro Arcades'],
     prompts: [
       { promptId: 'p1', answer: 'Early bird gets the worm, but the second mouse gets the cheese.' },
       { promptId: 'p3', answer: 'Someone genuine, kind, and open-minded.' },
@@ -149,12 +149,12 @@ export const MOCK_USERS: UserProfile[] = [
     email: 'riley.dev@example.com',
     bio: 'Software developer by day, nature explorer by weekend. Love strategy board games and finding hidden trails. Looking for someone to share adventures with.',
     images: [
-      'https://placehold.co/600x800/3B82F6/FFFFFF.png',
-      'https://placehold.co/700x500/10B981/FFFFFF.png',
-      'https://placehold.co/650x750/F59E0B/FFFFFF.png',
+      'https://placehold.co/600x800/3B82F6/FFFFFF.png?text=Riley+1',
+      'https://placehold.co/700x500/10B981/FFFFFF.png?text=Riley+2',
+      'https://placehold.co/650x750/F59E0B/FFFFFF.png?text=Riley+3',
     ],
     vibeTags: ['tech enthusiast', 'nature lover', 'board games', 'hiking', 'problem solver', 'craft beer', 'stargazing'],
-    locationPatterns: ['National Parks', 'Board Game Cafes', 'Tech Meetups', 'Local Breweries', 'Scenic Overlooks'],
+    locationPatterns: ['National Parks', 'Board Game Cafes', 'Tech Meetups', 'Local Breweries', 'Scenic Overlooks', 'Mountain Summits', 'Campgrounds'],
     prompts: [
       { promptId: 'p6', answer: 'That otters hold hands when they sleep so they don\'t float away from each other.' },
       { promptId: 'p9', answer: 'Learn a new programming language and visit a new national park.' },
@@ -180,12 +180,12 @@ export const MOCK_USERS: UserProfile[] = [
     email: 'morgan.art@example.com',
     bio: 'Painter and musician. I find beauty in everyday chaos. Often found at farmers markets or sketching in a park. My ideal date involves live music and good conversation.',
     images: [
-      'https://placehold.co/600x800/EC4899/FFFFFF.png',
-      'https://placehold.co/800x600/8B5CF6/FFFFFF.png',
-      'https://placehold.co/500x700/D97706/FFFFFF.png',
+      'https://placehold.co/600x800/EC4899/FFFFFF.png?text=Morgan+1',
+      'https://placehold.co/800x600/8B5CF6/FFFFFF.png?text=Morgan+2',
+      'https://placehold.co/500x700/D97706/FFFFFF.png?text=Morgan+3',
     ],
     vibeTags: ['artist', 'musician', 'farmers market regular', 'live music aficionado', 'sketchbook always', 'vintage lover', 'deep conversations'],
-    locationPatterns: ['Art Supply Stores', 'Live Music Venues', 'Local Farmers Markets', 'Botanical Gardens', 'Indie Cinemas'],
+    locationPatterns: ['Art Supply Stores', 'Live Music Venues', 'Local Farmers Markets', 'Botanical Gardens', 'Indie Cinemas', 'Antique Shops', 'Poetry Slams'],
     prompts: [
       { promptId: 'p2', answer: 'A long brunch, followed by a stroll through a flea market, and ending with some live jazz.' },
       { promptId: 'p7', answer: 'A collaborative art project that sometimes gets a little messy but is always beautiful.' },
@@ -211,12 +211,12 @@ export const MOCK_USERS: UserProfile[] = [
     email: 'jordan.fit@example.com',
     bio: 'Fitness enthusiast and world traveler. Always planning the next trip or the next workout. Looking for a partner in crime for adventures and gym sessions.',
     images: [
-      'https://placehold.co/600x800/EF4444/FFFFFF.png',
-      'https://placehold.co/750x550/22C55E/FFFFFF.png',
-      'https://placehold.co/600x900/6366F1/FFFFFF.png',
+      'https://placehold.co/600x800/EF4444/FFFFFF.png?text=Jordan+1',
+      'https://placehold.co/750x550/22C55E/FFFFFF.png?text=Jordan+2',
+      'https://placehold.co/600x900/6366F1/FFFFFF.png?text=Jordan+3',
     ],
     vibeTags: ['fitness junkie', 'travel bug', 'adventure seeker', 'gym regular', 'mountain climber', 'foodie (healthy)', 'optimistic'],
-    locationPatterns: ['Gyms & Fitness Studios', 'Hiking Trails', 'Airports', 'Healthy Eateries', 'Rock Climbing Centers'],
+    locationPatterns: ['Gyms & Fitness Studios', 'Hiking Trails', 'Airports', 'Healthy Eateries', 'Rock Climbing Centers', 'Marathon Routes', 'International Hostels'],
     prompts: [
       { promptId: 'p4', answer: 'My resilience and ability to make friends anywhere.' },
       { promptId: 'p12', answer: 'To visit every continent and run a marathon in at least three of them.' },
@@ -244,73 +244,66 @@ export const baseDate = new Date('2024-05-24T12:00:00.000Z'); // Example: Friday
 const daysAgo = (days: number, hours = 0, minutes = 0) =>
   new Date(baseDate.getTime() - (days * 24 * 60 * 60 * 1000) - (hours * 60 * 60 * 1000) - (minutes * 60 * 1000)).toISOString();
 
-export const MOCK_CROSSED_PATHS_USERS: CrossedPathUser[] = MOCK_USERS.filter(u => u.id !== MOCK_USER_ID).map((user, index) => ({
-  ...user,
-  crossedAt: daysAgo(index + 0.1),
-  location: index % 2 === 0 ? 'Main Street Cafe' : 'City Park Fountain',
-}));
-
-
 export const MOCK_MOMENTS: Moment[] = [
-  // Moments for MOCK_USER_ID within the last week (relative to baseDate)
+  // Moments for MOCK_USER_ID within the last week (relative to baseDate) - Updated to famous landmarks
   {
     id: 'moment-recap-1',
     userId: MOCK_USER_ID,
-    placeName: 'Montclair Art Museum',
+    placeName: 'Eiffel Tower',
     timestamp: daysAgo(1, 2, 30), // Thursday, May 23rd
     potentialMatchId: 'user-1',
-    coordinates: { lat: 40.8137, lng: -74.2097 },
-    placeImage: 'https://placehold.co/200x150/7F7F7F/FFFFFF.png?text=Art+Museum'
+    coordinates: { lat: 48.8584, lng: 2.2945 },
+    placeImage: 'https://placehold.co/200x150/7F7F7F/FFFFFF.png?text=Eiffel+Tower'
   },
   {
     id: 'moment-recap-2',
     userId: MOCK_USER_ID,
-    placeName: 'Van Vleck House & Gardens',
+    placeName: 'Statue of Liberty',
     timestamp: daysAgo(2, 5, 15), // Wednesday, May 22nd
-    coordinates: { lat: 40.8155, lng: -74.2036 },
-    placeImage: 'https://placehold.co/200x150/A3A3A3/080808.png?text=Gardens'
+    coordinates: { lat: 40.6892, lng: -74.0445 },
+    placeImage: 'https://placehold.co/200x150/A3A3A3/080808.png?text=Statue+Liberty'
   },
   {
     id: 'moment-recap-3',
     userId: MOCK_USER_ID,
-    placeName: 'Watchung Booksellers',
+    placeName: 'Golden Gate Bridge',
     timestamp: daysAgo(3, 1, 0), // Tuesday, May 21st
     potentialMatchId: 'user-2',
-    coordinates: { lat: 40.8073, lng: -74.2036 },
-    placeImage: 'https://placehold.co/200x150/E70F72/FFFFFF.png?text=Bookstore'
+    coordinates: { lat: 37.8199, lng: -122.4783 },
+    placeImage: 'https://placehold.co/200x150/E70F72/FFFFFF.png?text=Golden+Gate'
   },
   {
     id: 'moment-recap-4',
     userId: MOCK_USER_ID,
-    placeName: 'Edgemont Memorial Park',
+    placeName: 'Times Square',
     timestamp: daysAgo(4, 7, 0), // Monday, May 20th
-    coordinates: { lat: 40.8197, lng: -74.2052 },
-    placeImage: 'https://placehold.co/200x150/262626/FAFAFA.png?text=Park'
+    coordinates: { lat: 40.7580, lng: -73.9855 },
+    placeImage: 'https://placehold.co/200x150/262626/FAFAFA.png?text=Times+Square'
   },
   {
     id: 'moment-recap-5',
     userId: MOCK_USER_ID,
-    placeName: 'The Clairidge Cinema',
+    placeName: 'Louvre Museum',
     timestamp: daysAgo(5, -6, 0), // Sunday, May 19th (evening)
     potentialMatchId: 'user-3',
-    coordinates: { lat: 40.8150, lng: -74.2125 },
-    placeImage: 'https://placehold.co/200x150/080808/E70F72.png?text=Cinema'
+    coordinates: { lat: 48.8606, lng: 2.3376 },
+    placeImage: 'https://placehold.co/200x150/080808/E70F72.png?text=Louvre'
   },
   {
     id: 'moment-recap-6',
     userId: MOCK_USER_ID,
-    placeName: 'Trend Coffee & Tea House',
+    placeName: 'The Colosseum',
     timestamp: daysAgo(0, 3, 0), // Friday, May 24th (today, relative to baseDate)
-    coordinates: { lat: 40.8125, lng: -74.2120 },
-    placeImage: 'https://placehold.co/200x150/FAFAFA/080808.png?text=Coffee+House'
+    coordinates: { lat: 41.8902, lng: 12.4922 },
+    placeImage: 'https://placehold.co/200x150/FAFAFA/080808.png?text=Colosseum'
   },
   {
     id: 'moment-recap-7',
     userId: MOCK_USER_ID,
-    placeName: 'Montclair Art Museum', // Repeated visit
+    placeName: 'Sydney Opera House', // Repeated visit
     timestamp: daysAgo(6, 4, 0), // Saturday, May 18th
-    coordinates: { lat: 40.8137, lng: -74.2097 },
-    placeImage: 'https://placehold.co/200x150/E70F72/080808.png?text=Art+Museum+Again'
+    coordinates: { lat: -33.8568, lng: 151.2153 },
+    placeImage: 'https://placehold.co/200x150/E70F72/080808.png?text=Sydney+Opera'
   },
   // Older moment, should NOT appear in recap
   {
@@ -441,4 +434,8 @@ export const getCurrentUser = (): UserProfile => {
   return user;
 };
 
-    
+export const MOCK_CROSSED_PATHS_USERS: CrossedPathUser[] = MOCK_USERS.filter(u => u.id !== MOCK_USER_ID).map((user, index) => ({
+  ...user,
+  crossedAt: daysAgo(index + 0.1), // Slightly different times for each
+  location: index % 3 === 0 ? 'Eiffel Tower' : (index % 3 === 1 ? 'Times Square' : 'Golden Gate Bridge'), // Example locations
+}));
