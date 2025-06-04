@@ -51,7 +51,7 @@ export function MatchCard({ user, onLike, onPass, showCrossedPathInfo = false }:
 
   return (
     <Dialog>
-      <Card className="w-full max-w-sm mx-auto overflow-hidden shadow-2xl transform transition-all duration-300 hover:scale-105 bg-card flex flex-col h-[650px]">
+      <Card className="w-full max-w-sm mx-auto overflow-hidden shadow-2xl transform transition-all duration-300 hover:scale-105 bg-card flex flex-col h-[720px]">
         <CardHeader className="p-0 relative h-[55%]">
           <Image
             src={user.images[currentImageIndex]}
@@ -253,3 +253,4 @@ function ChevronRightIcon(props: React.SVGProps<SVGSVGElement>) {
     </svg>
   )
 }
+
