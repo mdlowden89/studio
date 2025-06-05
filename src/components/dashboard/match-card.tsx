@@ -138,8 +138,8 @@ export function MatchCard({ user, onLike, onPass, showCrossedPathInfo = false }:
             <Separator className="my-3 bg-border" />
           </DialogHeader>
           
-          {/* Main Image */}
-          <div className="px-6 pt-4"> {/* Main image padding control */}
+          {/* Main Image - positioned after header */}
+          <div className="px-6 pt-4">
             <div className="relative w-full max-w-xs aspect-[4/5] rounded-lg overflow-hidden shadow-lg mx-auto">
               <Image
                 src={mainImage}
@@ -152,7 +152,7 @@ export function MatchCard({ user, onLike, onPass, showCrossedPathInfo = false }:
             </div>
           </div>
 
-          {/* User Details Bar */}
+          {/* User Details Bar - positioned directly below main image */}
           <div className="px-6 pt-3 pb-3"> 
             <div className="w-full flex flex-nowrap justify-around overflow-x-auto p-3 bg-muted/30 rounded-lg">
               {userDetails.map((detail, index) => (
@@ -169,17 +169,17 @@ export function MatchCard({ user, onLike, onPass, showCrossedPathInfo = false }:
           
           {/* Rest of the content - bio, prompts, other photos */}
           <div className="px-6 pb-6 flex flex-col space-y-6"> 
+            <div className="space-y-2 w-full">
+              <h3 className="text-lg font-semibold text-primary">About {user.name}</h3>
+              <p className="text-muted-foreground whitespace-pre-line">{user.bio}</p>
+            </div>
+
             {firstPrompt && (
               <div className="space-y-2 w-full">
                 <h3 className="text-lg font-semibold text-primary">{AVAILABLE_PROMPTS.find(p => p.id === firstPrompt.promptId)?.question || "Prompt"}</h3>
                 <p className="text-muted-foreground whitespace-pre-line">{firstPrompt.answer}</p>
               </div>
             )}
-
-            <div className="space-y-2 w-full">
-              <h3 className="text-lg font-semibold text-primary">About {user.name}</h3>
-              <p className="text-muted-foreground whitespace-pre-line">{user.bio}</p>
-            </div>
                        
             {otherImages.length > 0 && (
               <div className="space-y-3 w-full">
@@ -222,3 +222,4 @@ export function MatchCard({ user, onLike, onPass, showCrossedPathInfo = false }:
     </Dialog>
   );
 }
+
