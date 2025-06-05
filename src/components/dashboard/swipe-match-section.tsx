@@ -3,7 +3,7 @@
 
 import { useState, useEffect } from "react"; 
 import { MOCK_USERS, MOCK_USER_ID } from "@/lib/mock-data";
-import type { UserProfile } from "@/lib/types"; // Added UserProfile type import
+import type { UserProfile } from "@/lib/types";
 import { MatchCard } from "./match-card";
 import { Button } from "@/components/ui/button";
 import { RefreshCw, Users, Undo2 } from "lucide-react";
@@ -18,6 +18,7 @@ import {
   AlertDialogHeader,
   AlertDialogTitle,
 } from "@/components/ui/alert-dialog";
+import ReactConfetti from 'react-confetti';
 
 export function SwipeMatchSection() {
   const [initialUsers, setInitialUsers] = useState<UserProfile[]>([]);
@@ -27,6 +28,7 @@ export function SwipeMatchSection() {
   const { toast } = useToast();
   const [showMatchAnimation, setShowMatchAnimation] = useState(false);
   const [matchedUserName, setMatchedUserName] = useState("");
+  const [windowSize, setWindowSize] = useState({ width: 0, height: 0 });
 
   useEffect(() => {
     // Filter and shuffle users only on the client-side
@@ -34,14 +36,30 @@ export function SwipeMatchSection() {
     setInitialUsers(filtered);
     setUsers([...filtered].sort(() => 0.5 - Math.random()));
     setCurrentIndex(0);
-    setPreviousIndex(null); // Reset undo state on refresh/initial load
+    setPreviousIndex(null);
   }, []); 
+
+  useEffect(() => {
+    const handleResize = () => {
+      setWindowSize({
+        width: window.innerWidth,
+        height: window.innerHeight,
+      });
+    };
+
+    if (typeof window !== 'undefined') {
+      handleResize();
+      window.addEventListener('resize', handleResize);
+      return () => window.removeEventListener('resize', handleResize);
+    }
+    return () => {};
+  }, []);
 
   const handleAction = (userId: string, action: "like" | "pass") => {
     const actionUser = users.find(u => u.id === userId);
     if (!actionUser) return;
 
-    setPreviousIndex(currentIndex); // Store current index for potential undo
+    setPreviousIndex(currentIndex); 
 
     if (action === "like") {
       const isMutualMatch = Math.random() < 0.4; 
@@ -69,8 +87,6 @@ export function SwipeMatchSection() {
         title: "That's everyone for now!",
         description: "Check back later for new profiles.",
       });
-      // Optionally, keep current index at users.length to show the "No More Profiles" screen
-      // Or loop back / show a specific "end of stack" UI
     }
   };
 
@@ -81,7 +97,7 @@ export function SwipeMatchSection() {
     if (previousIndex !== null && previousIndex < users.length) {
       const lastUser = users[previousIndex];
       setCurrentIndex(previousIndex);
-      setPreviousIndex(null); // Clear previous index after undoing
+      setPreviousIndex(null); 
       toast({ title: "Undo Successful", description: `You are now viewing ${lastUser?.name}'s profile again.` });
     } else {
       toast({ title: "Nothing to Undo", description: "You haven't swiped anyone yet or already undid.", variant: "destructive" });
@@ -90,14 +106,14 @@ export function SwipeMatchSection() {
 
   const refreshUsers = () => {
     const newFilteredUsers = MOCK_USERS.filter(user => user.id !== MOCK_USER_ID);
-    setInitialUsers(newFilteredUsers); // Update initialUsers if needed for other logic
+    setInitialUsers(newFilteredUsers); 
     setUsers([...newFilteredUsers].sort(() => 0.5 - Math.random()));
     setCurrentIndex(0);
-    setPreviousIndex(null); // Reset undo state
+    setPreviousIndex(null); 
     toast({ title: "Profiles Refreshed!", description: "Here are some new faces."});
   };
 
-  if (users.length === 0 && initialUsers.length === 0) { // Handles initial loading state before useEffect runs
+  if (users.length === 0 && initialUsers.length === 0) { 
     return (
       <div className="text-center py-10 flex flex-col items-center">
         <Users className="w-16 h-16 text-muted-foreground mb-4 animate-pulse" />
@@ -144,6 +160,15 @@ export function SwipeMatchSection() {
       </div>
 
       <AlertDialog open={showMatchAnimation} onOpenChange={setShowMatchAnimation}>
+        {showMatchAnimation && windowSize.width > 0 && windowSize.height > 0 && (
+          <ReactConfetti
+            width={windowSize.width}
+            height={windowSize.height}
+            recycle={false}
+            numberOfPieces={250}
+            gravity={0.15}
+          />
+        )}
         <AlertDialogContent className="bg-card text-card-foreground border-primary shadow-lg rounded-xl">
           <AlertDialogHeader>
             <div className="mx-auto flex h-20 w-20 items-center justify-center rounded-full bg-primary mb-4 animate-pulse">
@@ -201,4 +226,3 @@ function HeartHandshakeIcon(props: React.SVGProps<SVGSVGElement>) {
     </svg>
   )
 }
-

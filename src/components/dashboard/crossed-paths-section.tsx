@@ -1,7 +1,7 @@
 
 "use client";
 
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { MOCK_CROSSED_PATHS_USERS } from "@/lib/mock-data";
 import { MatchCard } from "./match-card";
 import { Button } from "@/components/ui/button";
@@ -17,6 +17,7 @@ import {
   AlertDialogHeader,
   AlertDialogTitle,
 } from "@/components/ui/alert-dialog";
+import ReactConfetti from 'react-confetti';
 
 export function CrossedPathsSection() {
   const [users, setUsers] = useState(MOCK_CROSSED_PATHS_USERS);
@@ -24,6 +25,23 @@ export function CrossedPathsSection() {
   const { toast } = useToast();
   const [showMatchAnimation, setShowMatchAnimation] = useState(false);
   const [matchedUserName, setMatchedUserName] = useState("");
+  const [windowSize, setWindowSize] = useState({ width: 0, height: 0 });
+
+  useEffect(() => {
+    const handleResize = () => {
+      setWindowSize({
+        width: window.innerWidth,
+        height: window.innerHeight,
+      });
+    };
+
+    if (typeof window !== 'undefined') {
+      handleResize();
+      window.addEventListener('resize', handleResize);
+      return () => window.removeEventListener('resize', handleResize);
+    }
+    return () => {};
+  }, []);
 
 
   const handleAction = (userId: string, action: "like" | "pass") => {
@@ -97,6 +115,15 @@ export function CrossedPathsSection() {
       </Button>
 
        <AlertDialog open={showMatchAnimation} onOpenChange={setShowMatchAnimation}>
+        {showMatchAnimation && windowSize.width > 0 && windowSize.height > 0 && (
+          <ReactConfetti
+            width={windowSize.width}
+            height={windowSize.height}
+            recycle={false}
+            numberOfPieces={250}
+            gravity={0.15}
+          />
+        )}
         <AlertDialogContent className="bg-card text-card-foreground border-primary shadow-lg rounded-xl">
           <AlertDialogHeader>
             <div className="mx-auto flex h-20 w-20 items-center justify-center rounded-full bg-primary mb-4 animate-pulse">
