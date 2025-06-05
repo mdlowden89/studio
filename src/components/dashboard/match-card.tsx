@@ -163,6 +163,26 @@ export function MatchCard({ user, onLike, onPass, showCrossedPathInfo = false }:
               <p className="text-muted-foreground whitespace-pre-line">{user.bio}</p>
             </div>
             
+            {otherImages.length > 0 && (
+              <div className="space-y-3 w-full">
+                <h3 className="text-lg font-semibold text-primary">More Photos</h3>
+                <div className="grid grid-cols-2 gap-3">
+                  {otherImages.map((img, idx) => (
+                    <div key={idx} className="relative aspect-[4/5] rounded-md overflow-hidden shadow">
+                      <Image
+                        src={img}
+                        alt={`${user.name} profile image ${idx + 1}`}
+                        layout="fill"
+                        objectFit="cover"
+                        data-ai-hint="lifestyle photo"
+                        unoptimized={img.startsWith('data:') || img.includes('placehold.co')}
+                      />
+                    </div>
+                  ))}
+                </div>
+              </div>
+            )}
+
             <div className="relative w-full max-w-sm aspect-[4/5] rounded-lg overflow-hidden shadow-lg mx-auto">
               <Image
                 src={mainImage}
@@ -189,25 +209,6 @@ export function MatchCard({ user, onLike, onPass, showCrossedPathInfo = false }:
               </div>
             )}
 
-            {otherImages.length > 0 && (
-              <div className="space-y-3 w-full">
-                <h3 className="text-lg font-semibold text-primary">More Photos</h3>
-                <div className="grid grid-cols-2 gap-3">
-                  {otherImages.map((img, idx) => (
-                    <div key={idx} className="relative aspect-[4/5] rounded-md overflow-hidden shadow">
-                      <Image
-                        src={img}
-                        alt={`${user.name} profile image ${idx + 1}`}
-                        layout="fill"
-                        objectFit="cover"
-                        data-ai-hint="lifestyle photo"
-                        unoptimized={img.startsWith('data:') || img.includes('placehold.co')}
-                      />
-                    </div>
-                  ))}
-                </div>
-              </div>
-            )}
           </div>
         </ScrollArea>
       </DialogContent>
