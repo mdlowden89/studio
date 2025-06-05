@@ -12,6 +12,7 @@ import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger } from 
 import { ScrollArea } from "@/components/ui/scroll-area";
 import { Separator } from "@/components/ui/separator";
 import { AVAILABLE_PROMPTS } from "@/lib/mock-data";
+import React from "react";
 
 interface MatchCardProps {
   user: UserProfile | CrossedPathUser;
@@ -34,10 +35,7 @@ export function MatchCard({ user, onLike, onPass, showCrossedPathInfo = false }:
   };
 
   const crossedPathUser = user as CrossedPathUser;
-  const mainImage = user.images.length > 0 ? user.images[currentImageIndex] : "https://placehold.co/600x800.png";
-  const otherImages = user.images.length > 0 ? user.images.filter((_, idx) => idx !== currentImageIndex) : [];
-  const firstPrompt = user.prompts.length > 0 ? user.prompts[0] : null;
-  const otherPrompts = user.prompts.length > 1 ? user.prompts.slice(1) : [];
+  const cardFaceImage = user.images.length > 0 ? user.images[currentImageIndex] : "https://placehold.co/600x800.png";
 
   const userDetails = [
     { icon: MapPin, label: "Location", value: user.locationName || user.locationAddress?.split(',')[0] || "N/A" },
@@ -48,20 +46,45 @@ export function MatchCard({ user, onLike, onPass, showCrossedPathInfo = false }:
     { icon: Wine, label: "Drinking", value: user.drinking && user.drinking !== "Prefer Not to Say" ? user.drinking : "N/A" },
   ];
 
+  // Define images for dialog layout
+  const dialogTopImage = user.images.length > 0 ? user.images[0] : "https://placehold.co/600x800.png";
+  const imagesForSpecificPlacement = user.images.slice(1); // Start from the second image
+
+  const imgAfterBio1 = imagesForSpecificPlacement[0];
+  const imgAfterBio2 = imagesForSpecificPlacement[1];
+  const imgForPrompt1 = imagesForSpecificPlacement[2];
+  const imgForPrompt2 = imagesForSpecificPlacement[3];
+  const remainingDialogImages = imagesForSpecificPlacement.slice(4);
+
+  const renderPlacedImage = (src: string | undefined, altHint: string, keySuffix: string) => {
+    if (!src) return null;
+    return (
+      <div className="relative aspect-[16/9] rounded-md overflow-hidden shadow w-full my-4" key={`placed-${altHint}-${keySuffix}`}>
+        <Image
+          src={src}
+          alt={`${user.name}'s photo - ${altHint}`}
+          layout="fill"
+          objectFit="cover"
+          data-ai-hint={`profile ${altHint}`}
+          unoptimized={src.startsWith('data:') || src.includes('placehold.co')}
+        />
+      </div>
+    );
+  };
 
   return (
     <Dialog>
       <Card className="w-full max-w-sm mx-auto overflow-hidden shadow-2xl transform transition-all duration-300 hover:scale-105 bg-card flex flex-col h-[720px]">
         <CardHeader className="p-0 relative h-[55%]">
           <Image
-            src={user.images[currentImageIndex]}
+            src={cardFaceImage}
             alt={user.name}
             width={600}
             height={800}
             className="object-cover w-full h-full cursor-pointer"
             data-ai-hint="profile lifestyle"
             onClick={nextImage}
-            unoptimized={user.images[currentImageIndex]?.startsWith('data:') || user.images[currentImageIndex]?.includes('placehold.co')}
+            unoptimized={cardFaceImage.startsWith('data:') || cardFaceImage.includes('placehold.co')}
           />
           {user.images.length > 1 && (
             <>
@@ -138,21 +161,19 @@ export function MatchCard({ user, onLike, onPass, showCrossedPathInfo = false }:
             <Separator className="my-3 bg-border" />
           </DialogHeader>
           
-          {/* Main Image - positioned after header */}
           <div className="px-6 pt-4">
             <div className="relative w-full max-w-xs aspect-[4/5] rounded-lg overflow-hidden shadow-lg mx-auto">
               <Image
-                src={mainImage}
+                src={dialogTopImage}
                 alt={`${user.name}'s main photo`}
                 layout="fill"
                 objectFit="cover"
                 data-ai-hint="profile photo"
-                unoptimized={mainImage.startsWith('data:') || mainImage.includes('placehold.co')}
+                unoptimized={dialogTopImage.startsWith('data:') || dialogTopImage.includes('placehold.co')}
               />
             </div>
           </div>
 
-          {/* User Details Bar - positioned directly below main image */}
           <div className="px-6 pt-3 pb-3"> 
             <div className="w-full flex flex-nowrap justify-around overflow-x-auto p-3 bg-muted/30 rounded-lg">
               {userDetails.map((detail, index) => (
@@ -167,29 +188,43 @@ export function MatchCard({ user, onLike, onPass, showCrossedPathInfo = false }:
             </div>
           </div>
           
-          {/* Rest of the content - bio, prompts, other photos */}
-          <div className="px-6 pb-6 flex flex-col space-y-6"> 
+          <div className="px-6 pb-6 flex flex-col space-y-4"> 
             <div className="space-y-2 w-full">
               <h3 className="text-lg font-semibold text-primary">About {user.name}</h3>
               <p className="text-muted-foreground whitespace-pre-line">{user.bio}</p>
             </div>
 
-            {firstPrompt && (
-              <div className="space-y-2 w-full">
-                <h3 className="text-lg font-semibold text-primary">{AVAILABLE_PROMPTS.find(p => p.id === firstPrompt.promptId)?.question || "Prompt"}</h3>
-                <p className="text-muted-foreground whitespace-pre-line">{firstPrompt.answer}</p>
-              </div>
-            )}
+            {renderPlacedImage(imgAfterBio1, "after bio 1", "ab1")}
+            {renderPlacedImage(imgAfterBio2, "after bio 2", "ab2")}
                        
-            {otherImages.length > 0 && (
-              <div className="space-y-3 w-full">
+            {user.prompts.map((p, index) => {
+              const promptDetails = AVAILABLE_PROMPTS.find(ap => ap.id === p.promptId);
+              const question = promptDetails?.question;
+              return (
+                <React.Fragment key={`${p.promptId}-${index}`}>
+                  <div className="bg-muted/30 p-4 rounded-lg mt-2">
+                    <h4 className="font-semibold text-foreground/80 mb-1">{question}</h4>
+                    <p className="text-sm text-muted-foreground whitespace-pre-line">{p.answer}</p>
+                  </div>
+                  {question === "I recently discovered that" && (
+                    <>
+                      {renderPlacedImage(imgForPrompt1, "after prompt 1", "ap1")}
+                      {renderPlacedImage(imgForPrompt2, "after prompt 2", "ap2")}
+                    </>
+                  )}
+                </React.Fragment>
+              );
+            })}
+
+            {remainingDialogImages.length > 0 && (
+              <div className="space-y-3 w-full pt-4">
                 <h3 className="text-lg font-semibold text-primary">More Photos</h3>
                 <div className="grid grid-cols-2 gap-3">
-                  {otherImages.map((img, idx) => (
-                    <div key={idx} className="relative aspect-[4/5] rounded-md overflow-hidden shadow">
+                  {remainingDialogImages.map((img, idx) => (
+                    <div key={`remaining-${idx}`} className="relative aspect-[4/5] rounded-md overflow-hidden shadow">
                       <Image
                         src={img}
-                        alt={`${user.name} profile image ${idx + 1}`}
+                        alt={`${user.name} profile image ${idx + 5}`}
                         layout="fill"
                         objectFit="cover"
                         data-ai-hint="lifestyle photo"
@@ -198,21 +233,6 @@ export function MatchCard({ user, onLike, onPass, showCrossedPathInfo = false }:
                     </div>
                   ))}
                 </div>
-              </div>
-            )}
-
-            {otherPrompts.length > 0 && (
-              <div className="space-y-4 w-full">
-                <h3 className="text-lg font-semibold text-primary">More from {user.name}</h3>
-                {otherPrompts.map(p => {
-                  const promptDetails = AVAILABLE_PROMPTS.find(ap => ap.id === p.promptId);
-                  return promptDetails ? (
-                    <div key={p.promptId} className="bg-muted/30 p-4 rounded-lg">
-                      <h4 className="font-semibold text-foreground/80 mb-1">{promptDetails.question}</h4>
-                      <p className="text-sm text-muted-foreground whitespace-pre-line">{p.answer}</p>
-                    </div>
-                  ) : null;
-                })}
               </div>
             )}
 
