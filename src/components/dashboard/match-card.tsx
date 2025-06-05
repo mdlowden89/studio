@@ -137,8 +137,21 @@ export function MatchCard({ user, onLike, onPass, showCrossedPathInfo = false }:
               )}
             <Separator className="my-3 bg-border" />
           </DialogHeader>
+          
+          <div className="px-6 pt-4 pb-4"> {/* Wrapper for the main image, with horizontal and top padding */}
+            <div className="relative w-full max-w-sm aspect-[4/5] rounded-lg overflow-hidden shadow-lg mx-auto">
+              <Image
+                src={mainImage}
+                alt={`${user.name}'s main photo`}
+                layout="fill"
+                objectFit="cover"
+                data-ai-hint="profile photo"
+                unoptimized={mainImage.startsWith('data:') || mainImage.includes('placehold.co')}
+              />
+            </div>
+          </div>
 
-          <div className="px-6 pb-6 flex flex-col space-y-6">
+          <div className="px-6 pb-6 flex flex-col space-y-6"> {/* Added pt-4 to space from image above */}
             <div className="w-full flex flex-nowrap justify-around overflow-x-auto p-3 bg-muted/30 rounded-lg">
               {userDetails.map((detail, index) => (
                  (detail.value && detail.value !== "N/A") && (
@@ -162,20 +175,7 @@ export function MatchCard({ user, onLike, onPass, showCrossedPathInfo = false }:
               <h3 className="text-lg font-semibold text-primary">About {user.name}</h3>
               <p className="text-muted-foreground whitespace-pre-line">{user.bio}</p>
             </div>
-            
-            {/* Main Image (mainImage) - Reverted to be before 'More Photos' grid */}
-            <div className="relative w-full max-w-sm aspect-[4/5] rounded-lg overflow-hidden shadow-lg mx-auto">
-              <Image
-                src={mainImage}
-                alt={`${user.name}'s main photo`}
-                layout="fill"
-                objectFit="cover"
-                data-ai-hint="profile photo"
-                unoptimized={mainImage.startsWith('data:') || mainImage.includes('placehold.co')}
-              />
-            </div>
-            
-            {/* More Photos (otherImages) - Reverted to be after 'mainImage' */}
+                       
             {otherImages.length > 0 && (
               <div className="space-y-3 w-full">
                 <h3 className="text-lg font-semibold text-primary">More Photos</h3>
