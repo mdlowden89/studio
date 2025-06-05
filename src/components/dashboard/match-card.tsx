@@ -138,7 +138,8 @@ export function MatchCard({ user, onLike, onPass, showCrossedPathInfo = false }:
             <Separator className="my-3 bg-border" />
           </DialogHeader>
           
-          <div className="px-6 pt-4 pb-4"> {/* Wrapper for the main image, with horizontal and top padding */}
+          {/* Main Image */}
+          <div className="px-6 pt-4"> {/* Removed bottom padding here */}
             <div className="relative w-full max-w-sm aspect-[4/5] rounded-lg overflow-hidden shadow-lg mx-auto">
               <Image
                 src={mainImage}
@@ -151,7 +152,8 @@ export function MatchCard({ user, onLike, onPass, showCrossedPathInfo = false }:
             </div>
           </div>
 
-          <div className="px-6 pb-6 flex flex-col space-y-6"> {/* Added pt-4 to space from image above */}
+          {/* User Details Bar - moved out of the main content flow for specific spacing */}
+          <div className="px-6 pt-3 pb-3"> {/* Added padding around it */}
             <div className="w-full flex flex-nowrap justify-around overflow-x-auto p-3 bg-muted/30 rounded-lg">
               {userDetails.map((detail, index) => (
                  (detail.value && detail.value !== "N/A") && (
@@ -163,7 +165,10 @@ export function MatchCard({ user, onLike, onPass, showCrossedPathInfo = false }:
                 )
               ))}
             </div>
-
+          </div>
+          
+          {/* Rest of the content - bio, prompts, other photos */}
+          <div className="px-6 pb-6 flex flex-col space-y-6"> 
             {firstPrompt && (
               <div className="space-y-2 w-full">
                 <h3 className="text-lg font-semibold text-primary">{AVAILABLE_PROMPTS.find(p => p.id === firstPrompt.promptId)?.question || "Prompt"}</h3>
