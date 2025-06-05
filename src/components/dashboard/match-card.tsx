@@ -139,17 +139,6 @@ export function MatchCard({ user, onLike, onPass, showCrossedPathInfo = false }:
           </DialogHeader>
 
           <div className="px-6 pb-6 flex flex-col space-y-6">
-            <div className="relative w-full max-w-sm aspect-[4/5] rounded-lg overflow-hidden shadow-lg mx-auto">
-              <Image
-                src={mainImage}
-                alt={`${user.name}'s main photo`}
-                layout="fill"
-                objectFit="cover"
-                data-ai-hint="profile photo"
-                unoptimized={mainImage.startsWith('data:') || mainImage.includes('placehold.co')}
-              />
-            </div>
-
             <div className="w-full flex flex-nowrap justify-around overflow-x-auto p-3 bg-muted/30 rounded-lg">
               {userDetails.map((detail, index) => (
                  (detail.value && detail.value !== "N/A") && (
@@ -172,6 +161,17 @@ export function MatchCard({ user, onLike, onPass, showCrossedPathInfo = false }:
             <div className="space-y-2 w-full">
               <h3 className="text-lg font-semibold text-primary">About {user.name}</h3>
               <p className="text-muted-foreground whitespace-pre-line">{user.bio}</p>
+            </div>
+            
+            <div className="relative w-full max-w-sm aspect-[4/5] rounded-lg overflow-hidden shadow-lg mx-auto">
+              <Image
+                src={mainImage}
+                alt={`${user.name}'s main photo`}
+                layout="fill"
+                objectFit="cover"
+                data-ai-hint="profile photo"
+                unoptimized={mainImage.startsWith('data:') || mainImage.includes('placehold.co')}
+              />
             </div>
 
             {otherPrompts.length > 0 && (
