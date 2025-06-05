@@ -163,6 +163,19 @@ export function MatchCard({ user, onLike, onPass, showCrossedPathInfo = false }:
               <p className="text-muted-foreground whitespace-pre-line">{user.bio}</p>
             </div>
             
+            {/* Main Image (mainImage) - Reverted to be before 'More Photos' grid */}
+            <div className="relative w-full max-w-sm aspect-[4/5] rounded-lg overflow-hidden shadow-lg mx-auto">
+              <Image
+                src={mainImage}
+                alt={`${user.name}'s main photo`}
+                layout="fill"
+                objectFit="cover"
+                data-ai-hint="profile photo"
+                unoptimized={mainImage.startsWith('data:') || mainImage.includes('placehold.co')}
+              />
+            </div>
+            
+            {/* More Photos (otherImages) - Reverted to be after 'mainImage' */}
             {otherImages.length > 0 && (
               <div className="space-y-3 w-full">
                 <h3 className="text-lg font-semibold text-primary">More Photos</h3>
@@ -182,17 +195,6 @@ export function MatchCard({ user, onLike, onPass, showCrossedPathInfo = false }:
                 </div>
               </div>
             )}
-
-            <div className="relative w-full max-w-sm aspect-[4/5] rounded-lg overflow-hidden shadow-lg mx-auto">
-              <Image
-                src={mainImage}
-                alt={`${user.name}'s main photo`}
-                layout="fill"
-                objectFit="cover"
-                data-ai-hint="profile photo"
-                unoptimized={mainImage.startsWith('data:') || mainImage.includes('placehold.co')}
-              />
-            </div>
 
             {otherPrompts.length > 0 && (
               <div className="space-y-4 w-full">
