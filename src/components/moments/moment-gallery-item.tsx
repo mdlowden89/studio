@@ -31,31 +31,43 @@ export function MomentGalleryItem({ moment }: MomentGalleryItemProps) {
       try {
         setIsLoading(true);
         setError(null);
-        setErrorCode(null);
+        setErrorCode(null); // Reset error code
         const result = await fetchPlacePhoto(moment.placeName, moment.coordinates);
         
         if (result.error) {
-          console.warn(`Error fetching photo for ${moment.placeName}: ${result.error}`);
+          console.warn(`MomentGalleryItem: Error fetching photo for "${moment.placeName}" (Moment ID: ${moment.id}). Code: ${result.error}`);
           setErrorCode(result.error);
-          if (result.error === 'API_KEY_MISSING' || result.error === 'API_KEY_INVALID') {
-            setError("Google Places API Key is missing or invalid. Please check server configuration.");
-          } else if (result.error === 'NO_PLACE_FOUND') {
-            setError(`Could not find "${moment.placeName}" on Google Places.`);
-          } else if (result.error === 'NO_PHOTO_FOR_PLACE') {
-            setError(`No photo available for "${moment.placeName}".`);
-          } else {
-            setError("Could not load photo for this place.");
+          // Set user-friendly error messages based on the error code
+          switch (result.error) {
+            case 'API_KEY_MISSING':
+              setError("Google Places API Key is missing from server .env. Please contact support or check server configuration.");
+              break;
+            case 'API_KEY_INVALID':
+              setError("Google Places API Key is invalid or not authorized. Please check Google Cloud Console and server configuration.");
+              break;
+            case 'NO_PLACE_FOUND':
+              setError(`Could not find "${moment.placeName}" on Google Places. Check the spelling or try a more specific name.`);
+              break;
+            case 'NO_PHOTO_FOR_PLACE':
+              setError(`No photo available for "${moment.placeName}" via Google Places API.`);
+              break;
+            case 'FETCH_FAILED':
+              setError("Failed to communicate with Google Places API. Check network or Genkit server logs.");
+              break;
+            default: // Handles PLACES_API_ERROR, ACTION_EXECUTION_ERROR, etc.
+              setError(`Could not load photo for "${moment.placeName}". Check Genkit server logs for details (Error: ${result.error}).`);
+              break;
           }
         } else if (result.photoUrl) {
           setPhotoUrl(result.photoUrl);
           setAttributionHtml(result.attributionHtml);
         } else {
-          // Should be caught by result.error, but as a fallback:
+          // This case should ideally be covered by result.error, but as a fallback:
           setError(`No photo found for "${moment.placeName}".`);
           setErrorCode('NO_PHOTO_FALLBACK');
         }
-      } catch (err) {
-        console.error("Client-side error calling fetchPlacePhoto:", err);
+      } catch (err: any) {
+        console.error(`MomentGalleryItem: Client-side error calling fetchPlacePhoto for "${moment.placeName}":`, err.message ? err.message : err);
         setError("Failed to fetch photo due to a client-server communication issue.");
         setErrorCode('CLIENT_FETCH_ERROR');
       } finally {
@@ -63,7 +75,7 @@ export function MomentGalleryItem({ moment }: MomentGalleryItemProps) {
       }
     }
     loadPhoto();
-  }, [moment.placeName, moment.coordinates, moment.id]); // Added moment.id to deps for safety if moment object itself changes
+  }, [moment.placeName, moment.coordinates, moment.id]);
 
   const momentDate = new Date(moment.timestamp);
 
@@ -80,14 +92,15 @@ export function MomentGalleryItem({ moment }: MomentGalleryItemProps) {
             data-ai-hint="place photo"
           />
         )}
-        {!isLoading && !photoUrl && (
-          <div className="flex flex-col items-center text-center p-2 text-muted-foreground">
-            {errorCode === 'API_KEY_MISSING' || errorCode === 'API_KEY_INVALID' ? (
+        {!isLoading && !photoUrl && ( // Error state
+          <div className="flex flex-col items-center text-center p-3 text-muted-foreground">
+            {errorCode === 'API_KEY_MISSING' || errorCode === 'API_KEY_INVALID' || errorCode?.startsWith('PLACES_API_ERROR') ? (
               <AlertTriangle className="h-8 w-8 mb-1 text-destructive" />
             ) : (
               <ImageOff className="h-8 w-8 mb-1" />
             )}
             <span className="text-xs">{error || "Photo not available"}</span>
+             {errorCode?.startsWith('PLACES_API_ERROR') && <span className="text-[10px] mt-1">(Check server/Genkit logs for details)</span>}
           </div>
         )}
       </div>
@@ -101,7 +114,7 @@ export function MomentGalleryItem({ moment }: MomentGalleryItemProps) {
           {format(momentDate, "MMM d, yyyy")} - {format(momentDate, "p")}
         </p>
       </CardContent>
-      {attributionHtml && !error && ( // Only show attribution if there's no error and html exists
+      {attributionHtml && !error && photoUrl && (
         <CardFooter className="p-2 text-center text-[10px] text-muted-foreground/70 bg-black/20">
           <div dangerouslySetInnerHTML={{ __html: attributionHtml }} />
         </CardFooter>
