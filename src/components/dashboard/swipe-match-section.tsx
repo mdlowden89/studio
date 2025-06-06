@@ -6,7 +6,7 @@ import { MOCK_USERS, MOCK_USER_ID } from "@/lib/mock-data";
 import type { UserProfile } from "@/lib/types";
 import { MatchCard } from "./match-card";
 import { Button } from "@/components/ui/button";
-import { RefreshCw, Users, Undo2, HeartHandshake as HeartHandshakeIcon } from "lucide-react"; // Updated import
+import { RefreshCw, Users, Undo2, HeartHandshake as HeartHandshakeIcon } from "lucide-react";
 import { useToast } from "@/hooks/use-toast";
 import {
   AlertDialog,
@@ -162,7 +162,7 @@ export function SwipeMatchSection() {
       <AlertDialog open={showMatchAnimation} onOpenChange={setShowMatchAnimation}>
         <AlertDialogContent className="bg-card text-card-foreground border-primary shadow-lg rounded-xl">
           {showMatchAnimation && windowSize.width > 0 && windowSize.height > 0 && (
-            <div style={{ position: 'fixed', top: 0, left: 0, width: '100%', height: '100%', zIndex: 9999 }}>
+            <div style={{ position: 'fixed', top: 0, left: 0, width: '100%', height: '100%', zIndex: 9999, pointerEvents: 'none' }}>
               <ReactConfetti
                 width={windowSize.width}
                 height={windowSize.height}
@@ -183,7 +183,6 @@ export function SwipeMatchSection() {
           </AlertDialogHeader>
           <AlertDialogFooter className="sm:justify-center gap-2">
              <AlertDialogCancel 
-              onClick={() => setShowMatchAnimation(false)}
               className="w-full sm:w-auto"
             >
               Keep Exploring
