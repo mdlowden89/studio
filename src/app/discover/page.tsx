@@ -27,7 +27,7 @@ export default function DiscoverPage() {
           <TabsList className="grid w-full grid-cols-1 md:w-1/3 mx-auto mb-6"> {/* Adjusted to grid-cols-1 and md:w-1/3 for single tab */}
             <TabsTrigger 
               value="swipe-match"
-              className="border border-primary hover:shadow-[0_0_10px_2px_hsl(var(--primary))] transition-all"
+              className="border border-primary hover:shadow-[0_0_15px_4px_hsl(var(--primary))]"
             >
               <Handshake className="mr-2 h-5 w-5" />
               Swipe & Match
