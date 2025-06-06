@@ -23,6 +23,7 @@ export type GetPlacePhotoInput = z.infer<typeof GetPlacePhotoInputSchema>;
 const GetPlacePhotoOutputSchema = z.object({
   photoUrl: z.string().optional().describe('The URL of the place photo.'),
   attributionHtml: z.string().optional().describe('HTML attributions for the photo, if any.'),
+  error: z.string().optional().describe('An error message if the operation failed, or an error code like API_KEY_MISSING.'),
 });
 export type GetPlacePhotoOutput = z.infer<typeof GetPlacePhotoOutputSchema>;
 
@@ -37,7 +38,7 @@ const getPlacePhotoFlow = ai.defineFlow(
     inputSchema: GetPlacePhotoInputSchema,
     outputSchema: GetPlacePhotoOutputSchema,
   },
-  async (input) => {
+  async (input): Promise<GetPlacePhotoOutput> => {
     const placesApiKey = process.env.NEXT_PUBLIC_GOOGLE_PLACES_API_KEY;
     const generalApiKey = process.env.GOOGLE_API_KEY;
     
@@ -50,41 +51,44 @@ const getPlacePhotoFlow = ai.defineFlow(
     }
     
     if (!apiKey) {
-      console.error('Google Places API Key is missing from .env file (checked NEXT_PUBLIC_GOOGLE_PLACES_API_KEY and GOOGLE_API_KEY).');
-      throw new Error('API key for Google Places is not configured.');
+      const errorMsg = 'Google Places API Key is missing from .env file (checked NEXT_PUBLIC_GOOGLE_PLACES_API_KEY and GOOGLE_API_KEY).';
+      console.error(errorMsg);
+      return { photoUrl: undefined, attributionHtml: undefined, error: 'API_KEY_MISSING' };
     }
     console.log(`Using API key from ${keySource}: ${apiKey.substring(0, 4)}...${apiKey.substring(apiKey.length - 4)} for place: ${input.placeName}`);
 
     // 1. Find Place ID and Photo Reference
     let findPlaceUrl = `https://maps.googleapis.com/maps/api/place/findplacefromtext/json?input=${encodeURIComponent(input.placeName)}&inputtype=textquery&fields=place_id,photos,name&key=${apiKey}`;
     if (input.coordinates) {
-        // Add location bias if coordinates are provided
         findPlaceUrl += `&locationbias=circle:2000@${input.coordinates.lat},${input.coordinates.lng}`;
         console.log(`Find place URL (with location bias): ${findPlaceUrl.replace(apiKey, "REDACTED_API_KEY")}`);
     } else {
         console.log(`Find place URL: ${findPlaceUrl.replace(apiKey, "REDACTED_API_KEY")}`);
     }
 
-
     try {
       const findPlaceResponse = await fetch(findPlaceUrl);
-      const responseText = await findPlaceResponse.text(); // Read text first for better error logging
+      const responseText = await findPlaceResponse.text();
       
       if (!findPlaceResponse.ok) {
-        console.error(`Google Places Find Place API error: ${findPlaceResponse.status} ${findPlaceResponse.statusText}. Response: ${responseText}`);
-        throw new Error(`Failed to find place: ${findPlaceResponse.statusText}`);
+        const errorDetail = `Google Places Find Place API error: ${findPlaceResponse.status} ${findPlaceResponse.statusText}. Response: ${responseText}`;
+        console.error(errorDetail);
+        return { photoUrl: undefined, attributionHtml: undefined, error: `PLACES_API_ERROR: ${findPlaceResponse.status}` };
       }
       
       const findPlaceData = JSON.parse(responseText);
       console.log('Google Places Find Place API Response Status:', findPlaceData.status);
       if (findPlaceData.error_message) {
         console.error('Google Places Find Place API Error Message:', findPlaceData.error_message);
+        // Specific error for API key issues if Places API returns it
+        if (findPlaceData.error_message.toLowerCase().includes("api key not valid") || findPlaceData.error_message.toLowerCase().includes("key invalid")) {
+            return { photoUrl: undefined, attributionHtml: undefined, error: 'API_KEY_INVALID' };
+        }
       }
-
 
       if (findPlaceData.status !== 'OK' || !findPlaceData.candidates || findPlaceData.candidates.length === 0) {
         console.warn('No place candidates found or API error for:', input.placeName, 'Status:', findPlaceData.status, 'Error:', findPlaceData.error_message);
-        return { photoUrl: undefined, attributionHtml: undefined };
+        return { photoUrl: undefined, attributionHtml: undefined, error: findPlaceData.status === 'ZERO_RESULTS' ? 'NO_PLACE_FOUND' : 'PLACES_API_ERROR' };
       }
 
       const place = findPlaceData.candidates[0];
@@ -92,7 +96,7 @@ const getPlacePhotoFlow = ai.defineFlow(
 
       if (!place.photos || place.photos.length === 0) {
         console.warn('No photos found for place:', place.name || input.placeName);
-        return { photoUrl: undefined, attributionHtml: undefined };
+        return { photoUrl: undefined, attributionHtml: undefined, error: 'NO_PHOTO_FOR_PLACE' };
       }
       console.log(`Found ${place.photos.length} photo(s) for ${place.name || input.placeName}. Using the first one.`);
 
@@ -101,19 +105,14 @@ const getPlacePhotoFlow = ai.defineFlow(
         ? place.photos[0].html_attributions[0]
         : undefined;
 
-      // 2. Construct Photo URL
-      // Maxwidth or maxheight is required.
       const photoUrl = `https://maps.googleapis.com/maps/api/place/photo?maxwidth=400&photoreference=${photoReference}&key=${apiKey}`;
       console.log(`Constructed photo URL: ${photoUrl.replace(apiKey, "REDACTED_API_KEY")}`);
-
 
       return { photoUrl, attributionHtml };
 
     } catch (error) {
       console.error('Error in getPlacePhotoFlow during fetch or processing:', error);
-      // Optionally re-throw or return a specific error structure
-      // For now, returning undefined if any step fails
-      return { photoUrl: undefined, attributionHtml: undefined };
+      return { photoUrl: undefined, attributionHtml: undefined, error: 'FETCH_FAILED' };
     }
   }
 );

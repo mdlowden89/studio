@@ -3,10 +3,8 @@
 
 import { suggestVibeTagsForUser, SuggestVibeTagsInput } from "@/ai/flows/suggest-vibe-tags-flow";
 import { suggestBioForUser, SuggestBioInput } from "@/ai/flows/suggest-bio-flow";
-import { getPlacePhoto, GetPlacePhotoInput } from "@/ai/flows/get-place-photo-flow";
+import { getPlacePhoto, GetPlacePhotoInput, GetPlacePhotoOutput } from "@/ai/flows/get-place-photo-flow"; // Import GetPlacePhotoOutput
 import type { UserProfile } from "@/lib/types";
-// MOCK_USERS and MOCK_USER_ID are no longer needed here for the removed actions.
-// DetailedMatchSuggestion and sanitizeUserProfileForPrompt are also no longer needed.
 
 export async function getAiSuggestedVibeTags(
   userBio: string,
@@ -48,13 +46,16 @@ export async function getAiSuggestedBio(
 export async function fetchPlacePhoto(
   placeName: string,
   coordinates?: { lat: number; lng: number }
-): Promise<{ photoUrl?: string; attributionHtml?: string }> {
+): Promise<GetPlacePhotoOutput> { // Return type updated to GetPlacePhotoOutput
   try {
     const input: GetPlacePhotoInput = { placeName, coordinates };
     const result = await getPlacePhoto(input);
-    return { photoUrl: result.photoUrl, attributionHtml: result.attributionHtml };
+    // result already includes photoUrl, attributionHtml, and potentially error
+    return result; 
   } catch (error) {
-    console.error("Error in fetchPlacePhoto action:", error);
-    return { photoUrl: undefined, attributionHtml: undefined };
+    console.error("Error in fetchPlacePhoto action (outer catch):", error);
+    // This catch block handles errors if the getPlacePhoto flow itself fails to execute
+    // or if there's an unhandled exception within it not caught by its internal try/catch.
+    return { photoUrl: undefined, attributionHtml: undefined, error: 'ACTION_EXECUTION_ERROR' };
   }
 }
