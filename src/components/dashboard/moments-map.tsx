@@ -37,6 +37,14 @@ const mapStyles = [
   { featureType: 'transit', elementType: 'geometry', stylers: [{ color: '#181818' }] }
 ];
 
+const CustomLoadingElement = () => (
+  <div className="flex items-center justify-center h-full bg-muted rounded-lg">
+    <Loader2 className="h-6 w-6 animate-spin text-primary mr-2" />
+    <p>Loading map resources...</p>
+  </div>
+);
+
+
 export function MomentsMap({ moments }: MomentsMapProps) {
   const [apiKey, setApiKey] = useState<string | undefined>(undefined);
   const [isMounted, setIsMounted] = useState(false);
@@ -113,7 +121,7 @@ export function MomentsMap({ moments }: MomentsMapProps) {
   }, [resetPhotoState]);
 
   if (!isMounted) {
-    return <div className="flex items-center justify-center h-full bg-muted rounded-lg"><p>Loading map...</p></div>;
+    return <div className="flex items-center justify-center h-full bg-muted rounded-lg"><Loader2 className="h-6 w-6 animate-spin text-primary mr-2" />Loading map...</div>;
   }
 
   if (!apiKey) {
@@ -130,7 +138,8 @@ export function MomentsMap({ moments }: MomentsMapProps) {
     <LoadScriptNext
         id="dashboard-moments-map-script"
         googleMapsApiKey={apiKey}
-        loadingElement={<div className="flex items-center justify-center h-full bg-muted rounded-lg"><p>Loading map resources...</p></div>}
+        loadingElement={<CustomLoadingElement />}
+        preventGoogleFontsLoading={true}
     >
       <GoogleMap
         mapContainerStyle={containerStyle}
@@ -193,3 +202,6 @@ export function MomentsMap({ moments }: MomentsMapProps) {
     </LoadScriptNext>
   );
 }
+
+
+    

@@ -97,6 +97,12 @@ const mapStyles = [
   { featureType: 'transit', elementType: 'geometry', stylers: [{ color: '#181818' }] }
 ];
 
+const CustomLoadingElement = () => (
+  <div className="mt-1 text-muted-foreground flex items-center">
+    <Loader2 className="h-4 w-4 animate-spin text-primary mr-2" />
+    Loading map services...
+  </div>
+);
 
 export function ProfileDetails({ user }: ProfileDetailsProps) {
   const [name, setName] = useState(user.name);
@@ -276,6 +282,63 @@ export function ProfileDetails({ user }: ProfileDetailsProps) {
 
     router.refresh();
   };
+  
+  const renderLocationSection = () => {
+    if (!isMounted) {
+      return <CustomLoadingElement />;
+    }
+    if (!mapsApiKey) {
+      return (
+        <div className="mt-1 p-3 bg-destructive text-destructive-foreground rounded-md text-sm">
+          Google Maps API Key is missing or invalid. Location search and map will not work. Add NEXT_PUBLIC_GOOGLE_MAPS_API_KEY to your .env file.
+        </div>
+      );
+    }
+    return (
+      <LoadScriptNext
+        id="profile-details-map-script"
+        googleMapsApiKey={mapsApiKey}
+        libraries={['places']}
+        loadingElement={<CustomLoadingElement />}
+        preventGoogleFontsLoading={true}
+      >
+        <div className="relative mt-1">
+          <MapPin className="absolute left-3 top-1/2 -translate-y-1/2 h-5 w-5 text-muted-foreground z-10" />
+          <StandaloneSearchBox
+            onLoad={onLoadSearchBox}
+            onPlacesChanged={onPlacesChanged}
+          >
+            <Input
+              id="locationAddress"
+              value={locationAddress}
+              onChange={(e) => {
+                setLocationAddress(e.target.value);
+                if (e.target.value !== currentLocationName && e.target.value !== user.locationAddress) {
+                  setCurrentCoordinates(null);
+                  setMarkerPosition(null);
+                  setCurrentLocationName("");
+                }
+              }}
+              className="bg-input pl-10"
+              placeholder="e.g., 123 Main St, Anytown or Anytown"
+            />
+          </StandaloneSearchBox>
+        </div>
+        <div className="mt-2 h-72 w-full bg-muted rounded-md overflow-hidden border border-border">
+          <GoogleMap
+            mapContainerStyle={{ width: '100%', height: '100%' }}
+            center={mapCenter}
+            zoom={markerPosition ? 15 : 8}
+            onLoad={onMapLoad}
+            options={{ styles: mapStyles, streetViewControl: false, mapTypeControl: false, fullscreenControl: false }}
+          >
+            {markerPosition && <MarkerF position={markerPosition} />}
+          </GoogleMap>
+        </div>
+      </LoadScriptNext>
+    );
+  };
+
 
   return (
     <form onSubmit={handleSubmit} className="space-y-8">
@@ -293,11 +356,11 @@ export function ProfileDetails({ user }: ProfileDetailsProps) {
           <Input
             id="age"
             type="number"
-            value={age === 0 && !name ? '' : age} // Handle initial empty state if age is 0 and name is not set (new profile)
+            value={age === 0 && !name ? '' : age} 
             onChange={(e) => {
               const rawValue = e.target.value;
               if (rawValue === "") {
-                setAge(0); // Or user.age if you prefer to revert to original on empty
+                setAge(0); 
               } else {
                 const parsedAge = parseInt(rawValue, 10);
                 setAge(isNaN(parsedAge) || parsedAge < 0 ? 0 : parsedAge);
@@ -428,57 +491,7 @@ export function ProfileDetails({ user }: ProfileDetailsProps) {
 
       <div>
         <Label htmlFor="locationAddress">Location (Address, Area, or Postcode)</Label>
-        {isMounted && !mapsApiKey ? (
-            <div className="mt-1 p-3 bg-destructive text-destructive-foreground rounded-md text-sm">
-                Google Maps API Key is missing or invalid. Location search and map will not work. Add NEXT_PUBLIC_GOOGLE_MAPS_API_KEY to your .env file.
-            </div>
-        ) : (
-        isMounted && mapsApiKey && (
-          <LoadScriptNext
-              id="profile-details-map-script"
-              googleMapsApiKey={mapsApiKey}
-              libraries={['places']}
-              loadingElement={<div className="mt-1 text-muted-foreground">Loading map services...</div>}
-          >
-              <div className="relative mt-1">
-                  <MapPin className="absolute left-3 top-1/2 -translate-y-1/2 h-5 w-5 text-muted-foreground z-10" />
-                  <StandaloneSearchBox
-                      onLoad={onLoadSearchBox}
-                      onPlacesChanged={onPlacesChanged}
-                  >
-                      <Input
-                          id="locationAddress"
-                          value={locationAddress}
-                          onChange={(e) => {
-                              setLocationAddress(e.target.value);
-                              if (e.target.value !== currentLocationName && e.target.value !== user.locationAddress) { // Prevent clearing if user clicks away then back
-                                  setCurrentCoordinates(null);
-                                  setMarkerPosition(null);
-                                  setCurrentLocationName("");
-                              }
-                          }}
-                          className="bg-input pl-10"
-                          placeholder="e.g., 123 Main St, Anytown or Anytown"
-                      />
-                  </StandaloneSearchBox>
-              </div>
-              <div className="mt-2 h-72 w-full bg-muted rounded-md overflow-hidden border border-border">
-                   <GoogleMap
-                      mapContainerStyle={{ width: '100%', height: '100%' }}
-                      center={mapCenter}
-                      zoom={markerPosition ? 15 : 8}
-                      onLoad={onMapLoad}
-                      options={{ styles: mapStyles, streetViewControl: false, mapTypeControl: false, fullscreenControl: false }}
-                  >
-                      {markerPosition && <MarkerF position={markerPosition} />}
-                  </GoogleMap>
-              </div>
-          </LoadScriptNext>
-          )
-        )}
-        {!isMounted && mapsApiKey && ( // If not mounted but API key exists, show loading
-            <div className="mt-1 text-muted-foreground">Loading location input...</div>
-        )}
+        {renderLocationSection()}
       </div>
 
 
@@ -571,3 +584,6 @@ export function ProfileDetails({ user }: ProfileDetailsProps) {
     </form>
   );
 }
+
+
+    

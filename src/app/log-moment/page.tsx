@@ -10,7 +10,7 @@ import { Label } from "@/components/ui/label";
 import { Textarea } from "@/components/ui/textarea";
 import { Badge } from "@/components/ui/badge";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
-import { Feather, MapPin, Clock, CheckCircle, Search, ArrowLeft, MessageSquare, UserCheck, Palette, UsersIcon, Sparkles, LogOut } from "lucide-react";
+import { Feather, MapPin, Clock, CheckCircle, Search, ArrowLeft, MessageSquare, UserCheck, Palette, UsersIcon, Sparkles, LogOut, Loader2 } from "lucide-react";
 import { format } from "date-fns";
 import { useToast } from "@/hooks/use-toast";
 import { GoogleMap, LoadScriptNext, StandaloneSearchBox, MarkerF } from '@react-google-maps/api';
@@ -230,7 +230,7 @@ export default function LogMomentPage() {
     return (
         <AppLayout>
             <div className="container mx-auto py-8 flex justify-center items-center h-full">
-                <p>Loading...</p>
+                <Loader2 className="h-8 w-8 animate-spin text-primary" />
             </div>
         </AppLayout>
     );
@@ -271,7 +271,8 @@ export default function LogMomentPage() {
                     id="log-moment-map-script"
                     googleMapsApiKey={mapsApiKey}
                     libraries={libraries}
-                    loadingElement={<div className="text-center p-4">Loading Map...</div>}
+                    loadingElement={<div className="text-center p-4 flex items-center justify-center"><Loader2 className="h-6 w-6 animate-spin text-primary mr-2" />Loading Map...</div>}
+                    preventGoogleFontsLoading={true}
                   >
                     <div className="space-y-4">
                       <div>
@@ -499,3 +500,6 @@ export default function LogMomentPage() {
 
     
 
+
+
+    
