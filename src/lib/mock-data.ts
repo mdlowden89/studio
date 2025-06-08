@@ -26,9 +26,9 @@ export const MOCK_USERS: UserProfile[] = [
     email: 'alex@example.com',
     bio: 'Loves hiking, coffee, and indie music. Always up for an adventure or a quiet night in with a good book.',
     images: [
-      'https://placehold.co/600x800/E70F72/080808.png',
-      'https://placehold.co/800x600/262626/FAFAFA.png',
-      'https://placehold.co/700x700/A3A3A3/080808.png',
+      'https://placehold.co/600x800.png',
+      'https://placehold.co/800x600.png',
+      'https://placehold.co/700x700.png',
     ],
     vibeTags: ['adventurous', 'bookworm', 'coffee lover', 'calm', 'indie music enthusiast', 'mountain hiker', 'thoughtful conversations'],
     locationPatterns: ['Downtown Cafe', 'Mountain Trails', 'City Park', 'Indie Bookstores', 'Record Shops'],
@@ -57,9 +57,9 @@ export const MOCK_USERS: UserProfile[] = [
     email: 'jamie@example.com',
     bio: 'Artist, foodie, and travel enthusiast. Exploring new cultures and cuisines is my passion.',
     images: [
-      'https://placehold.co/600x800/080808/E70F72.png',
-      'https://placehold.co/800x600/FAFAFA/262626.png',
-      'https://placehold.co/600x900/E70F72/0D0D0D.png',
+      'https://placehold.co/600x800.png',
+      'https://placehold.co/800x600.png',
+      'https://placehold.co/600x900.png',
     ],
     vibeTags: ['creative', 'foodie', 'globetrotter', 'energetic', 'gallery hopper', 'street art admirer', 'spice fanatic'],
     locationPatterns: ['Art Gallery', 'International Food Market', 'Airport Lounge', 'Hidden Gem Eateries', 'Photography Walks'],
@@ -89,8 +89,8 @@ export const MOCK_USERS: UserProfile[] = [
     bio: 'Tech geek, gamer, and animal lover. Fluent in sarcasm and Python.',
     images: [
       'https://placehold.co/600x800.png',
-      'https://placehold.co/700x700/101010/FAFAFA.png',
-      'https://placehold.co/800x500/222222/FFFFFF.png',
+      'https://placehold.co/700x700.png',
+      'https://placehold.co/800x500.png',
     ],
     vibeTags: ['techy', 'gamer', 'animal lover', 'witty', 'board game strategist', 'puzzle solver', 'pet cafe visitor'],
     locationPatterns: ['Tech Hub', 'Dog Park', 'Retro Arcade', 'Escape Rooms', 'Hardware Stores'],
@@ -118,7 +118,7 @@ export const MOCK_USERS: UserProfile[] = [
     email: 'dev@example.com',
     bio: "Full-stack developer by day, aspiring chef by night! I love experimenting with new recipes, especially Italian and Thai. Weekends are for long bike rides, discovering hidden city gems, and maybe a bit of retro gaming. Seeking connections and new experiences. Love exploring local cafes and parks. My vibe tags are usually \"explorer\", \"optimist\", \"curious\", and \"friendly\". Let's see where our paths cross!",
     images: [
-      'https://placehold.co/120x120/E70F72/FFFFFF.png?text=U',
+      'https://placehold.co/600x800.png', // Changed from 120x120 with text
       'https://placehold.co/600x800.png',
       'https://placehold.co/800x600.png',
     ],
@@ -149,9 +149,9 @@ export const MOCK_USERS: UserProfile[] = [
     email: 'riley.dev@example.com',
     bio: 'Software developer by day, nature explorer by weekend. Love strategy board games and finding hidden trails. Looking for someone to share adventures with.',
     images: [
-      'https://placehold.co/600x800/3B82F6/FFFFFF.png?text=Riley+1',
-      'https://placehold.co/700x500/10B981/FFFFFF.png?text=Riley+2',
-      'https://placehold.co/650x750/F59E0B/FFFFFF.png?text=Riley+3',
+      'https://placehold.co/600x800.png',
+      'https://placehold.co/700x500.png',
+      'https://placehold.co/650x750.png',
     ],
     vibeTags: ['tech enthusiast', 'nature lover', 'board games', 'hiking', 'problem solver', 'craft beer', 'stargazing'],
     locationPatterns: ['National Parks', 'Board Game Cafes', 'Tech Meetups', 'Local Breweries', 'Scenic Overlooks', 'Mountain Summits', 'Campgrounds'],
@@ -180,9 +180,9 @@ export const MOCK_USERS: UserProfile[] = [
     email: 'morgan.art@example.com',
     bio: 'Painter and musician. I find beauty in everyday chaos. Often found at farmers markets or sketching in a park. My ideal date involves live music and good conversation.',
     images: [
-      'https://placehold.co/600x800/EC4899/FFFFFF.png?text=Morgan+1',
-      'https://placehold.co/800x600/8B5CF6/FFFFFF.png?text=Morgan+2',
-      'https://placehold.co/500x700/D97706/FFFFFF.png?text=Morgan+3',
+      'https://placehold.co/600x800.png',
+      'https://placehold.co/800x600.png',
+      'https://placehold.co/500x700.png',
     ],
     vibeTags: ['artist', 'musician', 'farmers market regular', 'live music aficionado', 'sketchbook always', 'vintage lover', 'deep conversations'],
     locationPatterns: ['Art Supply Stores', 'Live Music Venues', 'Local Farmers Markets', 'Botanical Gardens', 'Indie Cinemas', 'Antique Shops', 'Poetry Slams'],
@@ -211,9 +211,9 @@ export const MOCK_USERS: UserProfile[] = [
     email: 'jordan.fit@example.com',
     bio: 'Fitness enthusiast and world traveler. Always planning the next trip or the next workout. Looking for a partner in crime for adventures and gym sessions.',
     images: [
-      'https://placehold.co/600x800/EF4444/FFFFFF.png?text=Jordan+1',
-      'https://placehold.co/750x550/22C55E/FFFFFF.png?text=Jordan+2',
-      'https://placehold.co/600x900/6366F1/FFFFFF.png?text=Jordan+3',
+      'https://placehold.co/600x800.png',
+      'https://placehold.co/750x550.png',
+      'https://placehold.co/600x900.png',
     ],
     vibeTags: ['fitness junkie', 'travel bug', 'adventure seeker', 'gym regular', 'mountain climber', 'foodie (healthy)', 'optimistic'],
     locationPatterns: ['Gyms & Fitness Studios', 'Hiking Trails', 'Airports', 'Healthy Eateries', 'Rock Climbing Centers', 'Marathon Routes', 'International Hostels'],
@@ -253,7 +253,7 @@ export const MOCK_MOMENTS: Moment[] = [
     timestamp: daysAgo(1, 2, 30), // Thursday, May 23rd
     potentialMatchId: 'user-1',
     coordinates: { lat: 48.8584, lng: 2.2945 },
-    placeImage: 'https://placehold.co/200x150/7F7F7F/FFFFFF.png?text=Eiffel+Tower'
+    placeImage: 'https://placehold.co/200x150.png'
   },
   {
     id: 'moment-recap-2',
@@ -261,7 +261,7 @@ export const MOCK_MOMENTS: Moment[] = [
     placeName: 'Statue of Liberty',
     timestamp: daysAgo(2, 5, 15), // Wednesday, May 22nd
     coordinates: { lat: 40.6892, lng: -74.0445 },
-    placeImage: 'https://placehold.co/200x150/A3A3A3/080808.png?text=Statue+Liberty'
+    placeImage: 'https://placehold.co/200x150.png'
   },
   {
     id: 'moment-recap-3',
@@ -270,7 +270,7 @@ export const MOCK_MOMENTS: Moment[] = [
     timestamp: daysAgo(3, 1, 0), // Tuesday, May 21st
     potentialMatchId: 'user-2',
     coordinates: { lat: 37.8199, lng: -122.4783 },
-    placeImage: 'https://placehold.co/200x150/E70F72/FFFFFF.png?text=Golden+Gate'
+    placeImage: 'https://placehold.co/200x150.png'
   },
   {
     id: 'moment-recap-4',
@@ -278,7 +278,7 @@ export const MOCK_MOMENTS: Moment[] = [
     placeName: 'Times Square',
     timestamp: daysAgo(4, 7, 0), // Monday, May 20th
     coordinates: { lat: 40.7580, lng: -73.9855 },
-    placeImage: 'https://placehold.co/200x150/262626/FAFAFA.png?text=Times+Square'
+    placeImage: 'https://placehold.co/200x150.png'
   },
   {
     id: 'moment-recap-5',
@@ -287,7 +287,7 @@ export const MOCK_MOMENTS: Moment[] = [
     timestamp: daysAgo(5, -6, 0), // Sunday, May 19th (evening)
     potentialMatchId: 'user-3',
     coordinates: { lat: 48.8606, lng: 2.3376 },
-    placeImage: 'https://placehold.co/200x150/080808/E70F72.png?text=Louvre'
+    placeImage: 'https://placehold.co/200x150.png'
   },
   {
     id: 'moment-recap-6',
@@ -295,7 +295,7 @@ export const MOCK_MOMENTS: Moment[] = [
     placeName: 'The Colosseum',
     timestamp: daysAgo(0, 3, 0), // Friday, May 24th (today, relative to baseDate)
     coordinates: { lat: 41.8902, lng: 12.4922 },
-    placeImage: 'https://placehold.co/200x150/FAFAFA/080808.png?text=Colosseum'
+    placeImage: 'https://placehold.co/200x150.png'
   },
   {
     id: 'moment-recap-7',
@@ -303,7 +303,7 @@ export const MOCK_MOMENTS: Moment[] = [
     placeName: 'Sydney Opera House', // Repeated visit
     timestamp: daysAgo(6, 4, 0), // Saturday, May 18th
     coordinates: { lat: -33.8568, lng: 151.2153 },
-    placeImage: 'https://placehold.co/200x150/E70F72/080808.png?text=Sydney+Opera'
+    placeImage: 'https://placehold.co/200x150.png'
   },
   // Older moment, should NOT appear in recap
   {
@@ -312,7 +312,7 @@ export const MOCK_MOMENTS: Moment[] = [
     placeName: 'Outdated Cafe',
     timestamp: daysAgo(10),
     coordinates: { lat: 40.8000, lng: -74.1900 },
-    placeImage: 'https://placehold.co/200x150/4A4A4A/FFFFFF.png?text=Old+Cafe'
+    placeImage: 'https://placehold.co/200x150.png'
   },
   // Original moments (some might be older than 7 days from baseDate now)
   {
@@ -322,7 +322,7 @@ export const MOCK_MOMENTS: Moment[] = [
     timestamp: daysAgo(8, 3, 30), // Older than 7 days
     potentialMatchId: 'user-1',
     coordinates: { lat: 40.8137, lng: -74.2097 },
-    placeImage: 'https://placehold.co/200x150/7F7F7F/FFFFFF.png?text=Art+Museum'
+    placeImage: 'https://placehold.co/200x150.png'
   },
 ];
 
@@ -412,7 +412,7 @@ export const getCurrentUser = (): UserProfile => {
         name: "Current User",
         age: 30,
         bio: "Default bio for a user not found in mock data.",
-        images: ['https://placehold.co/120x120/E70F72/FFFFFF.png?text=U'],
+        images: ['https://placehold.co/600x800.png'],
         vibeTags: ["default", "user"],
         prompts: [],
         email: 'user@example.com',
@@ -439,3 +439,5 @@ export const MOCK_CROSSED_PATHS_USERS: CrossedPathUser[] = MOCK_USERS.filter(u =
   crossedAt: daysAgo(index + 0.1), // Slightly different times for each
   location: index % 3 === 0 ? 'Eiffel Tower' : (index % 3 === 1 ? 'Times Square' : 'Golden Gate Bridge'), // Example locations
 }));
+
+    
