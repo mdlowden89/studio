@@ -1,15 +1,21 @@
 
+"use client";
+
+import { useState } from "react";
 import { AppLayout } from "@/components/layout/app-layout";
 import { Card, CardContent, CardHeader, CardTitle, CardDescription, CardFooter } from "@/components/ui/card";
-import { Sparkles, PlusCircle, ClipboardList, Users, MessageSquare, Route, MapPin, CalendarDays, Users2, TrendingUp, Activity, Map } from "lucide-react";
+import { Sparkles, PlusCircle, ClipboardList, Users, MessageSquare, Route, MapPin, CalendarDays, Users2, TrendingUp, Activity, Map, LayoutGrid, List as ListIcon } from "lucide-react";
 import { getCurrentUser, MOCK_MOMENTS, MOCK_CROSSED_PATHS_USERS, MOCK_CHAT_CONVERSATIONS, MOCK_USER_ID, MOCK_USERS, baseDate } from "@/lib/mock-data";
 import { Button } from "@/components/ui/button";
+import { Separator } from "@/components/ui/separator";
 import { subDays, isAfter, format, getDay } from "date-fns";
 import { MomentsMap } from "@/components/dashboard/moments-map";
+import { MomentGalleryItem } from "@/components/moments/moment-gallery-item";
 import Link from "next/link";
 
 export default function DashboardPage() {
   const currentUser = getCurrentUser();
+  const [recentPlacesViewMode, setRecentPlacesViewMode] = useState<'list' | 'imageGrid'>('list');
 
   const momentsLoggedCount = MOCK_MOMENTS.filter(moment => moment.userId === MOCK_USER_ID).length;
   const potentialMatchesCount = MOCK_CROSSED_PATHS_USERS.length;
@@ -21,17 +27,15 @@ export default function DashboardPage() {
     { title: "Active Chats", value: activeChatsCount, icon: MessageSquare, color: "text-purple-500" },
   ];
 
-  // Use baseDate from mock-data for consistent weekly recap calculation
   const oneWeekAgo = subDays(baseDate, 7);
   const momentsThisWeek = MOCK_MOMENTS
     .filter(moment => moment.userId === MOCK_USER_ID && isAfter(new Date(moment.timestamp), oneWeekAgo))
     .sort((a, b) => new Date(b.timestamp).getTime() - new Date(a.timestamp).getTime());
 
-  // Weekly Recap Insights
   const distinctPlacesVisitedCount = new Set(momentsThisWeek.map(m => m.placeName)).size;
 
   const dayCounts = momentsThisWeek.reduce((acc, moment) => {
-    const day = getDay(new Date(moment.timestamp)); // 0 for Sunday, 1 for Monday, etc.
+    const day = getDay(new Date(moment.timestamp));
     acc[day] = (acc[day] || 0) + 1;
     return acc;
   }, {} as Record<number, number>);
@@ -102,7 +106,7 @@ export default function DashboardPage() {
               <div>
                 <CardTitle className="text-xl font-semibold">Moments Trail</CardTitle>
                 <CardDescription className="text-muted-foreground">
-                  A map of places you've visited in the last 7 days.
+                  A map of places you've visited in the last 7 days, with a toggle for list or image view.
                 </CardDescription>
               </div>
             </div>
@@ -113,16 +117,47 @@ export default function DashboardPage() {
             </div>
             {momentsThisWeek.length > 0 ? (
               <div>
-                <h4 className="text-md font-semibold mb-2 text-foreground">Recent Places This Week:</h4>
-                <ul className="space-y-2">
-                  {momentsThisWeek.map(moment => (
-                    <li key={moment.id} className="flex items-center gap-2 p-2 bg-muted/30 rounded-md text-sm">
-                      <MapPin className="w-4 h-4 text-primary/80" />
-                      <span className="flex-grow font-medium text-foreground/90">{moment.placeName}</span>
-                      <span className="text-xs text-muted-foreground">{format(new Date(moment.timestamp), "MMM d, p")}</span>
-                    </li>
-                  ))}
-                </ul>
+                <div className="flex items-center justify-between mb-3">
+                  <h4 className="text-md font-semibold text-foreground">Recent Places This Week:</h4>
+                  <div className="flex items-center gap-2 border border-border p-1 rounded-md">
+                    <Button
+                      variant={recentPlacesViewMode === 'list' ? 'default' : 'ghost'}
+                      size="icon"
+                      onClick={() => setRecentPlacesViewMode('list')}
+                      aria-label="List view"
+                      className={recentPlacesViewMode === 'list' ? 'bg-primary text-primary-foreground hover:bg-primary/90' : 'hover:bg-accent'}
+                    >
+                      <ListIcon className="h-5 w-5" />
+                    </Button>
+                    <Separator orientation="vertical" className="h-6 bg-border" />
+                    <Button
+                      variant={recentPlacesViewMode === 'imageGrid' ? 'default' : 'ghost'}
+                      size="icon"
+                      onClick={() => setRecentPlacesViewMode('imageGrid')}
+                      aria-label="Image Grid view"
+                      className={recentPlacesViewMode === 'imageGrid' ? 'bg-primary text-primary-foreground hover:bg-primary/90' : 'hover:bg-accent'}
+                    >
+                      <LayoutGrid className="h-5 w-5" />
+                    </Button>
+                  </div>
+                </div>
+                {recentPlacesViewMode === 'list' ? (
+                  <ul className="space-y-2">
+                    {momentsThisWeek.map(moment => (
+                      <li key={moment.id} className="flex items-center gap-2 p-2 bg-muted/30 rounded-md text-sm">
+                        <MapPin className="w-4 h-4 text-primary/80" />
+                        <span className="flex-grow font-medium text-foreground/90">{moment.placeName}</span>
+                        <span className="text-xs text-muted-foreground">{format(new Date(moment.timestamp), "MMM d, p")}</span>
+                      </li>
+                    ))}
+                  </ul>
+                ) : (
+                  <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-3">
+                    {momentsThisWeek.map(moment => (
+                      <MomentGalleryItem key={moment.id} moment={moment} />
+                    ))}
+                  </div>
+                )}
               </div>
             ) : (
               <p className="text-muted-foreground text-center py-4">
