@@ -39,7 +39,7 @@ const navItems = [
 export function AppSidebar() {
   const pathname = usePathname();
   const router = useRouter();
-  const { state, isMobile } = useSidebar(); // Get sidebar state and mobile status
+  const { state, isMobile } = useSidebar(); 
   const currentUser = getCurrentUser();
 
   const handleLogout = () => {
@@ -72,7 +72,7 @@ export function AppSidebar() {
           );
 
           const linkButton = (
-            <Link href={item.href} asChild>
+            <Link href={item.href} aschild>
               {buttonContent}
             </Link>
           );
@@ -126,7 +126,6 @@ export function AppSidebar() {
         </Link>
         <SidebarMenuButton
             onClick={handleLogout}
-            // No tooltip prop here directly, as it's handled externally if needed
             className="justify-start w-full"
         >
             <LogOut className="h-5 w-5" />

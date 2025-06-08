@@ -123,7 +123,7 @@ const Sidebar = React.forwardRef<
       collapsible = "offcanvas",
       className,
       children,
-      defaultOpen, // This prop is used by Sheet if isMobile
+      defaultOpen, 
       ...restProps
     },
     ref
@@ -382,9 +382,9 @@ SidebarGroup.displayName = "SidebarGroup"
 
 const SidebarGroupLabel = React.forwardRef<
   HTMLDivElement,
-  React.ComponentProps<"div"> & { asChild?: boolean }
->(({ className, asChild = false, ...props }, ref) => {
-  const Comp = asChild ? Slot : "div"
+  React.ComponentProps<"div"> & { aschild?: boolean }
+>(({ className, aschild = false, ...props }, ref) => {
+  const Comp = aschild ? Slot : "div"
 
   return (
     <Comp
@@ -403,9 +403,9 @@ SidebarGroupLabel.displayName = "SidebarGroupLabel"
 
 const SidebarGroupAction = React.forwardRef<
   HTMLButtonElement,
-  React.ComponentProps<"button"> & { asChild?: boolean }
->(({ className, asChild = false, ...props }, ref) => {
-  const Comp = asChild ? Slot : "button"
+  React.ComponentProps<"button"> & { aschild?: boolean }
+>(({ className, aschild = false, ...props }, ref) => {
+  const Comp = aschild ? Slot : "button"
 
   return (
     <Comp
@@ -497,14 +497,12 @@ const SidebarMenuButton = React.forwardRef<
       size = "default",
       className,
       children,
-      ...restProps
+      ...restProps 
     },
     ref
   ) => {
-    // Destructure asChild from restProps. If it's present (e.g., from Link), it will be true.
-    // All other props (like href, onClick from Link) remain in linkAndButtonProps.
-    const { asChild, ...linkAndButtonProps } = restProps; // Note: `asChild` here is the prop received from the parent (e.g., Link)
-    const Comp = asChild ? Slot : "button"; // Use `asChild` from props to determine the component type
+    const { aschild, ...linkAndButtonProps } = restProps; 
+    const Comp = "button"; 
 
     return (
       <Comp
@@ -513,7 +511,7 @@ const SidebarMenuButton = React.forwardRef<
         data-size={size}
         data-active={isActive}
         className={cn(sidebarMenuButtonVariants({ variant, size, className }))}
-        {...linkAndButtonProps} // Spread remaining props (like href, onClick etc., but NOT asChild from parent)
+        {...linkAndButtonProps} 
       >
         {children}
       </Comp>
@@ -526,11 +524,11 @@ SidebarMenuButton.displayName = "SidebarMenuButton"
 const SidebarMenuAction = React.forwardRef<
   HTMLButtonElement,
   React.ComponentProps<"button"> & {
-    asChild?: boolean
+    aschild?: boolean
     showOnHover?: boolean
   }
->(({ className, asChild = false, showOnHover = false, ...props }, ref) => {
-  const Comp = asChild ? Slot : "button"
+>(({ className, aschild = false, showOnHover = false, ...props }, ref) => {
+  const Comp = aschild ? Slot : "button"
 
   return (
     <Comp
@@ -637,12 +635,12 @@ SidebarMenuSubItem.displayName = "SidebarMenuSubItem"
 const SidebarMenuSubButton = React.forwardRef<
   HTMLAnchorElement,
   React.ComponentProps<"a"> & {
-    asChild?: boolean
+    aschild?: boolean
     size?: "sm" | "md"
     isActive?: boolean
   }
->(({ asChild = false, size = "md", isActive, className, ...props }, ref) => {
-  const Comp = asChild ? Slot : "a"
+>(({ aschild = false, size = "md", isActive, className, ...props }, ref) => {
+  const Comp = aschild ? Slot : "a"
 
   return (
     <Comp
@@ -690,5 +688,3 @@ export {
   SidebarTrigger,
   useSidebar,
 }
-
-    

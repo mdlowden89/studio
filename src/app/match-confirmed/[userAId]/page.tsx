@@ -76,13 +76,13 @@ export default function MatchConfirmedPage() {
             </p>
           </CardContent>
           <CardFooter className="flex flex-col sm:flex-row justify-center gap-4 pt-6 border-t">
-            <Button asChild variant="outline" className="w-full sm:w-auto">
+            <Button aschild variant="outline" className="w-full sm:w-auto">
                 <Link href="/discover">
                     <Home className="mr-2 h-5 w-5" />
                     Keep Exploring
                 </Link>
             </Button>
-            <Button asChild className="w-full sm:w-auto bg-primary hover:bg-primary/90 text-primary-foreground">
+            <Button aschild className="w-full sm:w-auto bg-primary hover:bg-primary/90 text-primary-foreground">
                 <Link href={chatLink}>
                     <MessageCircle className="mr-2 h-5 w-5" />
                     Message {userA.name}
@@ -94,5 +94,4 @@ export default function MatchConfirmedPage() {
     </AppLayout>
   );
 }
-
     
