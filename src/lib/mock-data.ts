@@ -26,11 +26,11 @@ export const MOCK_USERS: UserProfile[] = [
     email: 'alex@example.com',
     bio: 'Loves hiking, coffee, and indie music. Always up for an adventure or a quiet night in with a good book.',
     images: [
-      'https://placehold.co/400x550.png', // Portrait
-      'https://placehold.co/800x600.png', // Landscape/Hobby
-      'https://placehold.co/500x500.png', // Square
-      'https://placehold.co/450x600.png', // Another portrait
-      'https://placehold.co/700x450.png', // Wide
+      'https://placehold.co/400x550.png',
+      'https://placehold.co/800x600.png',
+      'https://placehold.co/500x500.png',
+      'https://placehold.co/450x600.png',
+      'https://placehold.co/700x450.png',
     ],
     vibeTags: ['adventurous', 'bookworm', 'coffee lover', 'calm', 'indie music enthusiast', 'mountain hiker', 'thoughtful conversations'],
     locationPatterns: ['Downtown Cafe', 'Mountain Trails', 'City Park', 'Indie Bookstores', 'Record Shops'],
@@ -59,10 +59,10 @@ export const MOCK_USERS: UserProfile[] = [
     email: 'jamie@example.com',
     bio: 'Artist, foodie, and travel enthusiast. Exploring new cultures and cuisines is my passion.',
     images: [
-      'https://placehold.co/420x580.png', // Portrait
-      'https://placehold.co/750x500.png', // Landscape/Food
-      'https://placehold.co/600x600.png', // Square/Art
-      'https://placehold.co/500x700.png', // Tall portrait
+      'https://placehold.co/420x580.png',
+      'https://placehold.co/750x500.png',
+      'https://placehold.co/600x600.png',
+      'https://placehold.co/500x700.png',
     ],
     vibeTags: ['creative', 'foodie', 'globetrotter', 'energetic', 'gallery hopper', 'street art admirer', 'spice fanatic'],
     locationPatterns: ['Art Gallery', 'International Food Market', 'Airport Lounge', 'Hidden Gem Eateries', 'Photography Walks'],
@@ -91,9 +91,9 @@ export const MOCK_USERS: UserProfile[] = [
     email: 'casey@example.com',
     bio: 'Tech geek, gamer, and animal lover. Fluent in sarcasm and Python.',
     images: [
-      'https://placehold.co/450x600.png', // Portrait
-      'https://placehold.co/650x650.png', // Square/Pet
-      'https://placehold.co/800x500.png', // Landscape/Gaming setup
+      'https://placehold.co/450x600.png',
+      'https://placehold.co/650x650.png',
+      'https://placehold.co/800x500.png',
     ],
     vibeTags: ['techy', 'gamer', 'animal lover', 'witty', 'board game strategist', 'puzzle solver', 'pet cafe visitor'],
     locationPatterns: ['Tech Hub', 'Dog Park', 'Retro Arcade', 'Escape Rooms', 'Hardware Stores'],
@@ -121,11 +121,11 @@ export const MOCK_USERS: UserProfile[] = [
     email: 'dev@example.com',
     bio: "Full-stack developer by day, aspiring chef by night! I love experimenting with new recipes, especially Italian and Thai. Weekends are for long bike rides, discovering hidden city gems, and maybe a bit of retro gaming. Seeking connections and new experiences. Love exploring local cafes and parks. My vibe tags are usually \"explorer\", \"optimist\", \"curious\", and \"friendly\". Let's see where our paths cross!",
     images: [
-      'https://placehold.co/400x500.png', // Main profile pic
-      'https://placehold.co/700x500.png', // Hobby - e.g., cooking or biking
-      'https://placehold.co/600x600.png', // Social or activity
-      'https://placehold.co/380x520.png',
-      'https://placehold.co/720x480.png',
+      'https://placehold.co/400x550.png',
+      'https://placehold.co/800x600.png',
+      'https://placehold.co/500x500.png',
+      'https://placehold.co/450x600.png',
+      'https://placehold.co/700x450.png',
     ],
     vibeTags: ['explorer', 'optimist', 'curious', 'friendly', 'coffee enthusiast', 'park lover'],
     locationPatterns: ['Local Coffee Shop', 'Bookstore', 'Community Garden', 'Farmers Market', 'Museums', 'Culinary Schools', 'Bike Paths', 'Retro Arcades'],
@@ -250,79 +250,79 @@ const daysAgo = (days: number, hours = 0, minutes = 0) =>
   new Date(baseDate.getTime() - (days * 24 * 60 * 60 * 1000) - (hours * 60 * 60 * 1000) - (minutes * 60 * 1000)).toISOString();
 
 export const MOCK_MOMENTS: Moment[] = [
-  // Moments for MOCK_USER_ID within the last week (relative to baseDate) - Updated to famous landmarks
+  // Moments for MOCK_USER_ID within the last week (relative to baseDate) - Updated to London landmarks
   {
     id: 'moment-recap-1',
     userId: MOCK_USER_ID,
-    placeName: 'Eiffel Tower',
+    placeName: 'The Shard',
     timestamp: daysAgo(1, 2, 30), // Thursday, May 23rd
     potentialMatchId: 'user-1',
-    coordinates: { lat: 48.8584, lng: 2.2945 },
+    coordinates: { lat: 51.5045, lng: -0.0865 },
     placeImage: 'https://placehold.co/200x150.png'
   },
   {
     id: 'moment-recap-2',
     userId: MOCK_USER_ID,
-    placeName: 'Statue of Liberty',
+    placeName: 'Tower of London',
     timestamp: daysAgo(2, 5, 15), // Wednesday, May 22nd
-    coordinates: { lat: 40.6892, lng: -74.0445 },
+    coordinates: { lat: 51.5081, lng: -0.0759 },
     placeImage: 'https://placehold.co/200x150.png'
   },
   {
     id: 'moment-recap-3',
     userId: MOCK_USER_ID,
-    placeName: 'Golden Gate Bridge',
+    placeName: 'British Museum',
     timestamp: daysAgo(3, 1, 0), // Tuesday, May 21st
     potentialMatchId: 'user-2',
-    coordinates: { lat: 37.8199, lng: -122.4783 },
+    coordinates: { lat: 51.5194, lng: -0.1270 },
     placeImage: 'https://placehold.co/200x150.png'
   },
   {
     id: 'moment-recap-4',
     userId: MOCK_USER_ID,
-    placeName: 'Times Square',
+    placeName: 'Tate Modern',
     timestamp: daysAgo(4, 7, 0), // Monday, May 20th
-    coordinates: { lat: 40.7580, lng: -73.9855 },
+    coordinates: { lat: 51.5076, lng: -0.0994 },
     placeImage: 'https://placehold.co/200x150.png'
   },
   {
     id: 'moment-recap-5',
     userId: MOCK_USER_ID,
-    placeName: 'Louvre Museum',
+    placeName: 'Borough Market',
     timestamp: daysAgo(5, -6, 0), // Sunday, May 19th (evening)
     potentialMatchId: 'user-3',
-    coordinates: { lat: 48.8606, lng: 2.3376 },
+    coordinates: { lat: 51.5055, lng: -0.0910 },
     placeImage: 'https://placehold.co/200x150.png'
   },
   {
     id: 'moment-recap-6',
     userId: MOCK_USER_ID,
-    placeName: 'The Colosseum',
+    placeName: 'Covent Garden',
     timestamp: daysAgo(0, 3, 0), // Friday, May 24th (today, relative to baseDate)
-    coordinates: { lat: 41.8902, lng: 12.4922 },
+    coordinates: { lat: 51.5118, lng: -0.1245 },
     placeImage: 'https://placehold.co/200x150.png'
   },
   {
     id: 'moment-recap-7',
     userId: MOCK_USER_ID,
-    placeName: 'Sydney Opera House', // Repeated visit
+    placeName: 'Buckingham Palace',
     timestamp: daysAgo(6, 4, 0), // Saturday, May 18th
-    coordinates: { lat: -33.8568, lng: 151.2153 },
+    coordinates: { lat: 51.5014, lng: -0.1419 },
     placeImage: 'https://placehold.co/200x150.png'
   },
   // Older moment, should NOT appear in recap
   {
     id: 'moment-old-1',
     userId: MOCK_USER_ID,
-    placeName: 'Outdated Cafe',
+    placeName: 'Old Cafe Not in London',
     timestamp: daysAgo(10),
     coordinates: { lat: 40.8000, lng: -74.1900 },
     placeImage: 'https://placehold.co/200x150.png'
   },
-  // Original moments (some might be older than 7 days from baseDate now)
+  // Original non-MOCK_USER_ID moment (can be left as is or changed if needed)
   {
-    id: 'moment-1',
-    userId: MOCK_USER_ID,
+    id: 'moment-1', // This was originally for MOCK_USER_ID, changing to another user to avoid conflict
+    userId: 'user-4', // Assigning to another user to keep it in the system but not for Dev User
     placeName: 'Original Montclair Art Museum',
     timestamp: daysAgo(8, 3, 30), // Older than 7 days
     potentialMatchId: 'user-1',
@@ -442,7 +442,7 @@ export const getCurrentUser = (): UserProfile => {
 export const MOCK_CROSSED_PATHS_USERS: CrossedPathUser[] = MOCK_USERS.filter(u => u.id !== MOCK_USER_ID).map((user, index) => ({
   ...user,
   crossedAt: daysAgo(index + 0.1), // Slightly different times for each
-  location: index % 3 === 0 ? 'Eiffel Tower' : (index % 3 === 1 ? 'Times Square' : 'Golden Gate Bridge'), // Example locations
+  location: index % 3 === 0 ? 'The Shard' : (index % 3 === 1 ? 'Tate Modern' : 'British Museum'), // Example London locations
 }));
 
     
