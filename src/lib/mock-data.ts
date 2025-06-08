@@ -26,9 +26,11 @@ export const MOCK_USERS: UserProfile[] = [
     email: 'alex@example.com',
     bio: 'Loves hiking, coffee, and indie music. Always up for an adventure or a quiet night in with a good book.',
     images: [
-      'https://placehold.co/600x800.png',
-      'https://placehold.co/800x600.png',
-      'https://placehold.co/700x700.png',
+      'https://placehold.co/400x550.png', // Portrait
+      'https://placehold.co/800x600.png', // Landscape/Hobby
+      'https://placehold.co/500x500.png', // Square
+      'https://placehold.co/450x600.png', // Another portrait
+      'https://placehold.co/700x450.png', // Wide
     ],
     vibeTags: ['adventurous', 'bookworm', 'coffee lover', 'calm', 'indie music enthusiast', 'mountain hiker', 'thoughtful conversations'],
     locationPatterns: ['Downtown Cafe', 'Mountain Trails', 'City Park', 'Indie Bookstores', 'Record Shops'],
@@ -57,9 +59,10 @@ export const MOCK_USERS: UserProfile[] = [
     email: 'jamie@example.com',
     bio: 'Artist, foodie, and travel enthusiast. Exploring new cultures and cuisines is my passion.',
     images: [
-      'https://placehold.co/600x800.png',
-      'https://placehold.co/800x600.png',
-      'https://placehold.co/600x900.png',
+      'https://placehold.co/420x580.png', // Portrait
+      'https://placehold.co/750x500.png', // Landscape/Food
+      'https://placehold.co/600x600.png', // Square/Art
+      'https://placehold.co/500x700.png', // Tall portrait
     ],
     vibeTags: ['creative', 'foodie', 'globetrotter', 'energetic', 'gallery hopper', 'street art admirer', 'spice fanatic'],
     locationPatterns: ['Art Gallery', 'International Food Market', 'Airport Lounge', 'Hidden Gem Eateries', 'Photography Walks'],
@@ -88,9 +91,9 @@ export const MOCK_USERS: UserProfile[] = [
     email: 'casey@example.com',
     bio: 'Tech geek, gamer, and animal lover. Fluent in sarcasm and Python.',
     images: [
-      'https://placehold.co/600x800.png',
-      'https://placehold.co/700x700.png',
-      'https://placehold.co/800x500.png',
+      'https://placehold.co/450x600.png', // Portrait
+      'https://placehold.co/650x650.png', // Square/Pet
+      'https://placehold.co/800x500.png', // Landscape/Gaming setup
     ],
     vibeTags: ['techy', 'gamer', 'animal lover', 'witty', 'board game strategist', 'puzzle solver', 'pet cafe visitor'],
     locationPatterns: ['Tech Hub', 'Dog Park', 'Retro Arcade', 'Escape Rooms', 'Hardware Stores'],
@@ -118,9 +121,11 @@ export const MOCK_USERS: UserProfile[] = [
     email: 'dev@example.com',
     bio: "Full-stack developer by day, aspiring chef by night! I love experimenting with new recipes, especially Italian and Thai. Weekends are for long bike rides, discovering hidden city gems, and maybe a bit of retro gaming. Seeking connections and new experiences. Love exploring local cafes and parks. My vibe tags are usually \"explorer\", \"optimist\", \"curious\", and \"friendly\". Let's see where our paths cross!",
     images: [
-      'https://placehold.co/600x800.png', // Changed from 120x120 with text
-      'https://placehold.co/600x800.png',
-      'https://placehold.co/800x600.png',
+      'https://placehold.co/400x500.png', // Main profile pic
+      'https://placehold.co/700x500.png', // Hobby - e.g., cooking or biking
+      'https://placehold.co/600x600.png', // Social or activity
+      'https://placehold.co/380x520.png',
+      'https://placehold.co/720x480.png',
     ],
     vibeTags: ['explorer', 'optimist', 'curious', 'friendly', 'coffee enthusiast', 'park lover'],
     locationPatterns: ['Local Coffee Shop', 'Bookstore', 'Community Garden', 'Farmers Market', 'Museums', 'Culinary Schools', 'Bike Paths', 'Retro Arcades'],
@@ -149,7 +154,7 @@ export const MOCK_USERS: UserProfile[] = [
     email: 'riley.dev@example.com',
     bio: 'Software developer by day, nature explorer by weekend. Love strategy board games and finding hidden trails. Looking for someone to share adventures with.',
     images: [
-      'https://placehold.co/600x800.png',
+      'https://placehold.co/430x570.png',
       'https://placehold.co/700x500.png',
       'https://placehold.co/650x750.png',
     ],
@@ -180,7 +185,7 @@ export const MOCK_USERS: UserProfile[] = [
     email: 'morgan.art@example.com',
     bio: 'Painter and musician. I find beauty in everyday chaos. Often found at farmers markets or sketching in a park. My ideal date involves live music and good conversation.',
     images: [
-      'https://placehold.co/600x800.png',
+      'https://placehold.co/390x510.png',
       'https://placehold.co/800x600.png',
       'https://placehold.co/500x700.png',
     ],
@@ -211,9 +216,9 @@ export const MOCK_USERS: UserProfile[] = [
     email: 'jordan.fit@example.com',
     bio: 'Fitness enthusiast and world traveler. Always planning the next trip or the next workout. Looking for a partner in crime for adventures and gym sessions.',
     images: [
-      'https://placehold.co/600x800.png',
+      'https://placehold.co/410x560.png',
       'https://placehold.co/750x550.png',
-      'https://placehold.co/600x900.png',
+      'https://placehold.co/480x680.png',
     ],
     vibeTags: ['fitness junkie', 'travel bug', 'adventure seeker', 'gym regular', 'mountain climber', 'foodie (healthy)', 'optimistic'],
     locationPatterns: ['Gyms & Fitness Studios', 'Hiking Trails', 'Airports', 'Healthy Eateries', 'Rock Climbing Centers', 'Marathon Routes', 'International Hostels'],
@@ -412,7 +417,7 @@ export const getCurrentUser = (): UserProfile => {
         name: "Current User",
         age: 30,
         bio: "Default bio for a user not found in mock data.",
-        images: ['https://placehold.co/600x800.png'],
+        images: ['https://placehold.co/400x500.png'],
         vibeTags: ["default", "user"],
         prompts: [],
         email: 'user@example.com',
