@@ -26,19 +26,20 @@ import { Separator } from "@/components/ui/separator";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { getCurrentUser } from "@/lib/mock-data";
 import { CrossdLogoIcon } from "@/components/icons/crossd-logo";
+import { Tooltip, TooltipContent, TooltipTrigger } from "@/components/ui/tooltip";
 
 const navItems = [
-  { href: "/dashboard", label: "Dashboard", icon: Home },
-  { href: "/discover", label: "Discover", icon: Search },
-  { href: "/moments", label: "Moments", icon: MapPin },
-  { href: "/chat", label: "Chats", icon: MessageSquare },
-  { href: "/profile", label: "Profile", icon: UserCircle },
+  { href: "/dashboard", label: "Dashboard", icon: Home, tooltipClassName: "bg-popover text-popover-foreground border-border shadow-md" },
+  { href: "/discover", label: "Discover", icon: Search, tooltipClassName: "bg-popover text-popover-foreground border-border shadow-md" },
+  { href: "/moments", label: "Moments", icon: MapPin, tooltipClassName: "bg-popover text-popover-foreground border-border shadow-md" },
+  { href: "/chat", label: "Chats", icon: MessageSquare, tooltipClassName: "bg-popover text-popover-foreground border-border shadow-md" },
+  { href: "/profile", label: "Profile", icon: UserCircle, tooltipClassName: "bg-popover text-popover-foreground border-border shadow-md" },
 ];
 
 export function AppSidebar() {
   const pathname = usePathname();
   const router = useRouter();
-  const { state } = useSidebar();
+  const { state, isMobile } = useSidebar(); // Get sidebar state and mobile status
   const currentUser = getCurrentUser();
 
   const handleLogout = () => {
@@ -59,20 +60,44 @@ export function AppSidebar() {
       </SidebarHeader>
       <Separator className="my-2 bg-sidebar-border" />
       <SidebarMenu className="flex-1 p-2">
-        {navItems.map((item) => (
-          <SidebarMenuItem key={item.href}>
+        {navItems.map((item) => {
+          const buttonContent = (
+            <SidebarMenuButton
+              isActive={pathname === item.href || (item.href !== "/dashboard" && item.href !== "/" && pathname.startsWith(item.href))}
+              className="justify-start"
+            >
+              <item.icon className="h-5 w-5" />
+              <span>{item.label}</span>
+            </SidebarMenuButton>
+          );
+
+          const linkButton = (
             <Link href={item.href} asChild>
-              <SidebarMenuButton
-                isActive={pathname === item.href || (item.href !== "/dashboard" && item.href !== "/" && pathname.startsWith(item.href))}
-                tooltip={{children: item.label, className: "bg-popover text-popover-foreground border-border shadow-md"}}
-                className="justify-start"
-              >
-                <item.icon className="h-5 w-5" />
-                <span>{item.label}</span>
-              </SidebarMenuButton>
+              {buttonContent}
             </Link>
-          </SidebarMenuItem>
-        ))}
+          );
+
+          return (
+            <SidebarMenuItem key={item.href}>
+              {(state === "collapsed" && !isMobile) ? (
+                <Tooltip>
+                  <TooltipTrigger asChild>
+                    {linkButton}
+                  </TooltipTrigger>
+                  <TooltipContent
+                    side="right"
+                    align="center"
+                    className={item.tooltipClassName}
+                  >
+                    {item.label}
+                  </TooltipContent>
+                </Tooltip>
+              ) : (
+                linkButton
+              )}
+            </SidebarMenuItem>
+          );
+        })}
       </SidebarMenu>
       <Separator className="my-2 bg-sidebar-border" />
       <SidebarFooter className="p-2 space-y-2">
@@ -101,7 +126,7 @@ export function AppSidebar() {
         </Link>
         <SidebarMenuButton
             onClick={handleLogout}
-            tooltip={{children: "Log Out", className: "bg-popover text-popover-foreground border-border shadow-md"}}
+            // No tooltip prop here directly, as it's handled externally if needed
             className="justify-start w-full"
         >
             <LogOut className="h-5 w-5" />
