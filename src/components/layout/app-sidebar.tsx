@@ -63,15 +63,14 @@ export function AppSidebar() {
           <SidebarMenuItem key={item.href}>
             <Link href={item.href} asChild>
               <SidebarMenuButton
-                asChild
+                // removed asChild from SidebarMenuButton here
                 isActive={pathname === item.href || (item.href !== "/dashboard" && item.href !== "/" && pathname.startsWith(item.href))}
                 tooltip={{children: item.label, className: "bg-popover text-popover-foreground border-border shadow-md"}}
                 className="justify-start"
               >
-                <a>
-                  <item.icon className="h-5 w-5" />
-                  <span>{item.label}</span>
-                </a>
+                {/* Removed explicit <a> wrapper. Icon and span are direct children. */}
+                <item.icon className="h-5 w-5" />
+                <span>{item.label}</span>
               </SidebarMenuButton>
             </Link>
           </SidebarMenuItem>
