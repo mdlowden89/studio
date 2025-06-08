@@ -382,9 +382,9 @@ SidebarGroup.displayName = "SidebarGroup"
 
 const SidebarGroupLabel = React.forwardRef<
   HTMLDivElement,
-  React.ComponentProps<"div"> & { aschild?: boolean }
->(({ className, aschild = false, ...props }, ref) => {
-  const Comp = aschild ? Slot : "div"
+  React.ComponentProps<"div"> & { asChild?: boolean }
+>(({ className, asChild = false, ...props }, ref) => {
+  const Comp = asChild ? Slot : "div"
 
   return (
     <Comp
@@ -403,9 +403,9 @@ SidebarGroupLabel.displayName = "SidebarGroupLabel"
 
 const SidebarGroupAction = React.forwardRef<
   HTMLButtonElement,
-  React.ComponentProps<"button"> & { aschild?: boolean }
->(({ className, aschild = false, ...props }, ref) => {
-  const Comp = aschild ? Slot : "button"
+  React.ComponentProps<"button"> & { asChild?: boolean }
+>(({ className, asChild = false, ...props }, ref) => {
+  const Comp = asChild ? Slot : "button"
 
   return (
     <Comp
@@ -485,9 +485,10 @@ const sidebarMenuButtonVariants = cva(
 )
 
 const SidebarMenuButton = React.forwardRef<
-  HTMLButtonElement,
+  HTMLButtonElement, // Generally a button, but Slot can change this
   React.ComponentProps<"button"> & {
     isActive?: boolean;
+    asChild?: boolean; // The component's own polymorphic prop
   } & VariantProps<typeof sidebarMenuButtonVariants>
 >(
   (
@@ -497,12 +498,15 @@ const SidebarMenuButton = React.forwardRef<
       size = "default",
       className,
       children,
-      ...restProps 
+      asChild: ownAsChild = false, // Renamed to distinguish from forwarded asChild
+      ...restProps // May contain asChild from a parent like Link
     },
     ref
   ) => {
-    const { aschild, ...linkAndButtonProps } = restProps; 
-    const Comp = "button"; 
+    const Comp = ownAsChild ? Slot : "button";
+    // Explicitly destructure and remove 'asChild' if it came from restProps (e.g., from Link)
+    // to prevent it from being passed to the underlying DOM element or Slot.
+    const { asChild: _forwardedAsChild, ...filteredRestProps } = restProps;
 
     return (
       <Comp
@@ -511,7 +515,7 @@ const SidebarMenuButton = React.forwardRef<
         data-size={size}
         data-active={isActive}
         className={cn(sidebarMenuButtonVariants({ variant, size, className }))}
-        {...linkAndButtonProps} 
+        {...filteredRestProps} // Spread only the filtered props
       >
         {children}
       </Comp>
@@ -524,11 +528,11 @@ SidebarMenuButton.displayName = "SidebarMenuButton"
 const SidebarMenuAction = React.forwardRef<
   HTMLButtonElement,
   React.ComponentProps<"button"> & {
-    aschild?: boolean
+    asChild?: boolean
     showOnHover?: boolean
   }
->(({ className, aschild = false, showOnHover = false, ...props }, ref) => {
-  const Comp = aschild ? Slot : "button"
+>(({ className, asChild = false, showOnHover = false, ...props }, ref) => {
+  const Comp = asChild ? Slot : "button"
 
   return (
     <Comp
@@ -635,12 +639,12 @@ SidebarMenuSubItem.displayName = "SidebarMenuSubItem"
 const SidebarMenuSubButton = React.forwardRef<
   HTMLAnchorElement,
   React.ComponentProps<"a"> & {
-    aschild?: boolean
+    asChild?: boolean
     size?: "sm" | "md"
     isActive?: boolean
   }
->(({ aschild = false, size = "md", isActive, className, ...props }, ref) => {
-  const Comp = aschild ? Slot : "a"
+>(({ asChild = false, size = "md", isActive, className, ...props }, ref) => {
+  const Comp = asChild ? Slot : "a"
 
   return (
     <Comp

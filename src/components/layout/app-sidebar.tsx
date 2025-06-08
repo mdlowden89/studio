@@ -72,7 +72,7 @@ export function AppSidebar() {
           );
 
           const linkButton = (
-            <Link href={item.href} aschild>
+            <Link href={item.href} asChild>
               {buttonContent}
             </Link>
           );

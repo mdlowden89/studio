@@ -36,17 +36,19 @@ const buttonVariants = cva(
 export interface ButtonProps
   extends React.ButtonHTMLAttributes<HTMLButtonElement>,
     VariantProps<typeof buttonVariants> {
-  aschild?: boolean
+  asChild?: boolean
 }
 
 const Button = React.forwardRef<HTMLButtonElement, ButtonProps>(
-  ({ className, variant, size, aschild = false, ...props }, ref) => {
-    const Comp = aschild ? Slot : "button"
+  ({ className, variant, size, asChild: ownAsChild = false, ...restProps }, ref) => {
+    const Comp = ownAsChild ? Slot : "button"
+    // Filter out asChild from restProps if it exists, to prevent passing it to the DOM element
+    const { asChild: _forwardedAsChild, ...filteredRestProps } = restProps;
     return (
       <Comp
         className={cn(buttonVariants({ variant, size, className }))}
         ref={ref}
-        {...props}
+        {...filteredRestProps}
       />
     )
   }
