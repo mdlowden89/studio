@@ -10,7 +10,7 @@ import { Label } from "@/components/ui/label";
 import { Textarea } from "@/components/ui/textarea";
 import { Badge } from "@/components/ui/badge";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
-import { Feather, MapPin, Clock, CheckCircle, Search, ArrowLeft, MessageSquare, Smile, UserCheck, Palette, UsersIcon, Sparkles, LogOut } from "lucide-react";
+import { Feather, MapPin, Clock, CheckCircle, Search, ArrowLeft, MessageSquare, UserCheck, Palette, UsersIcon, Sparkles, LogOut } from "lucide-react";
 import { format } from "date-fns";
 import { useToast } from "@/hooks/use-toast";
 import { GoogleMap, LoadScriptNext, StandaloneSearchBox, MarkerF } from '@react-google-maps/api';
@@ -42,7 +42,6 @@ const mapStyles = [
 ];
 
 const libraries: ("places")[] = ['places'];
-const emotionTagsOptions = ["Excited", "Curious", "Fleeting", "Didn't get to say hi", "Hopeful", "Nostalgic"];
 
 const ethnicityOptions = [
   "White/Caucasian",
@@ -66,7 +65,6 @@ const initialLocationName = "";
 const initialLocationAddress = "";
 const initialCoordinates = null;
 const initialMomentDescription = "";
-const initialSelectedEmotionTags: string[] = [];
 const initialPersonDescription = "";
 const initialMatchEthnicity = "Prefer not to describe";
 const initialMatchHairColour = "Prefer not to describe";
@@ -85,10 +83,9 @@ export default function LogMomentPage() {
   const [isMounted, setIsMounted] = useState(false);
   const searchBoxRef = useRef<google.maps.places.SearchBox | null>(null);
   const mapRef = useRef<google.maps.Map | null>(null);
-  
+
   // Step 2 State
   const [momentDescription, setMomentDescription] = useState(initialMomentDescription);
-  const [selectedEmotionTags, setSelectedEmotionTags] = useState<string[]>(initialSelectedEmotionTags);
   const [personDescription, setPersonDescription] = useState(initialPersonDescription);
   const [matchEthnicity, setMatchEthnicity] = useState<string>(initialMatchEthnicity);
   const [matchHairColour, setMatchHairColour] = useState<string>(initialMatchHairColour);
@@ -101,7 +98,7 @@ export default function LogMomentPage() {
   useEffect(() => {
     setIsMounted(true);
     setMapsApiKey(process.env.NEXT_PUBLIC_GOOGLE_MAPS_API_KEY);
-    
+
     const now = new Date();
     setFormattedTimestamp(format(now, "h:mm bbb, EEEE"));
 
@@ -133,8 +130,8 @@ export default function LogMomentPage() {
           ? { lat: place.geometry.location.lat(), lng: place.geometry.location.lng() }
           : null;
 
-        setLocationAddress(newAddr); 
-        setLocationName(newName);    
+        setLocationAddress(newAddr);
+        setLocationName(newName);
         setCoordinates(newCoords);
         setMarkerPosition(newCoords);
 
@@ -145,10 +142,10 @@ export default function LogMomentPage() {
       }
     }
   }, []);
-  
+
   const onMapLoad = useCallback((map: google.maps.Map) => {
     mapRef.current = map;
-    if (coordinates && currentStep === 1) { 
+    if (coordinates && currentStep === 1) {
         map.panTo(coordinates);
         map.setZoom(15);
     }
@@ -159,7 +156,7 @@ export default function LogMomentPage() {
       const newCoords = { lat: e.latLng.lat(), lng: e.latLng.lng() };
       setCoordinates(newCoords);
       setMarkerPosition(newCoords);
-      setLocationName("Pinned Location"); 
+      setLocationName("Pinned Location");
       setLocationAddress(`Lat: ${newCoords.lat.toFixed(4)}, Lng: ${newCoords.lng.toFixed(4)}`);
       if (mapRef.current) {
         mapRef.current.panTo(newCoords);
@@ -195,10 +192,9 @@ export default function LogMomentPage() {
       coordinates,
       timestamp: new Date().toISOString(),
       momentDescription,
-      selectedEmotionTags, // Not interactive yet, but logged
-      matchEthnicity,       // Logged
-      matchHairColour,      // Logged
-      personDescription,    // Logged
+      matchEthnicity,
+      matchHairColour,
+      personDescription,
       userId: MOCK_USER_ID,
     });
     toast({
@@ -219,11 +215,10 @@ export default function LogMomentPage() {
     }
 
     setMomentDescription(initialMomentDescription);
-    setSelectedEmotionTags(initialSelectedEmotionTags);
     setPersonDescription(initialPersonDescription);
     setMatchEthnicity(initialMatchEthnicity);
     setMatchHairColour(initialMatchHairColour);
-    
+
     const now = new Date();
     setFormattedTimestamp(format(now, "h:mm bbb, EEEE"));
     setCurrentStep(1);
@@ -291,13 +286,13 @@ export default function LogMomentPage() {
                                 id="location-search"
                                 type="text"
                                 placeholder="e.g., The Alchemist's Cafe or 123 Main St"
-                                defaultValue={locationAddress} 
+                                defaultValue={locationAddress}
                                 className="bg-input pl-10"
                             />
                           </StandaloneSearchBox>
                         </div>
                       </div>
-                      
+
                       <div style={mapContainerStyle} className="rounded-md overflow-hidden border border-border">
                         <GoogleMap
                           mapContainerStyle={mapContainerStyle}
@@ -313,7 +308,7 @@ export default function LogMomentPage() {
                     </div>
                   </LoadScriptNext>
                 )}
-                
+
                 {locationName && coordinates && (
                   <div className="flex items-center gap-3 p-4 bg-muted/50 rounded-lg shadow-sm">
                     <MapPin className="w-6 h-6 text-primary flex-shrink-0" />
@@ -336,8 +331,8 @@ export default function LogMomentPage() {
                 )}
               </CardContent>
               <CardFooter className="border-t pt-6">
-                <Button 
-                  onClick={handleConfirmLocation} 
+                <Button
+                  onClick={handleConfirmLocation}
                   className="w-full bg-primary hover:bg-primary/90 text-primary-foreground"
                   disabled={!locationName || !coordinates || !formattedTimestamp || !mapsApiKey}
                 >
@@ -421,25 +416,6 @@ export default function LogMomentPage() {
                 </div>
 
                 <div>
-                  <Label className="flex items-center gap-1.5 mb-2">
-                    <Smile className="w-4 h-4 text-muted-foreground" />
-                    How did it feel? (Optional)
-                  </Label>
-                  <div className="flex flex-wrap gap-2">
-                    {emotionTagsOptions.map(tag => (
-                      <Badge 
-                        key={tag} 
-                        variant={selectedEmotionTags.includes(tag) ? "default" : "outline"}
-                        // onClick={() => toggleEmotionTag(tag)} // Add selection logic later
-                        className="cursor-pointer"
-                      >
-                        {tag}
-                      </Badge>
-                    ))}
-                  </div>
-                </div>
-                
-                <div>
                   <Label htmlFor="personDescription" className="flex items-center gap-1.5 mb-1.5">
                      <UserCheck className="w-4 h-4 text-muted-foreground" />
                     More details about them? (Optional)
@@ -457,15 +433,15 @@ export default function LogMomentPage() {
 
               </CardContent>
               <CardFooter className="border-t pt-6 flex justify-between">
-                <Button 
-                  onClick={() => setCurrentStep(1)} 
+                <Button
+                  onClick={() => setCurrentStep(1)}
                   variant="outline"
                 >
                   <ArrowLeft className="mr-2 h-5 w-5" />
                   Back to Location
                 </Button>
-                <Button 
-                  onClick={handleSaveMoment} 
+                <Button
+                  onClick={handleSaveMoment}
                   className="bg-primary hover:bg-primary/90 text-primary-foreground"
                 >
                   <CheckCircle className="mr-2 h-5 w-5" />
@@ -491,8 +467,8 @@ export default function LogMomentPage() {
                 </p>
               </CardContent>
               <CardFooter className="border-t pt-6 flex flex-col sm:flex-row gap-3">
-                <Button 
-                  onClick={handleLogAnother} 
+                <Button
+                  onClick={handleLogAnother}
                   variant="outline"
                   className="w-full sm:w-auto"
                 >
@@ -500,7 +476,7 @@ export default function LogMomentPage() {
                   Log Another Moment
                 </Button>
                 <Link href="/moments" passHref className="w-full sm:w-auto">
-                  <Button 
+                  <Button
                     className="w-full bg-primary hover:bg-primary/90 text-primary-foreground"
                   >
                     <LogOut className="mr-2 h-5 w-5 transform rotate-90" /> {/* Using LogOut rotated for "trail" icon */}
@@ -522,3 +498,4 @@ export default function LogMomentPage() {
 
 
     
+
