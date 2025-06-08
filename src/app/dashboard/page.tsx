@@ -1,7 +1,7 @@
 
 "use client";
 
-import { useState, useEffect } from "react";
+import { useState, useEffect, useMemo } from "react";
 import { AppLayout } from "@/components/layout/app-layout";
 import { Card, CardContent, CardHeader, CardTitle, CardDescription, CardFooter } from "@/components/ui/card";
 import { Sparkles, PlusCircle, ClipboardList, Users, MessageSquare, Route, MapPin, CalendarDays, Users2, TrendingUp, Activity, Map, LayoutGrid, List as ListIcon } from "lucide-react";
@@ -17,6 +17,7 @@ export default function DashboardPage() {
   const currentUser = getCurrentUser();
   const [recentPlacesViewMode, setRecentPlacesViewMode] = useState<'list' | 'imageGrid'>('list');
   const [clientFormattedTimes, setClientFormattedTimes] = useState<Record<string, string>>({});
+  const [windowSize, setWindowSize] = useState({ width: 0, height: 0 }); // For confetti or other responsive UI if needed
 
   const momentsLoggedCount = MOCK_MOMENTS.filter(moment => moment.userId === MOCK_USER_ID).length;
   const potentialMatchesCount = MOCK_CROSSED_PATHS_USERS.length;
@@ -28,37 +29,65 @@ export default function DashboardPage() {
     { title: "Active Chats", value: activeChatsCount, icon: MessageSquare, color: "text-purple-500" },
   ];
 
-  const oneWeekAgo = subDays(baseDate, 7);
-  const momentsThisWeek = MOCK_MOMENTS
-    .filter(moment => moment.userId === MOCK_USER_ID && isAfter(new Date(moment.timestamp), oneWeekAgo))
-    .sort((a, b) => new Date(b.timestamp).getTime() - new Date(a.timestamp).getTime());
+  // Memoize oneWeekAgo as baseDate is constant
+  const oneWeekAgo = useMemo(() => subDays(baseDate, 7), []);
+
+  // Memoize momentsThisWeek. It will recompute if MOCK_MOMENTS changes (implicitly) or oneWeekAgo changes.
+  const momentsThisWeek = useMemo(() => {
+    return MOCK_MOMENTS
+      .filter(moment => moment.userId === MOCK_USER_ID && isAfter(new Date(moment.timestamp), oneWeekAgo))
+      .sort((a, b) => new Date(b.timestamp).getTime() - new Date(a.timestamp).getTime());
+  }, [oneWeekAgo]); // MOCK_MOMENTS is an external constant, changes to it will trigger re-render, leading to re-calc.
+
+  // Create a stable dependency key for the useEffect that sets clientFormattedTimes
+  const momentsTimestampsKey = useMemo(() => {
+    return momentsThisWeek.map(m => `${m.id}-${m.timestamp}`).join(',');
+  }, [momentsThisWeek]);
 
   useEffect(() => {
     const newFormattedTimes: Record<string, string> = {};
+    // momentsThisWeek here is the memoized version from above
     momentsThisWeek.forEach(moment => {
       newFormattedTimes[moment.id] = format(new Date(moment.timestamp), "p"); // 'p' formats time like "10:00 AM"
     });
     setClientFormattedTimes(newFormattedTimes);
-  }, [momentsThisWeek]);
+  }, [momentsTimestampsKey]); // Depend on the stable key
 
-  const distinctPlacesVisitedCount = new Set(momentsThisWeek.map(m => m.placeName)).size;
-
-  const dayCounts = momentsThisWeek.reduce((acc, moment) => {
-    const day = getDay(new Date(moment.timestamp));
-    acc[day] = (acc[day] || 0) + 1;
-    return acc;
-  }, {} as Record<number, number>);
-
-  let mostActiveDayIndex = -1;
-  let maxMomentsOnDay = 0;
-  for (const day in dayCounts) {
-    if (dayCounts[day] > maxMomentsOnDay) {
-      maxMomentsOnDay = dayCounts[day];
-      mostActiveDayIndex = parseInt(day);
+  useEffect(() => {
+    const handleResize = () => {
+      setWindowSize({
+        width: window.innerWidth,
+        height: window.innerHeight,
+      });
+    };
+    if (typeof window !== 'undefined') {
+      handleResize();
+      window.addEventListener('resize', handleResize);
+      return () => window.removeEventListener('resize', handleResize);
     }
-  }
-  const dayNames = ["Sunday", "Monday", "Tuesday", "Wednesday", "Thursday", "Friday", "Saturday"];
-  const mostActiveDay = mostActiveDayIndex !== -1 ? dayNames[mostActiveDayIndex] : "N/A";
+    return () => {};
+  }, []); // Empty dependency array means this runs once on mount and cleans up on unmount
+
+  const distinctPlacesVisitedCount = useMemo(() => new Set(momentsThisWeek.map(m => m.placeName)).size, [momentsThisWeek]);
+
+  const { mostActiveDay } = useMemo(() => {
+    const dayCounts = momentsThisWeek.reduce((acc, moment) => {
+      const day = getDay(new Date(moment.timestamp));
+      acc[day] = (acc[day] || 0) + 1;
+      return acc;
+    }, {} as Record<number, number>);
+
+    let mostActiveDayIndex = -1;
+    let maxMomentsOnDay = 0;
+    for (const day in dayCounts) {
+      if (dayCounts[day] > maxMomentsOnDay) {
+        maxMomentsOnDay = dayCounts[day];
+        mostActiveDayIndex = parseInt(day);
+      }
+    }
+    const dayNames = ["Sunday", "Monday", "Tuesday", "Wednesday", "Thursday", "Friday", "Saturday"];
+    return { mostActiveDay: mostActiveDayIndex !== -1 ? dayNames[mostActiveDayIndex] : "N/A" };
+  }, [momentsThisWeek]);
 
 
   return (
@@ -154,7 +183,7 @@ export default function DashboardPage() {
                   <ul className="space-y-2">
                     {momentsThisWeek.map(moment => {
                       const datePart = format(new Date(moment.timestamp), "MMM d");
-                      const timePart = clientFormattedTimes[moment.id];
+                      const timePart = clientFormattedTimes[moment.id]; // Get client-formatted time
                       return (
                         <li key={moment.id} className="flex items-center gap-2 p-2 bg-muted/30 rounded-md text-sm">
                           <MapPin className="w-4 h-4 text-primary/80" />
