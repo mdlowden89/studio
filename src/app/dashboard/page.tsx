@@ -1,7 +1,7 @@
 
 "use client";
 
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { AppLayout } from "@/components/layout/app-layout";
 import { Card, CardContent, CardHeader, CardTitle, CardDescription, CardFooter } from "@/components/ui/card";
 import { Sparkles, PlusCircle, ClipboardList, Users, MessageSquare, Route, MapPin, CalendarDays, Users2, TrendingUp, Activity, Map, LayoutGrid, List as ListIcon } from "lucide-react";
@@ -16,6 +16,7 @@ import Link from "next/link";
 export default function DashboardPage() {
   const currentUser = getCurrentUser();
   const [recentPlacesViewMode, setRecentPlacesViewMode] = useState<'list' | 'imageGrid'>('list');
+  const [clientFormattedTimes, setClientFormattedTimes] = useState<Record<string, string>>({});
 
   const momentsLoggedCount = MOCK_MOMENTS.filter(moment => moment.userId === MOCK_USER_ID).length;
   const potentialMatchesCount = MOCK_CROSSED_PATHS_USERS.length;
@@ -31,6 +32,14 @@ export default function DashboardPage() {
   const momentsThisWeek = MOCK_MOMENTS
     .filter(moment => moment.userId === MOCK_USER_ID && isAfter(new Date(moment.timestamp), oneWeekAgo))
     .sort((a, b) => new Date(b.timestamp).getTime() - new Date(a.timestamp).getTime());
+
+  useEffect(() => {
+    const newFormattedTimes: Record<string, string> = {};
+    momentsThisWeek.forEach(moment => {
+      newFormattedTimes[moment.id] = format(new Date(moment.timestamp), "p"); // 'p' formats time like "10:00 AM"
+    });
+    setClientFormattedTimes(newFormattedTimes);
+  }, [momentsThisWeek]);
 
   const distinctPlacesVisitedCount = new Set(momentsThisWeek.map(m => m.placeName)).size;
 
@@ -143,13 +152,19 @@ export default function DashboardPage() {
                 </div>
                 {recentPlacesViewMode === 'list' ? (
                   <ul className="space-y-2">
-                    {momentsThisWeek.map(moment => (
-                      <li key={moment.id} className="flex items-center gap-2 p-2 bg-muted/30 rounded-md text-sm">
-                        <MapPin className="w-4 h-4 text-primary/80" />
-                        <span className="flex-grow font-medium text-foreground/90">{moment.placeName}</span>
-                        <span className="text-xs text-muted-foreground">{format(new Date(moment.timestamp), "MMM d, p")}</span>
-                      </li>
-                    ))}
+                    {momentsThisWeek.map(moment => {
+                      const datePart = format(new Date(moment.timestamp), "MMM d");
+                      const timePart = clientFormattedTimes[moment.id];
+                      return (
+                        <li key={moment.id} className="flex items-center gap-2 p-2 bg-muted/30 rounded-md text-sm">
+                          <MapPin className="w-4 h-4 text-primary/80" />
+                          <span className="flex-grow font-medium text-foreground/90">{moment.placeName}</span>
+                          <span className="text-xs text-muted-foreground">
+                            {datePart}{timePart ? `, ${timePart}` : ""}
+                          </span>
+                        </li>
+                      );
+                    })}
                   </ul>
                 ) : (
                   <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-3">
@@ -204,13 +219,15 @@ export default function DashboardPage() {
                   <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
                     {momentsThisWeek.map(moment => {
                       const matchedUser = moment.potentialMatchId ? MOCK_USERS.find(u => u.id === moment.potentialMatchId) : null;
+                      const datePart = format(new Date(moment.timestamp), "EEE, MMM d");
+                      const timePart = clientFormattedTimes[moment.id] ? `at ${clientFormattedTimes[moment.id]}` : "";
                       return (
                         <div key={moment.id} className="bg-muted/30 p-4 rounded-lg shadow hover:shadow-primary/20 transition-shadow">
                           <div className="flex items-center gap-2 mb-1.5">
                             <MapPin className="w-5 h-5 text-primary" />
                             <h5 className="font-semibold text-foreground truncate">{moment.placeName}</h5>
                           </div>
-                          <p className="text-xs text-muted-foreground mb-2">{format(new Date(moment.timestamp), "EEE, MMM d 'at' p")}</p>
+                          <p className="text-xs text-muted-foreground mb-2">{datePart} {timePart}</p>
                           {matchedUser ? (
                             <div className="flex items-center gap-2 text-xs text-green-400 bg-green-500/10 p-2 rounded-md">
                               <Users2 className="w-4 h-4" />
