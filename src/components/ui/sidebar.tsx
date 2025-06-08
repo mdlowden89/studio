@@ -384,7 +384,9 @@ const SidebarGroupLabel = React.forwardRef<
   HTMLDivElement,
   React.ComponentProps<"div"> & { asChild?: boolean }
 >(({ className, asChild = false, ...props }, ref) => {
-  const Comp = asChild ? Slot : "div"
+  const Comp = asChild ? Slot : "div";
+  // Filter out asChild prop before passing to DOM element or Slot
+  const { asChild: _forwardedAsChild, ...filteredProps } = props;
 
   return (
     <Comp
@@ -395,7 +397,7 @@ const SidebarGroupLabel = React.forwardRef<
         "group-data-[collapsible=icon]:-mt-8 group-data-[collapsible=icon]:opacity-0",
         className
       )}
-      {...props}
+      {...filteredProps}
     />
   )
 })
@@ -405,7 +407,8 @@ const SidebarGroupAction = React.forwardRef<
   HTMLButtonElement,
   React.ComponentProps<"button"> & { asChild?: boolean }
 >(({ className, asChild = false, ...props }, ref) => {
-  const Comp = asChild ? Slot : "button"
+  const Comp = asChild ? Slot : "button";
+  const { asChild: _forwardedAsChild, ...filteredProps } = props;
 
   return (
     <Comp
@@ -417,7 +420,7 @@ const SidebarGroupAction = React.forwardRef<
         "group-data-[collapsible=icon]:hidden",
         className
       )}
-      {...props}
+      {...filteredProps}
     />
   )
 })
@@ -485,10 +488,10 @@ const sidebarMenuButtonVariants = cva(
 )
 
 const SidebarMenuButton = React.forwardRef<
-  HTMLButtonElement, // Generally a button, but Slot can change this
+  HTMLButtonElement,
   React.ComponentProps<"button"> & {
     isActive?: boolean;
-    asChild?: boolean; // The component's own polymorphic prop
+    asChild?: boolean; // This component's own polymorphic prop
   } & VariantProps<typeof sidebarMenuButtonVariants>
 >(
   (
@@ -498,15 +501,18 @@ const SidebarMenuButton = React.forwardRef<
       size = "default",
       className,
       children,
-      asChild: ownAsChild = false, // Renamed to distinguish from forwarded asChild
-      ...restProps // May contain asChild from a parent like Link
+      asChild: internalAsChild = false, // This component's own decision to use Slot
+      ...restProps // Props from parent, might include asChild from Link, href, onClick etc.
     },
     ref
   ) => {
-    const Comp = ownAsChild ? Slot : "button";
-    // Explicitly destructure and remove 'asChild' if it came from restProps (e.g., from Link)
-    // to prevent it from being passed to the underlying DOM element or Slot.
-    const { asChild: _forwardedAsChild, ...filteredRestProps } = restProps;
+    const Comp = internalAsChild ? Slot : "button";
+
+    // Explicitly create a new object for props to be spread, and delete asChild if it exists.
+    const finalProps: Record<string, any> = { ...restProps };
+    if ('asChild' in finalProps) {
+      delete finalProps.asChild;
+    }
 
     return (
       <Comp
@@ -515,7 +521,7 @@ const SidebarMenuButton = React.forwardRef<
         data-size={size}
         data-active={isActive}
         className={cn(sidebarMenuButtonVariants({ variant, size, className }))}
-        {...filteredRestProps} // Spread only the filtered props
+        {...finalProps} // Spread props that are safe for a button or Slot
       >
         {children}
       </Comp>
@@ -532,7 +538,8 @@ const SidebarMenuAction = React.forwardRef<
     showOnHover?: boolean
   }
 >(({ className, asChild = false, showOnHover = false, ...props }, ref) => {
-  const Comp = asChild ? Slot : "button"
+  const Comp = asChild ? Slot : "button";
+  const { asChild: _forwardedAsChild, ...filteredProps } = props;
 
   return (
     <Comp
@@ -549,7 +556,7 @@ const SidebarMenuAction = React.forwardRef<
           "group-focus-within/menu-item:opacity-100 group-hover/menu-item:opacity-100 data-[state=open]:opacity-100 peer-data-[active=true]/menu-button:text-sidebar-accent-foreground md:opacity-0",
         className
       )}
-      {...props}
+      {...filteredProps}
     />
   )
 })
@@ -644,7 +651,9 @@ const SidebarMenuSubButton = React.forwardRef<
     isActive?: boolean
   }
 >(({ asChild = false, size = "md", isActive, className, ...props }, ref) => {
-  const Comp = asChild ? Slot : "a"
+  const Comp = asChild ? Slot : "a";
+  const { asChild: _forwardedAsChild, ...filteredProps } = props;
+
 
   return (
     <Comp
@@ -660,7 +669,7 @@ const SidebarMenuSubButton = React.forwardRef<
         "group-data-[collapsible=icon]:hidden",
         className
       )}
-      {...props}
+      {...filteredProps}
     />
   )
 })
