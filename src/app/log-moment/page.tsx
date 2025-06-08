@@ -273,6 +273,7 @@ export default function LogMomentPage() {
                     </div>
                 ) : (
                   <LoadScriptNext
+                    id="log-moment-map-script"
                     googleMapsApiKey={mapsApiKey}
                     libraries={libraries}
                     loadingElement={<div className="text-center p-4">Loading Map...</div>}

@@ -128,6 +128,7 @@ export function MomentsMap({ moments }: MomentsMapProps) {
 
   return (
     <LoadScriptNext
+        id="dashboard-moments-map-script"
         googleMapsApiKey={apiKey}
         loadingElement={<div className="flex items-center justify-center h-full bg-muted rounded-lg"><p>Loading map resources...</p></div>}
     >

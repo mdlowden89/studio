@@ -435,6 +435,7 @@ export function ProfileDetails({ user }: ProfileDetailsProps) {
         ) : (
         isMounted && mapsApiKey && (
           <LoadScriptNext
+              id="profile-details-map-script"
               googleMapsApiKey={mapsApiKey}
               libraries={['places']}
               loadingElement={<div className="mt-1 text-muted-foreground">Loading map services...</div>}
