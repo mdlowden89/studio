@@ -63,6 +63,7 @@ export function AppSidebar() {
         {navItems.map((item) => {
           const buttonContent = (
             <SidebarMenuButton
+              as="a" // Render SidebarMenuButton as an anchor tag
               isActive={pathname === item.href || (item.href !== "/dashboard" && item.href !== "/" && pathname.startsWith(item.href))}
               className="justify-start"
             >
@@ -72,7 +73,8 @@ export function AppSidebar() {
           );
 
           const linkButton = (
-            <Link href={item.href} asChild>
+            // Link uses legacyBehavior to pass href to the child <a> rendered by SidebarMenuButton
+            <Link href={item.href} passHref legacyBehavior> 
               {buttonContent}
             </Link>
           );
@@ -105,6 +107,7 @@ export function AppSidebar() {
           <Button 
             variant="ghost" 
             className="w-full justify-start p-2 h-auto items-center hover:bg-sidebar-accent hover:shadow-md hover:shadow-primary/40 transition-all duration-200"
+            as="a" // Ensure Button renders as an anchor tag when wrapped by Link legacyBehavior
           >
             <Avatar className="h-10 w-10 shrink-0">
               <AvatarImage 

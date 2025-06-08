@@ -488,10 +488,10 @@ const sidebarMenuButtonVariants = cva(
 )
 
 const SidebarMenuButton = React.forwardRef<
-  HTMLButtonElement,
-  React.ComponentProps<"button"> & {
+  HTMLButtonElement, // Default element type
+  React.ComponentProps<"button"> & { // Allow all button props
     isActive?: boolean;
-    asChild?: boolean; // This component's own polymorphic prop
+    as?: React.ElementType; // For polymorphism like as="a"
   } & VariantProps<typeof sidebarMenuButtonVariants>
 >(
   (
@@ -501,19 +501,11 @@ const SidebarMenuButton = React.forwardRef<
       size = "default",
       className,
       children,
-      asChild: internalAsChild = false, // This component's own decision to use Slot
-      ...restProps // Props from parent, might include asChild from Link, href, onClick etc.
+      as: Comp = "button", // Default to "button", but can be "a"
+      ...props
     },
     ref
   ) => {
-    const Comp = internalAsChild ? Slot : "button";
-
-    // Explicitly create a new object for props to be spread, and delete asChild if it exists.
-    const finalProps: Record<string, any> = { ...restProps };
-    if ('asChild' in finalProps) {
-      delete finalProps.asChild;
-    }
-
     return (
       <Comp
         ref={ref}
@@ -521,7 +513,7 @@ const SidebarMenuButton = React.forwardRef<
         data-size={size}
         data-active={isActive}
         className={cn(sidebarMenuButtonVariants({ variant, size, className }))}
-        {...finalProps} // Spread props that are safe for a button or Slot
+        {...props} // Spread remaining props (like href if Comp is "a")
       >
         {children}
       </Comp>
