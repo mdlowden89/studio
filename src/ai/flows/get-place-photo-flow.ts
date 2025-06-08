@@ -45,6 +45,10 @@ const getPlacePhotoFlow = ai.defineFlow(
 
       const placesApiKey = process.env.NEXT_PUBLIC_GOOGLE_PLACES_API_KEY;
       const generalApiKey = process.env.GOOGLE_API_KEY;
+
+      // DEBUG LOG: Check what keys the flow sees
+      console.log(`getPlacePhotoFlow: Env check - NEXT_PUBLIC_GOOGLE_PLACES_API_KEY: "${placesApiKey ? 'Exists' : 'Not Found'}"`);
+      console.log(`getPlacePhotoFlow: Env check - GOOGLE_API_KEY: "${generalApiKey ? 'Exists' : 'Not Found'}"`);
       
       let apiKey = placesApiKey;
       let keySource = "NEXT_PUBLIC_GOOGLE_PLACES_API_KEY";
@@ -52,13 +56,13 @@ const getPlacePhotoFlow = ai.defineFlow(
       if (!apiKey && generalApiKey) {
         apiKey = generalApiKey;
         keySource = "GOOGLE_API_KEY";
-        console.log(`getPlacePhotoFlow: NEXT_PUBLIC_GOOGLE_PLACES_API_KEY not found, using GOOGLE_API_KEY from ${keySource}.`);
+        console.log(`getPlacePhotoFlow: NEXT_PUBLIC_GOOGLE_PLACES_API_KEY not found, attempting to use GOOGLE_API_KEY from ${keySource}.`);
       } else if (apiKey) {
         console.log(`getPlacePhotoFlow: Using API key from ${keySource}.`);
       }
       
       if (!apiKey) {
-        const errorMsg = 'Google Places API Key is missing from .env file (checked NEXT_PUBLIC_GOOGLE_PLACES_API_KEY and GOOGLE_API_KEY).';
+        const errorMsg = 'Google Places API Key is missing from .env file (checked NEXT_PUBLIC_GOOGLE_PLACES_API_KEY and GOOGLE_API_KEY). Flow cannot proceed.';
         console.error(`getPlacePhotoFlow: ${errorMsg}`);
         return { photoUrl: undefined, attributionHtml: undefined, error: 'API_KEY_MISSING' };
       }
@@ -88,8 +92,10 @@ const getPlacePhotoFlow = ai.defineFlow(
                    return { photoUrl: undefined, attributionHtml: undefined, error: 'API_KEY_INVALID' };
               }
           } catch (parseError) {
+            // This catch is for if JSON.parse(responseText) fails for the error response.
             console.warn(`getPlacePhotoFlow: Could not parse error response as JSON for "${placeName}": ${parseError}`);
           }
+          // Generic HTTP error if not caught by specific API_KEY_INVALID logic
           console.log(`getPlacePhotoFlow: Returning PLACES_API_ERROR for "${placeName}" due to HTTP error ${findPlaceResponse.status}.`);
           return { photoUrl: undefined, attributionHtml: undefined, error: `PLACES_API_ERROR: ${findPlaceResponse.status}` };
         }
@@ -104,7 +110,7 @@ const getPlacePhotoFlow = ai.defineFlow(
               return { photoUrl: undefined, attributionHtml: undefined, error: 'API_KEY_INVALID' };
           }
            console.log(`getPlacePhotoFlow: Returning PLACES_API_ERROR for "${placeName}" due to error_message status ${findPlaceData.status}.`);
-           return { photoUrl: undefined, attributionHtml: undefined, error: `PLACES_API_ERROR: ${findPlaceData.status || 'UNKNOWN'}` };
+           return { photoUrl: undefined, attributionHtml: undefined, error: `PLACES_API_ERROR: ${findPlaceData.status || 'UNKNOWN_FROM_ERROR_MESSAGE'}` };
         }
 
         if (findPlaceData.status === 'ZERO_RESULTS') {
@@ -134,14 +140,18 @@ const getPlacePhotoFlow = ai.defineFlow(
           ? place.photos[0].html_attributions[0]
           : undefined;
 
+        // Note: The photo URL constructed here will be directly used by <Image src=...>
+        // Google Places Photo API redirects to the actual image. Maxwidth 400 is a reasonable default.
         const photoUrl = `https://maps.googleapis.com/maps/api/place/photo?maxwidth=400&photoreference=${photoReference}&key=${apiKey}`;
         console.log(`getPlacePhotoFlow: Constructed photo URL for "${placeName}": ${photoUrl.replace(apiKey, "REDACTED_API_KEY")}`);
         console.log(`getPlacePhotoFlow: Successfully returning photo for "${placeName}".`);
         return { photoUrl, attributionHtml };
 
       } catch (fetchError: any) {
+        // This catch handles errors during the fetch operation itself (e.g., network issues)
+        // or errors during the processing of a successful fetch (e.g., JSON.parse fails on a valid but unexpected response structure).
         console.error(`getPlacePhotoFlow: Error during fetch or processing for "${placeName}":`, fetchError.message ? fetchError.message : fetchError);
-        if (fetchError.stack) console.error(fetchError.stack);
+        if (fetchError.stack) console.error(fetchError.stack); // Log stack trace for better debugging
         console.log(`getPlacePhotoFlow: Returning FETCH_FAILED for "${placeName}" due to caught exception.`);
         return { photoUrl: undefined, attributionHtml: undefined, error: 'FETCH_FAILED' };
       }
