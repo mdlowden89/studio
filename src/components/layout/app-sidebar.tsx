@@ -26,7 +26,7 @@ import { Separator } from "@/components/ui/separator";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { getCurrentUser } from "@/lib/mock-data";
 import { CrossdLogoIcon } from "@/components/icons/crossd-logo";
-import { Tooltip, TooltipContent, TooltipTrigger, TooltipProvider } from "@/components/ui/tooltip"; // Ensured TooltipProvider is imported
+import { Tooltip, TooltipContent, TooltipTrigger } from "@/components/ui/tooltip"; // Removed TooltipProvider import as it's provided by SidebarProvider
 
 const navItems = [
   { href: "/dashboard", label: "Dashboard", icon: Home, tooltipClassName: "bg-popover text-popover-foreground border-border shadow-md" },
@@ -46,13 +46,11 @@ export function AppSidebar() {
     router.push('/');
   };
 
-  // Sort achievements by date, most recent first.
-  // Ensure achievedDate exists and is a valid date string for proper sorting.
   const sortedAchievements = currentUser.achievements
     ? [...currentUser.achievements].sort((a, b) => {
         const dateA = a.achievedDate ? new Date(a.achievedDate).getTime() : 0;
         const dateB = b.achievedDate ? new Date(b.achievedDate).getTime() : 0;
-        return dateB - dateA; // Sort descending
+        return dateB - dateA; 
       })
     : [];
   const displayedAchievements = sortedAchievements.slice(0, 3);
@@ -143,18 +141,16 @@ export function AppSidebar() {
             {displayedAchievements.map(ach => {
               const IconComponent = ach.icon;
               return (
-                <TooltipProvider key={ach.id}>
-                  <Tooltip delayDuration={100}>
-                    <TooltipTrigger asChild>
-                      <span className="p-1 rounded-full hover:bg-sidebar-accent/50 cursor-default">
-                        <IconComponent className="h-5 w-5 text-primary/80" />
-                      </span>
-                    </TooltipTrigger>
-                    <TooltipContent side="top" className="bg-popover text-popover-foreground border-border shadow-md">
-                      <p>{ach.name}</p>
-                    </TooltipContent>
-                  </Tooltip>
-                </TooltipProvider>
+                <Tooltip key={ach.id} delayDuration={100}> {/* Removed TooltipProvider, use Tooltip directly */}
+                  <TooltipTrigger asChild>
+                    <span className="p-1 rounded-full hover:bg-sidebar-accent/50 cursor-default">
+                      <IconComponent className="h-5 w-5 text-primary/80" />
+                    </span>
+                  </TooltipTrigger>
+                  <TooltipContent side="top" className="bg-popover text-popover-foreground border-border shadow-md">
+                    <p>{ach.name}</p>
+                  </TooltipContent>
+                </Tooltip>
               );
             })}
           </div>
