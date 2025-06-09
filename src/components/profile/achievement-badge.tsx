@@ -18,11 +18,11 @@ export function AchievementBadge({ achievement }: AchievementBadgeProps) {
       <Tooltip delayDuration={100}>
         <TooltipTrigger asChild>
           <Card className={cn(
-            "bg-card/70 hover:shadow-primary/20 transition-all duration-300 cursor-default",
-            achievement.glowEffect && "shadow-lg shadow-primary/50 ring-2 ring-primary/70 animate-pulse"
+            "group bg-card/70 transition-all duration-300 cursor-default",
+            "hover:shadow-lg hover:shadow-primary/50 hover:ring-2 hover:ring-primary/70"
           )}>
             <CardHeader className="flex flex-row items-center gap-3 p-4 pb-2">
-              <IconComponent className={cn("w-8 h-8", achievement.glowEffect ? "text-primary" : "text-muted-foreground")} />
+              <IconComponent className={cn("w-8 h-8 text-muted-foreground", "group-hover:text-primary transition-colors duration-300")} />
               <div>
                 <CardTitle className="text-lg text-foreground">{achievement.name}</CardTitle>
                 <p className="text-xs text-muted-foreground/80">{achievement.type}</p>
