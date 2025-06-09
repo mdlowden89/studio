@@ -5,8 +5,9 @@ import { ImageGallery } from "@/components/profile/image-gallery";
 import { PromptEditor } from "@/components/profile/prompt-editor";
 import { Card, CardHeader, CardTitle, CardDescription, CardContent } from "@/components/ui/card";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
-import { UserCircle, Image as ImageIcon, MessageSquareText } from "lucide-react";
+import { UserCircle, Image as ImageIcon, MessageSquareText, Trophy } from "lucide-react"; // Added Trophy
 import { getCurrentUser, AVAILABLE_PROMPTS } from "@/lib/mock-data";
+import { AchievementsSection } from "@/components/profile/achievements-section"; // Added
 
 export default function ProfilePage() {
   const currentUser = getCurrentUser();
@@ -20,17 +21,18 @@ export default function ProfilePage() {
                 <div>
                     <CardTitle className="text-3xl font-bold">Your Profile</CardTitle>
                     <CardDescription className="text-muted-foreground">
-                        Manage your public information, photos, and conversation starters.
+                        Manage your public information, photos, prompts, and earned achievements.
                     </CardDescription>
                 </div>
             </CardHeader>
         </Card>
 
         <Tabs defaultValue="details" className="w-full">
-          <TabsList className="grid w-full grid-cols-1 md:grid-cols-3 mb-6">
+          <TabsList className="grid w-full grid-cols-1 sm:grid-cols-2 md:grid-cols-4 mb-6"> {/* Adjusted grid-cols */}
             <TabsTrigger value="details"><UserCircle className="mr-2 h-4 w-4" />Details</TabsTrigger>
             <TabsTrigger value="photos"><ImageIcon className="mr-2 h-4 w-4" />Photos</TabsTrigger>
             <TabsTrigger value="prompts"><MessageSquareText className="mr-2 h-4 w-4" />Prompts</TabsTrigger>
+            <TabsTrigger value="achievements"><Trophy className="mr-2 h-4 w-4" />Achievements</TabsTrigger> {/* Added Achievements Tab */}
           </TabsList>
 
           <TabsContent value="details">
@@ -71,6 +73,19 @@ export default function ProfilePage() {
               </CardContent>
             </Card>
           </TabsContent>
+
+          <TabsContent value="achievements"> {/* Added Achievements Content */}
+            <Card className="bg-card">
+              <CardHeader>
+                <CardTitle>Your Achievements</CardTitle>
+                <CardDescription>Badges you've earned for your activity on Crossd.</CardDescription>
+              </CardHeader>
+              <CardContent>
+                <AchievementsSection achievements={currentUser.achievements || []} />
+              </CardContent>
+            </Card>
+          </TabsContent>
+
         </Tabs>
       </div>
     </AppLayout>

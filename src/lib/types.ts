@@ -22,6 +22,7 @@ export interface UserProfile {
   drinking?: string;
   smoking?: string;
   zodiacSign?: string; // Added
+  achievements?: Achievement[]; // Added for achievements
 }
 
 export interface ProfilePrompt {
@@ -81,4 +82,16 @@ export interface DetailedMatchSuggestion {
   sharedInterestReason: string;
   sharedLocationReason: string;
   sharedVibeTags: string[];
+}
+
+// Added Achievement type
+export interface Achievement {
+  id: string;
+  name: string;
+  type: string; // e.g., "Streak", "Prompt Sprint"
+  description: string;
+  icon: React.ElementType; // Lucide icon component
+  achievedDate?: string; // ISO date string when achieved
+  rewards: string[]; // Descriptions of rewards
+  glowEffect?: boolean; // For "Glow Badge" visual cue
 }

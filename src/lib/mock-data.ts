@@ -1,5 +1,6 @@
 
-import type { UserProfile, Moment, ChatConversation, ChatMessage, ProfilePrompt, CrossedPathUser } from './types';
+import type { UserProfile, Moment, ChatConversation, ChatMessage, ProfilePrompt, CrossedPathUser, Achievement } from './types';
+import { Flame, Zap, Compass, Sparkles, CalendarCheck2, MessageCircleReply, Globe, HeartHandshake } from 'lucide-react'; // Added icons for achievements
 
 export const MOCK_USER_ID = 'user-123';
 
@@ -16,6 +17,53 @@ export const AVAILABLE_PROMPTS: ProfilePrompt[] = [
   { id: 'p10', question: 'The Way to win me over is' },
   { id: 'p11', question: 'I go crazy for' },
   { id: 'p12', question: 'A life goal of mine' },
+];
+
+// Base date for consistent "days ago" calculations
+export const baseDate = new Date('2024-05-24T12:00:00.000Z'); // Example: Friday, May 24, 2024, 12:00 PM UTC
+
+// Helper to create past dates relative to baseDate
+const daysAgo = (days: number, hours = 0, minutes = 0) =>
+  new Date(baseDate.getTime() - (days * 24 * 60 * 60 * 1000) - (hours * 60 * 60 * 1000) - (minutes * 60 * 1000)).toISOString();
+
+const MOCK_ACHIEVEMENTS_FOR_CURRENT_USER: Achievement[] = [
+  {
+    id: 'achieve-1',
+    name: 'Daily Logger',
+    type: 'Streak',
+    description: 'Logged a Moment 3 days in a row.',
+    icon: Flame,
+    achievedDate: daysAgo(1),
+    rewards: ['Glow Badge: Profile gets glowing border for 24 hrs.'],
+    glowEffect: true,
+  },
+  {
+    id: 'achieve-2',
+    name: 'Quick Responder',
+    type: 'Prompt Sprint',
+    description: 'Replied to 3 Moment Matches in 24 hours.',
+    icon: Zap,
+    achievedDate: daysAgo(5),
+    rewards: ['Priority Visibility: Shown first in Explore.'],
+  },
+  {
+    id: 'achieve-3',
+    name: 'Urban Explorer',
+    type: 'Explorer',
+    description: 'Visited 3 different neighborhoods in a week.',
+    icon: Compass,
+    achievedDate: daysAgo(2),
+    rewards: ['Free Likes: Get 3 extra free likes.'],
+  },
+  {
+    id: 'achieve-4',
+    name: 'Fast Connection',
+    type: 'Double Spark',
+    description: 'Matched + started a conversation in under 2 hours.',
+    icon: Sparkles,
+    achievedDate: daysAgo(10),
+    rewards: ['Full Preview: Unlock a full preview of a hidden Like.'],
+  },
 ];
 
 export const MOCK_USERS: UserProfile[] = [
@@ -51,6 +99,7 @@ export const MOCK_USERS: UserProfile[] = [
     drinking: "Sometimes",
     smoking: "No",
     zodiacSign: "Aries",
+    achievements: [],
   },
   {
     id: 'user-2',
@@ -83,6 +132,7 @@ export const MOCK_USERS: UserProfile[] = [
     drinking: "Yes",
     smoking: "Sometimes",
     zodiacSign: "Gemini",
+    achievements: [],
   },
   {
     id: 'user-3',
@@ -113,6 +163,7 @@ export const MOCK_USERS: UserProfile[] = [
     drinking: "No",
     smoking: "Prefer Not to Say",
     zodiacSign: "Scorpio",
+    achievements: [],
   },
   {
     id: MOCK_USER_ID, // Current user
@@ -146,6 +197,7 @@ export const MOCK_USERS: UserProfile[] = [
     locationAddress: '1 Developer Way, Firebase City, FS',
     locationName: 'Firebase City',
     locationCoordinates: { lat: 37.7749, lng: -122.4194 },
+    achievements: MOCK_ACHIEVEMENTS_FOR_CURRENT_USER, // Added mock achievements
   },
   {
     id: 'user-4',
@@ -177,6 +229,7 @@ export const MOCK_USERS: UserProfile[] = [
     drinking: "Sometimes",
     smoking: "No",
     zodiacSign: "Aquarius",
+    achievements: [],
   },
   {
     id: 'user-5',
@@ -208,6 +261,7 @@ export const MOCK_USERS: UserProfile[] = [
     drinking: "Sometimes",
     smoking: "No",
     zodiacSign: "Pisces",
+    achievements: [],
   },
   {
     id: 'user-6',
@@ -239,15 +293,10 @@ export const MOCK_USERS: UserProfile[] = [
     drinking: "Yes",
     smoking: "No",
     zodiacSign: "Sagittarius",
+    achievements: [],
   },
 ];
 
-// Base date for consistent "days ago" calculations
-export const baseDate = new Date('2024-05-24T12:00:00.000Z'); // Example: Friday, May 24, 2024, 12:00 PM UTC
-
-// Helper to create past dates relative to baseDate
-const daysAgo = (days: number, hours = 0, minutes = 0) =>
-  new Date(baseDate.getTime() - (days * 24 * 60 * 60 * 1000) - (hours * 60 * 60 * 1000) - (minutes * 60 * 1000)).toISOString();
 
 export const MOCK_MOMENTS: Moment[] = [
   // Moments for MOCK_USER_ID within the last week (relative to baseDate) - Updated to London landmarks
@@ -434,6 +483,7 @@ export const getCurrentUser = (): UserProfile => {
         locationAddress: '123 Default Street, Default City',
         locationName: 'Default City',
         locationCoordinates: { lat: 0, lng: 0 },
+        achievements: [],
     };
   }
   return user;
