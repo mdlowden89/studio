@@ -44,6 +44,7 @@ const CustomLoadingElement = () => (
   </div>
 );
 
+const libraries: ("places")[] = ['places']; // Define libraries needed
 
 export function MomentsMap({ moments }: MomentsMapProps) {
   const [apiKey, setApiKey] = useState<string | undefined>(undefined);
@@ -138,6 +139,7 @@ export function MomentsMap({ moments }: MomentsMapProps) {
     <LoadScriptNext
         id="app-google-maps-script"
         googleMapsApiKey={apiKey}
+        libraries={libraries} // Added consistent libraries prop
         loadingElement={<CustomLoadingElement />}
         preventGoogleFontsLoading={true}
     >
