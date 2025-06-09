@@ -1,6 +1,6 @@
 
 import type { UserProfile, Moment, ChatConversation, ChatMessage, ProfilePrompt, CrossedPathUser, Achievement } from './types';
-import { Flame, Zap, Compass, Sparkles, CalendarCheck2, MessageCircleReply, Globe, HeartHandshake } from 'lucide-react'; // Added icons for achievements
+import { Flame, Zap, Compass, Sparkles, CalendarCheck2, MessageCircleReply, Globe, HeartHandshake, UserCheck } from 'lucide-react'; // Added UserCheck icon
 
 export const MOCK_USER_ID = 'user-123';
 
@@ -63,6 +63,16 @@ const MOCK_ACHIEVEMENTS_FOR_CURRENT_USER: Achievement[] = [
     icon: Sparkles,
     achievedDate: daysAgo(10),
     rewards: ['Full Preview: Unlock a full preview of a hidden Like.'],
+  },
+  {
+    id: 'achieve-5',
+    name: 'Profile Polisher',
+    type: 'Profile Completion',
+    description: 'Filled out all profile sections (bio, prompts, photos).',
+    icon: UserCheck,
+    achievedDate: daysAgo(15),
+    rewards: ['Slight boost in profile visibility.'],
+    glowEffect: false,
   },
 ];
 
