@@ -1,4 +1,6 @@
 
+"use client";
+
 import { AppLayout } from "@/components/layout/app-layout";
 import { ProfileDetails } from "@/components/profile/profile-details";
 import { ImageGallery } from "@/components/profile/image-gallery";
