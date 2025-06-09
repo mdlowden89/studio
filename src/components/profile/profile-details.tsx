@@ -296,7 +296,7 @@ export function ProfileDetails({ user }: ProfileDetailsProps) {
     }
     return (
       <LoadScriptNext
-        id="profile-details-map-script"
+        id="app-google-maps-script"
         googleMapsApiKey={mapsApiKey}
         libraries={['places']}
         loadingElement={<CustomLoadingElement />}

@@ -136,7 +136,7 @@ export function MomentsMap({ moments }: MomentsMapProps) {
 
   return (
     <LoadScriptNext
-        id="dashboard-moments-map-script"
+        id="app-google-maps-script"
         googleMapsApiKey={apiKey}
         loadingElement={<CustomLoadingElement />}
         preventGoogleFontsLoading={true}
