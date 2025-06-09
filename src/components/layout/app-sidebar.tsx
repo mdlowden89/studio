@@ -26,7 +26,7 @@ import { Separator } from "@/components/ui/separator";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { getCurrentUser } from "@/lib/mock-data";
 import { CrossdLogoIcon } from "@/components/icons/crossd-logo";
-import { Tooltip, TooltipContent, TooltipTrigger } from "@/components/ui/tooltip";
+import { Tooltip, TooltipContent, TooltipTrigger, TooltipProvider } from "@/components/ui/tooltip"; // Ensured TooltipProvider is imported
 
 const navItems = [
   { href: "/dashboard", label: "Dashboard", icon: Home, tooltipClassName: "bg-popover text-popover-foreground border-border shadow-md" },
@@ -46,6 +46,17 @@ export function AppSidebar() {
     router.push('/');
   };
 
+  // Sort achievements by date, most recent first.
+  // Ensure achievedDate exists and is a valid date string for proper sorting.
+  const sortedAchievements = currentUser.achievements
+    ? [...currentUser.achievements].sort((a, b) => {
+        const dateA = a.achievedDate ? new Date(a.achievedDate).getTime() : 0;
+        const dateB = b.achievedDate ? new Date(b.achievedDate).getTime() : 0;
+        return dateB - dateA; // Sort descending
+      })
+    : [];
+  const displayedAchievements = sortedAchievements.slice(0, 3);
+
   return (
     <Sidebar side="left" variant="sidebar" collapsible="none">
       <SidebarHeader>
@@ -63,7 +74,7 @@ export function AppSidebar() {
         {navItems.map((item) => {
           const buttonContent = (
             <SidebarMenuButton
-              as="a" // Render SidebarMenuButton as an anchor tag
+              as="a"
               isActive={pathname === item.href || (item.href !== "/dashboard" && item.href !== "/" && pathname.startsWith(item.href))}
               className="justify-start"
             >
@@ -73,7 +84,6 @@ export function AppSidebar() {
           );
 
           const linkButton = (
-            // Link uses legacyBehavior to pass href to the child <a> rendered by SidebarMenuButton
             <Link href={item.href} passHref legacyBehavior> 
               {buttonContent}
             </Link>
@@ -107,7 +117,7 @@ export function AppSidebar() {
           <Button 
             variant="ghost" 
             className="w-full justify-start p-2 h-auto items-center hover:bg-sidebar-accent hover:shadow-md hover:shadow-primary/40 transition-all duration-200"
-            as="a" // Ensure Button renders as an anchor tag when wrapped by Link legacyBehavior
+            as="a"
           >
             <Avatar className="h-10 w-10 shrink-0">
               <AvatarImage 
@@ -127,6 +137,29 @@ export function AppSidebar() {
             )}
           </Button>
         </Link>
+
+        {state === 'expanded' && displayedAchievements.length > 0 && (
+          <div className="flex items-center gap-2 px-2 pt-1">
+            {displayedAchievements.map(ach => {
+              const IconComponent = ach.icon;
+              return (
+                <TooltipProvider key={ach.id}>
+                  <Tooltip delayDuration={100}>
+                    <TooltipTrigger asChild>
+                      <span className="p-1 rounded-full hover:bg-sidebar-accent/50 cursor-default">
+                        <IconComponent className="h-5 w-5 text-primary/80" />
+                      </span>
+                    </TooltipTrigger>
+                    <TooltipContent side="top" className="bg-popover text-popover-foreground border-border shadow-md">
+                      <p>{ach.name}</p>
+                    </TooltipContent>
+                  </Tooltip>
+                </TooltipProvider>
+              );
+            })}
+          </div>
+        )}
+
         <SidebarMenuButton
             onClick={handleLogout}
             className="justify-start w-full"
