@@ -1,6 +1,7 @@
 
 "use client";
 
+import { useState } from "react"; // Added import
 import {
   Dialog,
   DialogContent,
@@ -126,5 +127,4 @@ export function CrossdPlusUpsellDialog({ isOpen, onOpenChange }: CrossdPlusUpsel
     </Dialog>
   );
 }
-
     
