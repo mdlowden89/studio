@@ -19,6 +19,9 @@ import {
   AlertDialogTitle,
 } from "@/components/ui/alert-dialog";
 import ReactConfetti from 'react-confetti';
+import { CrossdPlusUpsellDialog } from "@/components/pricing/crossd-plus-upsell-dialog"; // Import the new dialog
+
+const DAILY_LIKE_LIMIT = 8;
 
 export function SwipeMatchSection() {
   const [initialUsers, setInitialUsers] = useState<UserProfile[]>([]);
@@ -30,6 +33,9 @@ export function SwipeMatchSection() {
   const [matchedUserName, setMatchedUserName] = useState("");
   const [windowSize, setWindowSize] = useState({ width: 0, height: 0 });
 
+  const [likesUsedToday, setLikesUsedToday] = useState(0);
+  const [showUpsellDialog, setShowUpsellDialog] = useState(false);
+
   useEffect(() => {
     // Filter and shuffle users only on the client-side
     const filtered = MOCK_USERS.filter(user => user.id !== MOCK_USER_ID);
@@ -37,6 +43,9 @@ export function SwipeMatchSection() {
     setUsers([...filtered].sort(() => 0.5 - Math.random()));
     setCurrentIndex(0);
     setPreviousIndex(null);
+    // For prototype: reset likesUsedToday on component mount/refresh
+    // In a real app, this would be fetched from backend or persisted more robustly
+    setLikesUsedToday(0); 
   }, []); 
 
   useEffect(() => {
@@ -59,9 +68,12 @@ export function SwipeMatchSection() {
     const actionUser = users.find(u => u.id === userId);
     if (!actionUser) return;
 
-    setPreviousIndex(currentIndex); 
-
     if (action === "like") {
+      if (likesUsedToday >= DAILY_LIKE_LIMIT) {
+        setShowUpsellDialog(true);
+        return;
+      }
+      setLikesUsedToday(prev => prev + 1);
       const isMutualMatch = Math.random() < 0.4; 
       if (isMutualMatch) {
         setMatchedUserName(actionUser.name);
@@ -69,7 +81,7 @@ export function SwipeMatchSection() {
       } else {
         toast({
             title: "Liked!",
-            description: `Let's see if ${actionUser.name} likes you back!`,
+            description: `Let's see if ${actionUser.name} likes you back! (${DAILY_LIKE_LIMIT - likesUsedToday -1} likes remaining today)`,
         });
       }
     } else {
@@ -79,7 +91,8 @@ export function SwipeMatchSection() {
             variant: "default"
         });
     }
-
+    
+    setPreviousIndex(currentIndex); 
     if (currentIndex < users.length - 1) {
       setCurrentIndex(currentIndex + 1);
     } else {
@@ -96,6 +109,10 @@ export function SwipeMatchSection() {
   const handleUndo = () => {
     if (previousIndex !== null && previousIndex < users.length) {
       const lastUser = users[previousIndex];
+      // If the undone action was a like, decrement likesUsedToday
+      // This part is tricky without knowing what the action *was* for the previous user.
+      // For simplicity in prototype, we won't decrement like count on undo.
+      // In a real app, you'd need to track the specific action taken for the previous card.
       setCurrentIndex(previousIndex);
       setPreviousIndex(null); 
       toast({ title: "Undo Successful", description: `You are now viewing ${lastUser?.name}'s profile again.` });
@@ -110,6 +127,8 @@ export function SwipeMatchSection() {
     setUsers([...newFilteredUsers].sort(() => 0.5 - Math.random()));
     setCurrentIndex(0);
     setPreviousIndex(null); 
+    // In a real app, refreshing might not reset daily likes, but for prototype it's okay
+    // setLikesUsedToday(0); 
     toast({ title: "Profiles Refreshed!", description: "Here are some new faces."});
   };
 
@@ -158,6 +177,7 @@ export function SwipeMatchSection() {
           <RefreshCw className="mr-2 h-4 w-4" /> Refresh
         </Button>
       </div>
+      <p className="text-sm text-muted-foreground">Likes remaining today: {Math.max(0, DAILY_LIKE_LIMIT - likesUsedToday)}</p>
 
       <AlertDialog open={showMatchAnimation} onOpenChange={setShowMatchAnimation}>
         <AlertDialogContent className="bg-card text-card-foreground border-primary shadow-lg rounded-xl">
@@ -184,6 +204,7 @@ export function SwipeMatchSection() {
           <AlertDialogFooter className="sm:justify-center gap-2">
              <AlertDialogCancel 
               className="w-full sm:w-auto"
+              onClick={() => setShowMatchAnimation(false)}
             >
               Keep Exploring
             </AlertDialogCancel>
@@ -202,6 +223,13 @@ export function SwipeMatchSection() {
           </AlertDialogFooter>
         </AlertDialogContent>
       </AlertDialog>
+
+      <CrossdPlusUpsellDialog
+        isOpen={showUpsellDialog}
+        onOpenChange={setShowUpsellDialog}
+      />
     </div>
   );
 }
+
+    
