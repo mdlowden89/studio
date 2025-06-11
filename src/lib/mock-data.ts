@@ -53,7 +53,7 @@ const MOCK_ACHIEVEMENTS_FOR_CURRENT_USER: Achievement[] = [
     description: 'Visited 3 different neighborhoods in a week.',
     icon: Compass,
     achievedDate: daysAgo(2),
-    rewards: ['Free Likes: Get 3 extra free likes.'],
+    rewards: ['Free Likes or full preview of a hidden Like.'], // Updated reward text
   },
   {
     id: 'achieve-4',
@@ -709,3 +709,6 @@ export const MOCK_CROSSED_PATHS_USERS: CrossedPathUser[] = MOCK_USERS.filter(u =
 
     
 
+
+
+    
