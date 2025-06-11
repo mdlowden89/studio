@@ -10,7 +10,8 @@ import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { UserCircle, Image as ImageIcon, MessageSquareText, Trophy, Target as TargetIcon } from "lucide-react";
 import { getCurrentUser, AVAILABLE_PROMPTS } from "@/lib/mock-data";
 import { AchievementsSection } from "@/components/profile/achievements-section";
-import { ChallengesSection } from "@/components/challenges/challenges-section"; // New import
+import { ChallengesSection } from "@/components/challenges/challenges-section";
+import { Separator } from "@/components/ui/separator";
 
 export default function ProfilePage() {
   const currentUser = getCurrentUser();
@@ -31,12 +32,11 @@ export default function ProfilePage() {
         </Card>
 
         <Tabs defaultValue="details" className="w-full">
-          <TabsList className="grid w-full grid-cols-2 sm:grid-cols-3 md:grid-cols-5 mb-6">
+          <TabsList className="grid w-full grid-cols-2 sm:grid-cols-4 md:grid-cols-4 mb-6"> {/* Adjusted to 4 columns */}
             <TabsTrigger value="details"><UserCircle className="mr-2 h-4 w-4" />Details</TabsTrigger>
             <TabsTrigger value="photos"><ImageIcon className="mr-2 h-4 w-4" />Photos</TabsTrigger>
             <TabsTrigger value="prompts"><MessageSquareText className="mr-2 h-4 w-4" />Prompts</TabsTrigger>
-            <TabsTrigger value="challenges"><TargetIcon className="mr-2 h-4 w-4" />Challenges</TabsTrigger>
-            <TabsTrigger value="achievements"><Trophy className="mr-2 h-4 w-4" />Achievements</TabsTrigger>
+            <TabsTrigger value="progress"><TargetIcon className="mr-2 h-4 w-4" />Progress</TabsTrigger> {/* Combined Tab */}
           </TabsList>
 
           <TabsContent value="details">
@@ -78,26 +78,22 @@ export default function ProfilePage() {
             </Card>
           </TabsContent>
 
-          <TabsContent value="challenges">
+          <TabsContent value="progress"> {/* Combined Content */}
             <Card className="bg-card">
               <CardHeader>
-                <CardTitle>Available Challenges</CardTitle>
-                <CardDescription>Engage with these challenges to earn rewards and badges.</CardDescription>
+                <CardTitle>Your Progress & Achievements</CardTitle>
+                <CardDescription>Track your active challenges and view your earned badges.</CardDescription>
               </CardHeader>
-              <CardContent>
-                <ChallengesSection />
-              </CardContent>
-            </Card>
-          </TabsContent>
-
-          <TabsContent value="achievements">
-            <Card className="bg-card">
-              <CardHeader>
-                <CardTitle>Your Achievements</CardTitle>
-                <CardDescription>Badges you've earned for your activity on Crossd.</CardDescription>
-              </CardHeader>
-              <CardContent>
-                <AchievementsSection achievements={currentUser.achievements || []} />
+              <CardContent className="space-y-8">
+                <div>
+                  <h3 className="text-xl font-semibold mb-4 text-primary">Active Challenges</h3>
+                  <ChallengesSection />
+                </div>
+                <Separator className="my-6 bg-border/50" />
+                <div>
+                  <h3 className="text-xl font-semibold mb-4 text-primary">Earned Achievements</h3>
+                  <AchievementsSection achievements={currentUser.achievements || []} />
+                </div>
               </CardContent>
             </Card>
           </TabsContent>
