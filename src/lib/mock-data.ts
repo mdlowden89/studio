@@ -1,6 +1,6 @@
 
-import type { UserProfile, Moment, ChatConversation, ChatMessage, ProfilePrompt, CrossedPathUser, Achievement } from './types';
-import { Flame, Zap, Compass, Sparkles, CalendarCheck2, MessageCircleReply, Globe, HeartHandshake, UserCheck } from 'lucide-react'; // Added UserCheck icon
+import type { UserProfile, Moment, ChatConversation, ChatMessage, ProfilePrompt, CrossedPathUser, Achievement, Challenge } from './types';
+import { Flame, Zap, Compass, Sparkles, CalendarCheck2, MessageCircleReply, Globe, HeartHandshake, UserCheck, Target as TargetIcon } from 'lucide-react';
 
 export const MOCK_USER_ID = 'user-123';
 
@@ -19,10 +19,8 @@ export const AVAILABLE_PROMPTS: ProfilePrompt[] = [
   { id: 'p12', question: 'A life goal of mine' },
 ];
 
-// Base date for consistent "days ago" calculations
-export const baseDate = new Date('2024-05-24T12:00:00.000Z'); // Example: Friday, May 24, 2024, 12:00 PM UTC
+export const baseDate = new Date('2024-05-24T12:00:00.000Z'); 
 
-// Helper to create past dates relative to baseDate
 const daysAgo = (days: number, hours = 0, minutes = 0) =>
   new Date(baseDate.getTime() - (days * 24 * 60 * 60 * 1000) - (hours * 60 * 60 * 1000) - (minutes * 60 * 1000)).toISOString();
 
@@ -53,7 +51,7 @@ const MOCK_ACHIEVEMENTS_FOR_CURRENT_USER: Achievement[] = [
     description: 'Visited 3 different neighborhoods in a week.',
     icon: Compass,
     achievedDate: daysAgo(2),
-    rewards: ['Free Likes or full preview of a hidden Like.'], // Updated reward text
+    rewards: ['Free Likes or full preview of a hidden Like.'],
   },
   {
     id: 'achieve-4',
@@ -75,6 +73,53 @@ const MOCK_ACHIEVEMENTS_FOR_CURRENT_USER: Achievement[] = [
     glowEffect: false,
   },
 ];
+
+export const MOCK_AVAILABLE_CHALLENGES: Challenge[] = [
+  {
+    id: 'challenge-1',
+    name: 'Moment Marathon',
+    type: 'Streak',
+    description: 'Log a Moment 7 days in a row.',
+    icon: CalendarCheck2,
+    rewardPreview: 'Exclusive "Marathoner" Badge, 1 Week Crossd+ Trial',
+    progress: { current: MOCK_ACHIEVEMENTS_FOR_CURRENT_USER.find(a => a.id === 'achieve-1') ? 3 : 1, target: 7, unit: 'days logged' }, // User has logged 3 days already if "Daily Logger" is achieved
+    status: 'active',
+    timeLimit: 'Ongoing',
+  },
+  {
+    id: 'challenge-2',
+    name: 'Chatterbox Champ',
+    type: 'Timed Challenge',
+    description: 'Reply to 5 Moment Matches within 48 hours of matching.',
+    icon: MessageCircleReply,
+    rewardPreview: '5 Free Super Likes, "Chatterbox" Badge',
+    progress: { current: 1, target: 5, unit: 'matches replied' },
+    status: 'active',
+    timeLimit: '48 hours per match',
+  },
+  {
+    id: 'challenge-3',
+    name: 'City Navigator',
+    type: 'Exploration',
+    description: 'Visit and log Moments in 5 distinct boroughs or districts this month.',
+    icon: Globe,
+    rewardPreview: '"Navigator" Badge, Map Theme for Profile',
+    progress: { current: 2, target: 5, unit: 'districts visited' },
+    status: 'not_started',
+    timeLimit: 'Ends this month',
+  },
+  {
+    id: 'challenge-4',
+    name: 'Serendipity Seeker',
+    type: 'Connection',
+    description: 'Achieve 3 "Double Spark" matches (match + convo < 2hrs).',
+    icon: HeartHandshake,
+    rewardPreview: '"Serendipity" Badge, Extended Chat Features',
+    progress: { current: MOCK_ACHIEVEMENTS_FOR_CURRENT_USER.find(a => a.id === 'achieve-4') ? 1 : 0, target: 3, unit: 'double sparks' },
+    status: 'active',
+  },
+];
+
 
 export const MOCK_USERS: UserProfile[] = [
   {
@@ -176,7 +221,7 @@ export const MOCK_USERS: UserProfile[] = [
     achievements: [],
   },
   {
-    id: MOCK_USER_ID, // Current user
+    id: MOCK_USER_ID, 
     name: 'Dev User',
     age: 27,
     email: 'dev@example.com',
@@ -207,7 +252,7 @@ export const MOCK_USERS: UserProfile[] = [
     locationAddress: '1 Developer Way, Firebase City, FS',
     locationName: 'Firebase City',
     locationCoordinates: { lat: 37.7749, lng: -122.4194 },
-    achievements: MOCK_ACHIEVEMENTS_FOR_CURRENT_USER, // Added mock achievements
+    achievements: MOCK_ACHIEVEMENTS_FOR_CURRENT_USER, 
   },
   {
     id: 'user-4',
@@ -305,7 +350,6 @@ export const MOCK_USERS: UserProfile[] = [
     zodiacSign: "Sagittarius",
     achievements: [],
   },
-  // --- START OF NEW MOCK USERS ---
   {
     id: 'user-7',
     name: 'Taylor',
@@ -350,7 +394,7 @@ export const MOCK_USERS: UserProfile[] = [
     height: "6'2\"",
     locationAddress: "20 Gourmet Lane, Foodie Town, USA",
     locationName: "Foodie Town",
-    locationCoordinates: { lat: 34.0522, lng: -118.2437 }, // LA coordinates
+    locationCoordinates: { lat: 34.0522, lng: -118.2437 }, 
     drinking: "Yes",
     smoking: "No",
     zodiacSign: "Taurus",
@@ -375,7 +419,7 @@ export const MOCK_USERS: UserProfile[] = [
     height: "5'5\"",
     locationAddress: "30 Chapter Ave, Bookish City, USA",
     locationName: "Bookish City",
-    locationCoordinates: { lat: 47.6062, lng: -122.3321 }, // Seattle coordinates
+    locationCoordinates: { lat: 47.6062, lng: -122.3321 }, 
     drinking: "No",
     smoking: "No",
     zodiacSign: "Virgo",
@@ -400,7 +444,7 @@ export const MOCK_USERS: UserProfile[] = [
     height: "5'9\"",
     locationAddress: "40 Design Drive, Interface City, USA",
     locationName: "Interface City",
-    locationCoordinates: { lat: 40.4406, lng: -79.9959 }, // Pittsburgh coordinates
+    locationCoordinates: { lat: 40.4406, lng: -79.9959 }, 
     drinking: "Yes",
     smoking: "No",
     zodiacSign: "Cancer",
@@ -425,7 +469,7 @@ export const MOCK_USERS: UserProfile[] = [
     height: "5'6\"",
     locationAddress: "50 Campus Green, University Town, USA",
     locationName: "University Town",
-    locationCoordinates: { lat: 38.9897, lng: -76.9378 }, // College Park, MD coordinates
+    locationCoordinates: { lat: 38.9897, lng: -76.9378 }, 
     drinking: "Sometimes",
     smoking: "No",
     zodiacSign: "Leo",
@@ -450,7 +494,7 @@ export const MOCK_USERS: UserProfile[] = [
     height: "6'0\"",
     locationAddress: "60 Structure St, Design District, USA",
     locationName: "Design District",
-    locationCoordinates: { lat: 42.3736, lng: -71.1097 }, // Cambridge, MA coordinates
+    locationCoordinates: { lat: 42.3736, lng: -71.1097 }, 
     drinking: "Sometimes",
     smoking: "No",
     zodiacSign: "Capricorn",
@@ -475,7 +519,7 @@ export const MOCK_USERS: UserProfile[] = [
     height: "5'10\"",
     locationAddress: "70 Wanderlust Way, Global City, USA",
     locationName: "Global City",
-    locationCoordinates: { lat: 40.7128, lng: -74.0060 }, // NYC coordinates
+    locationCoordinates: { lat: 40.7128, lng: -74.0060 }, 
     drinking: "Yes",
     smoking: "Sometimes",
     zodiacSign: "Sagittarius",
@@ -500,23 +544,21 @@ export const MOCK_USERS: UserProfile[] = [
     height: "5'7\"",
     locationAddress: "80 Pixel Pl, Gamer Grid, USA",
     locationName: "Gamer Grid",
-    locationCoordinates: { lat: 37.7749, lng: -122.4194 }, // SF coordinates
+    locationCoordinates: { lat: 37.7749, lng: -122.4194 }, 
     drinking: "Sometimes",
     smoking: "No",
     zodiacSign: "Aquarius",
     achievements: [],
   }
-  // --- END OF NEW MOCK USERS ---
 ];
 
 
 export const MOCK_MOMENTS: Moment[] = [
-  // Moments for MOCK_USER_ID within the last week (relative to baseDate) - Updated to London landmarks
   {
     id: 'moment-recap-1',
     userId: MOCK_USER_ID,
     placeName: 'The Shard',
-    timestamp: daysAgo(1, 2, 30), // Thursday, May 23rd
+    timestamp: daysAgo(1, 2, 30), 
     potentialMatchId: 'user-1',
     coordinates: { lat: 51.5045, lng: -0.0865 },
     placeImage: 'https://placehold.co/200x150.png'
@@ -525,7 +567,7 @@ export const MOCK_MOMENTS: Moment[] = [
     id: 'moment-recap-2',
     userId: MOCK_USER_ID,
     placeName: 'Tower of London',
-    timestamp: daysAgo(2, 5, 15), // Wednesday, May 22nd
+    timestamp: daysAgo(2, 5, 15), 
     coordinates: { lat: 51.5081, lng: -0.0759 },
     placeImage: 'https://placehold.co/200x150.png'
   },
@@ -533,7 +575,7 @@ export const MOCK_MOMENTS: Moment[] = [
     id: 'moment-recap-3',
     userId: MOCK_USER_ID,
     placeName: 'British Museum',
-    timestamp: daysAgo(3, 1, 0), // Tuesday, May 21st
+    timestamp: daysAgo(3, 1, 0), 
     potentialMatchId: 'user-2',
     coordinates: { lat: 51.5194, lng: -0.1270 },
     placeImage: 'https://placehold.co/200x150.png'
@@ -542,7 +584,7 @@ export const MOCK_MOMENTS: Moment[] = [
     id: 'moment-recap-4',
     userId: MOCK_USER_ID,
     placeName: 'Tate Modern',
-    timestamp: daysAgo(4, 7, 0), // Monday, May 20th
+    timestamp: daysAgo(4, 7, 0), 
     coordinates: { lat: 51.5076, lng: -0.0994 },
     placeImage: 'https://placehold.co/200x150.png'
   },
@@ -550,7 +592,7 @@ export const MOCK_MOMENTS: Moment[] = [
     id: 'moment-recap-5',
     userId: MOCK_USER_ID,
     placeName: 'Borough Market',
-    timestamp: daysAgo(5, -6, 0), // Sunday, May 19th (evening)
+    timestamp: daysAgo(5, -6, 0), 
     potentialMatchId: 'user-3',
     coordinates: { lat: 51.5055, lng: -0.0910 },
     placeImage: 'https://placehold.co/200x150.png'
@@ -559,7 +601,7 @@ export const MOCK_MOMENTS: Moment[] = [
     id: 'moment-recap-6',
     userId: MOCK_USER_ID,
     placeName: 'Covent Garden',
-    timestamp: daysAgo(0, 3, 0), // Friday, May 24th (today, relative to baseDate)
+    timestamp: daysAgo(0, 3, 0), 
     coordinates: { lat: 51.5118, lng: -0.1245 },
     placeImage: 'https://placehold.co/200x150.png'
   },
@@ -567,11 +609,10 @@ export const MOCK_MOMENTS: Moment[] = [
     id: 'moment-recap-7',
     userId: MOCK_USER_ID,
     placeName: 'Buckingham Palace',
-    timestamp: daysAgo(6, 4, 0), // Saturday, May 18th
+    timestamp: daysAgo(6, 4, 0), 
     coordinates: { lat: 51.5014, lng: -0.1419 },
     placeImage: 'https://placehold.co/200x150.png'
   },
-  // Older moment, should NOT appear in recap
   {
     id: 'moment-old-1',
     userId: MOCK_USER_ID,
@@ -580,12 +621,11 @@ export const MOCK_MOMENTS: Moment[] = [
     coordinates: { lat: 40.8000, lng: -74.1900 },
     placeImage: 'https://placehold.co/200x150.png'
   },
-  // Original non-MOCK_USER_ID moment (can be left as is or changed if needed)
   {
-    id: 'moment-1', // This was originally for MOCK_USER_ID, changing to another user to avoid conflict
-    userId: 'user-4', // Assigning to another user to keep it in the system but not for Dev User
+    id: 'moment-1', 
+    userId: 'user-4', 
     placeName: 'Original Montclair Art Museum',
-    timestamp: daysAgo(8, 3, 30), // Older than 7 days
+    timestamp: daysAgo(8, 3, 30), 
     potentialMatchId: 'user-1',
     coordinates: { lat: 40.8137, lng: -74.2097 },
     placeImage: 'https://placehold.co/200x150.png'
@@ -672,7 +712,6 @@ export const MOCK_CHAT_MESSAGES: { [chatId: string]: ChatMessage[] } = {
 export const getCurrentUser = (): UserProfile => {
   const user = MOCK_USERS.find(user => user.id === MOCK_USER_ID);
   if (!user) {
-    // Fallback default user if MOCK_USER_ID not found (should not happen in normal flow)
     return {
         id: MOCK_USER_ID,
         name: "Current User",
@@ -703,12 +742,6 @@ export const getCurrentUser = (): UserProfile => {
 
 export const MOCK_CROSSED_PATHS_USERS: CrossedPathUser[] = MOCK_USERS.filter(u => u.id !== MOCK_USER_ID).map((user, index) => ({
   ...user,
-  crossedAt: daysAgo(index + 0.1), // Slightly different times for each
-  location: index % 3 === 0 ? 'The Shard' : (index % 3 === 1 ? 'Tate Modern' : 'British Museum'), // Example London locations
+  crossedAt: daysAgo(index + 0.1), 
+  location: index % 3 === 0 ? 'The Shard' : (index % 3 === 1 ? 'Tate Modern' : 'British Museum'), 
 }));
-
-    
-
-
-
-    

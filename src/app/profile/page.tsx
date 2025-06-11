@@ -7,9 +7,10 @@ import { ImageGallery } from "@/components/profile/image-gallery";
 import { PromptEditor } from "@/components/profile/prompt-editor";
 import { Card, CardHeader, CardTitle, CardDescription, CardContent } from "@/components/ui/card";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
-import { UserCircle, Image as ImageIcon, MessageSquareText, Trophy } from "lucide-react"; // Added Trophy
+import { UserCircle, Image as ImageIcon, MessageSquareText, Trophy, Target as TargetIcon } from "lucide-react";
 import { getCurrentUser, AVAILABLE_PROMPTS } from "@/lib/mock-data";
-import { AchievementsSection } from "@/components/profile/achievements-section"; // Added
+import { AchievementsSection } from "@/components/profile/achievements-section";
+import { ChallengesSection } from "@/components/challenges/challenges-section"; // New import
 
 export default function ProfilePage() {
   const currentUser = getCurrentUser();
@@ -23,18 +24,19 @@ export default function ProfilePage() {
                 <div>
                     <CardTitle className="text-3xl font-bold">Your Profile</CardTitle>
                     <CardDescription className="text-muted-foreground">
-                        Manage your public information, photos, prompts, and earned achievements.
+                        Manage your public information, photos, prompts, challenges, and achievements.
                     </CardDescription>
                 </div>
             </CardHeader>
         </Card>
 
         <Tabs defaultValue="details" className="w-full">
-          <TabsList className="grid w-full grid-cols-1 sm:grid-cols-2 md:grid-cols-4 mb-6"> {/* Adjusted grid-cols */}
+          <TabsList className="grid w-full grid-cols-2 sm:grid-cols-3 md:grid-cols-5 mb-6">
             <TabsTrigger value="details"><UserCircle className="mr-2 h-4 w-4" />Details</TabsTrigger>
             <TabsTrigger value="photos"><ImageIcon className="mr-2 h-4 w-4" />Photos</TabsTrigger>
             <TabsTrigger value="prompts"><MessageSquareText className="mr-2 h-4 w-4" />Prompts</TabsTrigger>
-            <TabsTrigger value="achievements"><Trophy className="mr-2 h-4 w-4" />Achievements</TabsTrigger> {/* Added Achievements Tab */}
+            <TabsTrigger value="challenges"><TargetIcon className="mr-2 h-4 w-4" />Challenges</TabsTrigger>
+            <TabsTrigger value="achievements"><Trophy className="mr-2 h-4 w-4" />Achievements</TabsTrigger>
           </TabsList>
 
           <TabsContent value="details">
@@ -76,7 +78,19 @@ export default function ProfilePage() {
             </Card>
           </TabsContent>
 
-          <TabsContent value="achievements"> {/* Added Achievements Content */}
+          <TabsContent value="challenges">
+            <Card className="bg-card">
+              <CardHeader>
+                <CardTitle>Available Challenges</CardTitle>
+                <CardDescription>Engage with these challenges to earn rewards and badges.</CardDescription>
+              </CardHeader>
+              <CardContent>
+                <ChallengesSection />
+              </CardContent>
+            </Card>
+          </TabsContent>
+
+          <TabsContent value="achievements">
             <Card className="bg-card">
               <CardHeader>
                 <CardTitle>Your Achievements</CardTitle>

@@ -1,4 +1,6 @@
 
+import type { LucideIcon } from 'lucide-react';
+
 export interface UserProfile {
   id: string;
   name: string;
@@ -21,8 +23,8 @@ export interface UserProfile {
   locationCoordinates?: { lat: number; lng: number };
   drinking?: string;
   smoking?: string;
-  zodiacSign?: string; // Added
-  achievements?: Achievement[]; // Added for achievements
+  zodiacSign?: string; 
+  achievements?: Achievement[]; 
 }
 
 export interface ProfilePrompt {
@@ -84,14 +86,31 @@ export interface DetailedMatchSuggestion {
   sharedVibeTags: string[];
 }
 
-// Added Achievement type
 export interface Achievement {
   id: string;
   name: string;
-  type: string; // e.g., "Streak", "Prompt Sprint"
+  type: string; 
   description: string;
-  icon: React.ElementType; // Lucide icon component
-  achievedDate?: string; // ISO date string when achieved
-  rewards: string[]; // Descriptions of rewards
-  glowEffect?: boolean; // For "Glow Badge" visual cue
+  icon: React.ElementType; 
+  achievedDate?: string; 
+  rewards: string[]; 
+  glowEffect?: boolean; 
+}
+
+export interface ChallengeProgress {
+  current: number;
+  target: number;
+  unit: string; // e.g., "days", "matches", "locations"
+}
+
+export interface Challenge {
+  id: string;
+  name: string; 
+  type: string; // e.g., "Streak", "Timed", "Exploration"
+  description: string; 
+  icon: React.ElementType; 
+  rewardPreview: string; // e.g., "Glow Badge, Priority Visibility"
+  progress?: ChallengeProgress;
+  status?: 'active' | 'not_started'; 
+  timeLimit?: string; // e.g., "Ends in 2 days", "24 hours remaining"
 }
