@@ -10,6 +10,7 @@ import {
   Home,
   LogOut,
   Search,
+  Sparkles, // For glow effect
 } from "lucide-react";
 import {
   Sidebar,
@@ -26,7 +27,8 @@ import { Separator } from "@/components/ui/separator";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { getCurrentUser } from "@/lib/mock-data";
 import { CrossdLogoIcon } from "@/components/icons/crossd-logo";
-import { Tooltip, TooltipContent, TooltipTrigger } from "@/components/ui/tooltip"; // Removed TooltipProvider import as it's provided by SidebarProvider
+import { Tooltip, TooltipContent, TooltipTrigger } from "@/components/ui/tooltip";
+import { cn } from "@/lib/utils";
 
 const navItems = [
   { href: "/dashboard", label: "Dashboard", icon: Home, tooltipClassName: "bg-popover text-popover-foreground border-border shadow-md" },
@@ -54,6 +56,10 @@ export function AppSidebar() {
       })
     : [];
   const displayedAchievements = sortedAchievements.slice(0, 3);
+
+  const isGlowModeActive = currentUser.achievements?.some(
+    (ach) => ach.id === 'achieve-1' && ach.glowEffect // Check for Daily Logger with glow effect
+  );
 
   return (
     <Sidebar side="left" variant="sidebar" collapsible="none">
@@ -117,14 +123,19 @@ export function AppSidebar() {
             className="w-full justify-start p-2 h-auto items-center hover:bg-sidebar-accent hover:shadow-md hover:shadow-primary/40 transition-all duration-200"
             as="a"
           >
-            <Avatar className="h-10 w-10 shrink-0">
-              <AvatarImage 
-                src={currentUser.images[0]} 
-                alt={currentUser.name} 
-                data-ai-hint="profile photo"
-              />
-              <AvatarFallback>{currentUser.name.substring(0, 1)}</AvatarFallback>
-            </Avatar>
+            <div className={cn("relative", isGlowModeActive && "ring-2 ring-primary rounded-full p-0.5 shadow-[0_0_15px_3px_hsl(var(--primary)/0.7)]")}>
+              <Avatar className="h-10 w-10 shrink-0">
+                <AvatarImage 
+                  src={currentUser.images[0]} 
+                  alt={currentUser.name} 
+                  data-ai-hint="profile photo"
+                />
+                <AvatarFallback>{currentUser.name.substring(0, 1)}</AvatarFallback>
+              </Avatar>
+              {isGlowModeActive && state === 'expanded' && (
+                  <Sparkles className="absolute -bottom-1 -right-1 h-4 w-4 text-primary bg-background/70 rounded-full p-0.5" />
+              )}
+            </div>
             {state === 'expanded' && (
               <div className="ml-3 flex flex-col items-start text-left">
                 <span className="font-medium text-sm text-sidebar-primary">{currentUser.name}</span>
@@ -141,7 +152,7 @@ export function AppSidebar() {
             {displayedAchievements.map(ach => {
               const IconComponent = ach.icon;
               return (
-                <Tooltip key={ach.id} delayDuration={100}> {/* Removed TooltipProvider, use Tooltip directly */}
+                <Tooltip key={ach.id} delayDuration={100}>
                   <TooltipTrigger asChild>
                     <span className="p-1 rounded-full hover:bg-sidebar-accent/50 cursor-default">
                       <IconComponent className="h-5 w-5 text-primary/80" />

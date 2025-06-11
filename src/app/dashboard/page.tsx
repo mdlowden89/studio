@@ -4,20 +4,24 @@
 import { useState, useEffect, useMemo } from "react";
 import { AppLayout } from "@/components/layout/app-layout";
 import { Card, CardContent, CardHeader, CardTitle, CardDescription, CardFooter } from "@/components/ui/card";
-import { Sparkles, PlusCircle, ClipboardList, Users, MessageSquare, Route, MapPin, CalendarDays, Users2, TrendingUp, Activity, Map, LayoutGrid, List as ListIcon } from "lucide-react";
-import { getCurrentUser, MOCK_MOMENTS, MOCK_CROSSED_PATHS_USERS, MOCK_CHAT_CONVERSATIONS, MOCK_USER_ID, MOCK_USERS, baseDate } from "@/lib/mock-data";
+import { Sparkles, PlusCircle, ClipboardList, Users, MessageSquare, Route, MapPin, CalendarDays, Users2, TrendingUp, Activity, Map, LayoutGrid, List as ListIcon, Lightbulb, Edit3, Repeat } from "lucide-react";
+import { getCurrentUser, MOCK_MOMENTS, MOCK_CROSSED_PATHS_USERS, MOCK_CHAT_CONVERSATIONS, MOCK_USER_ID, MOCK_USERS, baseDate, AVAILABLE_PROMPTS, MOCK_AVAILABLE_CHALLENGES } from "@/lib/mock-data";
 import { Button } from "@/components/ui/button";
 import { Separator } from "@/components/ui/separator";
 import { subDays, isAfter, format, getDay } from "date-fns";
 import { MomentsMap } from "@/components/dashboard/moments-map";
 import { MomentGalleryItem } from "@/components/moments/moment-gallery-item";
 import Link from "next/link";
+import type { ProfilePrompt, Challenge } from "@/lib/types";
+import { Progress } from "@/components/ui/progress";
+
 
 export default function DashboardPage() {
   const currentUser = getCurrentUser();
   const [recentPlacesViewMode, setRecentPlacesViewMode] = useState<'list' | 'imageGrid'>('list');
   const [clientFormattedTimes, setClientFormattedTimes] = useState<Record<string, string>>({});
-  const [windowSize, setWindowSize] = useState({ width: 0, height: 0 }); // For confetti or other responsive UI if needed
+  const [windowSize, setWindowSize] = useState({ width: 0, height: 0 });
+  const [promptOfTheDay, setPromptOfTheDay] = useState<ProfilePrompt | null>(null);
 
   const momentsLoggedCount = MOCK_MOMENTS.filter(moment => moment.userId === MOCK_USER_ID).length;
   const potentialMatchesCount = MOCK_CROSSED_PATHS_USERS.length;
@@ -29,29 +33,25 @@ export default function DashboardPage() {
     { title: "Active Chats", value: activeChatsCount, icon: MessageSquare, color: "text-purple-500" },
   ];
 
-  // Memoize oneWeekAgo as baseDate is constant
   const oneWeekAgo = useMemo(() => subDays(baseDate, 7), []);
 
-  // Memoize momentsThisWeek. It will recompute if MOCK_MOMENTS changes (implicitly) or oneWeekAgo changes.
   const momentsThisWeek = useMemo(() => {
     return MOCK_MOMENTS
       .filter(moment => moment.userId === MOCK_USER_ID && isAfter(new Date(moment.timestamp), oneWeekAgo))
       .sort((a, b) => new Date(b.timestamp).getTime() - new Date(a.timestamp).getTime());
-  }, [oneWeekAgo]); // MOCK_MOMENTS is an external constant, changes to it will trigger re-render, leading to re-calc.
+  }, [oneWeekAgo]);
 
-  // Create a stable dependency key for the useEffect that sets clientFormattedTimes
   const momentsTimestampsKey = useMemo(() => {
     return momentsThisWeek.map(m => `${m.id}-${m.timestamp}`).join(',');
   }, [momentsThisWeek]);
 
   useEffect(() => {
     const newFormattedTimes: Record<string, string> = {};
-    // momentsThisWeek here is the memoized version from above
     momentsThisWeek.forEach(moment => {
-      newFormattedTimes[moment.id] = format(new Date(moment.timestamp), "p"); // 'p' formats time like "10:00 AM"
+      newFormattedTimes[moment.id] = format(new Date(moment.timestamp), "p");
     });
     setClientFormattedTimes(newFormattedTimes);
-  }, [momentsTimestampsKey]); // Depend on the stable key
+  }, [momentsTimestampsKey]);
 
   useEffect(() => {
     const handleResize = () => {
@@ -66,7 +66,19 @@ export default function DashboardPage() {
       return () => window.removeEventListener('resize', handleResize);
     }
     return () => {};
-  }, []); // Empty dependency array means this runs once on mount and cleans up on unmount
+  }, []);
+
+  const selectNewPrompt = () => {
+    if (AVAILABLE_PROMPTS.length > 0) {
+      const randomIndex = Math.floor(Math.random() * AVAILABLE_PROMPTS.length);
+      setPromptOfTheDay(AVAILABLE_PROMPTS[randomIndex]);
+    }
+  };
+
+  useEffect(() => {
+    selectNewPrompt();
+  }, []);
+
 
   const distinctPlacesVisitedCount = useMemo(() => new Set(momentsThisWeek.map(m => m.placeName)).size, [momentsThisWeek]);
 
@@ -88,6 +100,12 @@ export default function DashboardPage() {
     const dayNames = ["Sunday", "Monday", "Tuesday", "Wednesday", "Thursday", "Friday", "Saturday"];
     return { mostActiveDay: mostActiveDayIndex !== -1 ? dayNames[mostActiveDayIndex] : "N/A" };
   }, [momentsThisWeek]);
+  
+  const activeStreakChallenge = useMemo(() => {
+    return MOCK_AVAILABLE_CHALLENGES.find(
+      (challenge) => challenge.type === "Streak" && challenge.status === "active"
+    );
+  }, []);
 
 
   return (
@@ -117,25 +135,83 @@ export default function DashboardPage() {
           </CardFooter>
         </Card>
 
-        <Card className="mb-8 bg-card shadow-xl">
-          <CardHeader>
-            <CardTitle className="text-xl font-semibold">Your Activity At a Glance</CardTitle>
-            <CardDescription className="text-muted-foreground">
-              A quick look at your Crossd engagement.
-            </CardDescription>
-          </CardHeader>
-          <CardContent>
-            <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
-              {stats.map((stat, index) => (
-                <div key={index} className="bg-muted/50 p-6 rounded-lg flex flex-col items-center text-center shadow-md">
-                  <stat.icon className={`w-10 h-10 mb-3 ${stat.color}`} />
-                  <p className="text-3xl font-bold text-foreground">{stat.value}</p>
-                  <p className="text-sm text-muted-foreground mt-1">{stat.title}</p>
+        <div className="grid grid-cols-1 lg:grid-cols-3 gap-8 mb-8">
+          <div className="lg:col-span-2">
+            <Card className="bg-card shadow-xl h-full">
+              <CardHeader>
+                <CardTitle className="text-xl font-semibold">Your Activity At a Glance</CardTitle>
+                <CardDescription className="text-muted-foreground">
+                  A quick look at your Crossd engagement.
+                </CardDescription>
+              </CardHeader>
+              <CardContent>
+                <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+                  {stats.map((stat, index) => (
+                    <div key={index} className="bg-muted/50 p-6 rounded-lg flex flex-col items-center text-center shadow-md">
+                      <stat.icon className={`w-10 h-10 mb-3 ${stat.color}`} />
+                      <p className="text-3xl font-bold text-foreground">{stat.value}</p>
+                      <p className="text-sm text-muted-foreground mt-1">{stat.title}</p>
+                    </div>
+                  ))}
                 </div>
-              ))}
-            </div>
-          </CardContent>
-        </Card>
+              </CardContent>
+            </Card>
+          </div>
+
+          <div className="lg:col-span-1 space-y-8">
+             {promptOfTheDay && (
+              <Card className="bg-card shadow-xl">
+                <CardHeader>
+                  <div className="flex items-center gap-2">
+                    <Lightbulb className="w-6 h-6 text-primary" />
+                    <CardTitle className="text-lg font-semibold">Prompt of the Day</CardTitle>
+                  </div>
+                   <CardDescription className="text-xs text-muted-foreground mt-1">Spark a new conversation or update your profile!</CardDescription>
+                </CardHeader>
+                <CardContent>
+                  <p className="text-sm text-foreground italic mb-3">&quot;{promptOfTheDay.question}&quot;</p>
+                </CardContent>
+                <CardFooter className="flex justify-between items-center">
+                  <Button variant="ghost" size="sm" onClick={selectNewPrompt} className="text-muted-foreground hover:text-primary">
+                    <Repeat className="mr-1.5 h-3.5 w-3.5" /> Another
+                  </Button>
+                  <Link href="/profile" passHref>
+                    <Button size="sm" className="bg-primary/90 hover:bg-primary text-primary-foreground text-xs">
+                      <Edit3 className="mr-1.5 h-3.5 w-3.5" /> Answer
+                    </Button>
+                  </Link>
+                </CardFooter>
+              </Card>
+            )}
+
+            {activeStreakChallenge && activeStreakChallenge.progress && (
+              <Card className="bg-card shadow-xl">
+                <CardHeader>
+                  <div className="flex items-center gap-2">
+                    <TrendingUp className="w-6 h-6 text-primary" />
+                    <CardTitle className="text-lg font-semibold">Active Streak</CardTitle>
+                  </div>
+                  <CardDescription className="text-xs text-muted-foreground mt-1">{activeStreakChallenge.name}</CardDescription>
+                </CardHeader>
+                <CardContent>
+                  <p className="text-sm text-foreground mb-2">{activeStreakChallenge.description}</p>
+                  <Progress value={(activeStreakChallenge.progress.current / activeStreakChallenge.progress.target) * 100} className="h-2 [&>div]:bg-primary" />
+                  <p className="text-xs text-muted-foreground mt-1 text-right">
+                    {activeStreakChallenge.progress.current} / {activeStreakChallenge.progress.target} {activeStreakChallenge.progress.unit}
+                  </p>
+                </CardContent>
+                 <CardFooter>
+                  <Link href="/profile" passHref className="w-full">
+                    <Button variant="outline" size="sm" className="w-full text-primary border-primary/70 hover:bg-primary/10">
+                        View All Challenges
+                    </Button>
+                  </Link>
+                </CardFooter>
+              </Card>
+            )}
+          </div>
+        </div>
+
 
         <Card className="mb-8 bg-card shadow-xl">
           <CardHeader>
@@ -183,7 +259,7 @@ export default function DashboardPage() {
                   <ul className="space-y-2">
                     {momentsThisWeek.map(moment => {
                       const datePart = format(new Date(moment.timestamp), "MMM d");
-                      const timePart = clientFormattedTimes[moment.id]; // Get client-formatted time
+                      const timePart = clientFormattedTimes[moment.id]; 
                       return (
                         <li key={moment.id} className="flex items-center gap-2 p-2 bg-muted/30 rounded-md text-sm">
                           <MapPin className="w-4 h-4 text-primary/80" />

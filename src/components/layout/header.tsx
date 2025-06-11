@@ -3,7 +3,7 @@
 import { usePathname } from 'next/navigation';
 import { SidebarTrigger } from "@/components/ui/sidebar";
 import { Button } from '@/components/ui/button';
-import { Bell, CheckCircle, Eye } from 'lucide-react'; // Added Eye icon
+import { Bell, CheckCircle, Eye, MessageSquareHeart } from 'lucide-react'; // Added MessageSquareHeart
 import Link from 'next/link';
 import {
   DropdownMenu,
@@ -30,7 +30,8 @@ const getTitleFromPathname = (pathname: string): string => {
 const mockNotifications = [
   { id: '1', title: 'New Match!', message: 'You and Alex liked each other.', time: '5m ago', read: false, href: "/chat/chat-1" },
   { id: 'nudge-1', title: 'Potential Crossing!', message: "Someone at The Alchemist's Cafe might have seen you.", time: '25m ago', read: false, href: "/confirm-moment/mock-moment-123", icon: Eye },
-  { id: '2', title: 'Message from Jamie', message: 'Hey, are you free tonight?', time: '1h ago', read: true, href: "/chat/chat-2" },
+  { id: 'autospark-1', title: 'Reconnect with Jamie?', message: "It's been a day, why not send a message?", time: '1h ago', read: false, href: "/chat/chat-2", icon: MessageSquareHeart },
+  { id: '2', title: 'Message from Jamie', message: 'Hey, are you free tonight?', time: '2h ago', read: true, href: "/chat/chat-2" },
   { id: '3', title: 'Path Crossed', message: 'You crossed paths with Casey near the park.', time: '3h ago', read: false, href: "/discover" },
   { id: '4', title: 'Profile View', message: 'Someone viewed your profile.', time: '1d ago', read: true, href: "/profile" },
 ];
@@ -72,7 +73,7 @@ export function Header() {
             <DropdownMenuLabel className="px-3 py-2 font-semibold">Notifications</DropdownMenuLabel>
             <DropdownMenuSeparator />
             {mockNotifications.length > 0 ? (
-              mockNotifications.map((notification) => (
+              mockNotifications.sort((a,b) => new Date(b.time.endsWith('m ago') ? Date.now() - parseInt(b.time) * 60000 : (b.time.endsWith('h ago') ? Date.now() - parseInt(b.time) * 3600000 : Date.now() - parseInt(b.time) * 86400000 )).getTime() - new Date(a.time.endsWith('m ago') ? Date.now() - parseInt(a.time) * 60000 : (a.time.endsWith('h ago') ? Date.now() - parseInt(a.time) * 3600000 : Date.now() - parseInt(a.time) * 86400000 )).getTime()).map((notification) => (
                 <Link href={notification.href || "#"} key={notification.id} passHref legacyBehavior>
                   <DropdownMenuItem className="p-3 flex flex-col items-start gap-1 cursor-pointer hover:bg-accent focus:bg-accent">
                     <div className="flex justify-between w-full items-center">
