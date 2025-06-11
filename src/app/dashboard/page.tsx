@@ -202,7 +202,7 @@ export default function DashboardPage() {
                 </CardContent>
                  <CardFooter>
                   <Link href="/profile" passHref className="w-full">
-                    <Button variant="outline" size="sm" className="w-full text-primary border-primary/70 hover:bg-primary/10 hover:text-primary-foreground">
+                    <Button variant="outline" size="sm" className="w-full text-primary border-primary/70 hover:bg-primary/10">
                         View All Challenges
                     </Button>
                   </Link>
