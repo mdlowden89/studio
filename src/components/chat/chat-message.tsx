@@ -6,6 +6,7 @@ import { MOCK_USER_ID } from "@/lib/mock-data";
 import { cn } from "@/lib/utils";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { MOCK_USERS } from "@/lib/mock-data"; // To get sender avatar
+import { useState, useEffect } from "react";
 
 interface ChatMessageProps {
   message: MessageType;
@@ -14,6 +15,16 @@ interface ChatMessageProps {
 export function ChatMessage({ message }: ChatMessageProps) {
   const isCurrentUserSender = message.senderId === MOCK_USER_ID;
   const sender = MOCK_USERS.find(u => u.id === message.senderId);
+  const [formattedTimestamp, setFormattedTimestamp] = useState<string>("");
+
+  useEffect(() => {
+    setFormattedTimestamp(
+      new Date(message.timestamp).toLocaleTimeString([], {
+        hour: "2-digit",
+        minute: "2-digit",
+      })
+    );
+  }, [message.timestamp]);
 
   return (
     <div className={cn("flex items-end gap-2", isCurrentUserSender ? "justify-end" : "justify-start")}>
@@ -33,7 +44,7 @@ export function ChatMessage({ message }: ChatMessageProps) {
       >
         <p className="text-sm break-words">{message.text}</p>
         <p className={cn("text-xs mt-1", isCurrentUserSender ? "text-primary-foreground/70 text-right" : "text-muted-foreground/70 text-left")}>
-          {new Date(message.timestamp).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })}
+          {formattedTimestamp}
         </p>
       </div>
        {isCurrentUserSender && sender && (
