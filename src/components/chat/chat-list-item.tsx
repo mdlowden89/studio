@@ -3,10 +3,11 @@
 
 import Link from "next/link";
 import { usePathname } from "next/navigation";
-import type { ChatConversation, UserProfile } from "@/lib/types";
+import type { ChatConversation } from "@/lib/types";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { MOCK_USER_ID } from "@/lib/mock-data";
 import { cn } from "@/lib/utils";
+import { useState, useEffect } from "react";
 
 interface ChatListItemProps {
   conversation: ChatConversation;
@@ -15,12 +16,21 @@ interface ChatListItemProps {
 export function ChatListItem({ conversation }: ChatListItemProps) {
   const pathname = usePathname();
   const isActive = pathname === `/chat/${conversation.id}`;
+  const [displayedTimestamp, setDisplayedTimestamp] = useState<string>("");
 
   const otherParticipant = conversation.participants.find(p => p.id !== MOCK_USER_ID);
-  if (!otherParticipant) return null; // Should not happen in a valid conversation
+
+  useEffect(() => {
+    if (conversation.lastMessage) {
+      setDisplayedTimestamp(new Date(conversation.lastMessage.timestamp).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' }));
+    } else {
+      setDisplayedTimestamp("");
+    }
+  }, [conversation.lastMessage]);
+
+  if (!otherParticipant) return null;
 
   const lastMessageText = conversation.lastMessage?.text || "No messages yet.";
-  const lastMessageTimestamp = conversation.lastMessage ? new Date(conversation.lastMessage.timestamp).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' }) : "";
 
   return (
     <Link href={`/chat/${conversation.id}`} className="block">
@@ -37,7 +47,7 @@ export function ChatListItem({ conversation }: ChatListItemProps) {
         <div className="flex-1 overflow-hidden">
           <div className="flex justify-between items-center">
             <h3 className="font-semibold truncate">{otherParticipant.name}</h3>
-            {lastMessageTimestamp && <span className="text-xs text-muted-foreground">{lastMessageTimestamp}</span>}
+            {displayedTimestamp && <span className="text-xs text-muted-foreground">{displayedTimestamp}</span>}
           </div>
           <p className={cn("text-sm truncate", isActive ? "text-accent-foreground/80" : "text-muted-foreground")}>
             {conversation.lastMessage?.senderId === MOCK_USER_ID && "You: "}
