@@ -4,6 +4,8 @@ import { SwipeMatchSection } from "@/components/dashboard/swipe-match-section";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Card, CardHeader, CardTitle, CardDescription } from "@/components/ui/card";
 import { Handshake, Search as SearchIcon } from "lucide-react";
+import { Separator } from "@/components/ui/separator";
+import { BlurredLikesSection } from "@/components/discover/blurred-likes-section";
 
 export default function DiscoverPage() {
   return (
@@ -16,7 +18,7 @@ export default function DiscoverPage() {
                 <div>
                     <CardTitle className="text-3xl font-bold">Discover Connections</CardTitle>
                     <CardDescription className="text-muted-foreground">
-                    Find new connections by swiping through profiles.
+                    Find new connections by swiping or see who's already noticed you.
                     </CardDescription>
                 </div>
             </div>
@@ -37,6 +39,11 @@ export default function DiscoverPage() {
             <SwipeMatchSection />
           </TabsContent>
         </Tabs>
+
+        <Separator className="my-12 bg-border/50" />
+
+        <BlurredLikesSection />
+
       </div>
     </AppLayout>
   );
