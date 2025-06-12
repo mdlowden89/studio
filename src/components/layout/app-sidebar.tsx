@@ -125,7 +125,7 @@ export function AppSidebar() {
           >
             <div className={cn(
                 "relative rounded-full", 
-                isGlowModeActive && "ring-4 ring-primary p-0.5 shadow-xl shadow-primary/70"
+                isGlowModeActive && "ring-2 ring-primary/50 p-0.5 shadow-md shadow-primary/30" // Reverted line
             )}>
               <Avatar className="h-10 w-10 shrink-0">
                 <AvatarImage 
