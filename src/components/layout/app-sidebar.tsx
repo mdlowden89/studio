@@ -123,7 +123,10 @@ export function AppSidebar() {
             className="w-full justify-start p-2 h-auto items-center hover:bg-sidebar-accent hover:shadow-md hover:shadow-primary/40 transition-all duration-200"
             as="a"
           >
-            <div className={cn("relative", isGlowModeActive && "ring-2 ring-primary rounded-full p-0.5 shadow-[0_0_15px_3px_hsl(var(--primary)/0.7)]")}>
+            <div className={cn(
+                "relative rounded-full", 
+                isGlowModeActive && "ring-4 ring-primary p-0.5 shadow-xl shadow-primary/70"
+            )}>
               <Avatar className="h-10 w-10 shrink-0">
                 <AvatarImage 
                   src={currentUser.images[0]} 
