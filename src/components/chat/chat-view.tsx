@@ -7,7 +7,7 @@ import { MOCK_USER_ID, MOCK_USERS } from "@/lib/mock-data";
 import { ChatMessage } from "./chat-message";
 import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
-import { Send, ArrowLeft, Video, Phone } from "lucide-react";
+import { Send, ArrowLeft, Video, Mic } from "lucide-react"; // Changed Phone to Mic
 import { ScrollArea } from "@/components/ui/scroll-area";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import Link from "next/link";
@@ -73,8 +73,8 @@ export function ChatView({ conversation, initialMessages }: ChatViewProps) {
             <Button variant="ghost" size="icon" aria-label="Video Call">
                 <Video className="h-5 w-5 text-primary" />
             </Button>
-            <Button variant="ghost" size="icon" aria-label="Audio Call">
-                <Phone className="h-5 w-5 text-primary" />
+            <Button variant="ghost" size="icon" aria-label="Send Voice Note"> {/* Changed aria-label */}
+                <Mic className="h-5 w-5 text-primary" /> {/* Changed icon to Mic */}
             </Button>
         </div>
       </div>
