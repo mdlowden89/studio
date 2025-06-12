@@ -32,11 +32,31 @@ export default function ProfilePage() {
         </Card>
 
         <Tabs defaultValue="details" className="w-full">
-          <TabsList className="grid w-full grid-cols-2 sm:grid-cols-4 md:grid-cols-4 mb-6"> {/* Adjusted to 4 columns */}
-            <TabsTrigger value="details"><UserCircle className="mr-2 h-4 w-4" />Details</TabsTrigger>
-            <TabsTrigger value="photos"><ImageIcon className="mr-2 h-4 w-4" />Photos</TabsTrigger>
-            <TabsTrigger value="prompts"><MessageSquareText className="mr-2 h-4 w-4" />Prompts</TabsTrigger>
-            <TabsTrigger value="progress"><TargetIcon className="mr-2 h-4 w-4" />Progress</TabsTrigger> {/* Combined Tab */}
+          <TabsList className="grid w-full grid-cols-2 sm:grid-cols-4 md:grid-cols-4 mb-6 !bg-card/60 border border-primary/50 p-1 rounded-lg">
+            <TabsTrigger 
+              value="details" 
+              className="data-[state=active]:bg-primary data-[state=active]:text-primary-foreground data-[state=active]:shadow-md data-[state=active]:shadow-primary/50 hover:text-primary focus-visible:ring-primary"
+            >
+              <UserCircle className="mr-2 h-4 w-4" />Details
+            </TabsTrigger>
+            <TabsTrigger 
+              value="photos"
+              className="data-[state=active]:bg-primary data-[state=active]:text-primary-foreground data-[state=active]:shadow-md data-[state=active]:shadow-primary/50 hover:text-primary focus-visible:ring-primary"
+            >
+              <ImageIcon className="mr-2 h-4 w-4" />Photos
+            </TabsTrigger>
+            <TabsTrigger 
+              value="prompts"
+              className="data-[state=active]:bg-primary data-[state=active]:text-primary-foreground data-[state=active]:shadow-md data-[state=active]:shadow-primary/50 hover:text-primary focus-visible:ring-primary"
+            >
+              <MessageSquareText className="mr-2 h-4 w-4" />Prompts
+            </TabsTrigger>
+            <TabsTrigger 
+              value="progress"
+              className="data-[state=active]:bg-primary data-[state=active]:text-primary-foreground data-[state=active]:shadow-md data-[state=active]:shadow-primary/50 hover:text-primary focus-visible:ring-primary"
+            >
+              <TargetIcon className="mr-2 h-4 w-4" />Progress
+            </TabsTrigger>
           </TabsList>
 
           <TabsContent value="details">
@@ -78,7 +98,7 @@ export default function ProfilePage() {
             </Card>
           </TabsContent>
 
-          <TabsContent value="progress"> {/* Combined Content */}
+          <TabsContent value="progress">
             <Card className="bg-card">
               <CardHeader>
                 <CardTitle>Your Progress & Achievements</CardTitle>
