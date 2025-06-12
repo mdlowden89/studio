@@ -40,7 +40,7 @@ export function BlurredLikesSection() {
             style={{
               transform: `rotate(${index * 5 - (mockLikers.length > 1 ? (mockLikers.length -1) * 2.5 : 0)}deg) translateX(${index * 12 - (mockLikers.length > 1 ? (mockLikers.length -1) * 6 : 0)}px) translateY(${index * -6}px)`,
               zIndex: mockLikers.length - index,
-              filter: 'blur(10px)', // Increased blur
+              filter: 'blur(8px)', // Reduced blur from 10px to 8px
             }}
           >
             <Image
