@@ -7,11 +7,13 @@ import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle }
 import { Separator } from "@/components/ui/separator";
 import { useToast } from "@/hooks/use-toast";
 import { getCurrentUser, MOCK_USERS, MOCK_USER_ID } from "@/lib/mock-data"; 
-import { CheckCircle, HelpCircle, Sparkles, ThumbsUp, ThumbsDown, MapPin, Clock, Palette, Users as UsersIcon, User as UserIcon } from "lucide-react";
+import { CheckCircle, HelpCircle, Sparkles, ThumbsUp, ThumbsDown, MapPin, Clock, Palette, Users as UsersIcon, User as UserIcon, Eye } from "lucide-react"; // Added Eye
 import { useParams, useRouter } from "next/navigation";
 import Link from "next/link";
 import { Avatar, AvatarImage, AvatarFallback } from "@/components/ui/avatar";
+import { Badge } from "@/components/ui/badge"; // Added Badge
 import { format } from "date-fns";
+import { useState } from "react"; // Added useState
 
 // Mock data for the moment User A logged about User B (the current user)
 // In a real app, this would be fetched based on params.momentId
@@ -32,6 +34,7 @@ export default function ConfirmMomentPage() {
   const router = useRouter();
   const { toast } = useToast();
   const currentUserB = getCurrentUser(); // This is User B for this demo
+  const [showUserAHint, setShowUserAHint] = useState(false);
 
   const momentId = params.momentId as string;
   const loggedMoment = MOCK_LOGGED_MOMENT_DETAILS; 
@@ -44,7 +47,6 @@ export default function ConfirmMomentPage() {
       description: `Great! You and ${userA.name} both acknowledged this moment.`,
       duration: 3000,
     });
-    // Navigate to the match confirmed page, passing userA's ID
     router.push(`/match-confirmed/${userA.id}`);
   };
 
@@ -55,6 +57,10 @@ export default function ConfirmMomentPage() {
       variant: "default",
     });
     router.push("/dashboard");
+  };
+
+  const handleShowHint = () => {
+    setShowUserAHint(true);
   };
 
   if (!userA) {
@@ -68,6 +74,8 @@ export default function ConfirmMomentPage() {
   }
 
   const momentDate = new Date(loggedMoment.timestamp);
+  const userABioSnippet = userA.bio.split('.').slice(0, 1).join('.') + (userA.bio.includes('.') ? '.' : '');
+
 
   return (
     <AppLayout>
@@ -143,23 +151,56 @@ export default function ConfirmMomentPage() {
               </div>
             )}
 
+            {showUserAHint && (
+                <div className="p-4 border border-primary/50 rounded-lg bg-primary/5 space-y-3 mt-4">
+                    <h3 className="text-lg font-semibold text-primary flex items-center gap-2">
+                        <Eye className="w-5 h-5" />A little about {userA.name}:
+                    </h3>
+                    <p className="text-sm text-foreground">
+                        <span className="font-medium">Age:</span> {userA.age}
+                    </p>
+                    {userA.vibeTags && userA.vibeTags.length > 0 && (
+                        <div className="text-sm">
+                            <span className="font-medium text-foreground">Vibes:</span>
+                            <div className="flex flex-wrap gap-1.5 mt-1">
+                                {userA.vibeTags.slice(0, 3).map(tag => (
+                                    <Badge key={tag} variant="secondary" className="capitalize text-xs">{tag}</Badge>
+                                ))}
+                            </div>
+                        </div>
+                    )}
+                    {userA.bio && (
+                         <p className="text-sm text-foreground">
+                            <span className="font-medium">Bio Snippet:</span> <span className="italic text-muted-foreground">&quot;{userABioSnippet}&quot;</span>
+                         </p>
+                    )}
+                </div>
+            )}
+
+
             <p className="text-sm text-center text-muted-foreground pt-4">
               Does this sound like a moment you experienced? Your profile details will only be fully shared with {userA.name} if you confirm.
             </p>
 
           </CardContent>
-          <CardFooter className="flex flex-col sm:flex-row justify-center gap-4 pt-6 border-t">
-            <Button onClick={handleDenyMatch} variant="outline" className="w-full sm:w-auto">
-              <ThumbsDown className="mr-2 h-5 w-5" /> No, this wasn&apos;t me
-            </Button>
-            <Button onClick={handleConfirmMatch} className="w-full sm:w-auto bg-primary hover:bg-primary/90 text-primary-foreground">
-              <ThumbsUp className="mr-2 h-5 w-5" /> Yes, that sounds like me!
-            </Button>
+          <CardFooter className="flex flex-col gap-3 pt-6 border-t">
+            {!showUserAHint && (
+                <Button onClick={handleShowHint} variant="secondary" className="w-full sm:w-auto">
+                    <HelpCircle className="mr-2 h-5 w-5" /> Could be me... Show a hint?
+                </Button>
+            )}
+            <div className="flex flex-col sm:flex-row justify-center gap-4 w-full">
+                <Button onClick={handleDenyMatch} variant="outline" className="w-full sm:w-auto">
+                <ThumbsDown className="mr-2 h-5 w-5" /> No, this wasn&apos;t me
+                </Button>
+                <Button onClick={handleConfirmMatch} className="w-full sm:w-auto bg-primary hover:bg-primary/90 text-primary-foreground">
+                <ThumbsUp className="mr-2 h-5 w-5" /> Yes, that sounds like me!
+                </Button>
+            </div>
           </CardFooter>
         </Card>
       </div>
     </AppLayout>
   );
 }
-
     
