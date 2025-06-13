@@ -7,7 +7,7 @@ import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle }
 import { Separator } from "@/components/ui/separator";
 import { useToast } from "@/hooks/use-toast";
 import { getCurrentUser, MOCK_USERS, MOCK_USER_ID } from "@/lib/mock-data"; 
-import { CheckCircle, HelpCircle, Sparkles, ThumbsUp, ThumbsDown, MapPin, Clock, Palette, Users as UsersIcon, User as UserIcon, Eye, Image as ImageIcon } from "lucide-react"; // Added Eye, ImageIcon
+import { CheckCircle, HelpCircle, Sparkles, ThumbsUp, ThumbsDown, MapPin, Clock, Palette, Users as UsersIcon, User as UserIcon, Eye, Image as ImageIcon, UserX } from "lucide-react"; // Added UserX
 import { useParams, useRouter } from "next/navigation";
 import Link from "next/link";
 import { Avatar, AvatarImage, AvatarFallback } from "@/components/ui/avatar";
@@ -64,6 +64,15 @@ export default function ConfirmMomentPage() {
     toast({
       title: "Not a Match",
       description: "No problem! Thanks for letting us know.",
+      variant: "default",
+    });
+    router.push("/dashboard");
+  };
+
+  const handleAcknowledgeAndDecline = () => {
+    toast({
+      title: "Acknowledgement Recorded",
+      description: "Thanks for letting us know. No match will be initiated, and your choice has been noted.",
       variant: "default",
     });
     router.push("/dashboard");
@@ -209,12 +218,15 @@ export default function ConfirmMomentPage() {
                     <HelpCircle className="mr-2 h-5 w-5" /> Could be me... Show a hint?
                 </Button>
             )}
-            <div className="flex flex-col sm:flex-row justify-center gap-4 w-full">
+            <div className="flex flex-col sm:flex-row justify-center gap-3 w-full">
                 <Button onClick={handleDenyMatch} variant="outline" className="w-full sm:w-auto">
-                <ThumbsDown className="mr-2 h-5 w-5" /> No, this wasn&apos;t me
+                    <ThumbsDown className="mr-2 h-5 w-5" /> No, this wasn&apos;t me
+                </Button>
+                <Button onClick={handleAcknowledgeAndDecline} variant="secondary" className="w-full sm:w-auto">
+                    <UserX className="mr-2 h-5 w-5" /> It was me, but pass
                 </Button>
                 <Button onClick={handleConfirmMatch} className="w-full sm:w-auto bg-primary hover:bg-primary/90 text-primary-foreground">
-                <ThumbsUp className="mr-2 h-5 w-5" /> Yes, that sounds like me!
+                    <ThumbsUp className="mr-2 h-5 w-5" /> Yes, that sounds like me!
                 </Button>
             </div>
           </CardFooter>
