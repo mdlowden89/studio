@@ -1,7 +1,7 @@
 
 "use client";
 
-import { useState, useEffect, useMemo } from "react";
+import { useState, useEffect, useMemo, useCallback } from "react"; // Added useCallback
 import { AppLayout } from "@/components/layout/app-layout";
 import { Card, CardContent, CardHeader, CardTitle, CardDescription, CardFooter } from "@/components/ui/card";
 import { Sparkles, PlusCircle, ClipboardList, Users, MessageSquare, Route, MapPin, CalendarDays, Users2, TrendingUp, Activity, Map, LayoutGrid, List as ListIcon, Lightbulb, Edit3, Repeat } from "lucide-react";
@@ -51,7 +51,7 @@ export default function DashboardPage() {
       newFormattedTimes[moment.id] = format(new Date(moment.timestamp), "p");
     });
     setClientFormattedTimes(newFormattedTimes);
-  }, [momentsTimestampsKey]);
+  }, [momentsTimestampsKey, momentsThisWeek]); // Added momentsThisWeek to dependency array
 
   useEffect(() => {
     const handleResize = () => {
@@ -68,16 +68,16 @@ export default function DashboardPage() {
     return () => {};
   }, []);
 
-  const selectNewPrompt = () => {
+  const selectNewPrompt = useCallback(() => {
     if (AVAILABLE_PROMPTS.length > 0) {
       const randomIndex = Math.floor(Math.random() * AVAILABLE_PROMPTS.length);
       setPromptOfTheDay(AVAILABLE_PROMPTS[randomIndex]);
     }
-  };
+  }, []); // AVAILABLE_PROMPTS is stable, setPromptOfTheDay is stable
 
   useEffect(() => {
     selectNewPrompt();
-  }, []);
+  }, [selectNewPrompt]);
 
 
   const distinctPlacesVisitedCount = useMemo(() => new Set(momentsThisWeek.map(m => m.placeName)).size, [momentsThisWeek]);
@@ -358,3 +358,6 @@ export default function DashboardPage() {
     </AppLayout>
   );
 }
+
+
+    
