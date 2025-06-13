@@ -7,13 +7,13 @@ import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle }
 import { Separator } from "@/components/ui/separator";
 import { useToast } from "@/hooks/use-toast";
 import { getCurrentUser, MOCK_USERS, MOCK_USER_ID } from "@/lib/mock-data"; 
-import { CheckCircle, HelpCircle, Sparkles, ThumbsUp, ThumbsDown, MapPin, Clock, Palette, Users as UsersIcon, User as UserIcon, Eye } from "lucide-react"; // Added Eye
+import { CheckCircle, HelpCircle, Sparkles, ThumbsUp, ThumbsDown, MapPin, Clock, Palette, Users as UsersIcon, User as UserIcon, Eye, Image as ImageIcon } from "lucide-react"; // Added Eye, ImageIcon
 import { useParams, useRouter } from "next/navigation";
 import Link from "next/link";
 import { Avatar, AvatarImage, AvatarFallback } from "@/components/ui/avatar";
-import { Badge } from "@/components/ui/badge"; // Added Badge
+import { Badge } from "@/components/ui/badge"; 
 import { format } from "date-fns";
-import { useState, useEffect } from "react"; // Added useEffect
+import { useState, useEffect } from "react"; 
 
 // Mock data for the moment User A logged about User B (the current user)
 // In a real app, this would be fetched based on params.momentId
@@ -161,28 +161,39 @@ export default function ConfirmMomentPage() {
             )}
 
             {showUserAHint && (
-                <div className="p-4 border border-primary/50 rounded-lg bg-primary/5 space-y-3 mt-4">
-                    <h3 className="text-lg font-semibold text-primary flex items-center gap-2">
-                        <Eye className="w-5 h-5" />A little about {userA.name}:
-                    </h3>
-                    <p className="text-sm text-foreground">
-                        <span className="font-medium">Age:</span> {userA.age}
-                    </p>
-                    {userA.vibeTags && userA.vibeTags.length > 0 && (
-                        <div className="text-sm">
-                            <span className="font-medium text-foreground">Vibes:</span>
-                            <div className="flex flex-wrap gap-1.5 mt-1">
-                                {userA.vibeTags.slice(0, 3).map(tag => (
-                                    <Badge key={tag} variant="secondary" className="capitalize text-xs">{tag}</Badge>
-                                ))}
-                            </div>
+                <div className="p-4 border border-primary/50 rounded-lg bg-primary/5 space-y-4 mt-4">
+                    <div className="flex items-center gap-2">
+                        <Eye className="w-6 h-6 text-primary" />
+                        <h3 className="text-lg font-semibold text-primary">A little about {userA.name}:</h3>
+                    </div>
+                    <div className="flex flex-col sm:flex-row items-center sm:items-start gap-4">
+                        {userA.images && userA.images.length > 0 && (
+                            <Avatar className="h-24 w-24 border-2 border-primary/50 flex-shrink-0">
+                                <AvatarImage src={userA.images[0]} alt={userA.name} data-ai-hint="profile avatar hint"/>
+                                <AvatarFallback>{userA.name.substring(0,1)}</AvatarFallback>
+                            </Avatar>
+                        )}
+                        <div className="space-y-2 text-sm text-center sm:text-left">
+                            <p className="text-foreground">
+                                <span className="font-medium">Age:</span> {userA.age}
+                            </p>
+                            {userA.vibeTags && userA.vibeTags.length > 0 && (
+                                <div>
+                                    <span className="font-medium text-foreground">Vibes:</span>
+                                    <div className="flex flex-wrap gap-1.5 mt-1 justify-center sm:justify-start">
+                                        {userA.vibeTags.slice(0, 3).map(tag => (
+                                            <Badge key={tag} variant="secondary" className="capitalize text-xs">{tag}</Badge>
+                                        ))}
+                                    </div>
+                                </div>
+                            )}
+                            {userA.bio && (
+                                <p className="text-foreground">
+                                    <span className="font-medium">Bio Snippet:</span> <span className="italic text-muted-foreground">&quot;{userABioSnippet}&quot;</span>
+                                </p>
+                            )}
                         </div>
-                    )}
-                    {userA.bio && (
-                         <p className="text-sm text-foreground">
-                            <span className="font-medium">Bio Snippet:</span> <span className="italic text-muted-foreground">&quot;{userABioSnippet}&quot;</span>
-                         </p>
-                    )}
+                    </div>
                 </div>
             )}
 
@@ -212,6 +223,8 @@ export default function ConfirmMomentPage() {
     </AppLayout>
   );
 }
+    
+
     
 
     
