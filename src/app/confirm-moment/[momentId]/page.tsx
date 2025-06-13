@@ -13,7 +13,7 @@ import Link from "next/link";
 import { Avatar, AvatarImage, AvatarFallback } from "@/components/ui/avatar";
 import { Badge } from "@/components/ui/badge"; // Added Badge
 import { format } from "date-fns";
-import { useState } from "react"; // Added useState
+import { useState, useEffect } from "react"; // Added useEffect
 
 // Mock data for the moment User A logged about User B (the current user)
 // In a real app, this would be fetched based on params.momentId
@@ -35,10 +35,20 @@ export default function ConfirmMomentPage() {
   const { toast } = useToast();
   const currentUserB = getCurrentUser(); // This is User B for this demo
   const [showUserAHint, setShowUserAHint] = useState(false);
+  const [formattedMomentTime, setFormattedMomentTime] = useState<string>("");
 
   const momentId = params.momentId as string;
   const loggedMoment = MOCK_LOGGED_MOMENT_DETAILS; 
   const userA = MOCK_USERS.find(u => u.id === loggedMoment.userA_id);
+
+  const momentDate = new Date(loggedMoment.timestamp);
+
+  useEffect(() => {
+    if (momentDate) {
+      setFormattedMomentTime(format(momentDate, 'p'));
+    }
+  }, [momentDate]);
+
 
   const handleConfirmMatch = () => {
     if (!userA) return;
@@ -73,7 +83,6 @@ export default function ConfirmMomentPage() {
     );
   }
 
-  const momentDate = new Date(loggedMoment.timestamp);
   const userABioSnippet = userA.bio.split('.').slice(0, 1).join('.') + (userA.bio.includes('.') ? '.' : '');
 
 
@@ -106,7 +115,7 @@ export default function ConfirmMomentPage() {
               </div>
               <div className="flex items-center gap-2">
                 <Clock className="w-5 h-5 text-primary" />
-                <p><span className="font-semibold text-foreground">When:</span> Around {format(momentDate, 'p')} on {format(momentDate, 'EEEE, MMM d')}</p>
+                <p><span className="font-semibold text-foreground">When:</span> Around {formattedMomentTime ? formattedMomentTime : "..."} on {format(momentDate, 'EEEE, MMM d')}</p>
               </div>
             </div>
             
@@ -203,4 +212,6 @@ export default function ConfirmMomentPage() {
     </AppLayout>
   );
 }
+    
+
     
