@@ -191,15 +191,15 @@ export default function LogMomentPage() {
       locationAddress,
       coordinates,
       timestamp: new Date().toISOString(),
-      momentDescription,
-      matchEthnicity,
-      matchHairColour,
-      personDescription,
+      momentDescription, // User A's general comment about the moment
+      matchEthnicity,   // User A's observation of User B's ethnicity
+      matchHairColour,  // User A's observation of User B's hair colour
+      personDescription,// User A's other observations about User B (clothing, activity etc.)
       userId: MOCK_USER_ID,
     });
     toast({
       title: "Moment Details Logged!",
-      description: `Location: ${locationName}. Description: ${momentDescription.substring(0,30)}...`,
+      description: `Location: ${locationName}. We'll keep an eye out!`,
     });
     setCurrentStep(3);
   };
@@ -349,6 +349,7 @@ export default function LogMomentPage() {
               <CardContent className="space-y-6 py-6">
                 <div className="text-center mb-4">
                     <h3 className="text-lg font-semibold text-primary/90">Did anyone catch your eye? (Optional)</h3>
+                    <p className="text-xs text-muted-foreground">Help us identify them if they're on Crossd.</p>
                 </div>
 
                 <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
@@ -389,6 +390,22 @@ export default function LogMomentPage() {
                         </Select>
                     </div>
                 </div>
+                
+                <div>
+                  <Label htmlFor="personDescription" className="flex items-center gap-1.5 mb-1.5">
+                     <UserCheck className="w-4 h-4 text-muted-foreground" />
+                    Other details about them? (Optional)
+                  </Label>
+                  <Textarea
+                    id="personDescription"
+                    value={personDescription}
+                    onChange={(e) => setPersonDescription(e.target.value)}
+                    placeholder="e.g., Wearing a blue hat, reading a book, had a small dog, laughing loudly."
+                    rows={3}
+                    className="bg-input"
+                  />
+                   <p className="text-xs text-muted-foreground mt-1">Describe their appearance (clothing, accessories), what they were doing, or any unique features.</p>
+                </div>
 
                 <div className="text-center mt-6 mb-2">
                     <h3 className="text-xl font-semibold text-primary">What was the moment like?</h3>
@@ -397,7 +414,7 @@ export default function LogMomentPage() {
                 <div>
                   <Label htmlFor="momentDescription" className="flex items-center gap-1.5 mb-1.5">
                     <MessageSquare className="w-4 h-4 text-muted-foreground" />
-                    Describe the experience
+                    Describe the experience or atmosphere
                   </Label>
                   <Textarea
                     id="momentDescription"
@@ -407,29 +424,13 @@ export default function LogMomentPage() {
                            setMomentDescription(e.target.value);
                         }
                     }}
-                    placeholder="e.g., I was sitting near the bar... they walked past wearing a red jacket..."
+                    placeholder="e.g., Cozy vibe in the cafe, I was enjoying my coffee. They caught my eye by the window."
                     rows={4}
                     className="bg-input"
                   />
                   <p className="text-xs text-muted-foreground text-right mt-1">
                     {momentDescription.length}/{characterLimit}
                   </p>
-                </div>
-
-                <div>
-                  <Label htmlFor="personDescription" className="flex items-center gap-1.5 mb-1.5">
-                     <UserCheck className="w-4 h-4 text-muted-foreground" />
-                    More details about them? (Optional)
-                  </Label>
-                  <Textarea
-                    id="personDescription"
-                    value={personDescription}
-                    onChange={(e) => setPersonDescription(e.target.value)}
-                    placeholder="e.g., They had curly hair and a navy hoodie. Or, they were reading a book I love."
-                    rows={3}
-                    className="bg-input"
-                  />
-                   <p className="text-xs text-muted-foreground mt-1">Any other notable details about the person or the interaction.</p>
                 </div>
 
               </CardContent>
@@ -461,7 +462,7 @@ export default function LogMomentPage() {
                 </p>
                  <p className="text-sm text-muted-foreground max-w-md mx-auto">
                    We'll try to find the person you saw! The details you provided (like their ethnicity: <span className="font-medium text-foreground/80">{matchEthnicity}</span>,
-                   and hair colour: <span className="font-medium text-foreground/80">{matchHairColour}</span>) are key.
+                   hair colour: <span className="font-medium text-foreground/80">{matchHairColour}</span>, and other observations: <span className="italic font-medium text-foreground/80">&quot;{personDescription.substring(0,50) || "N/A"}{personDescription.length > 50 ? "..." : ""}&quot;</span>) are key.
                 </p>
                 <p className="text-sm text-muted-foreground max-w-md mx-auto mt-1">
                   If someone whose profile matches your description was also here, and they also log this moment or express interest, we'll notify you both of a potential match!
@@ -503,3 +504,4 @@ export default function LogMomentPage() {
 
 
     
+
