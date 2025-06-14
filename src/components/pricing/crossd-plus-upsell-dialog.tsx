@@ -13,9 +13,10 @@ import {
 } from "@/components/ui/dialog";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
-import { CheckCircle, InfinityIcon, Eye, Rocket, Zap, Star } from "lucide-react";
+import { CheckCircle, InfinityIcon, Eye, Rocket, Zap, Star, Loader2 } from "lucide-react";
 import { useToast } from "@/hooks/use-toast";
 import { cn } from "@/lib/utils";
+import { loadStripe } from '@stripe/stripe-js';
 
 interface CrossdPlusUpsellDialogProps {
   isOpen: boolean;
@@ -29,33 +30,99 @@ const features = [
   { icon: Zap, text: "Priority Likes", description: "Your likes get shown to potential matches sooner." },
 ];
 
+// IMPORTANT: Replace these placeholder price_xxxx IDs with your actual Stripe Price IDs
 const pricingTiers = [
-  { id: "weekly", name: "Weekly", price: "£6.99", popular: false, bestValue: false },
-  { id: "monthly", name: "1 Month", price: "£9.99", originalPrice: "£12.99", popular: false, bestValue: false, save: "Save £3.00" },
-  { id: "quarterly", name: "3 Months", price: "£29.99", originalPrice: "£38.97", popular: true, bestValue: false, save: "Save £8.98" },
-  { id: "annual", name: "12 Months", price: "£89.99", originalPrice: "£155.88", popular: false, bestValue: true, save: "Save £65.89" },
+  { id: "weekly", name: "Weekly", price: "£6.99", popular: false, bestValue: false, stripePriceId: "price_placeholder_weekly" },
+  { id: "monthly", name: "1 Month", price: "£9.99", originalPrice: "£12.99", popular: false, bestValue: false, save: "Save £3.00", stripePriceId: "price_placeholder_monthly" },
+  { id: "quarterly", name: "3 Months", price: "£29.99", originalPrice: "£38.97", popular: true, bestValue: false, save: "Save £8.98", stripePriceId: "price_placeholder_quarterly" },
+  { id: "annual", name: "12 Months", price: "£89.99", originalPrice: "£155.88", popular: false, bestValue: true, save: "Save £65.89", stripePriceId: "price_placeholder_annual" },
 ];
+
+// Ensure your Stripe publishable key is set in .env.local
+const stripePromise = loadStripe(process.env.NEXT_PUBLIC_STRIPE_PUBLISHABLE_KEY!);
 
 export function CrossdPlusUpsellDialog({ isOpen, onOpenChange }: CrossdPlusUpsellDialogProps) {
   const { toast } = useToast();
   const [selectedTierId, setSelectedTierId] = useState<string | null>(pricingTiers.find(t => t.popular)?.id || pricingTiers[2].id);
+  const [isLoading, setIsLoading] = useState(false);
 
-  const handleSubscribe = (tierName: string) => {
-    toast({
-      title: "Subscription Started (Mock)",
-      description: `You've subscribed to the ${tierName} Crossd+ plan! Enjoy the perks.`,
-    });
-    onOpenChange(false);
+  const handleSubscribe = async () => {
+    if (!selectedTierId) {
+      toast({ title: "Selection Error", description: "Please select a subscription tier.", variant: "destructive" });
+      return;
+    }
+
+    const selectedTier = pricingTiers.find(t => t.id === selectedTierId);
+    if (!selectedTier || !selectedTier.stripePriceId || selectedTier.stripePriceId.includes('placeholder')) {
+      toast({
+        title: "Configuration Error",
+        description: "Stripe Price ID is not configured for this tier. Please replace placeholders.",
+        variant: "destructive",
+      });
+      console.error("Stripe Price ID is a placeholder or missing for tier:", selectedTier?.name);
+      return;
+    }
+
+    setIsLoading(true);
+
+    try {
+      // 1. Create a checkout session on the server
+      const response = await fetch('/api/create-checkout-session', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({ priceId: selectedTier.stripePriceId }),
+      });
+
+      const sessionData = await response.json();
+
+      if (!response.ok || !sessionData.sessionId) {
+        throw new Error(sessionData.error || 'Failed to create checkout session.');
+      }
+
+      // 2. Redirect to Stripe Checkout
+      const stripe = await stripePromise;
+      if (!stripe) {
+        throw new Error('Stripe.js has not loaded yet.');
+      }
+
+      const { error } = await stripe.redirectToCheckout({
+        sessionId: sessionData.sessionId,
+      });
+
+      if (error) {
+        console.error('Stripe redirectToCheckout error:', error);
+        toast({
+          title: "Payment Error",
+          description: error.message || "Could not redirect to Stripe. Please try again.",
+          variant: "destructive",
+        });
+      }
+      // If redirectToCheckout is successful, the user is redirected away,
+      // so further code here might not execute immediately.
+      // Success/failure is handled by Stripe's success_url and cancel_url.
+
+    } catch (error: any) {
+      console.error("Subscription process error:", error);
+      toast({
+        title: "Subscription Error",
+        description: error.message || "An unexpected error occurred. Please try again.",
+        variant: "destructive",
+      });
+    } finally {
+      setIsLoading(false);
+    }
   };
 
   return (
-    <Dialog open={isOpen} onOpenChange={onOpenChange}>
+    <Dialog open={isOpen} onOpenChange={(open) => { if (!isLoading) onOpenChange(open); }}>
       <DialogContent className="sm:max-w-lg bg-card text-card-foreground border-primary shadow-2xl p-0">
         <DialogHeader className="p-6 pb-4 text-center">
           <Star className="h-12 w-12 text-primary mx-auto mb-3 animate-pulse" />
           <DialogTitle className="text-3xl font-bold text-primary">Unlock Crossd+</DialogTitle>
           <DialogDescription className="text-muted-foreground text-md mt-1">
-            You're out of free likes for today! Upgrade to keep connecting.
+            Choose a plan to get unlimited access and premium features!
           </DialogDescription>
         </DialogHeader>
 
@@ -82,18 +149,20 @@ export function CrossdPlusUpsellDialog({ isOpen, onOpenChange }: CrossdPlusUpsel
                 <button
                   key={tier.id}
                   onClick={() => setSelectedTierId(tier.id)}
+                  disabled={isLoading}
                   className={cn(
                     "p-4 border rounded-lg text-left transition-all duration-200 relative overflow-hidden",
                     selectedTierId === tier.id ? "border-primary ring-2 ring-primary bg-primary/10 shadow-lg" : "border-border hover:border-primary/70 hover:bg-muted/50",
-                    tier.popular || tier.bestValue ? "border-primary" : ""
+                    tier.popular || tier.bestValue ? "border-primary" : "",
+                    isLoading ? "cursor-not-allowed opacity-70" : "cursor-pointer"
                   )}
                 >
                   {(tier.popular || tier.bestValue) && (
-                    <Badge 
-                      variant={tier.popular ? "default" : "secondary"} 
+                    <Badge
+                      variant={tier.popular ? "default" : "secondary"}
                       className={cn(
                         "absolute top-2 right-2 text-xs px-2 py-0.5",
-                        tier.popular ? "bg-primary text-primary-foreground" : "bg-yellow-500 text-black" 
+                        tier.popular ? "bg-primary text-primary-foreground" : "bg-yellow-500 text-black"
                       )}
                     >
                       {tier.popular ? "Most Popular" : "Best Value"}
@@ -103,28 +172,37 @@ export function CrossdPlusUpsellDialog({ isOpen, onOpenChange }: CrossdPlusUpsel
                   <p className="text-2xl font-bold text-primary mt-1">{tier.price}
                     {tier.originalPrice && <span className="text-xs text-muted-foreground line-through ml-1.5"> {tier.originalPrice}</span>}
                   </p>
-                  {tier.id !== "weekly" && <p className="text-xs text-muted-foreground mt-0.5">{tier.id === "monthly" ? "per month" : `billed ${tier.id === "quarterly" ? "every 3 months" : "annually"}`}</p> }
+                  {tier.id !== "weekly" && <p className="text-xs text-muted-foreground mt-0.5">{tier.id === "monthly" ? "per month" : `billed ${tier.id === "quarterly" ? "every 3 months" : "annually"}`}</p>}
                   {tier.save && <p className="text-xs text-green-500 font-medium mt-1">{tier.save}</p>}
                 </button>
               ))}
             </div>
+            <p className="text-xs text-muted-foreground mt-3 text-center">
+              Remember to replace placeholder Stripe Price IDs in the code with your actual IDs from Stripe.
+            </p>
           </div>
         </div>
 
         <DialogFooter className="p-6 pt-4 border-t border-border flex flex-col sm:flex-row gap-2">
           <DialogClose asChild>
-            <Button variant="outline" className="w-full sm:w-auto">Maybe Later</Button>
+            <Button variant="outline" className="w-full sm:w-auto" disabled={isLoading}>Maybe Later</Button>
           </DialogClose>
           <Button
-            onClick={() => handleSubscribe(pricingTiers.find(t => t.id === selectedTierId)?.name || "Selected")}
+            onClick={handleSubscribe}
             className="w-full sm:w-auto bg-primary hover:bg-primary/90 text-primary-foreground"
-            disabled={!selectedTierId}
+            disabled={!selectedTierId || isLoading}
           >
-            Upgrade to Crossd+
+            {isLoading ? (
+              <>
+                <Loader2 className="mr-2 h-4 w-4 animate-spin" />
+                Processing...
+              </>
+            ) : (
+              "Upgrade to Crossd+"
+            )}
           </Button>
         </DialogFooter>
       </DialogContent>
     </Dialog>
   );
 }
-    
