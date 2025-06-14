@@ -1,7 +1,7 @@
 
 "use client";
 
-import { useState } from "react"; // Added import
+import { useState } from "react";
 import {
   Dialog,
   DialogContent,
@@ -30,10 +30,10 @@ const features = [
 ];
 
 const pricingTiers = [
-  { id: "weekly", name: "Weekly", price: "$4.99", popular: false, bestValue: false },
-  { id: "monthly", name: "1 Month", price: "$14.99", originalPrice: "$19.96", popular: false, bestValue: false, save: "Save 25%" },
-  { id: "quarterly", name: "3 Months", price: "$29.99", originalPrice: "$59.88", popular: true, bestValue: false, save: "Save 50%" },
-  { id: "biannual", name: "6 Months", price: "$49.99", originalPrice: "$119.76", popular: false, bestValue: true, save: "Save 58%" },
+  { id: "weekly", name: "Weekly", price: "£4.99", popular: false, bestValue: false },
+  { id: "monthly", name: "1 Month", price: "£9.99", originalPrice: "£12.99", popular: false, bestValue: false, save: "Save £3.00" },
+  { id: "quarterly", name: "3 Months", price: "£29.99", originalPrice: "£38.97", popular: true, bestValue: false, save: "Save £8.98" },
+  { id: "biannual", name: "6 Months", price: "£49.99", originalPrice: "£77.94", popular: false, bestValue: true, save: "Save £27.95" },
 ];
 
 export function CrossdPlusUpsellDialog({ isOpen, onOpenChange }: CrossdPlusUpsellDialogProps) {
@@ -93,7 +93,7 @@ export function CrossdPlusUpsellDialog({ isOpen, onOpenChange }: CrossdPlusUpsel
                       variant={tier.popular ? "default" : "secondary"} 
                       className={cn(
                         "absolute top-2 right-2 text-xs px-2 py-0.5",
-                        tier.popular ? "bg-primary text-primary-foreground" : "bg-yellow-500 text-black"
+                        tier.popular ? "bg-primary text-primary-foreground" : "bg-yellow-500 text-black" 
                       )}
                     >
                       {tier.popular ? "Most Popular" : "Best Value"}
