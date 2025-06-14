@@ -1,10 +1,10 @@
 
 "use client";
 
-import { useState, useEffect, useMemo, useCallback } from "react"; // Added useCallback
+import { useState, useEffect, useMemo, useCallback } from "react";
 import { AppLayout } from "@/components/layout/app-layout";
 import { Card, CardContent, CardHeader, CardTitle, CardDescription, CardFooter } from "@/components/ui/card";
-import { Sparkles, PlusCircle, ClipboardList, Users, MessageSquare, Route, MapPin, CalendarDays, Users2, TrendingUp, Activity, Map, LayoutGrid, List as ListIcon, Lightbulb, Edit3, Repeat } from "lucide-react";
+import { Sparkles, PlusCircle, ClipboardList, Users, MessageSquare, Route, MapPin, CalendarDays, Users2, TrendingUp, Activity, Map, LayoutGrid, List as ListIcon, Lightbulb, Edit3, Repeat, Star } from "lucide-react";
 import { getCurrentUser, MOCK_MOMENTS, MOCK_CROSSED_PATHS_USERS, MOCK_CHAT_CONVERSATIONS, MOCK_USER_ID, MOCK_USERS, baseDate, AVAILABLE_PROMPTS, MOCK_AVAILABLE_CHALLENGES } from "@/lib/mock-data";
 import { Button } from "@/components/ui/button";
 import { Separator } from "@/components/ui/separator";
@@ -14,6 +14,7 @@ import { MomentGalleryItem } from "@/components/moments/moment-gallery-item";
 import Link from "next/link";
 import type { ProfilePrompt, Challenge } from "@/lib/types";
 import { Progress } from "@/components/ui/progress";
+import { CrossdPlusUpsellDialog } from "@/components/pricing/crossd-plus-upsell-dialog";
 
 
 export default function DashboardPage() {
@@ -22,6 +23,7 @@ export default function DashboardPage() {
   const [clientFormattedTimes, setClientFormattedTimes] = useState<Record<string, string>>({});
   const [windowSize, setWindowSize] = useState({ width: 0, height: 0 });
   const [promptOfTheDay, setPromptOfTheDay] = useState<ProfilePrompt | null>(null);
+  const [showUpsellDialog, setShowUpsellDialog] = useState(false);
 
   const momentsLoggedCount = MOCK_MOMENTS.filter(moment => moment.userId === MOCK_USER_ID).length;
   const potentialMatchesCount = MOCK_CROSSED_PATHS_USERS.length;
@@ -51,7 +53,7 @@ export default function DashboardPage() {
       newFormattedTimes[moment.id] = format(new Date(moment.timestamp), "p");
     });
     setClientFormattedTimes(newFormattedTimes);
-  }, [momentsTimestampsKey, momentsThisWeek]); // Added momentsThisWeek to dependency array
+  }, [momentsTimestampsKey, momentsThisWeek]); 
 
   useEffect(() => {
     const handleResize = () => {
@@ -73,7 +75,7 @@ export default function DashboardPage() {
       const randomIndex = Math.floor(Math.random() * AVAILABLE_PROMPTS.length);
       setPromptOfTheDay(AVAILABLE_PROMPTS[randomIndex]);
     }
-  }, []); // AVAILABLE_PROMPTS is stable, setPromptOfTheDay is stable
+  }, []); 
 
   useEffect(() => {
     selectNewPrompt();
@@ -354,10 +356,37 @@ export default function DashboardPage() {
             )}
           </CardContent>
         </Card>
+
+        <Card className="bg-gradient-to-br from-primary/10 via-card to-card shadow-xl border-primary/30">
+          <CardHeader className="text-center">
+            <div className="mx-auto flex h-16 w-16 items-center justify-center rounded-full bg-primary/80 mb-3 shadow-lg animate-pulse">
+              <Star className="h-8 w-8 text-primary-foreground" />
+            </div>
+            <CardTitle className="text-2xl font-bold text-primary">Unlock Crossd+</CardTitle>
+            <CardDescription className="text-muted-foreground max-w-md mx-auto">
+              Supercharge your experience with unlimited likes, see who likes you, and more exclusive perks!
+            </CardDescription>
+          </CardHeader>
+          <CardFooter className="flex justify-center p-6">
+            <Button 
+              onClick={() => setShowUpsellDialog(true)} 
+              size="lg" 
+              className="bg-primary hover:bg-primary/90 text-primary-foreground shadow-md hover:shadow-primary/50 transition-all duration-300 transform hover:scale-105"
+            >
+              <Sparkles className="mr-2 h-5 w-5" /> Explore Premium Features
+            </Button>
+          </CardFooter>
+        </Card>
+
+        <CrossdPlusUpsellDialog
+          isOpen={showUpsellDialog}
+          onOpenChange={setShowUpsellDialog}
+        />
+
       </div>
     </AppLayout>
   );
 }
-
+    
 
     
