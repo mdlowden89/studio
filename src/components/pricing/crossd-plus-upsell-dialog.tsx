@@ -30,10 +30,10 @@ const features = [
 ];
 
 const pricingTiers = [
-  { id: "weekly", name: "Weekly", price: "£4.99", popular: false, bestValue: false },
+  { id: "weekly", name: "Weekly", price: "£6.99", popular: false, bestValue: false },
   { id: "monthly", name: "1 Month", price: "£9.99", originalPrice: "£12.99", popular: false, bestValue: false, save: "Save £3.00" },
   { id: "quarterly", name: "3 Months", price: "£29.99", originalPrice: "£38.97", popular: true, bestValue: false, save: "Save £8.98" },
-  { id: "biannual", name: "6 Months", price: "£49.99", originalPrice: "£77.94", popular: false, bestValue: true, save: "Save £27.95" },
+  { id: "annual", name: "12 Months", price: "£89.99", originalPrice: "£155.88", popular: false, bestValue: true, save: "Save £65.89" },
 ];
 
 export function CrossdPlusUpsellDialog({ isOpen, onOpenChange }: CrossdPlusUpsellDialogProps) {
@@ -103,7 +103,7 @@ export function CrossdPlusUpsellDialog({ isOpen, onOpenChange }: CrossdPlusUpsel
                   <p className="text-2xl font-bold text-primary mt-1">{tier.price}
                     {tier.originalPrice && <span className="text-xs text-muted-foreground line-through ml-1.5"> {tier.originalPrice}</span>}
                   </p>
-                  {tier.id !== "weekly" && <p className="text-xs text-muted-foreground mt-0.5">{tier.id === "monthly" ? "per month" : `billed ${tier.id === "quarterly" ? "every 3 months" : "every 6 months"}`}</p> }
+                  {tier.id !== "weekly" && <p className="text-xs text-muted-foreground mt-0.5">{tier.id === "monthly" ? "per month" : `billed ${tier.id === "quarterly" ? "every 3 months" : "annually"}`}</p> }
                   {tier.save && <p className="text-xs text-green-500 font-medium mt-1">{tier.save}</p>}
                 </button>
               ))}
