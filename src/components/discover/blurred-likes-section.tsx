@@ -33,7 +33,7 @@ export function BlurredLikesSection() {
 
   return (
     <Card className="mt-12 bg-card shadow-xl">
-      <CardHeader className="text-center pb-4">
+      <CardHeader className="text-center pb-6"> {/* Changed pb-4 to pb-6 */}
         <div className="mx-auto flex h-16 w-16 items-center justify-center rounded-full bg-primary/80 mb-3 shadow-lg">
             <Eye className="h-8 w-8 text-primary-foreground" />
         </div>
