@@ -2,6 +2,7 @@
 "use client";
 
 import { useState } from "react";
+import { useRouter } from "next/navigation"; // Import useRouter
 import {
   Dialog,
   DialogContent,
@@ -37,10 +38,12 @@ const pricingTiers = [
   { id: "annual", name: "12 Months", price: "£89.99", originalPrice: "£155.88", popular: false, bestValue: true, save: "Save £65.89", stripePriceId: "price_placeholder_annual" },
 ];
 
+// Initialize Stripe.js outside the component
 const stripePromise = loadStripe(process.env.NEXT_PUBLIC_STRIPE_PUBLISHABLE_KEY!);
 
 export function CrossdPlusUpsellDialog({ isOpen, onOpenChange }: CrossdPlusUpsellDialogProps) {
   const { toast } = useToast();
+  const router = useRouter(); // Initialize useRouter
   const [selectedTierId, setSelectedTierId] = useState<string | null>(pricingTiers.find(t => t.popular)?.id || pricingTiers[2].id);
   const [isLoading, setIsLoading] = useState(false);
 
@@ -80,53 +83,16 @@ export function CrossdPlusUpsellDialog({ isOpen, onOpenChange }: CrossdPlusUpsel
           description: sessionData.error || 'Failed to create checkout session.',
           variant: "destructive",
         });
-        // isLoading will be set to false in the finally block
+        setIsLoading(false); // Reset loading on API error
         return;
       }
 
-      // Close the dialog BEFORE attempting to redirect
+      // Close the dialog
       onOpenChange(false);
 
-      // Use setTimeout to push the redirect to the next event loop cycle
-      setTimeout(async () => {
-        try {
-          const stripe = await stripePromise;
-          if (!stripe) {
-            toast({
-              title: "Stripe Error",
-              description: 'Stripe.js has not loaded yet. Please try again.',
-              variant: "destructive",
-            });
-            setIsLoading(false); // Reset loading if Stripe.js fails
-            return;
-          }
-
-          const { error } = await stripe.redirectToCheckout({
-            sessionId: sessionData.sessionId,
-          });
-
-          if (error) {
-            // If redirect fails, the user is still on the page. Toast the error.
-            toast({
-              title: "Payment Redirect Error",
-              description: error.message || "Could not redirect to Stripe. Please try again.",
-              variant: "destructive",
-            });
-            // isLoading will be reset by the outer finally block if this path is taken
-            // and the user remains on the page.
-          }
-          // If redirectToCheckout is successful, the user is redirected away.
-          // isLoading state on this component instance becomes less relevant.
-        } catch (timeoutError: any) {
-          console.error("Error within setTimeout during Stripe redirect:", timeoutError);
-          toast({
-            title: "Redirect Execution Error",
-            description: timeoutError.message || "An unexpected error occurred initiating the redirect. Please try again.",
-            variant: "destructive",
-          });
-          setIsLoading(false); // Ensure loading is reset if an error occurs INSIDE the timeout
-        }
-      }, 0);
+      // Redirect to an intermediate page that will handle the Stripe redirect
+      router.push(`/payment/initiate-stripe-redirect?sessionId=${sessionData.sessionId}`);
+      // setIsLoading(false) will be handled by page navigation or if error occurs above
 
     } catch (error: any) {
       console.error("Subscription process error:", error);
@@ -135,16 +101,10 @@ export function CrossdPlusUpsellDialog({ isOpen, onOpenChange }: CrossdPlusUpsel
         description: error.message || "An unexpected error occurred. Please try again.",
         variant: "destructive",
       });
-    } finally {
-      // This finally block will execute if the initial fetch or sessionData check fails,
-      // or if the setTimeout is scheduled but an error occurs within it that doesn't redirect.
-      // It might also execute if the redirect fails and control returns.
-      // If the redirect is successful, this component instance might be unmounted.
-      // To be safe, we set isLoading to false, though its effect might only be seen if the user stays.
-       if (document.body.contains(document.getElementById('dialog-content-id'))) { // Heuristic check if component might still be relevant
-         setIsLoading(false);
-       }
+      setIsLoading(false); // Reset loading on general error
     }
+    // Note: setIsLoading(false) might not be hit here if router.push successfully navigates away.
+    // If the push fails or if there's an error above, it should be reset.
   };
 
   return (
