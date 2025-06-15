@@ -33,7 +33,7 @@ const features = [
 // IMPORTANT: Replace these placeholder price_xxxx IDs with your actual Stripe Price IDs
 const pricingTiers = [
   { id: "weekly", name: "Weekly", price: "£6.99", popular: false, bestValue: false, stripePriceId: "price_placeholder_weekly" },
-  { id: "monthly", name: "1 Month", price: "£9.99", originalPrice: "£12.99", popular: false, bestValue: false, save: "Save £3.00", stripePriceId: "price_placeholder_monthly" },
+  { id: "monthly", name: "1 Month", price: "£9.99", originalPrice: "£12.99", popular: false, bestValue: false, save: "Save £3.00", stripePriceId: "price_1RZv4hHKQz8P5Ogk1OQmW0E9" },
   { id: "quarterly", name: "3 Months", price: "£29.99", originalPrice: "£38.97", popular: true, bestValue: false, save: "Save £8.98", stripePriceId: "price_placeholder_quarterly" },
   { id: "annual", name: "12 Months", price: "£89.99", originalPrice: "£155.88", popular: false, bestValue: true, save: "Save £65.89", stripePriceId: "price_placeholder_annual" },
 ];
