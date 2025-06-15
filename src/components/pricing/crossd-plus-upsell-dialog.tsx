@@ -30,7 +30,6 @@ const features = [
   { icon: Zap, text: "Priority Likes", description: "Your likes get shown to potential matches sooner." },
 ];
 
-// IMPORTANT: Replace these placeholder price_xxxx IDs with your actual Stripe Price IDs
 const pricingTiers = [
   { id: "weekly", name: "Weekly", price: "£6.99", popular: false, bestValue: false, stripePriceId: "price_placeholder_weekly" },
   { id: "monthly", name: "1 Month", price: "£9.99", originalPrice: "£12.99", popular: false, bestValue: false, save: "Save £3.00", stripePriceId: "price_1RZv4hHKQz8P5Ogk1OQmW0E9" },
@@ -38,7 +37,6 @@ const pricingTiers = [
   { id: "annual", name: "12 Months", price: "£89.99", originalPrice: "£155.88", popular: false, bestValue: true, save: "Save £65.89", stripePriceId: "price_placeholder_annual" },
 ];
 
-// Ensure your Stripe publishable key is set in .env.local
 const stripePromise = loadStripe(process.env.NEXT_PUBLIC_STRIPE_PUBLISHABLE_KEY!);
 
 export function CrossdPlusUpsellDialog({ isOpen, onOpenChange }: CrossdPlusUpsellDialogProps) {
@@ -66,7 +64,6 @@ export function CrossdPlusUpsellDialog({ isOpen, onOpenChange }: CrossdPlusUpsel
     setIsLoading(true);
 
     try {
-      // 1. Create a checkout session on the server
       const response = await fetch('/api/create-checkout-session', {
         method: 'POST',
         headers: {
@@ -78,13 +75,28 @@ export function CrossdPlusUpsellDialog({ isOpen, onOpenChange }: CrossdPlusUpsel
       const sessionData = await response.json();
 
       if (!response.ok || !sessionData.sessionId) {
-        throw new Error(sessionData.error || 'Failed to create checkout session.');
+        toast({
+          title: "Session Error",
+          description: sessionData.error || 'Failed to create checkout session.',
+          variant: "destructive",
+        });
+        // No finally block here, setIsLoading(false) will be handled by the outer finally
+        return; 
       }
 
-      // 2. Redirect to Stripe Checkout
+      // Close the dialog BEFORE redirecting
+      onOpenChange(false);
+      // Allow a microtask for DOM updates (dialog closing)
+      await Promise.resolve(); 
+
       const stripe = await stripePromise;
       if (!stripe) {
-        throw new Error('Stripe.js has not loaded yet.');
+        toast({
+          title: "Stripe Error",
+          description: 'Stripe.js has not loaded yet. Please try again.',
+          variant: "destructive",
+        });
+        return;
       }
 
       const { error } = await stripe.redirectToCheckout({
@@ -92,16 +104,16 @@ export function CrossdPlusUpsellDialog({ isOpen, onOpenChange }: CrossdPlusUpsel
       });
 
       if (error) {
-        console.error('Stripe redirectToCheckout error:', error);
+        // If redirect fails, toast the error. The dialog is already closed.
+        // Consider re-opening the dialog if critical: onOpenChange(true);
         toast({
-          title: "Payment Error",
+          title: "Payment Redirect Error",
           description: error.message || "Could not redirect to Stripe. Please try again.",
           variant: "destructive",
         });
       }
-      // If redirectToCheckout is successful, the user is redirected away,
-      // so further code here might not execute immediately.
-      // Success/failure is handled by Stripe's success_url and cancel_url.
+      // If redirectToCheckout is successful, the user is redirected away.
+      // If it fails, isLoading will be reset by the finally block.
 
     } catch (error: any) {
       console.error("Subscription process error:", error);
