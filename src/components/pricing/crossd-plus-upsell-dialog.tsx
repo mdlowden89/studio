@@ -80,40 +80,53 @@ export function CrossdPlusUpsellDialog({ isOpen, onOpenChange }: CrossdPlusUpsel
           description: sessionData.error || 'Failed to create checkout session.',
           variant: "destructive",
         });
-        // No finally block here, setIsLoading(false) will be handled by the outer finally
-        return; 
-      }
-
-      // Close the dialog BEFORE redirecting
-      onOpenChange(false);
-      // Allow a microtask for DOM updates (dialog closing)
-      await Promise.resolve(); 
-
-      const stripe = await stripePromise;
-      if (!stripe) {
-        toast({
-          title: "Stripe Error",
-          description: 'Stripe.js has not loaded yet. Please try again.',
-          variant: "destructive",
-        });
+        // isLoading will be set to false in the finally block
         return;
       }
 
-      const { error } = await stripe.redirectToCheckout({
-        sessionId: sessionData.sessionId,
-      });
+      // Close the dialog BEFORE attempting to redirect
+      onOpenChange(false);
 
-      if (error) {
-        // If redirect fails, toast the error. The dialog is already closed.
-        // Consider re-opening the dialog if critical: onOpenChange(true);
-        toast({
-          title: "Payment Redirect Error",
-          description: error.message || "Could not redirect to Stripe. Please try again.",
-          variant: "destructive",
-        });
-      }
-      // If redirectToCheckout is successful, the user is redirected away.
-      // If it fails, isLoading will be reset by the finally block.
+      // Use setTimeout to push the redirect to the next event loop cycle
+      setTimeout(async () => {
+        try {
+          const stripe = await stripePromise;
+          if (!stripe) {
+            toast({
+              title: "Stripe Error",
+              description: 'Stripe.js has not loaded yet. Please try again.',
+              variant: "destructive",
+            });
+            setIsLoading(false); // Reset loading if Stripe.js fails
+            return;
+          }
+
+          const { error } = await stripe.redirectToCheckout({
+            sessionId: sessionData.sessionId,
+          });
+
+          if (error) {
+            // If redirect fails, the user is still on the page. Toast the error.
+            toast({
+              title: "Payment Redirect Error",
+              description: error.message || "Could not redirect to Stripe. Please try again.",
+              variant: "destructive",
+            });
+            // isLoading will be reset by the outer finally block if this path is taken
+            // and the user remains on the page.
+          }
+          // If redirectToCheckout is successful, the user is redirected away.
+          // isLoading state on this component instance becomes less relevant.
+        } catch (timeoutError: any) {
+          console.error("Error within setTimeout during Stripe redirect:", timeoutError);
+          toast({
+            title: "Redirect Execution Error",
+            description: timeoutError.message || "An unexpected error occurred initiating the redirect. Please try again.",
+            variant: "destructive",
+          });
+          setIsLoading(false); // Ensure loading is reset if an error occurs INSIDE the timeout
+        }
+      }, 0);
 
     } catch (error: any) {
       console.error("Subscription process error:", error);
@@ -123,13 +136,20 @@ export function CrossdPlusUpsellDialog({ isOpen, onOpenChange }: CrossdPlusUpsel
         variant: "destructive",
       });
     } finally {
-      setIsLoading(false);
+      // This finally block will execute if the initial fetch or sessionData check fails,
+      // or if the setTimeout is scheduled but an error occurs within it that doesn't redirect.
+      // It might also execute if the redirect fails and control returns.
+      // If the redirect is successful, this component instance might be unmounted.
+      // To be safe, we set isLoading to false, though its effect might only be seen if the user stays.
+       if (document.body.contains(document.getElementById('dialog-content-id'))) { // Heuristic check if component might still be relevant
+         setIsLoading(false);
+       }
     }
   };
 
   return (
     <Dialog open={isOpen} onOpenChange={(open) => { if (!isLoading) onOpenChange(open); }}>
-      <DialogContent className="sm:max-w-lg bg-card text-card-foreground border-primary shadow-2xl p-0">
+      <DialogContent id="dialog-content-id" className="sm:max-w-lg bg-card text-card-foreground border-primary shadow-2xl p-0">
         <DialogHeader className="p-6 pb-4 text-center">
           <Star className="h-12 w-12 text-primary mx-auto mb-3 animate-pulse" />
           <DialogTitle className="text-3xl font-bold text-primary">Unlock Crossd+</DialogTitle>
