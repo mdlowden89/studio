@@ -86,13 +86,19 @@ export default {
         'flash-attention': {
           '0%': { transform: 'scale(1)', opacity: '1' },
           '50%': { transform: 'scale(1.25)', opacity: '0.7', color: 'hsl(var(--primary))' },
-          '100%': { transform: 'scale(1)', opacity: '1' }, // Color reverts to class-defined
+          '100%': { transform: 'scale(1)', opacity: '1' },
+        },
+        'handshake-shake': {
+          '0%, 100%': { transform: 'rotate(0deg)' },
+          '33%': { transform: 'rotate(-8deg)' },
+          '66%': { transform: 'rotate(8deg)' },
         },
   		},
   		animation: {
   			'accordion-down': 'accordion-down 0.2s ease-out',
   			'accordion-up': 'accordion-up 0.2s ease-out',
-        'flash-attention': 'flash-attention 0.6s ease-out 1', // Runs once
+        'flash-attention': 'flash-attention 0.6s ease-out 1',
+        'handshake-shake': 'handshake-shake 0.4s ease-in-out',
   		}
   	}
   },
