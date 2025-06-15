@@ -12,7 +12,7 @@ import { useState } from "react";
 
 // Select a few users who "liked" the current user (mock)
 const mockLikers = MOCK_USERS.filter(u => u.id !== MOCK_USER_ID && u.id !== 'user-123') // Ensure current dev user is not in likers
-                           .slice(0, 3); 
+                           .slice(0, 3);
                            // Make sure we have at least 3 different users for the stack
 
 export function BlurredLikesSection() {
@@ -33,7 +33,7 @@ export function BlurredLikesSection() {
 
   return (
     <Card className="mt-12 bg-card shadow-xl">
-      <CardHeader className="text-center pb-6"> {/* Changed pb-4 to pb-6 */}
+      <CardHeader className="text-center pb-8"> {/* Changed pb-6 to pb-8 */}
         <div className="mx-auto flex h-16 w-16 items-center justify-center rounded-full bg-primary/80 mb-3 shadow-lg">
             <Eye className="h-8 w-8 text-primary-foreground" />
         </div>
@@ -51,7 +51,7 @@ export function BlurredLikesSection() {
               style={{
                 transform: `rotate(${index * 5 - (mockLikers.length > 1 ? (mockLikers.length -1) * 2.5 : 0)}deg) translateX(${index * 12 - (mockLikers.length > 1 ? (mockLikers.length -1) * 6 : 0)}px) translateY(${index * -6}px)`,
                 zIndex: mockLikers.length - index,
-                filter: 'blur(5px)', 
+                filter: 'blur(5px)',
               }}
             >
               <Image
@@ -72,7 +72,7 @@ export function BlurredLikesSection() {
           ))}
         </div>
 
-        <Button 
+        <Button
           onClick={() => setShowUpsellDialog(true)}
           size="lg"
           className="bg-gradient-to-r from-primary via-pink-500 to-orange-400 hover:from-primary/90 hover:via-pink-500/90 hover:to-orange-400/90 text-primary-foreground shadow-lg px-8 py-3 text-base transform hover:scale-105 transition-transform"
