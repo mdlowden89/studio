@@ -82,11 +82,17 @@ export default {
   				to: {
   					height: '0'
   				}
-  			}
+  			},
+        'flash-attention': {
+          '0%': { transform: 'scale(1)', opacity: '1' },
+          '50%': { transform: 'scale(1.25)', opacity: '0.7', color: 'hsl(var(--primary))' },
+          '100%': { transform: 'scale(1)', opacity: '1' }, // Color reverts to class-defined
+        },
   		},
   		animation: {
   			'accordion-down': 'accordion-down 0.2s ease-out',
-  			'accordion-up': 'accordion-up 0.2s ease-out'
+  			'accordion-up': 'accordion-up 0.2s ease-out',
+        'flash-attention': 'flash-attention 0.6s ease-out 1', // Runs once
   		}
   	}
   },
