@@ -15,8 +15,8 @@ export default function SignUpPage() {
   const handleSignUp = (e: React.FormEvent) => {
     e.preventDefault();
     // In a real app, you'd handle form submission, validation, and API calls here.
-    // For now, we'll just navigate to the dashboard.
-    router.push('/dashboard');
+    // For now, we'll just navigate to the dashboard and trigger the upsell dialog.
+    router.push('/dashboard?showBoostUpsell=true');
   };
 
   return (

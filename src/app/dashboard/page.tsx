@@ -15,6 +15,8 @@ import Link from "next/link";
 import type { ProfilePrompt, Challenge } from "@/lib/types";
 import { Progress } from "@/components/ui/progress";
 import { CrossdPlusUpsellDialog } from "@/components/pricing/crossd-plus-upsell-dialog";
+import { FreeBoostUpsellDialog } from "@/components/pricing/free-boost-upsell-dialog";
+import { useSearchParams, useRouter } from "next/navigation";
 
 
 export default function DashboardPage() {
@@ -24,6 +26,10 @@ export default function DashboardPage() {
   const [windowSize, setWindowSize] = useState({ width: 0, height: 0 });
   const [promptOfTheDay, setPromptOfTheDay] = useState<ProfilePrompt | null>(null);
   const [showUpsellDialog, setShowUpsellDialog] = useState(false);
+  const [showFreeBoostDialog, setShowFreeBoostDialog] = useState(false);
+
+  const searchParams = useSearchParams();
+  const router = useRouter();
 
   const momentsLoggedCount = MOCK_MOMENTS.filter(moment => moment.userId === MOCK_USER_ID).length;
   const potentialMatchesCount = MOCK_CROSSED_PATHS_USERS.length;
@@ -80,6 +86,15 @@ export default function DashboardPage() {
   useEffect(() => {
     selectNewPrompt();
   }, [selectNewPrompt]);
+
+  useEffect(() => {
+    if (searchParams.get('showBoostUpsell') === 'true') {
+      // TODO: In a real app, check if user is already premium before showing.
+      setShowFreeBoostDialog(true);
+      // Clean the URL
+      router.replace('/dashboard', { scroll: false });
+    }
+  }, [searchParams, router]);
 
 
   const distinctPlacesVisitedCount = useMemo(() => new Set(momentsThisWeek.map(m => m.placeName)).size, [momentsThisWeek]);
@@ -381,6 +396,11 @@ export default function DashboardPage() {
         <CrossdPlusUpsellDialog
           isOpen={showUpsellDialog}
           onOpenChange={setShowUpsellDialog}
+        />
+
+        <FreeBoostUpsellDialog
+          isOpen={showFreeBoostDialog}
+          onOpenChange={setShowFreeBoostDialog}
         />
 
       </div>
