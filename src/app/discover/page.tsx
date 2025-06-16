@@ -1,4 +1,7 @@
 
+"use client";
+
+import { useState, useEffect } from "react";
 import { AppLayout } from "@/components/layout/app-layout";
 import { SwipeMatchSection } from "@/components/dashboard/swipe-match-section";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
@@ -6,8 +9,33 @@ import { Card, CardHeader, CardTitle, CardDescription } from "@/components/ui/ca
 import { Handshake, Search as SearchIcon } from "lucide-react";
 import { Separator } from "@/components/ui/separator";
 import { BlurredLikesSection } from "@/components/discover/blurred-likes-section";
+import { ReceivedLikeUpsellDialog } from "@/components/discover/received-like-upsell-dialog";
+import { CrossdPlusUpsellDialog } from "@/components/pricing/crossd-plus-upsell-dialog";
 
 export default function DiscoverPage() {
+  const [showNewLikeUpsell, setShowNewLikeUpsell] = useState(false);
+  const [showPremiumUpsell, setShowPremiumUpsell] = useState(false);
+
+  useEffect(() => {
+    // Simulate checking for new likes and non-premium status
+    // In a real app, replace this with actual logic
+    const hasNewLikes = true; 
+    const isPremium = false; 
+
+    if (hasNewLikes && !isPremium) {
+      // Delay slightly to allow page to render first, then show dialog
+      const timer = setTimeout(() => {
+        setShowNewLikeUpsell(true);
+      }, 500);
+      return () => clearTimeout(timer);
+    }
+  }, []);
+
+  const handleUpgradeFromNewLikeDialog = () => {
+    setShowNewLikeUpsell(false);
+    setShowPremiumUpsell(true);
+  };
+
   return (
     <AppLayout>
       <div className="container mx-auto py-8">
@@ -45,6 +73,16 @@ export default function DiscoverPage() {
         <BlurredLikesSection />
 
       </div>
+
+      <ReceivedLikeUpsellDialog
+        isOpen={showNewLikeUpsell}
+        onOpenChange={setShowNewLikeUpsell}
+        onUpgrade={handleUpgradeFromNewLikeDialog}
+      />
+      <CrossdPlusUpsellDialog
+        isOpen={showPremiumUpsell}
+        onOpenChange={setShowPremiumUpsell}
+      />
     </AppLayout>
   );
 }
