@@ -1,6 +1,7 @@
 
 "use client";
 
+import { useState, useEffect } from "react";
 import { useParams, useRouter } from "next/navigation";
 import { AppLayout } from "@/components/layout/app-layout";
 import { Button } from "@/components/ui/button";
@@ -9,6 +10,7 @@ import { Avatar, AvatarImage, AvatarFallback } from "@/components/ui/avatar";
 import { MOCK_USERS, getCurrentUser } from "@/lib/mock-data";
 import { HeartHandshake, MessageCircle, Sparkles, Home } from "lucide-react";
 import Link from "next/link";
+import ReactConfetti from "react-confetti";
 
 // Using the same mock moment details for consistency in the prototype
 const MOCK_LOGGED_MOMENT_DETAILS = {
@@ -23,6 +25,35 @@ export default function MatchConfirmedPage() {
 
   const userA = MOCK_USERS.find(u => u.id === userAId);
   const currentUserB = getCurrentUser(); // This is "User B"
+
+  const [showConfetti, setShowConfetti] = useState(false);
+  const [windowSize, setWindowSize] = useState({ width: 0, height: 0 });
+
+  useEffect(() => {
+    const handleResize = () => {
+      setWindowSize({
+        width: window.innerWidth,
+        height: window.innerHeight,
+      });
+    };
+
+    if (typeof window !== "undefined") {
+      handleResize(); // Set initial size
+      window.addEventListener("resize", handleResize);
+      setShowConfetti(true); // Start confetti on mount
+
+      const timer = setTimeout(() => {
+        setShowConfetti(false);
+      }, 7000); // Confetti for 7 seconds
+
+      return () => {
+        window.removeEventListener("resize", handleResize);
+        clearTimeout(timer);
+      };
+    }
+    return () => {};
+  }, []);
+
 
   if (!userA || !currentUserB) {
     return (
@@ -42,6 +73,17 @@ export default function MatchConfirmedPage() {
 
   return (
     <AppLayout>
+      {showConfetti && windowSize.width > 0 && windowSize.height > 0 && (
+        <div style={{ position: 'fixed', top: 0, left: 0, width: '100%', height: '100%', zIndex: 9999, pointerEvents: 'none' }}>
+            <ReactConfetti
+                width={windowSize.width}
+                height={windowSize.height}
+                recycle={false}
+                numberOfPieces={500}
+                gravity={0.15}
+            />
+        </div>
+      )}
       <div className="container mx-auto py-12 flex justify-center items-center min-h-[calc(100vh-var(--header-height,4rem)-2rem-6rem)]">
         <Card className="bg-card shadow-xl w-full max-w-lg text-center">
           <CardHeader className="pb-4">
