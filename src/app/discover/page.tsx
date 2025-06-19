@@ -65,7 +65,7 @@ export default function DiscoverPage() {
             </TabsTrigger>
             <TabsTrigger
               value="spark-swipe"
-              className="group border border-primary/30 hover:shadow-[0_0_15px_4px_hsl(var(--primary)/0.5)] data-[state=active]:border-primary data-[state=active]:shadow-[0_0_15px_4px_hsl(var(--primary)/0.7)]"
+              className="group border border-yellow-500/30 hover:shadow-[0_0_15px_4px_theme(colors.yellow.500/0.5)] data-[state=active]:border-yellow-500 data-[state=active]:shadow-[0_0_15px_4px_theme(colors.yellow.500/0.7)] data-[state=active]:bg-yellow-500/10"
             >
               <SparklesIcon className="mr-2 h-5 w-5 text-yellow-400 group-hover:animate-pulse" />
               Spark Swipe
@@ -74,7 +74,7 @@ export default function DiscoverPage() {
           <TabsContent value="swipe-match">
             <SwipeMatchSection />
           </TabsContent>
-          <TabsContent value="spark-swipe">
+          <TabsContent value="spark-swipe" className="rounded-lg border border-yellow-500/30 bg-gradient-to-br from-card via-card to-yellow-500/5 p-4 md:p-6 shadow-inner shadow-yellow-500/10">
             <SparkSwipeSection />
           </TabsContent>
         </Tabs>
