@@ -4,9 +4,10 @@
 import { useState, useEffect } from "react";
 import { AppLayout } from "@/components/layout/app-layout";
 import { SwipeMatchSection } from "@/components/dashboard/swipe-match-section";
+import { SparkSwipeSection } from "@/components/discover/spark-swipe-section"; // New import
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Card, CardHeader, CardTitle, CardDescription } from "@/components/ui/card";
-import { Handshake, Search as SearchIcon } from "lucide-react";
+import { Handshake, Search as SearchIcon, Sparkles as SparklesIcon } from "lucide-react"; // Added SparklesIcon
 import { Separator } from "@/components/ui/separator";
 import { BlurredLikesSection } from "@/components/discover/blurred-likes-section";
 import { ReceivedLikeUpsellDialog } from "@/components/discover/received-like-upsell-dialog";
@@ -54,7 +55,7 @@ export default function DiscoverPage() {
         </Card>
 
         <Tabs defaultValue="swipe-match" className="w-full">
-          <TabsList className="grid w-full grid-cols-1 md:grid-cols-1 md:w-1/2 lg:w-1/3 mx-auto mb-6">
+          <TabsList className="grid w-full grid-cols-2 md:grid-cols-2 md:w-2/3 lg:w-1/2 mx-auto mb-6">
             <TabsTrigger
               value="swipe-match"
               className="group border border-primary/30 hover:shadow-[0_0_15px_4px_hsl(var(--primary)/0.5)] data-[state=active]:border-primary data-[state=active]:shadow-[0_0_15px_4px_hsl(var(--primary)/0.7)]"
@@ -62,9 +63,19 @@ export default function DiscoverPage() {
               <Handshake className="mr-2 h-5 w-5 transition-transform duration-100 group-hover:animate-handshake-shake" />
               Swipe & Match
             </TabsTrigger>
+            <TabsTrigger
+              value="spark-swipe"
+              className="group border border-primary/30 hover:shadow-[0_0_15px_4px_hsl(var(--primary)/0.5)] data-[state=active]:border-primary data-[state=active]:shadow-[0_0_15px_4px_hsl(var(--primary)/0.7)]"
+            >
+              <SparklesIcon className="mr-2 h-5 w-5 text-yellow-400 group-hover:animate-pulse" />
+              Spark Swipe
+            </TabsTrigger>
           </TabsList>
           <TabsContent value="swipe-match">
             <SwipeMatchSection />
+          </TabsContent>
+          <TabsContent value="spark-swipe">
+            <SparkSwipeSection />
           </TabsContent>
         </Tabs>
 
