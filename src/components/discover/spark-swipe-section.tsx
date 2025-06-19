@@ -1,29 +1,264 @@
 
 "use client";
 
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
-import { Sparkles, AlertTriangle } from "lucide-react";
+import { useState, useEffect, useCallback } from "react";
+import { MOCK_USERS, MOCK_USER_ID, getCurrentUser, AVAILABLE_PROMPTS } from "@/lib/mock-data";
+import type { UserProfile } from "@/lib/types";
+import { MatchCard } from "@/components/dashboard/match-card"; // Re-using MatchCard
+import { Button } from "@/components/ui/button";
+import { RefreshCw, Users, Undo2, HeartHandshake as HeartHandshakeIcon, Sparkles as SparklesIcon, Loader2 } from "lucide-react";
+import { useToast } from "@/hooks/use-toast";
+import {
+  AlertDialog,
+  AlertDialogAction,
+  AlertDialogCancel,
+  AlertDialogContent,
+  AlertDialogDescription,
+  AlertDialogFooter,
+  AlertDialogHeader,
+  AlertDialogTitle,
+} from "@/components/ui/alert-dialog";
+import ReactConfetti from 'react-confetti';
+import { Card, CardHeader, CardTitle, CardDescription, CardContent } from "@/components/ui/card";
 
 export function SparkSwipeSection() {
-  return (
-    <Card className="bg-card shadow-xl">
-      <CardHeader className="text-center">
-        <Sparkles className="w-12 h-12 text-primary mx-auto mb-3 animate-pulse" />
-        <CardTitle className="text-2xl font-semibold">Spark Swipe</CardTitle>
-        <CardDescription className="text-muted-foreground">
-          Connect based on shared moments and prompt answers.
-        </CardDescription>
-      </CardHeader>
-      <CardContent>
-        <div className="text-center py-10 flex flex-col items-center text-muted-foreground">
-          <AlertTriangle className="w-16 h-16 mb-4" />
-          <h3 className="text-xl font-semibold mb-2 text-foreground">Coming Soon!</h3>
-          <p className="max-w-md">
-            This section will feature profiles you've crossed paths with at shared locations or who have answered similar prompts to yours.
-            Get ready for more meaningful connections!
+  const [sparkUsers, setSparkUsers] = useState<UserProfile[]>([]);
+  const [currentIndex, setCurrentIndex] = useState(0);
+  const [previousIndex, setPreviousIndex] = useState<number | null>(null);
+  const { toast } = useToast();
+  const [showMatchAnimation, setShowMatchAnimation] = useState(false);
+  const [matchedUserName, setMatchedUserName] = useState("");
+  const [windowSize, setWindowSize] = useState({ width: 0, height: 0 });
+  const [isLoading, setIsLoading] = useState(true);
+
+  const loadSparkUsers = useCallback(() => {
+    setIsLoading(true);
+    const currentUser = getCurrentUser();
+    const currentUserPromptIds = new Set(currentUser.prompts.map(p => p.promptId));
+
+    if (currentUserPromptIds.size === 0) {
+      setSparkUsers([]);
+      setIsLoading(false);
+      toast({
+        title: "Answer Some Prompts!",
+        description: "To find Spark Matches, answer some profile prompts first.",
+        variant: "default",
+      });
+      return;
+    }
+
+    const potentialMatches = MOCK_USERS.filter(user => {
+      if (user.id === MOCK_USER_ID) return false;
+      return user.prompts.some(p => currentUserPromptIds.has(p.promptId));
+    });
+
+    setSparkUsers([...potentialMatches].sort(() => 0.5 - Math.random())); // Shuffle
+    setCurrentIndex(0);
+    setPreviousIndex(null);
+    setIsLoading(false);
+
+    if (potentialMatches.length === 0) {
+        toast({
+            title: "No Spark Matches Found",
+            description: "We couldn't find users who answered similar prompts right now. Try refreshing later or broadening your profile!",
+            duration: 4000,
+        });
+    }
+  }, [toast]);
+
+  useEffect(() => {
+    loadSparkUsers();
+  }, [loadSparkUsers]);
+
+  useEffect(() => {
+    const handleResize = () => {
+      setWindowSize({
+        width: window.innerWidth,
+        height: window.innerHeight,
+      });
+    };
+
+    if (typeof window !== 'undefined') {
+      handleResize();
+      window.addEventListener('resize', handleResize);
+      return () => window.removeEventListener('resize', handleResize);
+    }
+    return () => {};
+  }, []);
+
+  const handleAction = (userId: string, action: "like" | "pass") => {
+    const actionUser = sparkUsers.find(u => u.id === userId);
+    if (!actionUser) return;
+
+    if (action === "like") {
+      const isMutualMatch = Math.random() < 0.5; // Higher chance for Spark matches
+      if (isMutualMatch) {
+        setMatchedUserName(actionUser.name);
+        setShowMatchAnimation(true);
+      } else {
+        toast({
+          title: "Spark Sent!",
+          description: `You've shown interest in ${actionUser.name}. Let's see if the spark is mutual!`,
+        });
+      }
+    } else {
+      toast({
+        title: "Passed",
+        description: `You've passed on ${actionUser.name}.`,
+        variant: "default",
+      });
+    }
+    
+    setPreviousIndex(currentIndex);
+    if (currentIndex < sparkUsers.length - 1) {
+      setCurrentIndex(currentIndex + 1);
+    } else {
+      toast({
+        title: "That's all Spark Matches for now!",
+        description: "Check back later or refresh for new recommendations.",
+      });
+    }
+  };
+
+  const handleLike = (userId: string) => handleAction(userId, "like");
+  const handlePass = (userId: string) => handleAction(userId, "pass");
+
+  const handleUndo = () => {
+    if (previousIndex !== null && previousIndex < sparkUsers.length) {
+      const lastUser = sparkUsers[previousIndex];
+      setCurrentIndex(previousIndex);
+      setPreviousIndex(null);
+      toast({ title: "Undo Successful", description: `Viewing ${lastUser?.name}'s profile again.` });
+    } else {
+      toast({ title: "Nothing to Undo", description: "No previous Spark profile to go back to.", variant: "destructive" });
+    }
+  };
+
+  const refreshUsers = () => {
+    toast({ title: "Refreshing Spark Matches...", description: "Finding new prompt-based connections." });
+    loadSparkUsers();
+  };
+
+  if (isLoading) {
+    return (
+      <Card className="bg-card shadow-xl">
+        <CardHeader className="text-center">
+          <SparklesIcon className="w-12 h-12 text-primary mx-auto mb-3 animate-pulse" />
+          <CardTitle className="text-2xl font-semibold">Igniting Sparks...</CardTitle>
+          <CardDescription className="text-muted-foreground">
+            Finding profiles based on your shared prompt interests.
+          </CardDescription>
+        </CardHeader>
+        <CardContent className="flex flex-col items-center justify-center min-h-[300px]">
+          <Loader2 className="w-16 h-16 text-primary animate-spin mb-4" />
+          <p className="text-muted-foreground">Loading potential connections...</p>
+        </CardContent>
+      </Card>
+    );
+  }
+
+  if (sparkUsers.length === 0 || currentIndex >= sparkUsers.length) {
+    return (
+      <Card className="bg-card shadow-xl">
+        <CardHeader className="text-center">
+          <SparklesIcon className="w-12 h-12 text-primary mx-auto mb-3" />
+          <CardTitle className="text-2xl font-semibold">No Spark Matches Right Now</CardTitle>
+          <CardDescription className="text-muted-foreground">
+            We couldn't find anyone with similar prompt answers, or you've seen them all.
+          </CardDescription>
+        </CardHeader>
+        <CardContent className="text-center py-10 flex flex-col items-center">
+          <Users className="w-16 h-16 text-muted-foreground mb-4" />
+          <p className="text-muted-foreground mb-4 max-w-md">
+            Try answering more profile prompts, or check back later. New connections are always sparking!
           </p>
-        </div>
-      </CardContent>
-    </Card>
+          <div className="flex gap-2 mt-4">
+            <Button onClick={handleUndo} variant="outline" disabled={previousIndex === null}>
+              <Undo2 className="mr-2 h-4 w-4" /> Undo
+            </Button>
+            <Button onClick={refreshUsers} variant="outline">
+              <RefreshCw className="mr-2 h-4 w-4" /> Refresh Sparks
+            </Button>
+          </div>
+        </CardContent>
+      </Card>
+    );
+  }
+
+  const currentUserToDisplay = sparkUsers[currentIndex];
+
+  return (
+    <div className="flex flex-col items-center space-y-6">
+      <Card className="w-full max-w-md mx-auto bg-transparent border-none shadow-none mb-2">
+        <CardHeader className="text-center px-0 pt-0 pb-3">
+          <SparklesIcon className="w-8 h-8 text-primary mx-auto mb-1 animate-pulse" />
+          <CardTitle className="text-xl font-semibold">Spark Swipe</CardTitle>
+          <CardDescription className="text-muted-foreground text-sm">
+            Connections based on shared profile prompt interests.
+          </CardDescription>
+        </CardHeader>
+      </Card>
+
+      <MatchCard
+        key={currentUserToDisplay.id}
+        user={currentUserToDisplay}
+        onLike={handleLike}
+        onPass={handlePass}
+      />
+      <div className="flex gap-2 mt-4">
+        <Button onClick={handleUndo} variant="outline" disabled={previousIndex === null}>
+          <Undo2 className="mr-2 h-4 w-4" /> Undo
+        </Button>
+        <Button onClick={refreshUsers} variant="outline">
+          <RefreshCw className="mr-2 h-4 w-4" /> Refresh Sparks
+        </Button>
+      </div>
+
+      <AlertDialog open={showMatchAnimation} onOpenChange={setShowMatchAnimation}>
+        <AlertDialogContent className="bg-card text-card-foreground border-primary shadow-lg rounded-xl">
+          {showMatchAnimation && windowSize.width > 0 && windowSize.height > 0 && (
+            <div style={{ position: 'fixed', top: 0, left: 0, width: '100%', height: '100%', zIndex: 9999, pointerEvents: 'none' }}>
+              <ReactConfetti
+                width={windowSize.width}
+                height={windowSize.height}
+                recycle={false}
+                numberOfPieces={500}
+                gravity={0.15}
+              />
+            </div>
+          )}
+          <AlertDialogHeader>
+            <div className="mx-auto flex h-20 w-20 items-center justify-center rounded-full bg-primary mb-4 animate-pulse">
+              <HeartHandshakeIcon className="h-10 w-10 text-primary-foreground" />
+            </div>
+            <AlertDialogTitle className="text-center text-2xl font-bold text-primary">Mutual Spark!</AlertDialogTitle>
+            <AlertDialogDescription className="text-center text-muted-foreground text-lg">
+              You and {matchedUserName} both liked each other! This connection sparked from shared interests.
+            </AlertDialogDescription>
+          </AlertDialogHeader>
+          <AlertDialogFooter className="sm:justify-center gap-2">
+            <AlertDialogCancel
+              className="w-full sm:w-auto"
+              onClick={() => setShowMatchAnimation(false)}
+            >
+              Keep Swiping
+            </AlertDialogCancel>
+            <AlertDialogAction
+              onClick={() => {
+                setShowMatchAnimation(false);
+                toast({
+                  title: `Chat with ${matchedUserName}!`,
+                  description: "Your shared interests made a spark!",
+                });
+                // router.push(`/chat/${newOrExistingChatId}`); // Future: Navigate to chat
+              }}
+              className="bg-primary hover:bg-primary/90 text-primary-foreground w-full sm:w-auto"
+            >
+              Send a Message
+            </AlertDialogAction>
+          </AlertDialogFooter>
+        </AlertDialogContent>
+      </AlertDialog>
+    </div>
   );
 }
