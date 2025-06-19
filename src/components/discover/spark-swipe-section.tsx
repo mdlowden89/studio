@@ -47,23 +47,26 @@ export function SparkSwipeSection() {
       return;
     }
 
-    const potentialMatches = MOCK_USERS.filter(user => {
-      if (user.id === MOCK_USER_ID) return false;
-      return user.prompts.some(p => currentUserPromptIds.has(p.promptId));
-    });
+    // Simulate a short delay for loading effect
+    setTimeout(() => {
+      const potentialMatches = MOCK_USERS.filter(user => {
+        if (user.id === MOCK_USER_ID) return false;
+        return user.prompts.some(p => currentUserPromptIds.has(p.promptId));
+      });
 
-    setSparkUsers([...potentialMatches].sort(() => 0.5 - Math.random())); // Shuffle
-    setCurrentIndex(0);
-    setPreviousIndex(null);
-    setIsLoading(false);
+      setSparkUsers([...potentialMatches].sort(() => 0.5 - Math.random())); // Shuffle
+      setCurrentIndex(0);
+      setPreviousIndex(null);
+      setIsLoading(false);
 
-    if (potentialMatches.length === 0) {
-        toast({
-            title: "No Spark Matches Found",
-            description: "We couldn't find users who answered similar prompts right now. Try refreshing later or broadening your profile!",
-            duration: 4000,
-        });
-    }
+      if (potentialMatches.length === 0) {
+          toast({
+              title: "No Spark Matches Found",
+              description: "We couldn't find users who answered similar prompts right now. Try refreshing later or broadening your profile!",
+              duration: 4000,
+          });
+      }
+    }, 750); // 750ms delay
   }, [toast]);
 
   useEffect(() => {
