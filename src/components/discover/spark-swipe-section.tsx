@@ -4,7 +4,7 @@
 import { useState, useEffect, useCallback } from "react";
 import { MOCK_USERS, MOCK_USER_ID, getCurrentUser, AVAILABLE_PROMPTS } from "@/lib/mock-data";
 import type { UserProfile } from "@/lib/types";
-import { MatchCard } from "@/components/dashboard/match-card"; // Re-using MatchCard
+import { MatchCard } from "@/components/dashboard/match-card"; 
 import { Button } from "@/components/ui/button";
 import { RefreshCw, Users, Undo2, HeartHandshake as HeartHandshakeIcon, Sparkles as SparklesIcon, Loader2 } from "lucide-react";
 import { useToast } from "@/hooks/use-toast";
@@ -47,14 +47,13 @@ export function SparkSwipeSection() {
       return;
     }
 
-    // Simulate a short delay for loading effect
     setTimeout(() => {
       const potentialMatches = MOCK_USERS.filter(user => {
         if (user.id === MOCK_USER_ID) return false;
         return user.prompts.some(p => currentUserPromptIds.has(p.promptId));
       });
 
-      setSparkUsers([...potentialMatches].sort(() => 0.5 - Math.random())); // Shuffle
+      setSparkUsers([...potentialMatches].sort(() => 0.5 - Math.random())); 
       setCurrentIndex(0);
       setPreviousIndex(null);
       setIsLoading(false);
@@ -66,7 +65,7 @@ export function SparkSwipeSection() {
               duration: 4000,
           });
       }
-    }, 750); // 750ms delay
+    }, 750); 
   }, [toast]);
 
   useEffect(() => {
@@ -94,7 +93,7 @@ export function SparkSwipeSection() {
     if (!actionUser) return;
 
     if (action === "like") {
-      const isMutualMatch = Math.random() < 0.5; // Higher chance for Spark matches
+      const isMutualMatch = Math.random() < 0.5; 
       if (isMutualMatch) {
         setMatchedUserName(actionUser.name);
         setShowMatchAnimation(true);
@@ -207,6 +206,7 @@ export function SparkSwipeSection() {
         user={currentUserToDisplay}
         onLike={handleLike}
         onPass={handlePass}
+        displayMode="detailedVibes"
       />
       <div className="flex gap-2 mt-4">
         <Button onClick={handleUndo} variant="outline" disabled={previousIndex === null}>
@@ -253,7 +253,6 @@ export function SparkSwipeSection() {
                   title: `Chat with ${matchedUserName}!`,
                   description: "Your shared interests made a spark!",
                 });
-                // router.push(`/chat/${newOrExistingChatId}`); // Future: Navigate to chat
               }}
               className="bg-primary hover:bg-primary/90 text-primary-foreground w-full sm:w-auto"
             >

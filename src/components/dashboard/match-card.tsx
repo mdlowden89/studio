@@ -6,12 +6,12 @@ import type { UserProfile, CrossedPathUser } from "@/lib/types";
 import { Card, CardContent, CardFooter, CardHeader, CardTitle, CardDescription } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
-import { Heart, X, MapPin, Info, Ruler, Users, Baby, ListChecks, Wine, ChevronLeftIcon, ChevronRightIcon } from "lucide-react";
+import { Heart, X, MapPin, Info, Ruler, Users, Baby, ListChecks, Wine, ChevronLeftIcon, ChevronRightIcon, Sparkles as SparklesIcon } from "lucide-react";
 import { useState } from "react";
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger } from "@/components/ui/dialog";
 import { ScrollArea } from "@/components/ui/scroll-area";
 import { Separator } from "@/components/ui/separator";
-import { AVAILABLE_PROMPTS, getCurrentUser } from "@/lib/mock-data"; // Added getCurrentUser
+import { AVAILABLE_PROMPTS } from "@/lib/mock-data";
 import React from "react";
 
 interface MatchCardProps {
@@ -19,18 +19,11 @@ interface MatchCardProps {
   onLike: (userId: string) => void;
   onPass: (userId: string) => void;
   showCrossedPathInfo?: boolean;
+  displayMode?: 'condensed' | 'detailedVibes';
 }
 
-export function MatchCard({ user, onLike, onPass, showCrossedPathInfo = false }: MatchCardProps) {
+export function MatchCard({ user, onLike, onPass, showCrossedPathInfo = false, displayMode = 'condensed' }: MatchCardProps) {
   const [currentImageIndex, setCurrentImageIndex] = useState(0);
-  const loggedInUser = getCurrentUser();
-
-  const commonVibeTags = React.useMemo(() => {
-    if (!loggedInUser || !loggedInUser.vibeTags || !user || !user.vibeTags) {
-      return [];
-    }
-    return loggedInUser.vibeTags.filter(tag => user.vibeTags.includes(tag));
-  }, [loggedInUser, user.vibeTags]);
 
   const nextImage = (e: React.MouseEvent) => {
     e.stopPropagation();
@@ -54,14 +47,13 @@ export function MatchCard({ user, onLike, onPass, showCrossedPathInfo = false }:
     { icon: Wine, label: "Drinking", value: user.drinking && user.drinking !== "Prefer Not to Say" ? user.drinking : "N/A" },
   ];
 
-  // Define images for dialog layout
   const dialogTopImage = user.images.length > 0 ? user.images[0] : "https://placehold.co/600x800.png";
   const imagesForSpecificPlacement = user.images.slice(1); 
 
-  const imgAfterBio1 = imagesForSpecificPlacement[0]; // This is "photo 2"
-  const imgAfterBio2 = imagesForSpecificPlacement[1]; // This is "photo 3"
-  const imgForPrompt1 = imagesForSpecificPlacement[2]; // This is "photo 4"
-  const imgForPrompt2 = imagesForSpecificPlacement[3]; // This is "photo 5"
+  const imgAfterBio1 = imagesForSpecificPlacement[0];
+  const imgAfterBio2 = imagesForSpecificPlacement[1];
+  const imgForPrompt1 = imagesForSpecificPlacement[2];
+  const imgForPrompt2 = imagesForSpecificPlacement[3];
   const remainingDialogImages = imagesForSpecificPlacement.slice(4);
 
 
@@ -110,20 +102,50 @@ export function MatchCard({ user, onLike, onPass, showCrossedPathInfo = false }:
           </div>
         </CardHeader>
         <CardContent className="p-4 flex-grow overflow-y-auto">
-            <div className="flex flex-wrap gap-2 mb-3">
-            {user.vibeTags.slice(0, 3).map((tag) => (
-              <Badge key={tag} variant="secondary" className="text-xs capitalize">{tag}</Badge>
-            ))}
-          </div>
-          {user.prompts.slice(0,1).map(p => {
-            const promptDetails = AVAILABLE_PROMPTS.find(ap => ap.id === p.promptId);
-            return promptDetails ? (
-              <div key={p.promptId} className="mt-2 p-3 bg-muted/50 rounded-lg">
-                <p className="text-xs font-semibold text-foreground/80">{promptDetails.question}</p>
-                <p className="text-sm text-foreground line-clamp-2">{p.answer}</p>
-              </div>
-            ) : null;
-          })}
+            {displayMode === 'detailedVibes' ? (
+                <div className="space-y-3">
+                    <h4 className="text-sm font-semibold text-primary flex items-center gap-1.5">
+                        <SparklesIcon className="w-4 h-4" />
+                        Their Vibe Tags:
+                    </h4>
+                    {user.vibeTags.length > 0 ? (
+                        <div className="flex flex-col items-start gap-1.5">
+                            {user.vibeTags.map((tag) => (
+                                <Badge key={tag} variant="secondary" className="text-xs capitalize px-2 py-0.5">{tag}</Badge>
+                            ))}
+                        </div>
+                    ) : (
+                        <p className="text-xs text-muted-foreground italic">No vibe tags shared yet.</p>
+                    )}
+                    
+                    {user.prompts.slice(0,1).map(p => {
+                        const promptDetails = AVAILABLE_PROMPTS.find(ap => ap.id === p.promptId);
+                        return promptDetails ? (
+                        <div key={p.promptId} className="mt-3 pt-3 border-t border-border">
+                            <p className="text-xs font-semibold text-foreground/80 mb-0.5">{promptDetails.question}</p>
+                            <p className="text-sm text-foreground">{p.answer}</p>
+                        </div>
+                        ) : null;
+                    })}
+                </div>
+            ) : ( // Condensed mode
+                <>
+                    <div className="flex flex-wrap gap-2 mb-3">
+                        {user.vibeTags.slice(0, 3).map((tag) => (
+                        <Badge key={tag} variant="secondary" className="text-xs capitalize">{tag}</Badge>
+                        ))}
+                    </div>
+                    {user.prompts.slice(0,1).map(p => {
+                        const promptDetails = AVAILABLE_PROMPTS.find(ap => ap.id === p.promptId);
+                        return promptDetails ? (
+                        <div key={p.promptId} className="mt-2 p-3 bg-muted/50 rounded-lg">
+                            <p className="text-xs font-semibold text-foreground/80">{promptDetails.question}</p>
+                            <p className="text-sm text-foreground line-clamp-2">{p.answer}</p>
+                        </div>
+                        ) : null;
+                    })}
+                </>
+            )}
         </CardContent>
          <CardFooter className="flex justify-around p-4 border-t border-border">
           <Button variant="outline" size="lg" className="rounded-full p-4 border-destructive text-destructive hover:bg-destructive/10" onClick={() => onPass(user.id)} aria-label="Pass">
@@ -152,7 +174,7 @@ export function MatchCard({ user, onLike, onPass, showCrossedPathInfo = false }:
               )}
           </DialogHeader>
           
-          <div className="px-6 pt-4 pb-3"> {/* Main image container */}
+          <div className="px-6 pt-4 pb-3">
             <div className="relative w-full max-w-xs aspect-[4/5] rounded-lg overflow-hidden shadow-lg mx-auto">
               <Image
                 src={dialogTopImage}
@@ -165,19 +187,7 @@ export function MatchCard({ user, onLike, onPass, showCrossedPathInfo = false }:
             </div>
           </div>
 
-          {commonVibeTags.length > 0 && (
-            <div className="px-6 pt-2 pb-2">
-              <h3 className="text-md font-semibold text-primary mb-2">You both dig:</h3>
-              <div className="flex flex-col items-start gap-1.5">
-                {commonVibeTags.map(tag => (
-                  <Badge key={tag} variant="secondary" className="capitalize text-xs">{tag}</Badge>
-                ))}
-              </div>
-              <Separator className="my-4 bg-border" />
-            </div>
-          )}
-
-          <div className="px-6 pt-1 pb-3">  {/* Details bar */}
+          <div className="px-6 pt-1 pb-3">
             <div className="w-full flex flex-nowrap justify-around overflow-x-auto p-3 bg-muted/30 rounded-lg">
               {userDetails.map((detail, index) => (
                  (detail.value && detail.value !== "N/A") && (
@@ -294,4 +304,3 @@ export function MatchCard({ user, onLike, onPass, showCrossedPathInfo = false }:
     </Dialog>
   );
 }
-
