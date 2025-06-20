@@ -11,7 +11,7 @@ import { useState } from "react";
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger } from "@/components/ui/dialog";
 import { ScrollArea } from "@/components/ui/scroll-area";
 import { Separator } from "@/components/ui/separator";
-import { AVAILABLE_PROMPTS } from "@/lib/mock-data";
+import { AVAILABLE_PROMPTS, getCurrentUser } from "@/lib/mock-data"; // Added getCurrentUser
 import React from "react";
 
 interface MatchCardProps {
@@ -23,6 +23,14 @@ interface MatchCardProps {
 
 export function MatchCard({ user, onLike, onPass, showCrossedPathInfo = false }: MatchCardProps) {
   const [currentImageIndex, setCurrentImageIndex] = useState(0);
+  const loggedInUser = getCurrentUser();
+
+  const commonVibeTags = React.useMemo(() => {
+    if (!loggedInUser || !loggedInUser.vibeTags || !user || !user.vibeTags) {
+      return [];
+    }
+    return loggedInUser.vibeTags.filter(tag => user.vibeTags.includes(tag));
+  }, [loggedInUser, user.vibeTags]);
 
   const nextImage = (e: React.MouseEvent) => {
     e.stopPropagation();
@@ -144,7 +152,7 @@ export function MatchCard({ user, onLike, onPass, showCrossedPathInfo = false }:
               )}
           </DialogHeader>
           
-          <div className="px-6 pt-4 pb-3"> {/* Reduced bottom padding for image container */}
+          <div className="px-6 pt-4 pb-3"> {/* Main image container */}
             <div className="relative w-full max-w-xs aspect-[4/5] rounded-lg overflow-hidden shadow-lg mx-auto">
               <Image
                 src={dialogTopImage}
@@ -157,7 +165,19 @@ export function MatchCard({ user, onLike, onPass, showCrossedPathInfo = false }:
             </div>
           </div>
 
-          <div className="px-6 pt-1 pb-3">  {/* Adjusted padding for details bar */}
+          {commonVibeTags.length > 0 && (
+            <div className="px-6 pt-2 pb-2">
+              <h3 className="text-md font-semibold text-primary mb-2">You both dig:</h3>
+              <div className="flex flex-wrap gap-1.5">
+                {commonVibeTags.map(tag => (
+                  <Badge key={tag} variant="secondary" className="capitalize text-xs">{tag}</Badge>
+                ))}
+              </div>
+              <Separator className="my-4 bg-border" />
+            </div>
+          )}
+
+          <div className="px-6 pt-1 pb-3">  {/* Details bar */}
             <div className="w-full flex flex-nowrap justify-around overflow-x-auto p-3 bg-muted/30 rounded-lg">
               {userDetails.map((detail, index) => (
                  (detail.value && detail.value !== "N/A") && (
@@ -169,7 +189,7 @@ export function MatchCard({ user, onLike, onPass, showCrossedPathInfo = false }:
                 )
               ))}
             </div>
-             <Separator className="my-4 bg-border" /> {/* Separator added */}
+             <Separator className="my-4 bg-border" />
           </div>
           
           <div className="px-6 pb-6 flex flex-col space-y-4"> 
