@@ -102,7 +102,6 @@ export function MatchCard({ user, onLike, onPass, showCrossedPathInfo = false }:
           </div>
         </CardHeader>
         <CardContent className="p-4 flex-grow overflow-y-auto">
-            <CardDescription className="text-muted-foreground line-clamp-3 mb-2">{user.bio}</CardDescription>
             <div className="flex flex-wrap gap-2 mb-3">
             {user.vibeTags.slice(0, 3).map((tag) => (
               <Badge key={tag} variant="secondary" className="text-xs capitalize">{tag}</Badge>
