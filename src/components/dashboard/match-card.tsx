@@ -168,7 +168,7 @@ export function MatchCard({ user, onLike, onPass, showCrossedPathInfo = false }:
           {commonVibeTags.length > 0 && (
             <div className="px-6 pt-2 pb-2">
               <h3 className="text-md font-semibold text-primary mb-2">You both dig:</h3>
-              <div className="flex flex-wrap gap-1.5">
+              <div className="flex flex-col items-start gap-1.5">
                 {commonVibeTags.map(tag => (
                   <Badge key={tag} variant="secondary" className="capitalize text-xs">{tag}</Badge>
                 ))}
