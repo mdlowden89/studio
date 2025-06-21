@@ -22,6 +22,9 @@ import ReactConfetti from 'react-confetti';
 import { Card, CardHeader, CardTitle, CardDescription, CardContent } from "@/components/ui/card";
 import { fetchSparkSwipeInsights } from "@/app/actions";
 import type { SparkSwipeOutput, SparkSwipeInput } from "@/ai/flows/spark-swipe-flow";
+import { CrossdPlusUpsellDialog } from "@/components/pricing/crossd-plus-upsell-dialog";
+
+const DAILY_SPARK_LIMIT = 1;
 
 export function SparkSwipeSection() {
   const [sparkUsers, setSparkUsers] = useState<UserProfile[]>([]);
@@ -35,6 +38,11 @@ export function SparkSwipeSection() {
 
   const [insights, setInsights] = useState<SparkSwipeOutput | null>(null);
   const [isInsightsLoading, setIsInsightsLoading] = useState(false);
+
+  const [sparksUsedToday, setSparksUsedToday] = useState(0);
+  const [showUpsellDialog, setShowUpsellDialog] = useState(false);
+  const [sparksAnimationTrigger, setSparksAnimationTrigger] = useState(0);
+
 
   const loadSparkUsers = useCallback(() => {
     setIsLoading(true);
@@ -142,6 +150,11 @@ export function SparkSwipeSection() {
   }, []);
 
   const handleAction = (userId: string, action: "like" | "pass") => {
+    if (sparksUsedToday >= DAILY_SPARK_LIMIT) {
+      setShowUpsellDialog(true);
+      return;
+    }
+
     const actionUser = sparkUsers.find(u => u.id === userId);
     if (!actionUser) return;
 
@@ -164,7 +177,10 @@ export function SparkSwipeSection() {
       });
     }
     
+    setSparksUsedToday(prev => prev + 1);
+    setSparksAnimationTrigger(prev => prev + 1);
     setPreviousIndex(currentIndex);
+
     if (currentIndex < sparkUsers.length - 1) {
       setCurrentIndex(currentIndex + 1);
     } else {
@@ -185,6 +201,10 @@ export function SparkSwipeSection() {
       const lastUser = sparkUsers[previousIndex];
       setCurrentIndex(previousIndex);
       setPreviousIndex(null);
+      // Logic to potentially 'refund' a spark swipe if undone could be added here
+      if (sparksUsedToday > 0) {
+        setSparksUsedToday(prev => prev - 1);
+      }
       toast({ title: "Undo Successful", description: `Viewing ${lastUser?.name}'s profile again.` });
     } else {
       toast({ title: "Nothing to Undo", description: "No previous Spark profile to go back to.", variant: "destructive" });
@@ -263,7 +283,6 @@ export function SparkSwipeSection() {
         onPass={handlePass}
         sparkInsights={insights}
         isInsightsLoading={isInsightsLoading}
-        displayMode="detailedVibes"
       />
       <div className="flex gap-2 mt-4">
         <Button onClick={handleUndo} variant="outline" disabled={previousIndex === null || isInsightsLoading}>
@@ -273,6 +292,17 @@ export function SparkSwipeSection() {
           <RefreshCw className="mr-2 h-4 w-4" /> Refresh Sparks
         </Button>
       </div>
+
+       <p className="text-sm text-muted-foreground mt-2">
+        Free Spark Swipes remaining today:{" "}
+        <span
+          key={sparksAnimationTrigger}
+          className="font-semibold text-foreground animate-flash-attention"
+        >
+          {Math.max(0, DAILY_SPARK_LIMIT - sparksUsedToday)}
+        </span>
+      </p>
+
 
       <AlertDialog open={showMatchAnimation} onOpenChange={setShowMatchAnimation}>
         <AlertDialogContent className="bg-card text-card-foreground border-primary shadow-lg rounded-xl">
@@ -318,6 +348,11 @@ export function SparkSwipeSection() {
           </AlertDialogFooter>
         </AlertDialogContent>
       </AlertDialog>
+
+      <CrossdPlusUpsellDialog
+        isOpen={showUpsellDialog}
+        onOpenChange={setShowUpsellDialog}
+      />
     </div>
   );
 }
