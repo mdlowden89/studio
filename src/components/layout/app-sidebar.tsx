@@ -58,7 +58,7 @@ export function AppSidebar() {
   const displayedAchievements = sortedAchievements.slice(0, 3);
 
   const isGlowModeActive = currentUser.achievements?.some(
-    (ach) => ach.id === 'achieve-1' && ach.glowEffect // Check for Daily Logger with glow effect
+    (ach) => ach.glowEffect // Simplified check for any achievement with glow effect
   );
 
   return (
@@ -125,7 +125,7 @@ export function AppSidebar() {
           >
             <div className={cn(
                 "relative rounded-full", 
-                isGlowModeActive && "ring-2 ring-primary/50 p-0.5 shadow-md shadow-primary/30" // Reverted line
+                isGlowModeActive && "ring-2 ring-primary/50 p-0.5 shadow-md shadow-primary/30"
             )}>
               <Avatar className="h-10 w-10 shrink-0">
                 <AvatarImage 

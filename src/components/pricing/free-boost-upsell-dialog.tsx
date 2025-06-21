@@ -25,7 +25,7 @@ interface FreeBoostUpsellDialogProps {
   onOpenChange: (isOpen: boolean) => void;
 }
 
-const STRIPE_PLATINUM_WEEKLY_BOOST_PRICE_ID = "price_platinum_weekly_boost_offer"; // REPLACE THIS WITH YOUR ACTUAL STRIPE PRICE ID
+const STRIPE_PLATINUM_WEEKLY_BOOST_PRICE_ID = "price_placeholder_platinum_weekly_boost_offer"; // REPLACE THIS WITH YOUR ACTUAL STRIPE PRICE ID
 
 const formatTime = (totalSeconds: number): string => {
   if (totalSeconds < 0) return "00:00:00";
