@@ -8,7 +8,7 @@ import { useMemo, useState, useEffect, useCallback } from 'react';
 import { format } from 'date-fns';
 import Image from 'next/image';
 import { fetchPlacePhoto } from '@/app/actions';
-import { Loader2, ImageOff, HeartHandshake, Sparkles, Repeat } from 'lucide-react';
+import { Loader2, ImageOff, AlertTriangle } from 'lucide-react';
 
 interface MomentsMapProps {
   moments: Moment[];
@@ -47,12 +47,6 @@ const CustomLoadingElement = () => (
 );
 
 const libraries: ("places")[] = ['places'];
-
-const hotspotIcons = {
-    'Connection Zone': HeartHandshake,
-    'Serendipity Spike': Sparkles,
-    'Loop Zone': Repeat,
-};
 
 export function MomentsMap({ moments, hotspots }: MomentsMapProps) {
   const [apiKey, setApiKey] = useState<string | undefined>(undefined);
@@ -137,6 +131,17 @@ export function MomentsMap({ moments, hotspots }: MomentsMapProps) {
       scale: 8,
     };
   }, [isMounted]);
+
+  const getHotspotEmoji = (hotspot: Hotspot): string => {
+    if (hotspot.charge === 'morning') return '☀️';
+    if (hotspot.charge === 'night') return '🌙';
+    switch (hotspot.type) {
+      case 'Connection Zone': return '💕';
+      case 'Serendipity Spike': return '✨';
+      case 'Loop Zone': return '🔁';
+      default: return '📍';
+    }
+  };
 
   if (!isMounted) {
     return <div className="flex items-center justify-center h-full bg-muted rounded-lg"><Loader2 className="h-6 w-6 animate-spin text-primary mr-2" />Loading map...</div>;
@@ -241,10 +246,10 @@ export function MomentsMap({ moments, hotspots }: MomentsMapProps) {
             options={{ pixelOffset: new window.google.maps.Size(0, -35) }}
           >
             <div className="p-2 bg-card text-card-foreground rounded-lg shadow-xl max-w-xs w-64 space-y-2">
-              <div className="flex items-center gap-2">
-                {React.createElement(hotspotIcons[selectedHotspot.type], {className: "w-5 h-5 text-amber-400"})}
-                <h4 className="font-bold text-md text-amber-400 truncate">{selectedHotspot.type}</h4>
-              </div>
+               <div className="flex items-center gap-2">
+                 <span className="text-xl" role="img" aria-label="hotspot-emoji">{getHotspotEmoji(selectedHotspot)}</span>
+                 <h4 className="font-bold text-md text-amber-400 truncate">{selectedHotspot.type}</h4>
+               </div>
               <p className="font-semibold text-foreground">{selectedHotspot.title}</p>
               <p className="text-xs text-muted-foreground italic">"{selectedHotspot.description}"</p>
             </div>

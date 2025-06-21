@@ -775,4 +775,20 @@ export const MOCK_HOTSPOTS: Hotspot[] = [
     description: 'High-vibe connections are sparking here with the scenic views.',
     coordinates: { lat: 51.5109, lng: -0.0837 },
   },
+  {
+    id: 'hs-5',
+    type: 'Connection Zone',
+    title: 'Hyde Park Mornings',
+    description: 'This area is emotionally charged on sunny mornings. Great for calm vibes.',
+    coordinates: { lat: 51.5073, lng: -0.1657 },
+    charge: 'morning',
+  },
+  {
+    id: 'hs-6',
+    type: 'Serendipity Spike',
+    title: 'Soho Evenings',
+    description: 'Sparks fly here after dark. High energy and frequent matches.',
+    coordinates: { lat: 51.5132, lng: -0.1367 },
+    charge: 'night',
+  },
 ];

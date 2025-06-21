@@ -120,4 +120,5 @@ export interface Hotspot {
   title: string;
   description: string;
   coordinates: { lat: number; lng: number };
+  charge?: 'morning' | 'night';
 }
