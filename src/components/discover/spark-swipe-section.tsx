@@ -21,7 +21,7 @@ import {
 import ReactConfetti from 'react-confetti';
 import { Card, CardHeader, CardTitle, CardDescription, CardContent } from "@/components/ui/card";
 import { fetchSparkSwipeInsights } from "@/app/actions";
-import type { SparkSwipeOutput } from "@/ai/flows/spark-swipe-flow";
+import type { SparkSwipeOutput, SparkSwipeInput } from "@/ai/flows/spark-swipe-flow";
 
 export function SparkSwipeSection() {
   const [sparkUsers, setSparkUsers] = useState<UserProfile[]>([]);
@@ -86,7 +86,28 @@ export function SparkSwipeSection() {
         setIsInsightsLoading(true);
         setInsights(null);
         try {
-          const result = await fetchSparkSwipeInsights(currentUser, candidateUser);
+          // Construct a plain, serializable object that matches the AI flow's input schema
+          const input: SparkSwipeInput = {
+            currentUserProfile: {
+              id: currentUser.id,
+              name: currentUser.name,
+              age: currentUser.age,
+              bio: currentUser.bio,
+              vibeTags: currentUser.vibeTags,
+              locationPatterns: currentUser.locationPatterns,
+              prompts: currentUser.prompts,
+            },
+            candidateUserProfile: {
+              id: candidateUser.id,
+              name: candidateUser.name,
+              age: candidateUser.age,
+              bio: candidateUser.bio,
+              vibeTags: candidateUser.vibeTags,
+              locationPatterns: candidateUser.locationPatterns,
+              prompts: candidateUser.prompts,
+            },
+          };
+          const result = await fetchSparkSwipeInsights(input);
           setInsights(result);
         } catch (error) {
           console.error("Failed to fetch insights", error);
@@ -242,6 +263,7 @@ export function SparkSwipeSection() {
         onPass={handlePass}
         sparkInsights={insights}
         isInsightsLoading={isInsightsLoading}
+        displayMode="detailedVibes"
       />
       <div className="flex gap-2 mt-4">
         <Button onClick={handleUndo} variant="outline" disabled={previousIndex === null || isInsightsLoading}>

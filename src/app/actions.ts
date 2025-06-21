@@ -62,11 +62,9 @@ export async function fetchPlacePhoto(
 }
 
 export async function fetchSparkSwipeInsights(
-  currentUserProfile: UserProfile,
-  candidateUserProfile: UserProfile
+  input: SparkSwipeInput
 ): Promise<SparkSwipeOutput | null> {
   try {
-    const input: SparkSwipeInput = { currentUserProfile, candidateUserProfile };
     const result = await getSparkSwipeInsights(input);
     return result;
   } catch (error) {
