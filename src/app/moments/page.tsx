@@ -9,7 +9,7 @@ import { Button } from "@/components/ui/button";
 import { Route, List, LayoutGrid } from "lucide-react";
 import { Separator } from "@/components/ui/separator";
 import { MomentsMap } from "@/components/dashboard/moments-map";
-import { MOCK_MOMENTS } from "@/lib/mock-data";
+import { MOCK_MOMENTS, MOCK_HOTSPOTS } from "@/lib/mock-data";
 
 export type ViewMode = "list" | "gallery";
 
@@ -35,7 +35,7 @@ export default function MomentsPage() {
           <CardContent className="space-y-6">
             {/* Map Section */}
             <div className="aspect-[2/1] w-full bg-muted rounded-lg overflow-hidden shadow-inner">
-              <MomentsMap moments={momentsWithCoords} />
+              <MomentsMap moments={momentsWithCoords} hotspots={MOCK_HOTSPOTS} />
             </div>
 
             <Separator />
