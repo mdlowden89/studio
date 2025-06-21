@@ -1,6 +1,7 @@
 
 "use client";
 
+import * as React from 'react';
 import { GoogleMap, LoadScriptNext, MarkerF, InfoWindowF } from '@react-google-maps/api';
 import type { Moment, Hotspot } from '@/lib/types';
 import { useMemo, useState, useEffect, useCallback } from 'react';
