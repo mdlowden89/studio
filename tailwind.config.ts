@@ -1,3 +1,4 @@
+
 import type { Config } from "tailwindcss";
 
 export default {
@@ -93,12 +94,18 @@ export default {
           '33%': { transform: 'rotate(-8deg)' },
           '66%': { transform: 'rotate(8deg)' },
         },
+        'pulse-hotspot': {
+          '0%': { transform: 'scale(0.1)', opacity: '0.8' },
+          '70%': { transform: 'scale(1)', opacity: '0' },
+          '100%': { transform: 'scale(1)', opacity: '0' },
+        },
   		},
   		animation: {
   			'accordion-down': 'accordion-down 0.2s ease-out',
   			'accordion-up': 'accordion-up 0.2s ease-out',
         'flash-attention': 'flash-attention 0.6s ease-out 1',
         'handshake-shake': 'handshake-shake 0.4s ease-in-out',
+        'pulse-hotspot': 'pulse-hotspot 2.5s cubic-bezier(0.4, 0, 0.6, 1) infinite',
   		}
   	}
   },

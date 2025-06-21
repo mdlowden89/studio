@@ -4,7 +4,7 @@
 import { useState, useEffect, useMemo, useCallback } from "react";
 import { AppLayout } from "@/components/layout/app-layout";
 import { Card, CardContent, CardHeader, CardTitle, CardDescription, CardFooter } from "@/components/ui/card";
-import { Sparkles, PlusCircle, ClipboardList, Users, MessageSquare, Route, MapPin, CalendarDays, Users2, TrendingUp, Activity, Map, LayoutGrid, List as ListIcon, Lightbulb, Edit3, Repeat, Star, ShoppingBag, Zap, Undo2, Eye, BrainCircuit } from "lucide-react";
+import { Sparkles, PlusCircle, ClipboardList, Users, MessageSquare, Route, MapPin, CalendarDays, Users2, TrendingUp, Activity, Map, LayoutGrid, List as ListIcon, Lightbulb, Edit3, Repeat, Star, ShoppingBag, Zap, Undo2, Eye, BrainCircuit, Signal } from "lucide-react";
 import { getCurrentUser, MOCK_MOMENTS, MOCK_CROSSED_PATHS_USERS, MOCK_CHAT_CONVERSATIONS, MOCK_USER_ID, MOCK_USERS, baseDate, AVAILABLE_PROMPTS, MOCK_AVAILABLE_CHALLENGES } from "@/lib/mock-data";
 import { Button } from "@/components/ui/button";
 import { Separator } from "@/components/ui/separator";
@@ -18,6 +18,7 @@ import { CrossdPlusUpsellDialog } from "@/components/pricing/crossd-plus-upsell-
 import { FreeBoostUpsellDialog } from "@/components/pricing/free-boost-upsell-dialog";
 import { useSearchParams, useRouter } from "next/navigation";
 import { useToast } from "@/hooks/use-toast";
+import { EmotionalHotspotsUpsell } from "@/components/dashboard/emotional-hotspots-upsell";
 
 
 export default function DashboardPage() {
@@ -347,6 +348,23 @@ export default function DashboardPage() {
         <Card className="mb-8 bg-card shadow-xl">
           <CardHeader>
              <div className="flex items-center gap-3">
+                <Signal className="w-7 h-7 text-primary" />
+                <div>
+                    <CardTitle className="text-xl font-semibold">Emotional Hotspots</CardTitle>
+                    <CardDescription className="text-muted-foreground">
+                      A premium Crossd+ feature to know where sparks are born.
+                    </CardDescription>
+                </div>
+            </div>
+          </CardHeader>
+          <CardContent>
+            <EmotionalHotspotsUpsell onUnlock={() => setShowUpsellDialog(true)} />
+          </CardContent>
+        </Card>
+
+        <Card className="mb-8 bg-card shadow-xl">
+          <CardHeader>
+             <div className="flex items-center gap-3">
                 <Activity className="w-7 h-7 text-primary" />
                 <div>
                     <CardTitle className="text-xl font-semibold">Your Weekly Recap</CardTitle>
@@ -521,4 +539,5 @@ export default function DashboardPage() {
     
 
     
+
 
