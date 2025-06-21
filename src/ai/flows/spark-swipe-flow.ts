@@ -85,12 +85,12 @@ Generate a JSON object that adheres to the output schema. Follow these instructi
 
 1.  **headlineReasoning**: Write a short, engaging, one-sentence summary of why they are a good match.
 2.  **vibeTagAnalysis**:
-    -   `commonTags`: Identify and list the exact vibe tags they have in common.
-    -   `compatibilityReasoning`: Even if they don't share many tags, find a creative connection between their vibes. For example, if one is a "Chill Walker" and the other is a "Bookstore Romantic," you might say, "Your shared love for quiet, thoughtful activities suggests a strong potential connection."
+    -   'commonTags': Identify and list the exact vibe tags they have in common.
+    -   'compatibilityReasoning': Even if they don't share many tags, find a creative connection between their vibes. For example, if one is a "Chill Walker" and the other is a "Bookstore Romantic," you might say, "Your shared love for quiet, thoughtful activities suggests a strong potential connection."
 3.  **locationAnalysis**:
-    -   `compatibilityReasoning`: Analyze their `locationPatterns`. Don't just list them. Create a compelling sentence about their lifestyle overlap. Example: "You both frequent similar types of places on weekends, like cozy cafés and bookstores."
+    -   'compatibilityReasoning': Analyze their 'locationPatterns'. Don't just list them. Create a compelling sentence about their lifestyle overlap. Example: "You both frequent similar types of places on weekends, like cozy cafés and bookstores."
 4.  **collaborativeFilteringAnalysis**:
-    -   `recommendationReasoning`: Invent a plausible-sounding collaborative filtering insight. Use the format "Users like you who matched with [some user type] also matched with [Candidate's Name]." Example: "Users like you who vibe with thoughtful introverts also tend to spark with artsy adventurers like {{candidateUserProfile.name}}."
+    -   'recommendationReasoning': Invent a plausible-sounding collaborative filtering insight. Use the format "Users like you who matched with [some user type] also matched with [Candidate's Name]." Example: "Users like you who vibe with thoughtful introverts also tend to spark with artsy adventurers like {{candidateUserProfile.name}}."
 5.  **sparkFlowScore**: Provide a compatibility score between 60 and 95. Be realistic.
 
 Your entire response must be a single, valid JSON object matching the requested schema.
