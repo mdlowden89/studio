@@ -5,7 +5,7 @@ import { useState, useEffect, useMemo, useCallback } from "react";
 import { AppLayout } from "@/components/layout/app-layout";
 import { Card, CardContent, CardHeader, CardTitle, CardDescription, CardFooter } from "@/components/ui/card";
 import { Sparkles, PlusCircle, ClipboardList, Users, MessageSquare, Route, MapPin, CalendarDays, Users2, TrendingUp, Activity, Map, LayoutGrid, List as ListIcon, Lightbulb, Edit3, Repeat, Star, ShoppingBag, Zap, Undo2, Eye, BrainCircuit, Signal } from "lucide-react";
-import { getCurrentUser, MOCK_MOMENTS, MOCK_CROSSED_PATHS_USERS, MOCK_CHAT_CONVERSATIONS, MOCK_USER_ID, MOCK_USERS, baseDate, AVAILABLE_PROMPTS, MOCK_AVAILABLE_CHALLENGES } from "@/lib/mock-data";
+import { getCurrentUser, MOCK_MOMENTS, MOCK_CROSSED_PATHS_USERS, MOCK_CHAT_CONVERSATIONS, MOCK_USER_ID, MOCK_USERS, baseDate, AVAILABLE_PROMPTS, MOCK_AVAILABLE_CHALLENGES, MOCK_HOTSPOTS } from "@/lib/mock-data";
 import { Button } from "@/components/ui/button";
 import { Separator } from "@/components/ui/separator";
 import { subDays, isAfter, format, getDay } from "date-fns";
@@ -285,7 +285,7 @@ export default function DashboardPage() {
           </CardHeader>
           <CardContent>
             <div className="aspect-[2/1] w-full bg-muted rounded-lg overflow-hidden mb-4 shadow-inner">
-              <MomentsMap moments={momentsThisWeek.filter(m => m.coordinates)} />
+              <MomentsMap moments={momentsThisWeek.filter(m => m.coordinates)} hotspots={MOCK_HOTSPOTS} />
             </div>
             {momentsThisWeek.length > 0 ? (
               <div>
@@ -539,5 +539,6 @@ export default function DashboardPage() {
     
 
     
+
 
 

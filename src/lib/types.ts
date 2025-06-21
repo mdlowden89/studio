@@ -1,4 +1,3 @@
-
 import type { LucideIcon } from 'lucide-react';
 
 export interface UserProfile {
@@ -113,4 +112,12 @@ export interface Challenge {
   progress?: ChallengeProgress;
   status?: 'active' | 'not_started'; 
   timeLimit?: string; // e.g., "Ends in 2 days", "24 hours remaining"
+}
+
+export interface Hotspot {
+  id: string;
+  type: 'Connection Zone' | 'Serendipity Spike' | 'Loop Zone';
+  title: string;
+  description: string;
+  coordinates: { lat: number; lng: number };
 }

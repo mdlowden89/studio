@@ -2,15 +2,16 @@
 "use client";
 
 import { GoogleMap, LoadScriptNext, MarkerF, InfoWindowF } from '@react-google-maps/api';
-import type { Moment } from '@/lib/types';
+import type { Moment, Hotspot } from '@/lib/types';
 import { useMemo, useState, useEffect, useCallback } from 'react';
 import { format } from 'date-fns';
 import Image from 'next/image';
 import { fetchPlacePhoto } from '@/app/actions';
-import { Loader2, ImageOff } from 'lucide-react';
+import { Loader2, ImageOff, HeartHandshake, Sparkles, Repeat } from 'lucide-react';
 
 interface MomentsMapProps {
   moments: Moment[];
+  hotspots?: Hotspot[];
 }
 
 const containerStyle = {
@@ -44,12 +45,19 @@ const CustomLoadingElement = () => (
   </div>
 );
 
-const libraries: ("places")[] = ['places']; // Define libraries needed
+const libraries: ("places")[] = ['places'];
 
-export function MomentsMap({ moments }: MomentsMapProps) {
+const hotspotIcons = {
+    'Connection Zone': HeartHandshake,
+    'Serendipity Spike': Sparkles,
+    'Loop Zone': Repeat,
+};
+
+export function MomentsMap({ moments, hotspots }: MomentsMapProps) {
   const [apiKey, setApiKey] = useState<string | undefined>(undefined);
   const [isMounted, setIsMounted] = useState(false);
   const [selectedMoment, setSelectedMoment] = useState<Moment | null>(null);
+  const [selectedHotspot, setSelectedHotspot] = useState<Hotspot | null>(null);
 
   const [fetchedPhotoUrl, setFetchedPhotoUrl] = useState<string | undefined | null>(undefined);
   const [fetchedAttributionHtml, setFetchedAttributionHtml] = useState<string | undefined>(undefined);
@@ -69,6 +77,7 @@ export function MomentsMap({ moments }: MomentsMapProps) {
   }, []);
 
   const handleMarkerClick = useCallback(async (moment: Moment) => {
+    setSelectedHotspot(null);
     setSelectedMoment(moment);
     resetPhotoState();
 
@@ -80,7 +89,7 @@ export function MomentsMap({ moments }: MomentsMapProps) {
           setFetchedPhotoUrl(result.photoUrl);
           setFetchedAttributionHtml(result.attributionHtml);
         } else {
-          setFetchedPhotoUrl(null); // Explicitly set to null if no photo found
+          setFetchedPhotoUrl(null);
           setPhotoError("No photo found for this place.");
         }
       } catch (err) {
@@ -91,8 +100,20 @@ export function MomentsMap({ moments }: MomentsMapProps) {
         setIsPhotoLoading(false);
       }
     } else {
-      setFetchedPhotoUrl(null); // No placeName to search for
+      setFetchedPhotoUrl(null);
     }
+  }, [resetPhotoState]);
+
+  const handleHotspotClick = useCallback((hotspot: Hotspot) => {
+    setSelectedMoment(null);
+    setSelectedHotspot(hotspot);
+    resetPhotoState();
+  }, [resetPhotoState]);
+
+  const handleMapClick = useCallback(() => {
+    setSelectedMoment(null);
+    setSelectedHotspot(null);
+    resetPhotoState();
   }, [resetPhotoState]);
 
   const validMoments = useMemo(() => moments.filter(moment => moment.coordinates), [moments]);
@@ -101,25 +122,20 @@ export function MomentsMap({ moments }: MomentsMapProps) {
     if (validMoments.length > 0 && validMoments[0].coordinates) {
       return { lat: validMoments[0].coordinates.lat, lng: validMoments[0].coordinates.lng };
     }
-    return { lat: 40.7128, lng: -74.0060 };
+    return { lat: 51.5072, lng: -0.1276 }; // Default to London
   }, [validMoments]);
 
-  const markers = useMemo(() =>
-    validMoments.map((moment) => (
-      moment.coordinates ?
-      <MarkerF
-        key={moment.id}
-        position={{ lat: moment.coordinates.lat, lng: moment.coordinates.lng }}
-        title={moment.placeName}
-        onClick={() => handleMarkerClick(moment)}
-      /> : null
-    ))
-  , [validMoments, handleMarkerClick]);
-
-  const handleInfoWindowClose = useCallback(() => {
-    setSelectedMoment(null);
-    resetPhotoState();
-  }, [resetPhotoState]);
+  const hotspotMarkerIcon = useMemo(() => {
+    if (!isMounted || typeof window === 'undefined' || !window.google) return undefined;
+    return {
+      path: window.google.maps.SymbolPath.CIRCLE,
+      fillColor: '#FBBF24', // amber-400
+      fillOpacity: 0.8,
+      strokeColor: '#FFFFFF',
+      strokeWeight: 2,
+      scale: 8,
+    };
+  }, [isMounted]);
 
   if (!isMounted) {
     return <div className="flex items-center justify-center h-full bg-muted rounded-lg"><Loader2 className="h-6 w-6 animate-spin text-primary mr-2" />Loading map...</div>;
@@ -139,27 +155,46 @@ export function MomentsMap({ moments }: MomentsMapProps) {
     <LoadScriptNext
         id="app-google-maps-script"
         googleMapsApiKey={apiKey}
-        libraries={libraries} // Added consistent libraries prop
+        libraries={libraries}
         loadingElement={<CustomLoadingElement />}
         preventGoogleFontsLoading={true}
     >
       <GoogleMap
         mapContainerStyle={containerStyle}
         center={center}
-        zoom={validMoments.length > 0 ? 12 : 5}
+        zoom={validMoments.length > 0 || (hotspots && hotspots.length > 0) ? 12 : 5}
         options={{
           streetViewControl: false,
           mapTypeControl: false,
           fullscreenControl: false,
           styles: mapStyles,
         }}
-        onClick={handleInfoWindowClose}
+        onClick={handleMapClick}
       >
-        {isMounted && markers}
-        {selectedMoment && selectedMoment.coordinates && isMounted && typeof window !== 'undefined' && window.google && (
+        {isMounted && validMoments.map((moment) => (
+          moment.coordinates ?
+          <MarkerF
+            key={moment.id}
+            position={{ lat: moment.coordinates.lat, lng: moment.coordinates.lng }}
+            title={moment.placeName}
+            onClick={() => handleMarkerClick(moment)}
+          /> : null
+        ))}
+
+        {isMounted && hotspots?.map((hotspot) => (
+          <MarkerF
+            key={hotspot.id}
+            position={hotspot.coordinates}
+            title={hotspot.title}
+            icon={hotspotMarkerIcon}
+            onClick={() => handleHotspotClick(hotspot)}
+          />
+        ))}
+
+        {selectedMoment && selectedMoment.coordinates && isMounted && (
           <InfoWindowF
-            position={{ lat: selectedMoment.coordinates.lat, lng: selectedMoment.coordinates.lng }}
-            onCloseClick={handleInfoWindowClose}
+            position={selectedMoment.coordinates}
+            onCloseClick={handleMapClick}
             options={{ pixelOffset: new window.google.maps.Size(0, -35) }}
           >
             <div className="p-2 bg-card text-card-foreground rounded-lg shadow-xl max-w-xs w-64 space-y-2">
@@ -189,10 +224,7 @@ export function MomentsMap({ moments }: MomentsMapProps) {
               )}
 
               <p className="text-xs text-muted-foreground">
-                {format(new Date(selectedMoment.timestamp), "MMM d, yyyy")}
-              </p>
-              <p className="text-xs text-muted-foreground">
-                {format(new Date(selectedMoment.timestamp), "p")}
+                {format(new Date(selectedMoment.timestamp), "MMM d, yyyy, p")}
               </p>
               {fetchedAttributionHtml && (
                 <div className="text-[10px] text-muted-foreground/70 leading-tight" dangerouslySetInnerHTML={{ __html: fetchedAttributionHtml }} />
@@ -200,10 +232,24 @@ export function MomentsMap({ moments }: MomentsMapProps) {
             </div>
           </InfoWindowF>
         )}
+
+        {selectedHotspot && selectedHotspot.coordinates && isMounted && (
+          <InfoWindowF
+            position={selectedHotspot.coordinates}
+            onCloseClick={handleMapClick}
+            options={{ pixelOffset: new window.google.maps.Size(0, -35) }}
+          >
+            <div className="p-2 bg-card text-card-foreground rounded-lg shadow-xl max-w-xs w-64 space-y-2">
+              <div className="flex items-center gap-2">
+                {React.createElement(hotspotIcons[selectedHotspot.type], {className: "w-5 h-5 text-amber-400"})}
+                <h4 className="font-bold text-md text-amber-400 truncate">{selectedHotspot.type}</h4>
+              </div>
+              <p className="font-semibold text-foreground">{selectedHotspot.title}</p>
+              <p className="text-xs text-muted-foreground italic">"{selectedHotspot.description}"</p>
+            </div>
+          </InfoWindowF>
+        )}
       </GoogleMap>
     </LoadScriptNext>
   );
 }
-
-
-    

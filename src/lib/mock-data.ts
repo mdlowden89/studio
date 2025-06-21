@@ -1,5 +1,4 @@
-
-import type { UserProfile, Moment, ChatConversation, ChatMessage, ProfilePrompt, CrossedPathUser, Achievement, Challenge } from './types';
+import type { UserProfile, Moment, ChatConversation, ChatMessage, ProfilePrompt, CrossedPathUser, Achievement, Challenge, Hotspot } from './types';
 import { Flame, Zap, Compass, Sparkles, CalendarCheck2, MessageCircleReply, Globe, HeartHandshake, UserCheck, Target as TargetIcon } from 'lucide-react';
 
 export const MOCK_USER_ID = 'user-123';
@@ -746,3 +745,27 @@ export const MOCK_CROSSED_PATHS_USERS: CrossedPathUser[] = MOCK_USERS.filter(u =
   crossedAt: daysAgo(index + 0.1), 
   location: index % 3 === 0 ? 'The Shard' : (index % 3 === 1 ? 'Tate Modern' : 'British Museum'), 
 }));
+
+export const MOCK_HOTSPOTS: Hotspot[] = [
+  {
+    id: 'hs-1',
+    type: 'Connection Zone',
+    title: 'British Museum Area',
+    description: '3 recent Moments were logged here this week.',
+    coordinates: { lat: 51.5194, lng: -0.1270 },
+  },
+  {
+    id: 'hs-2',
+    type: 'Serendipity Spike',
+    title: 'Near The Shard',
+    description: 'This area had 2 Double Sparks today.',
+    coordinates: { lat: 51.5055, lng: -0.0875 },
+  },
+  {
+    id: 'hs-3',
+    type: 'Loop Zone',
+    title: 'Covent Garden Market',
+    description: 'You’ve crossed paths with multiple users here before.',
+    coordinates: { lat: 51.5118, lng: -0.1245 },
+  },
+];
