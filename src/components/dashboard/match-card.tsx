@@ -6,23 +6,73 @@ import type { UserProfile, CrossedPathUser } from "@/lib/types";
 import { Card, CardContent, CardFooter, CardHeader, CardTitle, CardDescription } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
-import { Heart, X, MapPin, Info, Ruler, Users, Baby, ListChecks, Wine, ChevronLeftIcon, ChevronRightIcon, Sparkles as SparklesIcon } from "lucide-react";
+import { Heart, X, MapPin, Info, Ruler, Users, Baby, ListChecks, Wine, ChevronLeftIcon, ChevronRightIcon, Sparkles as SparklesIcon, Compass, BrainCircuit, TrendingUp, Loader2 } from "lucide-react";
 import { useState } from "react";
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger } from "@/components/ui/dialog";
 import { ScrollArea } from "@/components/ui/scroll-area";
 import { Separator } from "@/components/ui/separator";
-import { AVAILABLE_PROMPTS } from "@/lib/mock-data";
+import { AVAILABLE_PROMPTS, getCurrentUser } from "@/lib/mock-data";
 import React from "react";
+import type { SparkSwipeOutput } from "@/ai/flows/spark-swipe-flow";
+import { Skeleton } from "@/components/ui/skeleton";
 
 interface MatchCardProps {
   user: UserProfile | CrossedPathUser;
   onLike: (userId: string) => void;
   onPass: (userId: string) => void;
   showCrossedPathInfo?: boolean;
-  displayMode?: 'condensed' | 'detailedVibes';
+  sparkInsights?: SparkSwipeOutput | null;
+  isInsightsLoading?: boolean;
 }
 
-export function MatchCard({ user, onLike, onPass, showCrossedPathInfo = false, displayMode = 'condensed' }: MatchCardProps) {
+const SparkInsightsPanel = ({ insights }: { insights: SparkSwipeOutput }) => (
+  <div className="space-y-3 p-3 bg-muted/50 rounded-lg">
+    <h4 className="text-sm font-semibold text-primary flex items-center gap-1.5">
+      <SparklesIcon className="w-4 h-4" />
+      Spark Insights (Premium)
+    </h4>
+    <p className="text-xs italic text-foreground/90">{`"${insights.headlineReasoning}"`}</p>
+    <ul className="space-y-2 text-xs">
+       {insights.vibeTagAnalysis.commonTags.length > 0 && (
+         <li className="flex items-start gap-2">
+            <BrainCircuit className="w-4 h-4 text-foreground/70 mt-0.5 shrink-0" />
+            <div>
+                <span className="font-medium">Shared Vibes:</span>
+                <div className="flex flex-wrap gap-1 mt-0.5">
+                    {insights.vibeTagAnalysis.commonTags.map(tag => <Badge key={tag} variant="secondary" className="text-xs capitalize">{tag}</Badge>)}
+                </div>
+            </div>
+         </li>
+       )}
+        <li className="flex items-start gap-2">
+            <Compass className="w-4 h-4 text-foreground/70 mt-0.5 shrink-0" />
+            <span><span className="font-medium">Rhythm Overlap:</span> {insights.locationAnalysis.compatibilityReasoning}</span>
+        </li>
+        <li className="flex items-start gap-2">
+            <TrendingUp className="w-4 h-4 text-foreground/70 mt-0.5 shrink-0" />
+            <span><span className="font-medium">Spark Flow Score:</span> {insights.sparkFlowScore}% momentum prediction.</span>
+        </li>
+    </ul>
+  </div>
+);
+
+const SparkInsightsLoader = () => (
+    <div className="space-y-2 p-3 bg-muted/50 rounded-lg">
+        <div className="flex items-center gap-1.5">
+            <Loader2 className="w-4 h-4 text-primary animate-spin" />
+            <Skeleton className="h-4 w-40" />
+        </div>
+        <Skeleton className="h-3 w-full" />
+        <Skeleton className="h-3 w-5/6" />
+         <div className="flex items-center gap-2 pt-2">
+            <Skeleton className="h-6 w-6 rounded-full" />
+            <Skeleton className="h-4 w-4/5" />
+        </div>
+    </div>
+);
+
+
+export function MatchCard({ user, onLike, onPass, showCrossedPathInfo = false, sparkInsights, isInsightsLoading = false }: MatchCardProps) {
   const [currentImageIndex, setCurrentImageIndex] = useState(0);
 
   const nextImage = (e: React.MouseEvent) => {
@@ -39,7 +89,6 @@ export function MatchCard({ user, onLike, onPass, showCrossedPathInfo = false, d
   const cardFaceImage = user.images.length > 0 ? user.images[currentImageIndex] : "https://placehold.co/600x800.png";
 
   const userDetails = [
-    { icon: MapPin, label: "Location", value: user.locationName || user.locationAddress?.split(',')[0] || "N/A" },
     { icon: Ruler, label: "Height", value: user.height && user.height !== "Prefer Not to Say" ? user.height : "N/A" },
     { icon: Users, label: "Ethnicity", value: user.ethnicity && user.ethnicity !== "Prefer Not to Say" ? user.ethnicity : "N/A" },
     { icon: Baby, label: "Children", value: user.childrenStatus && user.childrenStatus !== "Prefer Not to Say" ? user.childrenStatus : "N/A" },
@@ -55,6 +104,9 @@ export function MatchCard({ user, onLike, onPass, showCrossedPathInfo = false, d
   const imgForPrompt1 = imagesForSpecificPlacement[2];
   const imgForPrompt2 = imagesForSpecificPlacement[3];
   const remainingDialogImages = imagesForSpecificPlacement.slice(4);
+  
+  const currentUser = getCurrentUser();
+  const commonVibeTags = currentUser.vibeTags.filter(tag => user.vibeTags.includes(tag));
 
 
   return (
@@ -102,34 +154,10 @@ export function MatchCard({ user, onLike, onPass, showCrossedPathInfo = false, d
           </div>
         </CardHeader>
         <CardContent className="p-4 flex-grow overflow-y-auto">
-            {displayMode === 'detailedVibes' ? (
-                <div className="space-y-3">
-                    <h4 className="text-sm font-semibold text-primary flex items-center gap-1.5">
-                        <SparklesIcon className="w-4 h-4" />
-                        Their Vibe Tags:
-                    </h4>
-                    {user.vibeTags.length > 0 ? (
-                        <div className="flex flex-col items-start gap-1.5">
-                            {user.vibeTags.map((tag) => (
-                                <Badge key={tag} variant="secondary" className="text-xs capitalize px-2 py-0.5">{tag}</Badge>
-                            ))}
-                        </div>
-                    ) : (
-                        <p className="text-xs text-muted-foreground italic">No vibe tags shared yet.</p>
-                    )}
-                    
-                    {user.prompts.slice(0,1).map(p => {
-                        const promptDetails = AVAILABLE_PROMPTS.find(ap => ap.id === p.promptId);
-                        return promptDetails ? (
-                        <div key={p.promptId} className="mt-3 pt-3 border-t border-border">
-                            <p className="text-xs font-semibold text-foreground/80 mb-0.5">{promptDetails.question}</p>
-                            <p className="text-sm text-foreground">{p.answer}</p>
-                        </div>
-                        ) : null;
-                    })}
-                </div>
-            ) : ( // Condensed mode
-                <>
+            {isInsightsLoading && <SparkInsightsLoader />}
+            {sparkInsights && !isInsightsLoading && <SparkInsightsPanel insights={sparkInsights} />}
+            {!isInsightsLoading && !sparkInsights && (
+                 <>
                     <div className="flex flex-wrap gap-2 mb-3">
                         {user.vibeTags.slice(0, 3).map((tag) => (
                         <Badge key={tag} variant="secondary" className="text-xs capitalize">{tag}</Badge>
@@ -186,8 +214,22 @@ export function MatchCard({ user, onLike, onPass, showCrossedPathInfo = false, d
               />
             </div>
           </div>
+          
+           {commonVibeTags.length > 0 && (
+            <>
+                <div className="px-6 pb-4">
+                  <h3 className="text-lg font-semibold text-primary mb-2">You both dig:</h3>
+                  <div className="flex flex-col items-start gap-1.5">
+                    {commonVibeTags.map(tag => (
+                      <Badge key={tag} variant="secondary" className="text-sm capitalize">{tag}</Badge>
+                    ))}
+                  </div>
+                </div>
+                <Separator className="my-0 bg-border" />
+            </>
+          )}
 
-          <div className="px-6 pt-1 pb-3">
+          <div className="px-6 pt-4 pb-3">
             <div className="w-full flex flex-nowrap justify-around overflow-x-auto p-3 bg-muted/30 rounded-lg">
               {userDetails.map((detail, index) => (
                  (detail.value && detail.value !== "N/A") && (

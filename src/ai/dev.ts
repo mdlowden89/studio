@@ -27,3 +27,4 @@ if (result.error) {
 import '@/ai/flows/suggest-vibe-tags-flow.ts';
 import '@/ai/flows/suggest-bio-flow.ts';
 import '@/ai/flows/get-place-photo-flow.ts';
+import '@/ai/flows/spark-swipe-flow.ts';

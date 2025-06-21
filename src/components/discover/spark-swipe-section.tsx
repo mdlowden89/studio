@@ -2,9 +2,9 @@
 "use client";
 
 import { useState, useEffect, useCallback } from "react";
-import { MOCK_USERS, MOCK_USER_ID, getCurrentUser, AVAILABLE_PROMPTS } from "@/lib/mock-data";
+import { getCurrentUser, MOCK_USERS } from "@/lib/mock-data";
 import type { UserProfile } from "@/lib/types";
-import { MatchCard } from "@/components/dashboard/match-card"; 
+import { MatchCard } from "@/components/dashboard/match-card";
 import { Button } from "@/components/ui/button";
 import { RefreshCw, Users, Undo2, HeartHandshake as HeartHandshakeIcon, Sparkles as SparklesIcon, Loader2 } from "lucide-react";
 import { useToast } from "@/hooks/use-toast";
@@ -20,6 +20,8 @@ import {
 } from "@/components/ui/alert-dialog";
 import ReactConfetti from 'react-confetti';
 import { Card, CardHeader, CardTitle, CardDescription, CardContent } from "@/components/ui/card";
+import { fetchSparkSwipeInsights } from "@/app/actions";
+import type { SparkSwipeOutput } from "@/ai/flows/spark-swipe-flow";
 
 export function SparkSwipeSection() {
   const [sparkUsers, setSparkUsers] = useState<UserProfile[]>([]);
@@ -30,6 +32,9 @@ export function SparkSwipeSection() {
   const [matchedUserName, setMatchedUserName] = useState("");
   const [windowSize, setWindowSize] = useState({ width: 0, height: 0 });
   const [isLoading, setIsLoading] = useState(true);
+
+  const [insights, setInsights] = useState<SparkSwipeOutput | null>(null);
+  const [isInsightsLoading, setIsInsightsLoading] = useState(false);
 
   const loadSparkUsers = useCallback(() => {
     setIsLoading(true);
@@ -49,28 +54,55 @@ export function SparkSwipeSection() {
 
     setTimeout(() => {
       const potentialMatches = MOCK_USERS.filter(user => {
-        if (user.id === MOCK_USER_ID) return false;
+        if (user.id === currentUser.id) return false;
         return user.prompts.some(p => currentUserPromptIds.has(p.promptId));
       });
 
-      setSparkUsers([...potentialMatches].sort(() => 0.5 - Math.random())); 
+      setSparkUsers([...potentialMatches].sort(() => 0.5 - Math.random()));
       setCurrentIndex(0);
       setPreviousIndex(null);
       setIsLoading(false);
 
       if (potentialMatches.length === 0) {
-          toast({
-              title: "No Spark Matches Found",
-              description: "We couldn't find users who answered similar prompts right now. Try refreshing later or broadening your profile!",
-              duration: 4000,
-          });
+        toast({
+          title: "No Spark Matches Found",
+          description: "We couldn't find users who answered similar prompts right now. Try refreshing later or broadening your profile!",
+          duration: 4000,
+        });
       }
-    }, 750); 
+    }, 750);
   }, [toast]);
 
   useEffect(() => {
     loadSparkUsers();
   }, [loadSparkUsers]);
+  
+  useEffect(() => {
+    if (sparkUsers.length > 0 && currentIndex < sparkUsers.length) {
+      const currentUser = getCurrentUser();
+      const candidateUser = sparkUsers[currentIndex];
+
+      const getInsights = async () => {
+        setIsInsightsLoading(true);
+        setInsights(null);
+        try {
+          const result = await fetchSparkSwipeInsights(currentUser, candidateUser);
+          setInsights(result);
+        } catch (error) {
+          console.error("Failed to fetch insights", error);
+          toast({
+            title: "Could not load Spark Insights",
+            description: "There was an error getting AI insights for this match.",
+            variant: "destructive",
+          });
+        } finally {
+          setIsInsightsLoading(false);
+        }
+      };
+      
+      getInsights();
+    }
+  }, [currentIndex, sparkUsers, toast]);
 
   useEffect(() => {
     const handleResize = () => {
@@ -93,7 +125,7 @@ export function SparkSwipeSection() {
     if (!actionUser) return;
 
     if (action === "like") {
-      const isMutualMatch = Math.random() < 0.5; 
+      const isMutualMatch = Math.random() < 0.5;
       if (isMutualMatch) {
         setMatchedUserName(actionUser.name);
         setShowMatchAnimation(true);
@@ -119,6 +151,8 @@ export function SparkSwipeSection() {
         title: "That's all Spark Matches for now!",
         description: "Check back later or refresh for new recommendations.",
       });
+       // To show the 'empty' state, we can advance the index past the end of the array
+      setCurrentIndex(currentIndex + 1);
     }
   };
 
@@ -196,7 +230,7 @@ export function SparkSwipeSection() {
           <SparklesIcon className="w-8 h-8 text-primary mx-auto mb-1 animate-pulse" />
           <CardTitle className="text-xl font-semibold">Spark Swipe</CardTitle>
           <CardDescription className="text-muted-foreground text-sm">
-            Connections based on shared profile prompt interests.
+            Swipe with meaning. Match through mood, movement, and mutual energy.
           </CardDescription>
         </CardHeader>
       </Card>
@@ -206,13 +240,14 @@ export function SparkSwipeSection() {
         user={currentUserToDisplay}
         onLike={handleLike}
         onPass={handlePass}
-        displayMode="detailedVibes"
+        sparkInsights={insights}
+        isInsightsLoading={isInsightsLoading}
       />
       <div className="flex gap-2 mt-4">
-        <Button onClick={handleUndo} variant="outline" disabled={previousIndex === null}>
+        <Button onClick={handleUndo} variant="outline" disabled={previousIndex === null || isInsightsLoading}>
           <Undo2 className="mr-2 h-4 w-4" /> Undo
         </Button>
-        <Button onClick={refreshUsers} variant="outline">
+        <Button onClick={refreshUsers} variant="outline" disabled={isInsightsLoading}>
           <RefreshCw className="mr-2 h-4 w-4" /> Refresh Sparks
         </Button>
       </div>

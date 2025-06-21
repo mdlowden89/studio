@@ -4,6 +4,7 @@
 import { suggestVibeTagsForUser, SuggestVibeTagsInput } from "@/ai/flows/suggest-vibe-tags-flow";
 import { suggestBioForUser, SuggestBioInput } from "@/ai/flows/suggest-bio-flow";
 import { getPlacePhoto, GetPlacePhotoInput, GetPlacePhotoOutput } from "@/ai/flows/get-place-photo-flow"; // Import GetPlacePhotoOutput
+import { getSparkSwipeInsights, SparkSwipeInput, SparkSwipeOutput } from "@/ai/flows/spark-swipe-flow";
 import type { UserProfile } from "@/lib/types";
 
 export async function getAiSuggestedVibeTags(
@@ -57,5 +58,21 @@ export async function fetchPlacePhoto(
     // This catch block handles errors if the getPlacePhoto flow itself fails to execute
     // or if there's an unhandled exception within it not caught by its internal try/catch.
     return { photoUrl: undefined, attributionHtml: undefined, error: 'ACTION_EXECUTION_ERROR' };
+  }
+}
+
+export async function fetchSparkSwipeInsights(
+  currentUserProfile: UserProfile,
+  candidateUserProfile: UserProfile
+): Promise<SparkSwipeOutput | null> {
+  try {
+    const input: SparkSwipeInput = { currentUserProfile, candidateUserProfile };
+    const result = await getSparkSwipeInsights(input);
+    return result;
+  } catch (error) {
+    console.error("Error in fetchSparkSwipeInsights action:", error);
+    // In a real app, you might want more granular error handling.
+    // For now, returning null allows the UI to handle the failure gracefully.
+    return null;
   }
 }
