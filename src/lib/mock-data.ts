@@ -768,4 +768,11 @@ export const MOCK_HOTSPOTS: Hotspot[] = [
     description: 'You’ve crossed paths with multiple users here before.',
     coordinates: { lat: 51.5118, lng: -0.1245 },
   },
+  {
+    id: 'hs-4',
+    type: 'Serendipity Spike',
+    title: 'Sky Garden Views',
+    description: 'High-vibe connections are sparking here with the scenic views.',
+    coordinates: { lat: 51.5109, lng: -0.0837 },
+  },
 ];
