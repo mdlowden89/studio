@@ -4,7 +4,7 @@
 import { useState, useEffect, useMemo, useCallback } from "react";
 import { AppLayout } from "@/components/layout/app-layout";
 import { Card, CardContent, CardHeader, CardTitle, CardDescription, CardFooter } from "@/components/ui/card";
-import { Sparkles, PlusCircle, ClipboardList, Users, MessageSquare, Route, MapPin, CalendarDays, Users2, TrendingUp, Activity, Map, LayoutGrid, List as ListIcon, Lightbulb, Edit3, Repeat, Star } from "lucide-react";
+import { Sparkles, PlusCircle, ClipboardList, Users, MessageSquare, Route, MapPin, CalendarDays, Users2, TrendingUp, Activity, Map, LayoutGrid, List as ListIcon, Lightbulb, Edit3, Repeat, Star, ShoppingBag, Zap, Undo2, Eye, BrainCircuit } from "lucide-react";
 import { getCurrentUser, MOCK_MOMENTS, MOCK_CROSSED_PATHS_USERS, MOCK_CHAT_CONVERSATIONS, MOCK_USER_ID, MOCK_USERS, baseDate, AVAILABLE_PROMPTS, MOCK_AVAILABLE_CHALLENGES } from "@/lib/mock-data";
 import { Button } from "@/components/ui/button";
 import { Separator } from "@/components/ui/separator";
@@ -17,6 +17,7 @@ import { Progress } from "@/components/ui/progress";
 import { CrossdPlusUpsellDialog } from "@/components/pricing/crossd-plus-upsell-dialog";
 import { FreeBoostUpsellDialog } from "@/components/pricing/free-boost-upsell-dialog";
 import { useSearchParams, useRouter } from "next/navigation";
+import { useToast } from "@/hooks/use-toast";
 
 
 export default function DashboardPage() {
@@ -30,6 +31,7 @@ export default function DashboardPage() {
 
   const searchParams = useSearchParams();
   const router = useRouter();
+  const { toast } = useToast();
 
   const momentsLoggedCount = MOCK_MOMENTS.filter(moment => moment.userId === MOCK_USER_ID).length;
   const potentialMatchesCount = MOCK_CROSSED_PATHS_USERS.length;
@@ -124,6 +126,44 @@ export default function DashboardPage() {
     );
   }, []);
 
+  const boosters = [
+    {
+      icon: Zap,
+      title: "Glow Mode Boost",
+      price: "£3.49",
+      description: "24-hour visibility surge, neon spark aura, and priority placement in feeds.",
+      tagline: "Your spark. Center stage.",
+    },
+    {
+      icon: Repeat,
+      title: "Echo Replay",
+      price: "£2.49",
+      description: "Rewatch one expired or missed Moment and see when/where you crossed paths.",
+      tagline: "Time passed. But your moment didn’t have to.",
+    },
+    {
+      icon: Undo2,
+      title: "Undo Pass (Backtrack)",
+      price: "£1.99",
+      description: "Instantly rewind your last accidental swipe/pass to get a second chance.",
+      tagline: "One swipe shouldn’t seal your fate.",
+    },
+    {
+      icon: Eye,
+      title: "Free Like Reveal",
+      price: "£1.49",
+      description: "View one of your blurred Likes without needing to match first.",
+      tagline: "One reveal. One heartbeat closer.",
+    },
+    {
+      icon: BrainCircuit,
+      title: "FateSync Toolkit",
+      price: "£7.99",
+      description: "Get a full AI-powered compatibility analysis, AI message starters, and enhanced moment visuals.",
+      tagline: "When your spark deserves more than a swipe.",
+      colSpan: 'sm:col-span-2 lg:col-span-1',
+    },
+  ];
 
   return (
     <AppLayout>
@@ -372,7 +412,7 @@ export default function DashboardPage() {
           </CardContent>
         </Card>
 
-        <Card className="bg-gradient-to-br from-primary/10 via-card to-card shadow-xl border-primary/30">
+        <Card className="mb-8 bg-gradient-to-br from-primary/10 via-card to-card shadow-xl border-primary/30">
           <CardHeader className="text-center">
             <div className="mx-auto flex h-16 w-16 items-center justify-center rounded-full bg-primary/80 mb-3 shadow-lg animate-pulse">
               <Star className="h-8 w-8 text-primary-foreground" />
@@ -393,6 +433,77 @@ export default function DashboardPage() {
           </CardFooter>
         </Card>
 
+        <Card className="mb-8 bg-card shadow-xl">
+          <CardHeader>
+            <div className="flex items-center gap-3">
+              <ShoppingBag className="w-8 h-8 text-primary" />
+              <div>
+                <CardTitle className="text-2xl font-bold">A La Carte Boosters</CardTitle>
+                <CardDescription className="text-muted-foreground">
+                  Enhance your experience with powerful one-time purchases.
+                </CardDescription>
+              </div>
+            </div>
+          </CardHeader>
+          <CardContent>
+            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
+              {boosters.slice(0, 4).map((booster) => {
+                const BoosterIcon = booster.icon;
+                return (
+                  <Card key={booster.title} className="bg-muted/30 flex flex-col">
+                    <CardHeader>
+                      <div className="flex items-center gap-3">
+                        <BoosterIcon className="w-7 h-7 text-primary" />
+                        <CardTitle className="text-lg">{booster.title}</CardTitle>
+                      </div>
+                    </CardHeader>
+                    <CardContent className="flex-grow space-y-2">
+                      <p className="text-sm text-muted-foreground">{booster.description}</p>
+                      <p className="text-xs italic text-foreground/80">&quot;{booster.tagline}&quot;</p>
+                    </CardContent>
+                    <CardFooter className="flex items-center justify-between pt-4">
+                      <p className="text-lg font-bold text-primary">{booster.price}</p>
+                      <Button variant="outline" size="sm" onClick={() => toast({ title: "Coming Soon!", description: `${booster.title} checkout is not yet implemented.` })}>
+                        Purchase
+                      </Button>
+                    </CardFooter>
+                  </Card>
+                );
+              })}
+              {/* Special layout for the last, larger booster */}
+              {boosters.length > 4 && (() => {
+                  const lastBooster = boosters[4];
+                  const BoosterIcon = lastBooster.icon;
+                  return (
+                    <Card key={lastBooster.title} className="sm:col-span-2 lg:col-span-3 bg-muted/40 border-primary/30 flex flex-col sm:flex-row items-start gap-4 p-4">
+                        <div className="flex items-center gap-3 w-full sm:w-auto">
+                            <BoosterIcon className="w-10 h-10 text-primary flex-shrink-0" />
+                            <div className="sm:hidden">
+                                <CardTitle className="text-lg">{lastBooster.title}</CardTitle>
+                                <p className="text-lg font-bold text-primary">{lastBooster.price}</p>
+                            </div>
+                        </div>
+                        <div className="flex-grow">
+                             <div className="hidden sm:block">
+                                <CardTitle className="text-lg">{lastBooster.title}</CardTitle>
+                            </div>
+                            <p className="text-sm text-muted-foreground mt-1">{lastBooster.description}</p>
+                            <p className="text-xs italic text-foreground/80 mt-2">&quot;{lastBooster.tagline}&quot;</p>
+                        </div>
+                        <div className="flex flex-col items-center justify-center w-full sm:w-auto mt-4 sm:mt-0">
+                           <p className="hidden sm:block text-xl font-bold text-primary mb-2">{lastBooster.price}</p>
+                           <Button className="w-full sm:w-auto" onClick={() => toast({ title: "Coming Soon!", description: `${lastBooster.title} checkout is not yet implemented.` })}>
+                            Purchase Toolkit
+                           </Button>
+                        </div>
+                    </Card>
+                  );
+              })()}
+            </div>
+          </CardContent>
+        </Card>
+
+
         <CrossdPlusUpsellDialog
           isOpen={showUpsellDialog}
           onOpenChange={setShowUpsellDialog}
@@ -410,3 +521,4 @@ export default function DashboardPage() {
     
 
     
+
