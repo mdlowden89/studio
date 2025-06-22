@@ -31,7 +31,7 @@ const MOCK_ACHIEVEMENTS_FOR_CURRENT_USER: Achievement[] = [
     description: 'Logged a Moment 3 days in a row.',
     icon: Flame,
     achievedDate: daysAgo(1),
-    rewards: ['Preview a Hidden Like'],
+    rewards: ['🔓 Preview a Hidden Like'],
     glowEffect: false,
   },
   {
@@ -50,7 +50,7 @@ const MOCK_ACHIEVEMENTS_FOR_CURRENT_USER: Achievement[] = [
     description: 'Visited 3 different neighborhoods in a week.',
     icon: Compass,
     achievedDate: daysAgo(2),
-    rewards: ['Echo Replay Token'],
+    rewards: ['🎁 Echo Replay Token'],
   },
   {
     id: 'achieve-4',
@@ -59,7 +59,7 @@ const MOCK_ACHIEVEMENTS_FOR_CURRENT_USER: Achievement[] = [
     description: 'Matched + started a conversation in under 2 hours.',
     icon: Sparkles,
     achievedDate: daysAgo(10),
-    rewards: ['6-Hour Boosted Glow'],
+    rewards: ['🌟 6-Hour Boosted Glow'],
     glowEffect: true,
   },
   {
@@ -561,7 +561,6 @@ export const MOCK_MOMENTS: Moment[] = [
     timestamp: daysAgo(1, 2, 30), 
     potentialMatchId: 'user-1',
     coordinates: { lat: 51.5045, lng: -0.0865 },
-    placeImage: 'https://placehold.co/200x150.png'
   },
   {
     id: 'moment-recap-2',
@@ -569,7 +568,6 @@ export const MOCK_MOMENTS: Moment[] = [
     placeName: 'Tower of London',
     timestamp: daysAgo(2, 5, 15), 
     coordinates: { lat: 51.5081, lng: -0.0759 },
-    placeImage: 'https://placehold.co/200x150.png'
   },
   {
     id: 'moment-recap-3',
@@ -578,7 +576,6 @@ export const MOCK_MOMENTS: Moment[] = [
     timestamp: daysAgo(3, 1, 0), 
     potentialMatchId: 'user-2',
     coordinates: { lat: 51.5194, lng: -0.1270 },
-    placeImage: 'https://placehold.co/200x150.png'
   },
   {
     id: 'moment-recap-4',
@@ -586,7 +583,6 @@ export const MOCK_MOMENTS: Moment[] = [
     placeName: 'Tate Modern',
     timestamp: daysAgo(4, 7, 0), 
     coordinates: { lat: 51.5076, lng: -0.0994 },
-    placeImage: 'https://placehold.co/200x150.png'
   },
   {
     id: 'moment-recap-5',
@@ -595,7 +591,6 @@ export const MOCK_MOMENTS: Moment[] = [
     timestamp: daysAgo(5, -6, 0), 
     potentialMatchId: 'user-3',
     coordinates: { lat: 51.5055, lng: -0.0910 },
-    placeImage: 'https://placehold.co/200x150.png'
   },
   {
     id: 'moment-recap-6',
@@ -603,7 +598,6 @@ export const MOCK_MOMENTS: Moment[] = [
     placeName: 'Covent Garden',
     timestamp: daysAgo(0, 3, 0), 
     coordinates: { lat: 51.5118, lng: -0.1245 },
-    placeImage: 'https://placehold.co/200x150.png'
   },
   {
     id: 'moment-recap-7',
@@ -611,7 +605,6 @@ export const MOCK_MOMENTS: Moment[] = [
     placeName: 'Buckingham Palace',
     timestamp: daysAgo(6, 4, 0), 
     coordinates: { lat: 51.5014, lng: -0.1419 },
-    placeImage: 'https://placehold.co/200x150.png'
   },
   {
     id: 'moment-old-1',
@@ -619,7 +612,6 @@ export const MOCK_MOMENTS: Moment[] = [
     placeName: 'Old Cafe Not in London',
     timestamp: daysAgo(10),
     coordinates: { lat: 40.8000, lng: -74.1900 },
-    placeImage: 'https://placehold.co/200x150.png'
   },
   {
     id: 'moment-1', 
@@ -628,7 +620,6 @@ export const MOCK_MOMENTS: Moment[] = [
     timestamp: daysAgo(8, 3, 30), 
     potentialMatchId: 'user-1',
     coordinates: { lat: 40.8137, lng: -74.2097 },
-    placeImage: 'https://placehold.co/200x150.png'
   },
 ];
 
