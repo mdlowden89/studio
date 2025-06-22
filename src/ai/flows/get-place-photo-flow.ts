@@ -62,14 +62,9 @@ const getPlacePhotoFlow = ai.defineFlow(
       }
       
       if (!apiKey) {
-        const errorMsg = 'Google Places API Key is missing. Returning a placeholder image for development.';
-        console.warn(`getPlacePhotoFlow: ${errorMsg}`);
-        const placeholderUrl = `https://placehold.co/400x300.png`;
-        return {
-          photoUrl: placeholderUrl,
-          attributionHtml: `Placeholder for ${placeName}`,
-          error: undefined,
-        };
+        const errorMsg = 'Google Places API Key is missing. The Genkit server could not find NEXT_PUBLIC_GOOGLE_PLACES_API_KEY or GOOGLE_API_KEY in the environment.';
+        console.error(`getPlacePhotoFlow: ${errorMsg}`);
+        return { photoUrl: undefined, attributionHtml: undefined, error: 'API_KEY_MISSING' };
       }
       console.log(`getPlacePhotoFlow: Using API key from ${keySource} for place: ${placeName}`);
 
