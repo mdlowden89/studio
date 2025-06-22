@@ -21,6 +21,13 @@ export function MomentGalleryItem({ moment }: MomentGalleryItemProps) {
   const [errorCode, setErrorCode] = useState<string | null>(null);
 
   useEffect(() => {
+    // If a specific image is provided in the moment data, use it directly.
+    if (moment.placeImage) {
+      setPhotoUrl(moment.placeImage);
+      setIsLoading(false);
+      return;
+    }
+
     async function loadPhoto() {
       if (!moment.placeName) {
         setError("Place name is missing for this moment.");
@@ -75,7 +82,7 @@ export function MomentGalleryItem({ moment }: MomentGalleryItemProps) {
       }
     }
     loadPhoto();
-  }, [moment.placeName, moment.coordinates, moment.id]);
+  }, [moment.placeImage, moment.placeName, moment.coordinates, moment.id]);
 
   const momentDate = new Date(moment.timestamp);
 

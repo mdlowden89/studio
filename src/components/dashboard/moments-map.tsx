@@ -8,7 +8,7 @@ import { useMemo, useState, useEffect, useCallback } from 'react';
 import { format } from 'date-fns';
 import Image from 'next/image';
 import { fetchPlacePhoto } from '@/app/actions';
-import { Loader2, ImageOff, AlertTriangle } from 'lucide-react';
+import { Loader2, ImageOff, AlertTriangle, Heart, Sparkles, Sun, Moon } from 'lucide-react';
 
 interface MomentsMapProps {
   moments: Moment[];
@@ -48,6 +48,12 @@ const CustomLoadingElement = () => (
 
 const libraries: ("places")[] = ['places'];
 
+const hotspotIcons = {
+  'Connection Zone': '💕',
+  'Serendipity Spike': '✨',
+  'Loop Zone': '🔁',
+};
+
 export function MomentsMap({ moments, hotspots }: MomentsMapProps) {
   const [apiKey, setApiKey] = useState<string | undefined>(undefined);
   const [isMounted, setIsMounted] = useState(false);
@@ -75,6 +81,13 @@ export function MomentsMap({ moments, hotspots }: MomentsMapProps) {
     setSelectedHotspot(null);
     setSelectedMoment(moment);
     resetPhotoState();
+
+    // If a specific image is provided in the moment data, use it directly.
+    if (moment.placeImage) {
+      setFetchedPhotoUrl(moment.placeImage);
+      setIsPhotoLoading(false);
+      return;
+    }
 
     if (moment.placeName) {
       setIsPhotoLoading(true);
@@ -135,12 +148,7 @@ export function MomentsMap({ moments, hotspots }: MomentsMapProps) {
   const getHotspotEmoji = (hotspot: Hotspot): string => {
     if (hotspot.charge === 'morning') return '☀️';
     if (hotspot.charge === 'night') return '🌙';
-    switch (hotspot.type) {
-      case 'Connection Zone': return '💕';
-      case 'Serendipity Spike': return '✨';
-      case 'Loop Zone': return '🔁';
-      default: return '📍';
-    }
+    return hotspotIcons[hotspot.type] || '📍';
   };
 
   if (!isMounted) {
