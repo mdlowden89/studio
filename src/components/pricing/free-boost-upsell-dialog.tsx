@@ -14,10 +14,16 @@ import {
 } from "@/components/ui/dialog";
 import { Button } from "@/components/ui/button";
 import { ScrollArea } from "@/components/ui/scroll-area";
-import { X as XIcon, Zap, Sparkles, Star, Loader2 } from "lucide-react";
+import { X as XIcon, Zap, Sparkles, Star, Loader2, InfinityIcon, Eye, Rocket } from "lucide-react";
 import { useToast } from "@/hooks/use-toast";
 import { cn } from "@/lib/utils";
 import { CrossdLogoIcon } from "@/components/icons/crossd-logo";
+import {
+  Tooltip,
+  TooltipContent,
+  TooltipProvider,
+  TooltipTrigger,
+} from "@/components/ui/tooltip";
 
 interface FreeBoostUpsellDialogProps {
   isOpen: boolean;
@@ -164,13 +170,28 @@ export function FreeBoostUpsellDialog({ isOpen, onOpenChange }: FreeBoostUpsellD
                 What&apos;s included
               </div>
               <div className="space-y-2.5 text-left">
-                <div className="flex justify-between items-center p-3 bg-muted/30 rounded-md text-sm">
-                  <div className="flex items-center gap-2">
-                    <Star className="h-5 w-5 text-yellow-400 fill-yellow-400" />
-                    <span className="font-medium text-foreground">Crossd+ Platinum</span>
-                  </div>
-                  <span className="font-semibold text-foreground">£19.99/wk</span>
-                </div>
+                <TooltipProvider>
+                  <Tooltip>
+                    <TooltipTrigger asChild>
+                      <div className="flex justify-between items-center p-3 bg-muted/30 rounded-md text-sm cursor-help">
+                        <div className="flex items-center gap-2">
+                          <Star className="h-5 w-5 text-yellow-400 fill-yellow-400" />
+                          <span className="font-medium text-foreground">Crossd+ Platinum</span>
+                        </div>
+                        <span className="font-semibold text-foreground">£19.99/wk</span>
+                      </div>
+                    </TooltipTrigger>
+                    <TooltipContent className="bg-popover text-popover-foreground border-border shadow-md">
+                      <p className="font-semibold mb-2 text-primary">Platinum Features:</p>
+                      <ul className="space-y-1.5 text-xs">
+                        <li className="flex items-center gap-2"><InfinityIcon className="h-4 w-4 text-muted-foreground" /> Unlimited Likes</li>
+                        <li className="flex items-center gap-2"><Eye className="h-4 w-4 text-muted-foreground" /> See Who Likes You</li>
+                        <li className="flex items-center gap-2"><Rocket className="h-4 w-4 text-muted-foreground" /> VIP Profile</li>
+                        <li className="flex items-center gap-2"><Zap className="h-4 w-4 text-muted-foreground" /> Priority Likes</li>
+                      </ul>
+                    </TooltipContent>
+                  </Tooltip>
+                </TooltipProvider>
                 <div className="flex justify-between items-center p-3 bg-muted/30 rounded-md text-sm">
                   <div className="flex items-center gap-2">
                     <Zap className="h-5 w-5 text-primary" />
