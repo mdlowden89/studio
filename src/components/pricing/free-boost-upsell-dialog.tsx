@@ -13,12 +13,11 @@ import {
   DialogClose,
 } from "@/components/ui/dialog";
 import { Button } from "@/components/ui/button";
-import { Badge } from "@/components/ui/badge";
-import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { ScrollArea } from "@/components/ui/scroll-area";
 import { X as XIcon, Zap, Sparkles, Star, Loader2 } from "lucide-react";
 import { useToast } from "@/hooks/use-toast";
 import { cn } from "@/lib/utils";
+import { CrossdLogoIcon } from "@/components/icons/crossd-logo";
 
 interface FreeBoostUpsellDialogProps {
   isOpen: boolean;
@@ -140,10 +139,10 @@ export function FreeBoostUpsellDialog({ isOpen, onOpenChange }: FreeBoostUpsellD
               <Sparkles className="absolute -top-2 -left-2 h-5 w-5 sm:h-6 sm:w-6 text-primary animate-pulse opacity-70" style={{ transform: 'rotate(-25deg)' }} />
               <Sparkles className="absolute -top-1 -right-3 h-6 w-6 sm:h-7 sm:w-7 text-primary animate-pulse opacity-80 delay-100" style={{ transform: 'rotate(20deg)' }} />
               
-              <Avatar className="w-full h-full mx-auto border-4 border-primary/80 shadow-xl">
-                <AvatarImage src="https://placehold.co/128x128.png" alt="User Profile" data-ai-hint="attractive person" />
-                <AvatarFallback>U</AvatarFallback>
-              </Avatar>
+              <div className="w-full h-full mx-auto border-4 border-primary/80 shadow-xl rounded-full bg-card flex items-center justify-center">
+                <CrossdLogoIcon className="w-20 h-20 sm:w-24 sm:h-24 text-primary" />
+              </div>
+
               <div className="absolute -bottom-2 -right-2 bg-primary rounded-full p-1.5 shadow-md border-2 border-card">
                 <Zap className="h-4 w-4 text-primary-foreground" />
               </div>
