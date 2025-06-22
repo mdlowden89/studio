@@ -62,9 +62,14 @@ const getPlacePhotoFlow = ai.defineFlow(
       }
       
       if (!apiKey) {
-        const errorMsg = 'Google Places API Key is missing from .env file (checked NEXT_PUBLIC_GOOGLE_PLACES_API_KEY and GOOGLE_API_KEY). Flow cannot proceed.';
-        console.error(`getPlacePhotoFlow: ${errorMsg}`);
-        return { photoUrl: undefined, attributionHtml: undefined, error: 'API_KEY_MISSING' };
+        const errorMsg = 'Google Places API Key is missing. Returning a placeholder image for development.';
+        console.warn(`getPlacePhotoFlow: ${errorMsg}`);
+        const placeholderUrl = `https://placehold.co/400x300.png`;
+        return {
+          photoUrl: placeholderUrl,
+          attributionHtml: `Placeholder for ${placeName}`,
+          error: undefined,
+        };
       }
       console.log(`getPlacePhotoFlow: Using API key from ${keySource} for place: ${placeName}`);
 
@@ -164,5 +169,3 @@ const getPlacePhotoFlow = ai.defineFlow(
     }
   }
 );
-
-    
