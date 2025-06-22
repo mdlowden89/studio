@@ -1,4 +1,3 @@
-
 import type { UserProfile, Moment, ChatConversation, ChatMessage, ProfilePrompt, CrossedPathUser, Achievement, Challenge, Hotspot } from './types';
 import { Flame, Zap, Compass, Sparkles, CalendarCheck2, MessageCircleReply, Globe, HeartHandshake, UserCheck, Target as TargetIcon } from 'lucide-react';
 
@@ -562,6 +561,8 @@ export const MOCK_MOMENTS: Moment[] = [
     timestamp: daysAgo(1, 2, 30), 
     potentialMatchId: 'user-1',
     coordinates: { lat: 51.5045, lng: -0.0865 },
+    category: 'attraction',
+    isPremium: true,
   },
   {
     id: 'moment-recap-2',
@@ -569,6 +570,7 @@ export const MOCK_MOMENTS: Moment[] = [
     placeName: 'Tower of London',
     timestamp: daysAgo(2, 5, 15), 
     coordinates: { lat: 51.5081, lng: -0.0759 },
+    category: 'attraction',
   },
   {
     id: 'moment-recap-3',
@@ -577,6 +579,7 @@ export const MOCK_MOMENTS: Moment[] = [
     timestamp: daysAgo(3, 1, 0), 
     potentialMatchId: 'user-2',
     coordinates: { lat: 51.5194, lng: -0.1270 },
+    category: 'museum',
   },
   {
     id: 'moment-recap-4',
@@ -584,6 +587,8 @@ export const MOCK_MOMENTS: Moment[] = [
     placeName: 'Tate Modern',
     timestamp: daysAgo(4, 7, 0), 
     coordinates: { lat: 51.5076, lng: -0.0994 },
+    category: 'museum',
+    isPremium: true,
   },
   {
     id: 'moment-recap-5',
@@ -592,6 +597,7 @@ export const MOCK_MOMENTS: Moment[] = [
     timestamp: daysAgo(5, -6, 0), 
     potentialMatchId: 'user-3',
     coordinates: { lat: 51.5055, lng: -0.0910 },
+    category: 'market',
   },
   {
     id: 'moment-recap-6',
@@ -599,6 +605,7 @@ export const MOCK_MOMENTS: Moment[] = [
     placeName: 'Covent Garden',
     timestamp: daysAgo(0, 3, 0), 
     coordinates: { lat: 51.5118, lng: -0.1245 },
+    category: 'shopping',
   },
   {
     id: 'moment-recap-7',
@@ -606,6 +613,7 @@ export const MOCK_MOMENTS: Moment[] = [
     placeName: 'Buckingham Palace',
     timestamp: daysAgo(6, 4, 0), 
     coordinates: { lat: 51.5014, lng: -0.1419 },
+    category: 'attraction',
   },
   {
     id: 'moment-old-1',
@@ -613,6 +621,7 @@ export const MOCK_MOMENTS: Moment[] = [
     placeName: 'Old Cafe Not in London',
     timestamp: daysAgo(10),
     coordinates: { lat: 40.8000, lng: -74.1900 },
+    category: 'cafe',
   },
   {
     id: 'moment-1', 
@@ -621,6 +630,7 @@ export const MOCK_MOMENTS: Moment[] = [
     timestamp: daysAgo(8, 3, 30), 
     potentialMatchId: 'user-1',
     coordinates: { lat: 40.8137, lng: -74.2097 },
+    category: 'museum',
   },
 ];
 

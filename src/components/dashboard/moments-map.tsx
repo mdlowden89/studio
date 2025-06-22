@@ -1,4 +1,3 @@
-
 "use client";
 
 import * as React from 'react';
@@ -9,6 +8,7 @@ import { format } from 'date-fns';
 import Image from 'next/image';
 import { fetchPlacePhoto } from '@/app/actions';
 import { Loader2, ImageOff, AlertTriangle, Heart, Sparkles, Sun, Moon } from 'lucide-react';
+import { cn } from '@/lib/utils';
 
 interface MomentsMapProps {
   moments: Moment[];
@@ -53,6 +53,38 @@ const hotspotIcons = {
   'Serendipity Spike': '✨',
   'Loop Zone': '🔁',
 };
+
+const categoryEmojis: { [key: string]: string } = {
+  cafe: '☕',
+  museum: '🏛️',
+  market: '🛍️',
+  attraction: '🌟',
+  shopping: '🛒',
+  park: '🌳',
+  restaurant: '🍽️',
+  default: '📍',
+};
+
+const MomentPin = ({ category = 'default', isPremium = false, onClick }: { category?: string, isPremium?: boolean, onClick: () => void }) => {
+  const emoji = categoryEmojis[category] || categoryEmojis.default;
+  
+  return (
+    <div
+      onClick={onClick}
+      className={cn(
+        "w-8 h-8 rounded-full flex items-center justify-center text-lg cursor-pointer transition-transform duration-200 hover:scale-125",
+        isPremium 
+          ? "bg-gradient-to-br from-primary via-pink-500 to-orange-400 text-white shadow-lg shadow-primary/50" 
+          : "bg-background border-2 border-primary"
+      )}
+      role="button"
+      aria-label={`Moment location: ${category}`}
+    >
+      {emoji}
+    </div>
+  );
+};
+
 
 // Define the new PulsingHotspot component
 const PulsingHotspot = ({ onClick }: { onClick: () => void }) => (
@@ -133,23 +165,23 @@ export function MomentsMap({ moments, hotspots }: MomentsMapProps) {
               setPhotoError(`Could not load photo. Error: ${result.error}`);
               break;
           }
-          setFetchedPhotoUrl(null);
+          setFetchedPhotoUrl(undefined);
         } else if (result.photoUrl) {
           setFetchedPhotoUrl(result.photoUrl);
           setFetchedAttributionHtml(result.attributionHtml);
         } else {
-          setFetchedPhotoUrl(null);
+          setFetchedPhotoUrl(undefined);
           setPhotoError("No photo found for this place.");
         }
       } catch (err: any) {
         console.error(`MomentsMap: Client-side error for "${moment.placeName}":`, err.message);
         setPhotoError("Failed to fetch photo.");
-        setFetchedPhotoUrl(null);
+        setFetchedPhotoUrl(undefined);
       } finally {
         setIsPhotoLoading(false);
       }
     } else {
-      setFetchedPhotoUrl(null);
+      setFetchedPhotoUrl(undefined);
       setPhotoError("No place name provided.");
     }
   }, [resetPhotoState]);
@@ -216,16 +248,25 @@ export function MomentsMap({ moments, hotspots }: MomentsMapProps) {
         onClick={handleMapClick}
       >
         {isMounted && validMoments.map((moment) => (
-          moment.coordinates ?
-          <MarkerF
-            key={moment.id}
-            position={{ lat: moment.coordinates.lat, lng: moment.coordinates.lng }}
-            title={moment.placeName}
-            onClick={() => handleMarkerClick(moment)}
-          /> : null
+          moment.coordinates ? (
+            <OverlayViewF
+              key={`moment-overlay-${moment.id}`}
+              position={moment.coordinates}
+              mapPaneName={OverlayViewF.OVERLAY_MOUSE_TARGET}
+              getPixelPositionOffset={(width, height) => ({
+                x: -(width / 2),
+                y: -height, // Anchor at the bottom center
+              })}
+            >
+              <MomentPin 
+                category={moment.category} 
+                isPremium={moment.isPremium}
+                onClick={() => handleMarkerClick(moment)} 
+              />
+            </OverlayViewF>
+          ) : null
         ))}
 
-        {/* Replace MarkerF for hotspots with OverlayViewF */}
         {isMounted && hotspots?.map((hotspot) => (
           <OverlayViewF
             key={`hotspot-overlay-${hotspot.id}`}
@@ -244,7 +285,7 @@ export function MomentsMap({ moments, hotspots }: MomentsMapProps) {
           <InfoWindowF
             position={selectedMoment.coordinates}
             onCloseClick={handleMapClick}
-            options={{ pixelOffset: new window.google.maps.Size(0, -35) }}
+            options={{ pixelOffset: new window.google.maps.Size(0, -40) }} // Adjust offset for new pin size
           >
             <div className="p-2 bg-card text-card-foreground rounded-lg shadow-xl max-w-xs w-64 space-y-2">
               <h4 className="font-bold text-md text-primary truncate">{selectedMoment.placeName}</h4>
@@ -266,7 +307,7 @@ export function MomentsMap({ moments, hotspots }: MomentsMapProps) {
                   />
                 </div>
               )}
-              {!isPhotoLoading && fetchedPhotoUrl === null && (
+              {!isPhotoLoading && !fetchedPhotoUrl && (
                  <div className="flex flex-col justify-center items-center h-32 bg-muted/50 rounded text-muted-foreground">
                   <ImageOff className="w-8 h-8 mb-1" />
                   <span className="text-xs">{photoError || "No photo available"}</span>
