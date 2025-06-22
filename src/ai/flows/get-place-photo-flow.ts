@@ -44,29 +44,35 @@ const getPlacePhotoFlow = ai.defineFlow(
       console.log(`getPlacePhotoFlow: Starting flow for place: "${placeName}"`, coordinates ? `with coordinates ${JSON.stringify(coordinates)}` : '');
 
       const placesApiKey = process.env.NEXT_PUBLIC_GOOGLE_PLACES_API_KEY;
+      const mapsApiKey = process.env.NEXT_PUBLIC_GOOGLE_MAPS_API_KEY;
       const generalApiKey = process.env.GOOGLE_API_KEY;
 
       // DEBUG LOG: Check what keys the flow sees
-      console.log(`getPlacePhotoFlow: Env check - NEXT_PUBLIC_GOOGLE_PLACES_API_KEY: "${placesApiKey ? 'Exists' : 'Not Found'}"`);
-      console.log(`getPlacePhotoFlow: Env check - GOOGLE_API_KEY: "${generalApiKey ? 'Exists' : 'Not Found'}"`);
+      console.log(`getPlacePhotoFlow: Env check - NEXT_PUBLIC_GOOGLE_PLACES_API_KEY: "${placesApiKey ? 'Found' : 'Not Found'}"`);
+      console.log(`getPlacePhotoFlow: Env check - NEXT_PUBLIC_GOOGLE_MAPS_API_KEY: "${mapsApiKey ? 'Found' : 'Not Found'}"`);
+      console.log(`getPlacePhotoFlow: Env check - GOOGLE_API_KEY: "${generalApiKey ? 'Found' : 'Not Found'}"`);
       
-      let apiKey = placesApiKey;
-      let keySource = "NEXT_PUBLIC_GOOGLE_PLACES_API_KEY";
+      let apiKey: string | undefined;
+      let keySource: string | undefined;
 
-      if (!apiKey && generalApiKey) {
+      if (placesApiKey) {
+        apiKey = placesApiKey;
+        keySource = "NEXT_PUBLIC_GOOGLE_PLACES_API_KEY";
+      } else if (mapsApiKey) {
+        apiKey = mapsApiKey;
+        keySource = "NEXT_PUBLIC_GOOGLE_MAPS_API_KEY";
+      } else if (generalApiKey) {
         apiKey = generalApiKey;
         keySource = "GOOGLE_API_KEY";
-        console.log(`getPlacePhotoFlow: NEXT_PUBLIC_GOOGLE_PLACES_API_KEY not found, attempting to use GOOGLE_API_KEY from ${keySource}.`);
-      } else if (apiKey) {
-        console.log(`getPlacePhotoFlow: Using API key from ${keySource}.`);
       }
       
       if (!apiKey) {
-        const errorMsg = 'Google Places API Key is missing. The Genkit server could not find NEXT_PUBLIC_GOOGLE_PLACES_API_KEY or GOOGLE_API_KEY in the environment.';
+        const errorMsg = 'Google API Key is missing. The Genkit server could not find NEXT_PUBLIC_GOOGLE_PLACES_API_KEY, NEXT_PUBLIC_GOOGLE_MAPS_API_KEY, or GOOGLE_API_KEY in the environment.';
         console.error(`getPlacePhotoFlow: ${errorMsg}`);
-        return { photoUrl: undefined, attributionHtml: undefined, error: 'API_KEY_MISSING' };
+        return { error: 'API_KEY_MISSING' };
       }
-      console.log(`getPlacePhotoFlow: Using API key from ${keySource} for place: ${placeName}`);
+      
+      console.log(`getPlacePhotoFlow: Using API key from environment variable: "${keySource}" for place: ${placeName}`);
 
       // 1. Find Place ID and Photo Reference
       let findPlaceUrl = `https://maps.googleapis.com/maps/api/place/findplacefromtext/json?input=${encodeURIComponent(placeName)}&inputtype=textquery&fields=place_id,photos,name&key=${apiKey}`;
@@ -89,7 +95,7 @@ const getPlacePhotoFlow = ai.defineFlow(
               if (errorJson.error_message && (errorJson.error_message.toLowerCase().includes("api key not valid") || errorJson.error_message.toLowerCase().includes("key invalid"))){
                    console.error(`getPlacePhotoFlow: Detected API Key Invalid from response: ${errorJson.error_message}`);
                    console.log(`getPlacePhotoFlow: Returning API_KEY_INVALID for "${placeName}" due to HTTP error and specific message.`);
-                   return { photoUrl: undefined, attributionHtml: undefined, error: 'API_KEY_INVALID' };
+                   return { error: 'API_KEY_INVALID' };
               }
           } catch (parseError) {
             // This catch is for if JSON.parse(responseText) fails for the error response.
@@ -97,7 +103,7 @@ const getPlacePhotoFlow = ai.defineFlow(
           }
           // Generic HTTP error if not caught by specific API_KEY_INVALID logic
           console.log(`getPlacePhotoFlow: Returning PLACES_API_ERROR for "${placeName}" due to HTTP error ${findPlaceResponse.status}.`);
-          return { photoUrl: undefined, attributionHtml: undefined, error: `PLACES_API_ERROR: ${findPlaceResponse.status}` };
+          return { error: `PLACES_API_ERROR: ${findPlaceResponse.status}` };
         }
         
         const findPlaceData = JSON.parse(responseText);
@@ -107,22 +113,22 @@ const getPlacePhotoFlow = ai.defineFlow(
           console.error(`getPlacePhotoFlow: Google Places Find Place API explicit error message for "${placeName}":`, findPlaceData.error_message, 'Status:', findPlaceData.status);
           if (findPlaceData.error_message.toLowerCase().includes("api key not valid") || findPlaceData.error_message.toLowerCase().includes("key invalid") || findPlaceData.status === 'REQUEST_DENIED') {
               console.log(`getPlacePhotoFlow: Returning API_KEY_INVALID for "${placeName}" due to error_message or REQUEST_DENIED.`);
-              return { photoUrl: undefined, attributionHtml: undefined, error: 'API_KEY_INVALID' };
+              return { error: 'API_KEY_INVALID' };
           }
            console.log(`getPlacePhotoFlow: Returning PLACES_API_ERROR for "${placeName}" due to error_message status ${findPlaceData.status}.`);
-           return { photoUrl: undefined, attributionHtml: undefined, error: `PLACES_API_ERROR: ${findPlaceData.status || 'UNKNOWN_FROM_ERROR_MESSAGE'}` };
+           return { error: `PLACES_API_ERROR: ${findPlaceData.status || 'UNKNOWN_FROM_ERROR_MESSAGE'}` };
         }
 
         if (findPlaceData.status === 'ZERO_RESULTS') {
           console.warn(`getPlacePhotoFlow: No place candidates found for: "${placeName}". Status: ZERO_RESULTS`);
           console.log(`getPlacePhotoFlow: Returning NO_PLACE_FOUND for "${placeName}".`);
-          return { photoUrl: undefined, attributionHtml: undefined, error: 'NO_PLACE_FOUND' };
+          return { error: 'NO_PLACE_FOUND' };
         }
 
         if (findPlaceData.status !== 'OK' || !findPlaceData.candidates || findPlaceData.candidates.length === 0) {
           console.warn(`getPlacePhotoFlow: API error or no candidates for "${placeName}". Status: ${findPlaceData.status}. Candidates:`, findPlaceData.candidates);
           console.log(`getPlacePhotoFlow: Returning PLACES_API_ERROR for "${placeName}" due to status not OK or no candidates.`);
-          return { photoUrl: undefined, attributionHtml: undefined, error: `PLACES_API_ERROR: ${findPlaceData.status || 'UNKNOWN_CANDIDATE_ISSUE'}` };
+          return { error: `PLACES_API_ERROR: ${findPlaceData.status || 'UNKNOWN_CANDIDATE_ISSUE'}` };
         }
 
         const place = findPlaceData.candidates[0];
@@ -131,7 +137,7 @@ const getPlacePhotoFlow = ai.defineFlow(
         if (!place.photos || place.photos.length === 0) {
           console.warn(`getPlacePhotoFlow: No photos found for place: "${place.name || placeName}" (ID: ${place.place_id})`);
           console.log(`getPlacePhotoFlow: Returning NO_PHOTO_FOR_PLACE for "${placeName}".`);
-          return { photoUrl: undefined, attributionHtml: undefined, error: 'NO_PHOTO_FOR_PLACE' };
+          return { error: 'NO_PHOTO_FOR_PLACE' };
         }
         console.log(`getPlacePhotoFlow: Found ${place.photos.length} photo(s) for "${place.name || placeName}". Using the first one.`);
 
@@ -153,14 +159,14 @@ const getPlacePhotoFlow = ai.defineFlow(
         console.error(`getPlacePhotoFlow: Error during fetch or processing for "${placeName}":`, fetchError.message ? fetchError.message : fetchError);
         if (fetchError.stack) console.error(fetchError.stack); // Log stack trace for better debugging
         console.log(`getPlacePhotoFlow: Returning FETCH_FAILED for "${placeName}" due to caught exception.`);
-        return { photoUrl: undefined, attributionHtml: undefined, error: 'FETCH_FAILED' };
+        return { error: 'FETCH_FAILED' };
       }
     } catch (flowError: any) {
       // This is the outermost catch for truly unexpected errors in the flow's setup or logic
       // that weren't caught by the inner try-catch for fetch operations.
       console.error(`getPlacePhotoFlow: CRITICAL UNHANDLED EXCEPTION IN FLOW for place "${input.placeName}":`, flowError.message ? flowError.message : flowError, flowError.stack);
       // Returning a distinct error code if this outermost catch is hit
-      return { photoUrl: undefined, attributionHtml: undefined, error: 'CRITICAL_FLOW_FAILURE' };
+      return { error: 'CRITICAL_FLOW_FAILURE' };
     }
   }
 );

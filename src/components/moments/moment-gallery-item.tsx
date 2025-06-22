@@ -39,22 +39,22 @@ export function MomentGalleryItem({ moment }: MomentGalleryItemProps) {
           // Set user-friendly error messages based on the error code
           switch (result.error) {
             case 'API_KEY_MISSING':
-              setError("Google Places API Key is missing from server .env. Please contact support or check server configuration.");
+              setError("Google API Key is missing from server .env.");
               break;
             case 'API_KEY_INVALID':
-              setError("Google Places API Key is invalid or not authorized. Please check Google Cloud Console and server configuration.");
+              setError("Google API Key is invalid or not authorized for Places API.");
               break;
             case 'NO_PLACE_FOUND':
-              setError(`Could not find "${moment.placeName}" on Google Places. Check the spelling or try a more specific name.`);
+              setError(`Could not find "${moment.placeName}" on Google Places.`);
               break;
             case 'NO_PHOTO_FOR_PLACE':
-              setError(`No photo available for "${moment.placeName}" via Google Places API.`);
+              setError(`No photo available for "${moment.placeName}".`);
               break;
             case 'FETCH_FAILED':
-              setError("Failed to communicate with Google Places API. Check network or Genkit server logs.");
+              setError("Failed to communicate with Google Places API. Check Genkit server logs.");
               break;
             default: // Handles PLACES_API_ERROR, ACTION_EXECUTION_ERROR, etc.
-              setError(`Could not load photo for "${moment.placeName}". Check Genkit server logs for details (Error: ${result.error}).`);
+              setError(`Could not load photo. Error: ${result.error}`);
               break;
           }
         } else if (result.photoUrl) {
@@ -92,14 +92,21 @@ export function MomentGalleryItem({ moment }: MomentGalleryItemProps) {
           />
         )}
         {!isLoading && !photoUrl && ( // Error state
-          <div className="flex flex-col items-center text-center p-3 text-muted-foreground">
-            {errorCode === 'API_KEY_MISSING' || errorCode === 'API_KEY_INVALID' || errorCode?.startsWith('PLACES_API_ERROR') ? (
-              <AlertTriangle className="h-8 w-8 mb-1 text-destructive" />
+          <div className="flex flex-col items-center justify-center text-center p-3 text-muted-foreground h-full">
+            {(errorCode === 'API_KEY_MISSING' || errorCode === 'API_KEY_INVALID') ? (
+               <>
+                <AlertTriangle className="h-8 w-8 mb-2 text-destructive" />
+                <p className="text-sm font-semibold text-destructive">Configuration Error</p>
+                <p className="text-xs mt-1">
+                  The Google API key is missing or invalid. Please check your <code>.env</code> file and ensure the Genkit server is restarted.
+                </p>
+               </>
             ) : (
-              <ImageOff className="h-8 w-8 mb-1" />
+               <>
+                <ImageOff className="h-8 w-8 mb-1" />
+                <span className="text-xs">{error || "Photo not available"}</span>
+               </>
             )}
-            <span className="text-xs">{error || "Photo not available"}</span>
-             {errorCode?.startsWith('PLACES_API_ERROR') && <span className="text-[10px] mt-1">(Check server/Genkit logs for details)</span>}
           </div>
         )}
       </div>
