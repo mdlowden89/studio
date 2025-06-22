@@ -45,7 +45,6 @@ export function FreeBoostUpsellDialog({ isOpen, onOpenChange }: FreeBoostUpsellD
   const router = useRouter();
   const [isLoading, setIsLoading] = useState(false);
   
-  // Initial duration: 24 hours in seconds. Timer should only run client-side.
   const initialDuration = 23 * 3600 + 59 * 60 + 56; // 23:59:56
   const [timeLeft, setTimeLeft] = useState(initialDuration);
   const [isClient, setIsClient] = useState(false);
@@ -55,23 +54,25 @@ export function FreeBoostUpsellDialog({ isOpen, onOpenChange }: FreeBoostUpsellD
   }, []);
 
   useEffect(() => {
-    if (!isOpen || !isClient || timeLeft <= 0) {
-      if (timeLeft <=0 && isClient) setTimeLeft(0); // Ensure it doesn't go negative on display
-      return;
+    if (isOpen && isClient) {
+      // Reset timer if it had run out and dialog is reopened
+      if (timeLeft <= 0) {
+        setTimeLeft(initialDuration);
+      }
+      
+      const timerId = setInterval(() => {
+        setTimeLeft((prevTime) => {
+          if (prevTime <= 1) {
+            clearInterval(timerId);
+            return 0;
+          }
+          return prevTime - 1;
+        });
+      }, 1000);
+
+      return () => clearInterval(timerId);
     }
-
-    const timerId = setInterval(() => {
-      setTimeLeft((prevTime) => {
-        if (prevTime <= 1) {
-          clearInterval(timerId);
-          return 0;
-        }
-        return prevTime - 1;
-      });
-    }, 1000);
-
-    return () => clearInterval(timerId);
-  }, [isOpen, isClient, timeLeft]);
+  }, [isOpen, isClient]);
 
   const handleSubscribe = async () => {
     if (!STRIPE_PLATINUM_WEEKLY_BOOST_PRICE_ID || STRIPE_PLATINUM_WEEKLY_BOOST_PRICE_ID.includes("placeholder")) {
@@ -104,9 +105,8 @@ export function FreeBoostUpsellDialog({ isOpen, onOpenChange }: FreeBoostUpsellD
         return;
       }
       
-      onOpenChange(false); // Close dialog before redirect attempt
+      onOpenChange(false);
       router.push(`/payment/initiate-stripe-redirect?sessionId=${sessionData.sessionId}`);
-      // setIsLoading will be effectively handled by page navigation or error
 
     } catch (error: any) {
       console.error("Subscription process error:", error);
@@ -135,12 +135,11 @@ export function FreeBoostUpsellDialog({ isOpen, onOpenChange }: FreeBoostUpsellD
             <Zap className="h-5 w-5 text-primary" />
             Get a Free Boost
           </DialogTitle>
-          <div className="w-8" /> {/* Spacer for centering title */}
+          <div className="w-8" />
         </DialogHeader>
 
-        <ScrollArea className="max-h-[calc(90vh-120px)]"> {/* Adjusted max height */}
+        <ScrollArea className="max-h-[calc(90vh-120px)]">
           <div className="p-6 pt-4 space-y-6 text-center">
-            {/* Sparkles and Profile Image */}
             <div className="relative w-28 h-28 sm:w-32 sm:h-32 mx-auto my-4">
               <Sparkles className="absolute -top-2 -left-2 h-5 w-5 sm:h-6 sm:w-6 text-primary animate-pulse opacity-70" style={{ transform: 'rotate(-25deg)' }} />
               <Sparkles className="absolute -top-1 -right-3 h-6 w-6 sm:h-7 sm:w-7 text-primary animate-pulse opacity-80 delay-100" style={{ transform: 'rotate(20deg)' }} />
