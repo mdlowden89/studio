@@ -31,8 +31,8 @@ const MOCK_ACHIEVEMENTS_FOR_CURRENT_USER: Achievement[] = [
     description: 'Logged a Moment 3 days in a row.',
     icon: Flame,
     achievedDate: daysAgo(1),
-    rewards: ['Glow Badge: Profile gets glowing border for 24 hrs.'],
-    glowEffect: true,
+    rewards: ['Preview a Hidden Like'],
+    glowEffect: false,
   },
   {
     id: 'achieve-2',
@@ -50,7 +50,7 @@ const MOCK_ACHIEVEMENTS_FOR_CURRENT_USER: Achievement[] = [
     description: 'Visited 3 different neighborhoods in a week.',
     icon: Compass,
     achievedDate: daysAgo(2),
-    rewards: ['Free Likes or full preview of a hidden Like.'],
+    rewards: ['Echo Replay Token'],
   },
   {
     id: 'achieve-4',
@@ -59,7 +59,8 @@ const MOCK_ACHIEVEMENTS_FOR_CURRENT_USER: Achievement[] = [
     description: 'Matched + started a conversation in under 2 hours.',
     icon: Sparkles,
     achievedDate: daysAgo(10),
-    rewards: ['Full Preview: Unlock a full preview of a hidden Like.'],
+    rewards: ['6-Hour Boosted Glow'],
+    glowEffect: true,
   },
   {
     id: 'achieve-5',
