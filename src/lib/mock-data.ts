@@ -1,3 +1,4 @@
+
 import type { UserProfile, Moment, ChatConversation, ChatMessage, ProfilePrompt, CrossedPathUser, Achievement, Challenge, Hotspot } from './types';
 import { Flame, Zap, Compass, Sparkles, CalendarCheck2, MessageCircleReply, Globe, HeartHandshake, UserCheck, Target as TargetIcon } from 'lucide-react';
 
@@ -781,6 +782,21 @@ export const MOCK_HOTSPOTS: Hotspot[] = [
     title: 'Soho Evenings',
     description: 'Sparks fly here after dark. High energy and frequent matches.',
     coordinates: { lat: 51.5132, lng: -0.1367 },
+    charge: 'night',
+  },
+  {
+    id: 'hs-7',
+    type: 'Connection Zone',
+    title: 'Historic Tower of London',
+    description: 'A popular spot for history buffs. Many moments have been logged here recently.',
+    coordinates: { lat: 51.5081, lng: -0.0759 },
+  },
+  {
+    id: 'hs-8',
+    type: 'Serendipity Spike',
+    title: 'The Gherkin After Work',
+    description: 'A hub of activity in the evenings. Sparks often fly here as the sun sets.',
+    coordinates: { lat: 51.5145, lng: -0.0803 },
     charge: 'night',
   },
 ];
