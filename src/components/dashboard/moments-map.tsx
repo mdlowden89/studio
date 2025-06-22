@@ -2,7 +2,7 @@
 "use client";
 
 import * as React from 'react';
-import { GoogleMap, LoadScriptNext, MarkerF, InfoWindowF } from '@react-google-maps/api';
+import { GoogleMap, LoadScriptNext, MarkerF, InfoWindowF, OverlayViewF } from '@react-google-maps/api';
 import type { Moment, Hotspot } from '@/lib/types';
 import { useMemo, useState, useEffect, useCallback } from 'react';
 import { format } from 'date-fns';
@@ -54,16 +54,42 @@ const hotspotIcons = {
   'Loop Zone': '🔁',
 };
 
+// Define the new PulsingHotspot component
+const PulsingHotspot = ({ onClick }: { onClick: () => void }) => (
+  <div 
+    className="relative w-8 h-8 cursor-pointer"
+    onClick={onClick}
+    aria-label="Hotspot"
+    role="button"
+  >
+    {/* These two divs create the pulsing animation effect */}
+    <div 
+      className="absolute inset-0 rounded-full bg-amber-400/70 animate-pulse-hotspot"
+      style={{ animationDelay: '0s' }}
+    />
+    <div 
+      className="absolute inset-0 rounded-full bg-amber-400/60 animate-pulse-hotspot"
+      style={{ animationDelay: '0.8s' }}
+    />
+    {/* This is the solid center dot */}
+    <div className="absolute inset-0 flex items-center justify-center">
+      <div className="w-3 h-3 rounded-full bg-amber-400 border-2 border-white shadow-lg" />
+    </div>
+  </div>
+);
+
+
 export function MomentsMap({ moments, hotspots }: MomentsMapProps) {
   const [apiKey, setApiKey] = useState<string | undefined>(undefined);
   const [isMounted, setIsMounted] = useState(false);
   const [selectedMoment, setSelectedMoment] = useState<Moment | null>(null);
   const [selectedHotspot, setSelectedHotspot] = useState<Hotspot | null>(null);
 
-  const [fetchedPhotoUrl, setFetchedPhotoUrl] = useState<string | undefined | null>(undefined);
+  const [fetchedPhotoUrl, setFetchedPhotoUrl] = useState<string | undefined>(undefined);
   const [fetchedAttributionHtml, setFetchedAttributionHtml] = useState<string | undefined>(undefined);
   const [isPhotoLoading, setIsPhotoLoading] = useState<boolean>(false);
   const [photoError, setPhotoError] = useState<string | null>(null);
+  const [errorCode, setErrorCode] = useState<string | null>(null);
 
   useEffect(() => {
     setIsMounted(true);
@@ -75,6 +101,7 @@ export function MomentsMap({ moments, hotspots }: MomentsMapProps) {
     setFetchedAttributionHtml(undefined);
     setIsPhotoLoading(false);
     setPhotoError(null);
+    setErrorCode(null);
   }, []);
 
   const handleMarkerClick = useCallback(async (moment: Moment) => {
@@ -82,7 +109,6 @@ export function MomentsMap({ moments, hotspots }: MomentsMapProps) {
     setSelectedMoment(moment);
     resetPhotoState();
 
-    // If a specific image is provided in the moment data, use it directly.
     if (moment.placeImage) {
       setFetchedPhotoUrl(moment.placeImage);
       setIsPhotoLoading(false);
@@ -93,22 +119,44 @@ export function MomentsMap({ moments, hotspots }: MomentsMapProps) {
       setIsPhotoLoading(true);
       try {
         const result = await fetchPlacePhoto(moment.placeName, moment.coordinates);
-        if (result.photoUrl) {
+        if (result.error) {
+           console.warn(`MomentsMap: Error fetching photo for "${moment.placeName}" (Moment ID: ${moment.id}). Code: ${result.error}`);
+           setErrorCode(result.error);
+           switch (result.error) {
+            case 'API_KEY_MISSING':
+              setPhotoError("Google API Key is missing on server.");
+              break;
+            case 'API_KEY_INVALID':
+              setPhotoError("Google API Key is invalid.");
+              break;
+            case 'NO_PLACE_FOUND':
+              setPhotoError(`Could not find "${moment.placeName}".`);
+              break;
+            case 'NO_PHOTO_FOR_PLACE':
+              setPhotoError(`No photo available for "${moment.placeName}".`);
+              break;
+            default:
+              setPhotoError(`Could not load photo. Error: ${result.error}`);
+              break;
+          }
+          setFetchedPhotoUrl(null);
+        } else if (result.photoUrl) {
           setFetchedPhotoUrl(result.photoUrl);
           setFetchedAttributionHtml(result.attributionHtml);
         } else {
           setFetchedPhotoUrl(null);
           setPhotoError("No photo found for this place.");
         }
-      } catch (err) {
-        console.error("Error fetching place photo for InfoWindow:", err);
-        setPhotoError("Could not load photo.");
+      } catch (err: any) {
+        console.error(`MomentsMap: Client-side error for "${moment.placeName}":`, err.message);
+        setPhotoError("Failed to fetch photo.");
         setFetchedPhotoUrl(null);
       } finally {
         setIsPhotoLoading(false);
       }
     } else {
       setFetchedPhotoUrl(null);
+      setPhotoError("No place name provided.");
     }
   }, [resetPhotoState]);
 
@@ -132,18 +180,6 @@ export function MomentsMap({ moments, hotspots }: MomentsMapProps) {
     }
     return { lat: 51.5072, lng: -0.1276 }; // Default to London
   }, [validMoments]);
-
-  const hotspotMarkerIcon = useMemo(() => {
-    if (!isMounted || typeof window === 'undefined' || !window.google) return undefined;
-    return {
-      path: window.google.maps.SymbolPath.CIRCLE,
-      fillColor: '#FBBF24', // amber-400
-      fillOpacity: 0.8,
-      strokeColor: '#FFFFFF',
-      strokeWeight: 2,
-      scale: 8,
-    };
-  }, [isMounted]);
 
   const getHotspotEmoji = (hotspot: Hotspot): string => {
     if (hotspot.charge === 'morning') return '☀️';
@@ -195,14 +231,19 @@ export function MomentsMap({ moments, hotspots }: MomentsMapProps) {
           /> : null
         ))}
 
+        {/* Replace MarkerF for hotspots with OverlayViewF */}
         {isMounted && hotspots?.map((hotspot) => (
-          <MarkerF
-            key={hotspot.id}
+          <OverlayViewF
+            key={`hotspot-overlay-${hotspot.id}`}
             position={hotspot.coordinates}
-            title={hotspot.title}
-            icon={hotspotMarkerIcon}
-            onClick={() => handleHotspotClick(hotspot)}
-          />
+            mapPaneName={OverlayViewF.OVERLAY_MOUSE_TARGET}
+            getPixelPositionOffset={(width, height) => ({
+              x: -(width / 2),
+              y: -(height / 2),
+            })}
+          >
+            <PulsingHotspot onClick={() => handleHotspotClick(hotspot)} />
+          </OverlayViewF>
         ))}
 
         {selectedMoment && selectedMoment.coordinates && isMounted && (
@@ -227,6 +268,7 @@ export function MomentsMap({ moments, hotspots }: MomentsMapProps) {
                     layout="fill"
                     objectFit="cover"
                     data-ai-hint="place photo"
+                    unoptimized={fetchedPhotoUrl.startsWith('data:') || fetchedPhotoUrl.includes('placehold.co')}
                   />
                 </div>
               )}
