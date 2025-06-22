@@ -43,8 +43,6 @@ export interface Moment {
   placeName: string;
   timestamp: string; // ISO date string
   coordinates?: { lat: number; lng: number };
-  category?: 'cafe' | 'museum' | 'market' | 'attraction' | 'shopping' | 'park' | 'restaurant';
-  isPremium?: boolean;
 }
 
 export interface ChatMessage {
@@ -121,5 +119,4 @@ export interface Hotspot {
   title: string;
   description: string;
   coordinates: { lat: number; lng: number };
-  charge?: 'morning' | 'night';
 }

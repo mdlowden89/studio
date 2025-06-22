@@ -1,10 +1,8 @@
-
 "use client";
 
+import Image from "next/image";
 import { Button } from "@/components/ui/button";
 import { Sparkles, Signal } from "lucide-react";
-import { MomentsMap } from "./moments-map";
-import { MOCK_HOTSPOTS } from "@/lib/mock-data";
 
 interface EmotionalHotspotsUpsellProps {
   onUnlock: () => void;
@@ -13,12 +11,14 @@ interface EmotionalHotspotsUpsellProps {
 export function EmotionalHotspotsUpsell({ onUnlock }: EmotionalHotspotsUpsellProps) {
   return (
     <div className="relative w-full aspect-video sm:aspect-[2/1] overflow-hidden rounded-lg bg-card">
-      {/* Live Map Preview */}
-      <div className="absolute inset-0 blur-sm brightness-75 pointer-events-none">
-        <MomentsMap moments={[]} hotspots={MOCK_HOTSPOTS} />
-      </div>
-
-      {/* Overlay and Call to Action */}
+      <Image
+        src="https://placehold.co/800x400.png"
+        alt="Emotional Hotspots map preview"
+        layout="fill"
+        objectFit="cover"
+        className="blur-sm brightness-75"
+        data-ai-hint="neon map grid"
+      />
       <div className="absolute inset-0 bg-gradient-to-t from-background via-background/60 to-transparent" />
       <div className="relative z-10 p-6 flex flex-col items-center justify-center h-full text-center">
         <div className="mx-auto flex h-16 w-16 items-center justify-center rounded-full bg-primary/80 mb-4 shadow-lg">

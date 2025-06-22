@@ -1,14 +1,13 @@
 "use client";
 
 import * as React from 'react';
-import { GoogleMap, LoadScriptNext, MarkerF, InfoWindowF, OverlayViewF } from '@react-google-maps/api';
+import { GoogleMap, LoadScriptNext, MarkerF, InfoWindowF } from '@react-google-maps/api';
 import type { Moment, Hotspot } from '@/lib/types';
 import { useMemo, useState, useEffect, useCallback } from 'react';
 import { format } from 'date-fns';
 import Image from 'next/image';
 import { fetchPlacePhoto } from '@/app/actions';
-import { Loader2, ImageOff, AlertTriangle, Heart, Sparkles, Sun, Moon } from 'lucide-react';
-import { cn } from '@/lib/utils';
+import { Loader2, ImageOff, AlertTriangle } from 'lucide-react';
 
 interface MomentsMapProps {
   moments: Moment[];
@@ -53,63 +52,6 @@ const hotspotIcons = {
   'Serendipity Spike': '✨',
   'Loop Zone': '🔁',
 };
-
-const categoryEmojis: { [key: string]: string } = {
-  cafe: '☕',
-  museum: '🏛️',
-  market: '🛍️',
-  attraction: '🌟',
-  shopping: '🛒',
-  park: '🌳',
-  restaurant: '🍽️',
-  default: '📍',
-};
-
-const MomentPin = ({ category = 'default', isPremium = false, onClick }: { category?: string, isPremium?: boolean, onClick: () => void }) => {
-  const emoji = categoryEmojis[category] || categoryEmojis.default;
-  
-  return (
-    <div
-      onClick={onClick}
-      className={cn(
-        "w-8 h-8 rounded-full flex items-center justify-center text-lg cursor-pointer transition-transform duration-200 hover:scale-125",
-        isPremium 
-          ? "bg-gradient-to-br from-primary via-pink-500 to-orange-400 text-white shadow-lg shadow-primary/50" 
-          : "bg-background border-2 border-primary"
-      )}
-      role="button"
-      aria-label={`Moment location: ${category}`}
-    >
-      {emoji}
-    </div>
-  );
-};
-
-
-// Define the new PulsingHotspot component
-const PulsingHotspot = ({ onClick }: { onClick: () => void }) => (
-  <div 
-    className="relative w-8 h-8 cursor-pointer"
-    onClick={onClick}
-    aria-label="Hotspot"
-    role="button"
-  >
-    {/* These two divs create the pulsing animation effect */}
-    <div 
-      className="absolute inset-0 rounded-full bg-primary/70 animate-pulse-hotspot"
-      style={{ animationDelay: '0s' }}
-    />
-    <div 
-      className="absolute inset-0 rounded-full bg-primary/60 animate-pulse-hotspot"
-      style={{ animationDelay: '0.8s' }}
-    />
-    {/* This is the solid center dot */}
-    <div className="absolute inset-0 flex items-center justify-center">
-      <div className="w-3 h-3 rounded-full bg-primary border-2 border-white shadow-lg" />
-    </div>
-  </div>
-);
-
 
 export function MomentsMap({ moments, hotspots }: MomentsMapProps) {
   const [apiKey, setApiKey] = useState<string | undefined>(undefined);
@@ -208,8 +150,6 @@ export function MomentsMap({ moments, hotspots }: MomentsMapProps) {
   }, [validMoments]);
 
   const getHotspotEmoji = (hotspot: Hotspot): string => {
-    if (hotspot.charge === 'morning') return '☀️';
-    if (hotspot.charge === 'night') return '🌙';
     return hotspotIcons[hotspot.type] || '📍';
   };
 
@@ -249,43 +189,34 @@ export function MomentsMap({ moments, hotspots }: MomentsMapProps) {
       >
         {isMounted && validMoments.map((moment) => (
           moment.coordinates ? (
-            <OverlayViewF
-              key={`moment-overlay-${moment.id}`}
+            <MarkerF
+              key={`moment-marker-${moment.id}`}
               position={moment.coordinates}
-              mapPaneName={OverlayViewF.OVERLAY_MOUSE_TARGET}
-              getPixelPositionOffset={(width, height) => ({
-                x: -(width / 2),
-                y: -height, // Anchor at the bottom center
-              })}
-            >
-              <MomentPin 
-                category={moment.category} 
-                isPremium={moment.isPremium}
-                onClick={() => handleMarkerClick(moment)} 
-              />
-            </OverlayViewF>
+              onClick={() => handleMarkerClick(moment)}
+            />
           ) : null
         ))}
-
+        
         {isMounted && hotspots?.map((hotspot) => (
-          <OverlayViewF
-            key={`hotspot-overlay-${hotspot.id}`}
+          <MarkerF
+            key={`hotspot-marker-${hotspot.id}`}
             position={hotspot.coordinates}
-            mapPaneName={OverlayViewF.OVERLAY_MOUSE_TARGET}
-            getPixelPositionOffset={(width, height) => ({
-              x: -(width / 2),
-              y: -(height / 2),
-            })}
-          >
-            <PulsingHotspot onClick={() => handleHotspotClick(hotspot)} />
-          </OverlayViewF>
+            onClick={() => handleHotspotClick(hotspot)}
+            icon={{
+              path: window.google.maps.SymbolPath.CIRCLE,
+              fillColor: '#FBBF24', // amber-400
+              fillOpacity: 0.8,
+              strokeColor: '#FFFFFF',
+              strokeWeight: 2,
+              scale: 10
+            }}
+          />
         ))}
 
         {selectedMoment && selectedMoment.coordinates && isMounted && (
           <InfoWindowF
             position={selectedMoment.coordinates}
             onCloseClick={handleMapClick}
-            options={{ pixelOffset: new window.google.maps.Size(0, -40) }} // Adjust offset for new pin size
           >
             <div className="p-2 bg-card text-card-foreground rounded-lg shadow-xl max-w-xs w-64 space-y-2">
               <h4 className="font-bold text-md text-primary truncate">{selectedMoment.placeName}</h4>
@@ -328,7 +259,6 @@ export function MomentsMap({ moments, hotspots }: MomentsMapProps) {
           <InfoWindowF
             position={selectedHotspot.coordinates}
             onCloseClick={handleMapClick}
-            options={{ pixelOffset: new window.google.maps.Size(0, -35) }}
           >
             <div className="p-2 bg-card text-card-foreground rounded-lg shadow-xl max-w-xs w-64 space-y-2">
                <div className="flex items-center gap-2">
