@@ -64,16 +64,16 @@ const PulsingHotspot = ({ onClick }: { onClick: () => void }) => (
   >
     {/* These two divs create the pulsing animation effect */}
     <div 
-      className="absolute inset-0 rounded-full bg-amber-400/70 animate-pulse-hotspot"
+      className="absolute inset-0 rounded-full bg-primary/70 animate-pulse-hotspot"
       style={{ animationDelay: '0s' }}
     />
     <div 
-      className="absolute inset-0 rounded-full bg-amber-400/60 animate-pulse-hotspot"
+      className="absolute inset-0 rounded-full bg-primary/60 animate-pulse-hotspot"
       style={{ animationDelay: '0.8s' }}
     />
     {/* This is the solid center dot */}
     <div className="absolute inset-0 flex items-center justify-center">
-      <div className="w-3 h-3 rounded-full bg-amber-400 border-2 border-white shadow-lg" />
+      <div className="w-3 h-3 rounded-full bg-primary border-2 border-white shadow-lg" />
     </div>
   </div>
 );
@@ -108,12 +108,6 @@ export function MomentsMap({ moments, hotspots }: MomentsMapProps) {
     setSelectedHotspot(null);
     setSelectedMoment(moment);
     resetPhotoState();
-
-    if (moment.placeImage) {
-      setFetchedPhotoUrl(moment.placeImage);
-      setIsPhotoLoading(false);
-      return;
-    }
 
     if (moment.placeName) {
       setIsPhotoLoading(true);
@@ -298,7 +292,7 @@ export function MomentsMap({ moments, hotspots }: MomentsMapProps) {
             <div className="p-2 bg-card text-card-foreground rounded-lg shadow-xl max-w-xs w-64 space-y-2">
                <div className="flex items-center gap-2">
                  <span className="text-xl" role="img" aria-label="hotspot-emoji">{getHotspotEmoji(selectedHotspot)}</span>
-                 <h4 className="font-bold text-md text-amber-400 truncate">{selectedHotspot.type}</h4>
+                 <h4 className="font-bold text-md text-primary truncate">{selectedHotspot.type}</h4>
                </div>
               <p className="font-semibold text-foreground">{selectedHotspot.title}</p>
               <p className="text-xs text-muted-foreground italic">"{selectedHotspot.description}"</p>
