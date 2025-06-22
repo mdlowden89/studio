@@ -1,3 +1,4 @@
+
 "use client";
 
 import * as React from 'react';
@@ -197,7 +198,7 @@ export function MomentsMap({ moments, hotspots }: MomentsMapProps) {
           ) : null
         ))}
         
-        {isMounted && hotspots?.map((hotspot) => (
+        {isMounted && window.google && hotspots?.map((hotspot) => (
           <MarkerF
             key={`hotspot-marker-${hotspot.id}`}
             position={hotspot.coordinates}
