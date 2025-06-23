@@ -3,20 +3,51 @@
 
 import Link from 'next/link';
 import { useRouter } from 'next/navigation';
+import { useState } from 'react';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from '@/components/ui/card';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { CrossdLogoIcon } from '@/components/icons/crossd-logo';
+import { useToast } from "@/hooks/use-toast";
+import { handleUserSignUp } from "@/app/actions";
+import { Loader2 } from 'lucide-react';
 
 export default function SignUpPage() {
   const router = useRouter();
+  const { toast } = useToast();
+  const [isLoading, setIsLoading] = useState(false);
 
-  const handleSignUp = (e: React.FormEvent) => {
+  const onSignUp = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
-    // In a real app, you'd handle form submission, validation, and API calls here.
-    // For now, we'll just navigate to the dashboard and trigger the upsell dialog.
-    router.push('/dashboard?showBoostUpsell=true');
+    setIsLoading(true);
+
+    const formData = new FormData(e.currentTarget);
+    const fullName = formData.get('fullName') as string;
+    const email = formData.get('email') as string;
+    
+    try {
+      await handleUserSignUp({ name: fullName, email: email });
+      
+      toast({
+        title: "Sign Up Successful!",
+        description: "Welcome to Crossd! A confirmation email is on its way.",
+      });
+
+      // In a real app, you might wait for email verification.
+      // For now, we'll just navigate to the dashboard and trigger the upsell dialog.
+      router.push('/dashboard?showBoostUpsell=true');
+
+    } catch (error) {
+      console.error(error);
+      toast({
+        title: "Sign Up Failed",
+        description: "Something went wrong. Please try again.",
+        variant: "destructive",
+      });
+    } finally {
+      setIsLoading(false);
+    }
   };
 
   return (
@@ -47,25 +78,32 @@ export default function SignUpPage() {
             <CardDescription>Join Crossd and start making connections.</CardDescription>
           </CardHeader>
           <CardContent className="space-y-6">
-            <form className="space-y-4" onSubmit={handleSignUp}>
+            <form className="space-y-4" onSubmit={onSignUp}>
               <div>
                 <Label htmlFor="fullName">Full Name</Label>
-                <Input id="fullName" type="text" placeholder="John Doe" required className="mt-1 bg-input" />
+                <Input id="fullName" name="fullName" type="text" placeholder="John Doe" required className="mt-1 bg-input" />
               </div>
               <div>
                 <Label htmlFor="email">Email Address</Label>
-                <Input id="email" type="email" placeholder="you@example.com" required className="mt-1 bg-input" />
+                <Input id="email" name="email" type="email" placeholder="you@example.com" required className="mt-1 bg-input" />
               </div>
               <div>
                 <Label htmlFor="password">Password</Label>
-                <Input id="password" type="password" placeholder="••••••••" required className="mt-1 bg-input" />
+                <Input id="password" name="password" type="password" placeholder="••••••••" required className="mt-1 bg-input" />
               </div>
               <div>
                 <Label htmlFor="confirmPassword">Confirm Password</Label>
-                <Input id="confirmPassword" type="password" placeholder="••••••••" required className="mt-1 bg-input" />
+                <Input id="confirmPassword" name="confirmPassword" type="password" placeholder="••••••••" required className="mt-1 bg-input" />
               </div>
-              <Button type="submit" className="w-full bg-primary hover:bg-primary/90 text-primary-foreground">
-                Sign Up
+              <Button type="submit" className="w-full bg-primary hover:bg-primary/90 text-primary-foreground" disabled={isLoading}>
+                {isLoading ? (
+                  <>
+                    <Loader2 className="mr-2 h-4 w-4 animate-spin" />
+                    Signing Up...
+                  </>
+                ) : (
+                  'Sign Up'
+                )}
               </Button>
             </form>
           </CardContent>
