@@ -40,11 +40,19 @@ export default function SignUpPage() {
 
     } catch (error) {
       console.error(error);
-      toast({
-        title: "Sign Up Failed",
-        description: "Something went wrong. Please try again.",
-        variant: "destructive",
-      });
+      if (error instanceof Error && error.message.includes("already exists")) {
+        toast({
+          title: "Sign Up Failed",
+          description: error.message, // Display the specific error from the action
+          variant: "destructive",
+        });
+      } else {
+        toast({
+          title: "Sign Up Failed",
+          description: "Something went wrong. Please try again.",
+          variant: "destructive",
+        });
+      }
     } finally {
       setIsLoading(false);
     }

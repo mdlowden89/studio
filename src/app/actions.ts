@@ -6,6 +6,7 @@ import { suggestBioForUser, SuggestBioInput } from "@/ai/flows/suggest-bio-flow"
 import { getPlacePhoto, GetPlacePhotoInput, GetPlacePhotoOutput } from "@/ai/flows/get-place-photo-flow"; // Import GetPlacePhotoOutput
 import { getSparkSwipeInsights, SparkSwipeInput, SparkSwipeOutput } from "@/ai/flows/spark-swipe-flow";
 import type { UserProfile } from "@/lib/types";
+import { MOCK_USERS } from "@/lib/mock-data";
 
 export async function getAiSuggestedVibeTags(
   userBio: string,
@@ -76,7 +77,16 @@ export async function fetchSparkSwipeInsights(
 }
 
 export async function handleUserSignUp(data: { name: string; email: string }) {
-  // In a real app, you would save the user to your database here.
+  // In a real app, you would query your database here.
+  console.log(`Checking for existing user with email: ${data.email}`);
+  
+  const existingUser = MOCK_USERS.find(user => user.email?.toLowerCase() === data.email.toLowerCase());
+
+  if (existingUser) {
+    console.error(`Sign up failed: User with email ${data.email} already exists.`);
+    throw new Error("A user with this email address already exists.");
+  }
+  
   console.log(`Simulating user sign up for: ${data.name} (${data.email})`);
 
   // This is where you would integrate with an email service like SendGrid, Nodemailer, etc.
