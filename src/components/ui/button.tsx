@@ -41,15 +41,13 @@ export interface ButtonProps
 }
 
 const Button = React.forwardRef<HTMLButtonElement, ButtonProps>(
-  ({ className, variant, size, asChild: ownAsChild = false, ...restProps }, ref) => {
-    const Comp = ownAsChild ? Slot : "button"
-    // Filter out asChild from restProps if it exists, to prevent passing it to the DOM element
-    const { asChild: _forwardedAsChild, ...filteredRestProps } = restProps;
+  ({ className, variant, size, asChild = false, ...props }, ref) => {
+    const Comp = asChild ? Slot : "button"
     return (
       <Comp
         className={cn(buttonVariants({ variant, size, className }))}
         ref={ref}
-        {...filteredRestProps}
+        {...props}
       />
     )
   }
