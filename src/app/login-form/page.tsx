@@ -78,7 +78,7 @@ export default function LoginFormPage() {
       {/* Footer */}
       <footer className="py-8 px-6 sm:px-10 md:px-16 border-t border-border text-sm text-muted-foreground">
         <div className="container mx-auto flex flex-col sm:flex-row justify-between items-center">
-          <p>&copy; {new Date().getFullYear()} Crossd. All rights reserved.</p>
+          <p>&copy; 2024 Crossd. All rights reserved.</p>
           <div className="flex gap-4 mt-4 sm:mt-0">
             <Link href="/terms" className="hover:text-foreground transition-colors">Terms of Service</Link>
             <Link href="/privacy" className="hover:text-foreground transition-colors">Privacy</Link>
