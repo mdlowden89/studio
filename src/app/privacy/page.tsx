@@ -1,4 +1,3 @@
-
 import Link from 'next/link';
 import { Button } from '@/components/ui/button';
 import { CrossdLogoIcon } from '@/components/icons/crossd-logo';
@@ -25,7 +24,7 @@ export default function PrivacyPolicyPage() {
             <CardHeader>
               <CardTitle className="text-3xl font-bold">Privacy Policy</CardTitle>
               <CardDescription>
-                Last updated: {new Date().toLocaleDateString('en-US', { year: 'numeric', month: 'long', day: 'numeric' })}
+                Last updated: June 23, 2024
               </CardDescription>
             </CardHeader>
             <CardContent className="space-y-6 text-muted-foreground prose prose-invert max-w-none">
@@ -48,7 +47,7 @@ export default function PrivacyPolicyPage() {
 
       <footer className="py-8 px-6 sm:px-10 md:px-16 border-t border-border text-sm text-muted-foreground">
         <div className="container mx-auto flex flex-col sm:flex-row justify-between items-center">
-          <p>&copy; {new Date().getFullYear()} Crossd. All rights reserved.</p>
+          <p>&copy; 2024 Crossd. All rights reserved.</p>
           <div className="flex gap-4 mt-4 sm:mt-0">
             <Link href="/terms" className="hover:text-foreground transition-colors">Terms of Service</Link>
             <Link href="/privacy" className="hover:text-foreground transition-colors">Privacy</Link>
