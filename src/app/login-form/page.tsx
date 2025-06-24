@@ -7,11 +7,12 @@ import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle }
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { CrossdLogoIcon } from '@/components/icons/crossd-logo';
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { Eye, EyeOff, Loader2 } from 'lucide-react';
 import { signInWithEmailAndPassword } from "firebase/auth";
 import { auth } from "@/lib/firebase";
 import { useToast } from "@/hooks/use-toast";
+import { useAuth } from '@/hooks/use-auth';
 
 
 export default function LoginFormPage() {
@@ -19,6 +20,15 @@ export default function LoginFormPage() {
   const { toast } = useToast();
   const [isLoading, setIsLoading] = useState(false);
   const [showPassword, setShowPassword] = useState(false);
+  const { user, isLoading: isAuthLoading } = useAuth();
+
+  useEffect(() => {
+    // If auth state is determined and there is a user, redirect to dashboard.
+    // This handles both users who are already logged in and users who just logged in.
+    if (!isAuthLoading && user) {
+      router.push('/dashboard');
+    }
+  }, [user, isAuthLoading, router]);
 
   const handleLogin = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -36,8 +46,8 @@ export default function LoginFormPage() {
 
     try {
       await signInWithEmailAndPassword(auth, email, password);
-      toast({ title: "Login Successful!", description: "Welcome back!" });
-      router.push('/dashboard');
+      // The `useEffect` hook will now handle the redirection.
+      toast({ title: "Login Successful!", description: "Welcome back! Redirecting to your dashboard..." });
     } catch (error: any) {
       console.error("Login error:", error);
       let errorMessage = "Invalid credentials. Please try again.";
@@ -49,10 +59,19 @@ export default function LoginFormPage() {
         description: errorMessage,
         variant: "destructive",
       });
-    } finally {
-      setIsLoading(false);
-    }
+      setIsLoading(false); // Only set loading to false on error, success will trigger a re-render/redirect
+    } 
   };
+
+  // Render a loading state while checking for an existing session.
+  if (isAuthLoading) {
+     return (
+      <div className="flex flex-col items-center justify-center min-h-screen bg-background">
+        <Loader2 className="h-12 w-12 animate-spin text-primary" />
+        <p className="mt-4 text-muted-foreground">Checking authentication status...</p>
+      </div>
+    );
+  }
 
   return (
     <div className="flex flex-col min-h-screen bg-background text-foreground">

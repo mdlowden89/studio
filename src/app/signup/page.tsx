@@ -2,7 +2,7 @@
 
 import Link from 'next/link';
 import { useRouter } from 'next/navigation';
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from '@/components/ui/card';
 import { Input } from '@/components/ui/input';
@@ -14,6 +14,7 @@ import { createUserWithEmailAndPassword, updateProfile } from "firebase/auth";
 import { doc, setDoc } from "firebase/firestore";
 import { auth, db } from "@/lib/firebase";
 import type { UserProfile } from '@/lib/types';
+import { useAuth } from '@/hooks/use-auth';
 
 export default function SignUpPage() {
   const router = useRouter();
@@ -21,6 +22,15 @@ export default function SignUpPage() {
   const [isLoading, setIsLoading] = useState(false);
   const [showPassword, setShowPassword] = useState(false);
   const [showConfirmPassword, setShowConfirmPassword] = useState(false);
+  const { user, isLoading: isAuthLoading } = useAuth();
+
+  useEffect(() => {
+    // If auth state is determined and there is a user, redirect to dashboard.
+    // This handles both users who are already logged in and users who just signed up.
+    if (!isAuthLoading && user) {
+      router.push('/dashboard');
+    }
+  }, [user, isAuthLoading, router]);
 
   const onSignUp = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
@@ -69,12 +79,10 @@ export default function SignUpPage() {
 
       toast({
         title: "Sign Up Successful!",
-        description: "Welcome to Crossd! You're now being redirected.",
+        description: "Welcome to Crossd! Redirecting to your dashboard...",
       });
 
-      // Redirect to dashboard. The app will now have an authenticated user.
-      router.push('/dashboard');
-
+      // Redirect is now handled by the useEffect hook.
     } catch (error: any) {
       console.error("Sign up error:", error);
       let errorMessage = "Something went wrong. Please try again.";
@@ -88,10 +96,19 @@ export default function SignUpPage() {
         description: errorMessage,
         variant: "destructive",
       });
-    } finally {
-      setIsLoading(false);
+      setIsLoading(false); // Stop loading only on failure
     }
   };
+
+  // Render a loading state while checking for an existing session.
+  if (isAuthLoading) {
+     return (
+      <div className="flex flex-col items-center justify-center min-h-screen bg-background">
+        <Loader2 className="h-12 w-12 animate-spin text-primary" />
+        <p className="mt-4 text-muted-foreground">Loading session...</p>
+      </div>
+    );
+  }
 
   return (
     <div className="flex flex-col min-h-screen bg-background text-foreground">
