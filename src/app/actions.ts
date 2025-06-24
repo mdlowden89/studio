@@ -30,9 +30,21 @@ export async function getOrCreateUserProfile(firebaseUser: User): Promise<UserPr
     return userDoc.data() as UserProfile;
   } else {
     console.log(`User ${firebaseUser.uid} not found in Firestore. Creating new profile...`);
+    
+    const getInitialName = () => {
+      if (firebaseUser.displayName) {
+        return firebaseUser.displayName;
+      }
+      if (firebaseUser.email) {
+        const emailName = firebaseUser.email.split('@')[0];
+        return emailName.charAt(0).toUpperCase() + emailName.slice(1);
+      }
+      return "New User";
+    };
+
     const newUserProfile: UserProfile = {
       id: firebaseUser.uid,
-      name: firebaseUser.displayName || "New User",
+      name: getInitialName(),
       email: firebaseUser.email || "",
       age: 18,
       bio: "Welcome to Crossd! Tell us about yourself.",
@@ -45,7 +57,7 @@ export async function getOrCreateUserProfile(firebaseUser: User): Promise<UserPr
     };
     
     await setDoc(userDocRef, newUserProfile);
-    console.log(`Successfully created profile for user ${firebaseUser.uid}.`);
+    console.log(`Successfully created profile for user ${firebaseUser.uid} with name: ${newUserProfile.name}`);
     return newUserProfile;
   }
 }
