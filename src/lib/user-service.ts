@@ -1,6 +1,7 @@
+
 'use server';
 
-import { dataConnect } from './firebase';
+import { dataConnect } from '@/lib/firebase';
 // Use a direct path alias that Next.js can resolve.
 import { UserProfile as UserProfileSDK, UserProfileQuery } from '@/lib/dataconnect/default-connector';
 import type { UserProfile } from './types';
