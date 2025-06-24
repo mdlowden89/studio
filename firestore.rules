@@ -1,0 +1,13 @@
+
+rules_version = '2';
+
+service cloud.firestore {
+  match /databases/{database}/documents {
+    // This rule allows anyone to read and write to the database.
+    // This is useful for development but is insecure for production.
+    // TODO: Secure your database before deploying to production.
+    match /{document=**} {
+      allow read, write: if true;
+    }
+  }
+}
