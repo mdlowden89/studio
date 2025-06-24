@@ -7,13 +7,13 @@ import { Progress } from "@/components/ui/progress";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { CheckCircle, Clock } from "lucide-react";
+import { Icon } from "@/components/icons/icon";
 
 interface ChallengeCardProps {
   challenge: Challenge;
 }
 
 export function ChallengeCard({ challenge }: ChallengeCardProps) {
-  const IconComponent = challenge.icon;
   const progressValue = challenge.progress ? (challenge.progress.current / challenge.progress.target) * 100 : 0;
 
   return (
@@ -21,7 +21,7 @@ export function ChallengeCard({ challenge }: ChallengeCardProps) {
       <CardHeader className="pb-3">
         <div className="flex items-start justify-between">
           <div className="flex items-center gap-3">
-            <IconComponent className="w-8 h-8 text-primary flex-shrink-0" />
+            <Icon name={challenge.icon} className="w-8 h-8 text-primary flex-shrink-0" />
             <div>
               <CardTitle className="text-lg text-foreground">{challenge.name}</CardTitle>
               <Badge variant="outline" className="mt-1 text-xs border-primary/50 text-primary/80">{challenge.type}</Badge>

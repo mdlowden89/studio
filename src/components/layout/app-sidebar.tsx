@@ -29,6 +29,7 @@ import { getCurrentUser } from "@/lib/mock-data";
 import { CrossdLogoIcon } from "@/components/icons/crossd-logo";
 import { Tooltip, TooltipContent, TooltipTrigger } from "@/components/ui/tooltip";
 import { cn } from "@/lib/utils";
+import { Icon } from "@/components/icons/icon";
 
 const navItems = [
   { href: "/dashboard", label: "Dashboard", icon: Home, tooltipClassName: "bg-popover text-popover-foreground border-border shadow-md" },
@@ -152,21 +153,18 @@ export function AppSidebar() {
 
         {state === 'expanded' && displayedAchievements.length > 0 && (
           <div className="flex items-center gap-2 px-2 pt-1">
-            {displayedAchievements.map(ach => {
-              const IconComponent = ach.icon;
-              return (
+            {displayedAchievements.map(ach => (
                 <Tooltip key={ach.id} delayDuration={100}>
                   <TooltipTrigger asChild>
                     <span className="p-1 rounded-full hover:bg-sidebar-accent/50 cursor-default">
-                      <IconComponent className="h-5 w-5 text-primary/80" />
+                      <Icon name={ach.icon} className="h-5 w-5 text-primary/80" />
                     </span>
                   </TooltipTrigger>
                   <TooltipContent side="top" className="bg-popover text-popover-foreground border-border shadow-md">
                     <p>{ach.name}</p>
                   </TooltipContent>
                 </Tooltip>
-              );
-            })}
+              ))}
           </div>
         )}
 

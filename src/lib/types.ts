@@ -90,7 +90,7 @@ export interface Achievement {
   name: string;
   type: string; 
   description: string;
-  icon: React.ElementType; 
+  icon: string; 
   achievedDate?: string; 
   rewards: string[]; 
   glowEffect?: boolean; 
@@ -107,7 +107,7 @@ export interface Challenge {
   name: string; 
   type: string; // e.g., "Streak", "Timed", "Exploration"
   description: string; 
-  icon: React.ElementType; 
+  icon: string; 
   rewardPreview: string; // e.g., "Glow Badge, Priority Visibility"
   progress?: ChallengeProgress;
   status?: 'active' | 'not_started'; 

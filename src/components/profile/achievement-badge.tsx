@@ -5,14 +5,13 @@ import type { Achievement } from "@/lib/types";
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from "@/components/ui/card";
 import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from "@/components/ui/tooltip";
 import { cn } from "@/lib/utils";
-import { Award } from "lucide-react"; // Default icon
+import { Icon } from "@/components/icons/icon";
 
 interface AchievementBadgeProps {
   achievement: Achievement;
 }
 
 export function AchievementBadge({ achievement }: AchievementBadgeProps) {
-  const IconComponent = achievement.icon || Award;
   return (
     <TooltipProvider>
       <Tooltip delayDuration={100}>
@@ -22,7 +21,7 @@ export function AchievementBadge({ achievement }: AchievementBadgeProps) {
             "hover:shadow-lg hover:shadow-primary/50 hover:ring-2 hover:ring-primary/70"
           )}>
             <CardHeader className="flex flex-row items-center gap-3 p-4 pb-2">
-              <IconComponent className={cn("w-8 h-8 text-muted-foreground", "group-hover:text-primary transition-colors duration-300")} />
+              <Icon name={achievement.icon} className={cn("w-8 h-8 text-muted-foreground", "group-hover:text-primary transition-colors duration-300")} />
               <div>
                 <CardTitle className="text-lg text-foreground">{achievement.name}</CardTitle>
                 <p className="text-xs text-muted-foreground/80">{achievement.type}</p>
