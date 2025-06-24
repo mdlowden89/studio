@@ -1,7 +1,7 @@
 
 "use server";
 
-import { suggestVibeTagsForUser, SuggestVibeTagsInput } from "@/ai/flows/suggest-vibe-tags-flow";
+import { suggestVibeTagsForUser, SuggestVibeTagsInput, VibeTagSuggestion } from "@/ai/flows/suggest-vibe-tags-flow";
 import { suggestBioForUser, SuggestBioInput } from "@/ai/flows/suggest-bio-flow";
 import { getPlacePhoto, GetPlacePhotoInput, GetPlacePhotoOutput } from "@/ai/flows/get-place-photo-flow"; // Import GetPlacePhotoOutput
 import { getSparkSwipeInsights, SparkSwipeInput, SparkSwipeOutput } from "@/ai/flows/spark-swipe-flow";
@@ -11,16 +11,17 @@ import { MOCK_USERS } from "@/lib/mock-data";
 export async function getAiSuggestedVibeTags(
   userBio: string,
   existingTags: string[]
-): Promise<string[]> {
+): Promise<VibeTagSuggestion[]> {
   try {
     const input: SuggestVibeTagsInput = {
       userBio,
       existingTags,
     };
     const result = await suggestVibeTagsForUser(input);
-    return result.suggestedTags
-      .map(tag => tag.toLowerCase())
-      .filter(tag => !existingTags.includes(tag));
+    // Filter out suggestions for tags that the user already has, just in case the AI includes one
+    return result.suggestedTags.filter(
+      suggestion => !existingTags.includes(suggestion.tag.toLowerCase())
+    );
   } catch (error) {
     console.error("Error in getAiSuggestedVibeTags:", error);
     return [];

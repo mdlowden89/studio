@@ -3,7 +3,7 @@
 /**
  * @fileOverview AI flow to suggest vibe tags based on user's bio and existing tags.
  *
- * - suggestVibeTagsForUser - A function that suggests new vibe tags.
+ * - suggestVibeTagsForUser - A function that suggests new vibe tags with emojis.
  * - SuggestVibeTagsInput - The input type for the suggestVibeTagsForUser function.
  * - SuggestVibeTagsOutput - The return type for the suggestVibeTagsForUser function.
  */
@@ -21,13 +21,25 @@ export type SuggestVibeTagsInput = z.infer<
   typeof SuggestVibeTagsInputSchema
 >;
 
+// New schema for a single suggestion with an emoji
+const VibeTagSuggestionSchema = z.object({
+  tag: z
+    .string()
+    .describe(
+      'The vibe tag text, in lowercase. Should be concise (1-3 words).'
+    ),
+  emoji: z.string().describe('A single emoji that represents the tag.'),
+});
+
 const SuggestVibeTagsOutputSchema = z.object({
   suggestedTags: z
-    .array(z.string())
+    .array(VibeTagSuggestionSchema)
     .describe(
-      'An array of up to 7 new, distinct, and diverse vibe tag suggestions relevant to the user bio and existing tags, in lowercase. Quality over quantity.'
+      'An array of up to 7 new, distinct, and diverse vibe tag suggestions, each with a corresponding emoji.'
     ),
 });
+
+export type VibeTagSuggestion = z.infer<typeof VibeTagSuggestionSchema>;
 export type SuggestVibeTagsOutput = z.infer<
   typeof SuggestVibeTagsOutputSchema
 >;
@@ -42,19 +54,28 @@ const prompt = ai.definePrompt({
   name: 'suggestVibeTagsPrompt',
   input: {schema: SuggestVibeTagsInputSchema},
   output: {schema: SuggestVibeTagsOutputSchema},
-  prompt: `You are an AI assistant specializing in crafting compelling user profiles. Your task is to suggest vibe tags.
-Analyze the user's biography and their existing vibe tags for context.
-Based on this, generate a list of diverse vibe tags (aim for around 5, but fewer high-quality, distinct tags are acceptable) that offer fresh perspectives or highlight unstated but implied interests or personality traits reflected in their bio.
+  prompt: `You are an expert in creating vibrant and expressive user profiles for a dating app called Crossd.
+Your task is to suggest 'vibe tags' for a user based on their biography and existing tags.
+
+**CRUCIAL RULE: Every single tag you suggest MUST have a corresponding emoji.**
 
 The suggested tags must be:
 - Relevant to the user's bio.
-- Concise (ideally 1-2 words).
-- In lowercase.
+- Distinct from their existing tags.
+- Concise (ideally 1-3 words) and in lowercase.
+- Diverse, covering personality, hobbies, interests, places, and lifestyle.
+
+Here are examples of good tags with emojis:
+- Personality: funny 😂, ambitious ✨, night owl 🦉, thoughtful 🤔, spontaneous ⚡️, optimist 😊
+- Hobbies: gaming 🎮, reading 📚, cooking 🍳, hiking 🏔️, movies 🎬, live music 🎤, dancing 💃, art 🎨
+- Places: coffee shops ☕️, beaches 🏖️, mountains ⛰️, museums 🏛️, countryside 🌳, theatre 🎭, cinema 🍿, restaurants 🍽️
+- Lifestyle: foodie 🍕, travel ✈️, dogs 🐶, cats 🐱, fitness 💪, sustainable living ♻️
+- Zodiac Signs: aries ♈️, taurus ♉️, gemini ♊️, cancer ♋️, leo ♌️, virgo ♍️, libra ♎️, scorpio ♏️, sagittarius ♐️, capricorn ♑️, aquarius ♒️, pisces ♓️
 
 User Bio:
 "{{userBio}}"
 
-Existing Vibe Tags (for context, try to offer something different):
+Existing Vibe Tags (do NOT suggest these):
 {{#if existingTags}}
 {{#each existingTags}}
 - {{this}}
@@ -63,7 +84,8 @@ Existing Vibe Tags (for context, try to offer something different):
 None
 {{/if}}
 
-Provide your suggestions in the 'suggestedTags' output field. Focus on creativity and identifying new aspects from the bio that might not be fully covered by existing tags.
+Analyze the bio and existing tags, then generate up to 7 new, creative suggestions.
+Provide your suggestions in the 'suggestedTags' output field, with each item containing a 'tag' and its 'emoji'.
 `,
 });
 
@@ -75,7 +97,9 @@ const suggestVibeTagsFlow = ai.defineFlow(
   },
   async input => {
     const {output} = await prompt(input);
-    return output!;
+    if (!output) {
+      return { suggestedTags: [] };
+    }
+    return output;
   }
 );
-

@@ -14,7 +14,8 @@ import { useToast } from "@/hooks/use-toast";
 import { MOCK_USERS, MOCK_USER_ID } from "@/lib/mock-data";
 import { useRouter } from "next/navigation";
 import { GoogleMap, LoadScriptNext, StandaloneSearchBox, MarkerF } from '@react-google-maps/api';
-import { getAiSuggestedVibeTags, getAiSuggestedBio } from "@/app/actions"; 
+import { getAiSuggestedVibeTags, getAiSuggestedBio } from "@/app/actions";
+import type { VibeTagSuggestion } from "@/ai/flows/suggest-vibe-tags-flow";
 
 interface ProfileDetailsProps {
   user: UserProfile;
@@ -134,7 +135,7 @@ export function ProfileDetails({ user }: ProfileDetailsProps) {
   const [isMounted, setIsMounted] = useState(false);
   const [mapsApiKey, setMapsApiKey] = useState<string | undefined>(undefined);
 
-  const [aiSuggestedTags, setAiSuggestedTags] = useState<string[]>([]);
+  const [aiSuggestedTags, setAiSuggestedTags] = useState<VibeTagSuggestion[]>([]);
   const [isSuggestingTags, setIsSuggestingTags] = useState(false);
   const [isLoadingBioSuggestion, setIsLoadingBioSuggestion] = useState(false);
 
@@ -165,7 +166,7 @@ export function ProfileDetails({ user }: ProfileDetailsProps) {
     setAiSuggestedTags([]);
     try {
       const suggestions = await getAiSuggestedVibeTags(bio, vibeTags);
-      setAiSuggestedTags(suggestions.filter(s => !vibeTags.includes(s)));
+      setAiSuggestedTags(suggestions.filter(s => !vibeTags.includes(s.tag)));
       if (suggestions.length === 0 && vibeTags.length > 0) { // Only show if they already have tags
         toast({
           title: "No New Tag Suggestions",
@@ -184,11 +185,11 @@ export function ProfileDetails({ user }: ProfileDetailsProps) {
     }
   };
 
-  const handleAddSuggestedTag = (tag: string) => {
-    if (!vibeTags.includes(tag)) {
-      setVibeTags([...vibeTags, tag]);
+  const handleAddSuggestedTag = (tagSuggestion: VibeTagSuggestion) => {
+    if (!vibeTags.includes(tagSuggestion.tag)) {
+      setVibeTags([...vibeTags, tagSuggestion.tag]);
     }
-    setAiSuggestedTags(aiSuggestedTags.filter(s => s !== tag));
+    setAiSuggestedTags(aiSuggestedTags.filter(s => s.tag !== tagSuggestion.tag));
   };
 
   const handleSuggestBio = async () => {
@@ -573,17 +574,17 @@ export function ProfileDetails({ user }: ProfileDetailsProps) {
           <div className="my-3">
             <p className="text-sm font-medium text-foreground mb-1.5">AI Suggestions (click to add):</p>
             <div className="flex flex-wrap gap-2">
-              {aiSuggestedTags.map(tag => (
+              {aiSuggestedTags.map(suggestion => (
                 <Badge
-                  key={tag}
+                  key={suggestion.tag}
                   variant="outline"
                   className="text-sm capitalize cursor-pointer hover:bg-primary/20 border-primary/50 text-primary/90"
-                  onClick={() => handleAddSuggestedTag(tag)}
+                  onClick={() => handleAddSuggestedTag(suggestion)}
                   role="button"
                   tabIndex={0}
-                  onKeyDown={(e) => { if (e.key === 'Enter' || e.key === ' ') handleAddSuggestedTag(tag);}}
+                  onKeyDown={(e) => { if (e.key === 'Enter' || e.key === ' ') handleAddSuggestedTag(suggestion);}}
                 >
-                  {tag}
+                  {suggestion.emoji} {suggestion.tag}
                 </Badge>
               ))}
             </div>
