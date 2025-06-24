@@ -98,6 +98,40 @@ const mapStyles = [
   { featureType: 'transit', elementType: 'geometry', stylers: [{ color: '#181818' }] }
 ];
 
+const staticTagCategories: { title: string; tags: { tag: string; emoji: string }[] }[] = [
+  {
+    title: "Personality",
+    tags: [
+      { tag: 'funny', emoji: '😂' }, { tag: 'ambitious', emoji: '✨' }, { tag: 'morning person', emoji: '☀️' },
+      { tag: 'night owl', emoji: '🦉' }, { tag: 'intelligent', emoji: '🧠' }, { tag: 'thoughtful', emoji: '🤔' },
+      { tag: 'spontaneous', emoji: '⚡️' }, { tag: 'optimist', emoji: '😊' }, { tag: 'realist', emoji: '😐' },
+      { tag: 'introvert', emoji: '🤫' }, { tag: 'extrovert', emoji: '🗣️' }, { tag: 'creative', emoji: '🎨' },
+      { tag: 'calm', emoji: '🧘' }, { tag: 'energetic', emoji: '🤸‍♀️' }, { tag: 'romantic', emoji: '❤️' },
+      { tag: 'witty', emoji: '😏' },
+    ],
+  },
+  {
+    title: "Places & Activities",
+    tags: [
+      { tag: 'coffee shops', emoji: '☕️' }, { tag: 'theatres', emoji: '🎭' }, { tag: 'cinemas', emoji: '🎬' },
+      { tag: 'bowling', emoji: '🎳' }, { tag: 'beaches', emoji: '🏖️' }, { tag: 'countryside', emoji: '🌳' },
+      { tag: 'mountains', emoji: '⛰️' }, { tag: 'restaurants', emoji: '🍽️' }, { tag: 'museums', emoji: '🏛️' },
+      { tag: 'live music', emoji: '🎤' }, { tag: 'art galleries', emoji: '🎨' }, { tag: 'parks', emoji: '🏞️' },
+      { tag: 'pubs', emoji: '🍻' }, { tag: 'clubs', emoji: '💃' }, { tag: 'hiking', emoji: '🥾' },
+    ],
+  },
+  {
+    title: "Zodiac",
+    tags: [
+      { tag: 'aries', emoji: '♈️' }, { tag: 'taurus', emoji: '♉️' }, { tag: 'gemini', emoji: '♊️' },
+      { tag: 'cancer', emoji: '♋️' }, { tag: 'leo', emoji: '♌️' }, { tag: 'virgo', emoji: '♍️' },
+      { tag: 'libra', emoji: '♎️' }, { tag: 'scorpio', emoji: '♏️' }, { tag: 'sagittarius', emoji: '♐️' },
+      { tag: 'capricorn', emoji: '♑️' }, { tag: 'aquarius', emoji: '♒️' }, { tag: 'pisces', emoji: '♓️' },
+    ],
+  },
+];
+
+
 const CustomLoadingElement = () => (
   <div className="mt-1 text-muted-foreground flex items-center">
     <Loader2 className="h-4 w-4 animate-spin text-primary mr-2" />
@@ -106,7 +140,7 @@ const CustomLoadingElement = () => (
 );
 
 export function ProfileDetails({ user }: ProfileDetailsProps) {
-  const [name, setName] = useState(user.name === 'Dev User' ? '' : user.name);
+  const [name, setName] = useState(user.name);
   const [email, setEmail] = useState(user.email || "");
   const [age, setAge] = useState(user.age);
   const [bio, setBio] = useState(user.bio);
@@ -166,8 +200,9 @@ export function ProfileDetails({ user }: ProfileDetailsProps) {
     setAiSuggestedTags([]);
     try {
       const suggestions = await getAiSuggestedVibeTags(bio, vibeTags);
-      setAiSuggestedTags(suggestions.filter(s => !vibeTags.includes(s.tag)));
-      if (suggestions.length === 0 && vibeTags.length > 0) { // Only show if they already have tags
+      const newSuggestions = suggestions.filter(s => !vibeTags.includes(s.tag));
+      setAiSuggestedTags(newSuggestions);
+      if (newSuggestions.length === 0) {
         toast({
           title: "No New Tag Suggestions",
           description: "The AI couldn't find new tags for you right now. Your current tags might be comprehensive!",
@@ -184,12 +219,12 @@ export function ProfileDetails({ user }: ProfileDetailsProps) {
       setIsSuggestingTags(false);
     }
   };
-
-  const handleAddSuggestedTag = (tagSuggestion: VibeTagSuggestion) => {
+  
+  const handleAddVibeTag = (tagSuggestion: { tag: string; emoji: string }) => {
     if (!vibeTags.includes(tagSuggestion.tag)) {
       setVibeTags([...vibeTags, tagSuggestion.tag]);
     }
-    setAiSuggestedTags(aiSuggestedTags.filter(s => s.tag !== tagSuggestion.tag));
+    setAiSuggestedTags(prev => prev.filter(s => s.tag !== tagSuggestion.tag));
   };
 
   const handleSuggestBio = async () => {
@@ -531,8 +566,9 @@ export function ProfileDetails({ user }: ProfileDetailsProps) {
 
       <div>
         <Label>Vibe Tags</Label>
-        <div className="flex flex-wrap gap-2 mt-2 mb-2">
-          {vibeTags.map(tag => (
+        <p className="text-xs text-muted-foreground mt-1">Your current vibes. Click a tag to remove it.</p>
+        <div className="flex flex-wrap gap-2 mt-2 mb-4">
+          {vibeTags.length > 0 ? vibeTags.map(tag => (
             <Badge key={tag} variant="secondary" className="text-sm capitalize group relative pr-6">
               {tag}
               <button
@@ -544,8 +580,35 @@ export function ProfileDetails({ user }: ProfileDetailsProps) {
                 <XIcon className="h-3 w-3" />
               </button>
             </Badge>
+          )) : <p className="text-sm text-muted-foreground italic">No vibe tags selected yet.</p>}
+        </div>
+
+        <div className="space-y-4 my-4">
+          {staticTagCategories.map(category => (
+            <div key={category.title}>
+              <h4 className="text-sm font-medium text-muted-foreground mb-2">{category.title}</h4>
+              <div className="flex flex-wrap gap-2">
+                {category.tags.map(suggestion => (
+                  !vibeTags.includes(suggestion.tag) && (
+                    <Badge
+                      key={suggestion.tag}
+                      variant="outline"
+                      className="text-sm capitalize cursor-pointer hover:bg-primary/20 border-primary/50 text-primary/90"
+                      onClick={() => handleAddVibeTag(suggestion)}
+                      role="button"
+                      tabIndex={0}
+                      onKeyDown={(e) => { if (e.key === 'Enter' || e.key === ' ') handleAddVibeTag(suggestion);}}
+                    >
+                      {suggestion.emoji} {suggestion.tag}
+                    </Badge>
+                  )
+                ))}
+              </div>
+            </div>
           ))}
         </div>
+
+        <p className="text-sm text-muted-foreground mb-2">Or add your own / get more AI suggestions:</p>
         <div className="flex gap-2 items-center">
           <Input
             placeholder="Add a vibe tag (e.g., foodie)"
@@ -561,12 +624,12 @@ export function ProfileDetails({ user }: ProfileDetailsProps) {
             {isSuggestingTags ? <Loader2 className="h-5 w-5 animate-spin" /> : <Lightbulb className="h-5 w-5" />}
           </Button>
         </div>
-        <p className="text-xs text-muted-foreground mt-1">Press Enter or click '+' to add a tag manually, or click the lightbulb for AI suggestions.</p>
+        <p className="text-xs text-muted-foreground mt-1">Press Enter or click '+' to add a tag manually, or click the lightbulb for more AI suggestions based on your bio.</p>
 
         {isSuggestingTags && (
           <div className="text-sm text-muted-foreground flex items-center my-2">
             <Loader2 className="mr-2 h-4 w-4 animate-spin" />
-            AI is thinking of some cool tags for you...
+            AI is thinking of some more cool tags for you...
           </div>
         )}
 
@@ -579,10 +642,10 @@ export function ProfileDetails({ user }: ProfileDetailsProps) {
                   key={suggestion.tag}
                   variant="outline"
                   className="text-sm capitalize cursor-pointer hover:bg-primary/20 border-primary/50 text-primary/90"
-                  onClick={() => handleAddSuggestedTag(suggestion)}
+                  onClick={() => handleAddVibeTag(suggestion)}
                   role="button"
                   tabIndex={0}
-                  onKeyDown={(e) => { if (e.key === 'Enter' || e.key === ' ') handleAddSuggestedTag(suggestion);}}
+                  onKeyDown={(e) => { if (e.key === 'Enter' || e.key === ' ') handleAddVibeTag(suggestion);}}
                 >
                   {suggestion.emoji} {suggestion.tag}
                 </Badge>
@@ -596,3 +659,5 @@ export function ProfileDetails({ user }: ProfileDetailsProps) {
     </form>
   );
 }
+
+    
