@@ -66,8 +66,8 @@ The suggested tags must be:
 - Diverse, covering personality, hobbies, interests, places, and lifestyle.
 
 Here are examples of good tags with emojis:
-- Personality: funny 😂, ambitious ✨, night owl 🦉, thoughtful 🤔, spontaneous ⚡️, optimist 😊
-- Hobbies: gaming 🎮, reading 📚, cooking 🍳, hiking 🏔️, movies 🎬, live music 🎤, dancing 💃, art 🎨
+- Personality: funny 😂, ambitious ✨, night owl 🦉, thoughtful 🤔, spontaneous ⚡️, optimist 😊, morning bird ☀️, intelligent 🧠, calm 🧘, energetic 🤸‍♀️, romantic ❤️, witty 😏
+- Hobbies: gaming 🎮, reading 📚, cooking 🍳, hiking 🏔️, movies 🎬, live music 🎤, dancing 💃, art 🎨, bowling 🎳, photography 📷
 - Places: coffee shops ☕️, beaches 🏖️, mountains ⛰️, museums 🏛️, countryside 🌳, theatre 🎭, cinema 🍿, restaurants 🍽️
 - Lifestyle: foodie 🍕, travel ✈️, dogs 🐶, cats 🐱, fitness 💪, sustainable living ♻️
 - Zodiac Signs: aries ♈️, taurus ♉️, gemini ♊️, cancer ♋️, leo ♌️, virgo ♍️, libra ♎️, scorpio ♏️, sagittarius ♐️, capricorn ♑️, aquarius ♒️, pisces ♓️

@@ -8,8 +8,6 @@ import { Input } from "@/components/ui/input";
 import { Card } from "@/components/ui/card";
 import { Trash2, UploadCloud, Replace } from "lucide-react";
 import { useToast } from "@/hooks/use-toast";
-import { MOCK_USERS, MOCK_USER_ID } from "@/lib/mock-data";
-import { useRouter } from "next/navigation";
 
 interface ImageGalleryProps {
   initialImages: string[];
@@ -18,51 +16,25 @@ interface ImageGalleryProps {
 export function ImageGallery({ initialImages }: ImageGalleryProps) {
   const [images, setImages] = useState<string[]>(initialImages);
   const { toast } = useToast();
-  const router = useRouter();
-
-  const updateMockDataAndRefresh = (updatedLocalImages: string[]) => {
-    const currentUserIndex = MOCK_USERS.findIndex(u => u.id === MOCK_USER_ID);
-    if (currentUserIndex !== -1) {
-      // Create a new user object with the updated images
-      const updatedUser = {
-        ...MOCK_USERS[currentUserIndex],
-        images: [...updatedLocalImages], // Ensure images is a new array reference
-      };
-      // Replace the old user object with the new one in the MOCK_USERS array
-      MOCK_USERS.splice(currentUserIndex, 1, updatedUser);
-    }
-    router.refresh();
-  };
 
   const handleFileSelection = (file: File, index?: number) => {
     const reader = new FileReader();
     reader.onloadend = () => {
       const dataUrl = reader.result as string;
-      let newImagesArray: string[];
-
       if (typeof index === 'number') { // Replacing an existing image
-        newImagesArray = [...images];
+        const newImagesArray = [...images];
         newImagesArray[index] = dataUrl;
         setImages(newImagesArray);
-        updateMockDataAndRefresh(newImagesArray);
         toast({
           title: "Image Preview Updated",
-          description: `Image ${index + 1} preview has been updated with your selected file. This is a client-side preview.`,
+          description: `Image ${index + 1} has been updated. Save your profile to make it permanent.`,
         });
       } else { // Adding a new image
         if (images.length < 6) {
-          const isFirstImageThePlaceholder = images.length === 1 && images[0].includes('placehold.co') && images[0].includes('?text=U');
-          if (isFirstImageThePlaceholder) {
-            // If the only image is the "U" placeholder, replace it
-            newImagesArray = [dataUrl];
-          } else {
-            newImagesArray = [...images, dataUrl];
-          }
-          setImages(newImagesArray);
-          updateMockDataAndRefresh(newImagesArray);
+          setImages([...images, dataUrl]);
           toast({
             title: "Image Preview Added",
-            description: "Your selected file is now shown as a preview. This is a client-side preview.",
+            description: "Your new image has been added. Save your profile to make it permanent.",
           });
         } else {
           toast({
@@ -86,10 +58,10 @@ export function ImageGallery({ initialImages }: ImageGalleryProps) {
   const handleAddImage = (event: React.ChangeEvent<HTMLInputElement>) => {
     if (event.target.files && event.target.files[0]) {
       const file = event.target.files[0];
-      handleFileSelection(file); // Pass undefined for index to indicate adding
+      handleFileSelection(file);
     }
     if (event.target) {
-      event.target.value = ""; 
+      event.target.value = "";
     }
   };
 
@@ -99,24 +71,15 @@ export function ImageGallery({ initialImages }: ImageGalleryProps) {
       handleFileSelection(file, index);
     }
     if (event.target) {
-      event.target.value = ""; 
+      event.target.value = "";
     }
   };
 
   const handleRemoveImage = (index: number) => {
     if (images.length > 1) {
-      const newImagesArray = images.filter((_, i) => i !== index);
-      setImages(newImagesArray);
-      updateMockDataAndRefresh(newImagesArray);
-      toast({ title: "Image Removed", description: `Image ${index + 1} has been removed from the preview.` });
-    } else if (images.length === 1 && !(images[0].includes('placehold.co') && images[0].includes('?text=U'))) {
-      // If it's the last "real" image, replace with placeholder "U"
-      const placeholderU = 'https://placehold.co/120x120/E70F72/FFFFFF.png?text=U';
-      setImages([placeholderU]);
-      updateMockDataAndRefresh([placeholderU]);
-      toast({ title: "Image Removed", description: "Reverted to default avatar as it was the last image." });
-    }
-     else {
+      setImages(images.filter((_, i) => i !== index));
+      toast({ title: "Image Removed", description: `Image ${index + 1} has been removed. Save profile to confirm.` });
+    } else {
       toast({ title: "Cannot Remove", description: "You must have at least one profile image.", variant: "destructive" });
     }
   };
@@ -125,7 +88,7 @@ export function ImageGallery({ initialImages }: ImageGalleryProps) {
     <div className="space-y-6">
       <div className="grid grid-cols-2 sm:grid-cols-3 gap-4">
         {images.map((src, index) => (
-          <Card key={`${src.substring(0,30)}-${index}`} className="group relative aspect-[3/4] overflow-hidden bg-muted">
+          <Card key={`${src.substring(0, 30)}-${index}`} className="group relative aspect-[3/4] overflow-hidden bg-muted">
             <Image
               src={src}
               alt={`Profile image ${index + 1}`}
@@ -186,9 +149,9 @@ export function ImageGallery({ initialImages }: ImageGalleryProps) {
         )}
       </div>
       <p className="text-xs text-muted-foreground text-center">
-        Click on an image to replace or remove it. Click the '+' card to add a new photo.
+        Click on an image to replace or remove it. New image uploads are client-side previews.
         <br />
-        Image previews are client-side. Changes are reflected in the sidebar by updating mock data.
+        In a real app, you would hit "Save Profile" to make these changes permanent.
       </p>
     </div>
   );

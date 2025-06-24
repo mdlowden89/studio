@@ -1,3 +1,4 @@
+
 import type { UserProfile, Moment, ChatConversation, ChatMessage, ProfilePrompt, CrossedPathUser, Achievement, Challenge, Hotspot } from './types';
 
 export const MOCK_USER_ID = 'user-123';
@@ -229,9 +230,12 @@ export const MOCK_USERS: UserProfile[] = [
     email: 'morgan.dev@example.com',
     bio: "Just a dev user testing things out. I enjoy a good cup of coffee, exploring new tech, and weekend hikes. Let's see if our paths cross!",
     images: [
-      'https://placehold.co/400x550.png',
-      'https://placehold.co/400x550.png',
-      'https://placehold.co/400x550.png',
+        'https://placehold.co/400x550.png',
+        'https://placehold.co/600x800.png',
+        'https://placehold.co/800x600.png',
+        'https://placehold.co/500x700.png',
+        'https://placehold.co/700x500.png',
+        'https://placehold.co/650x650.png',
     ],
     vibeTags: ['coffee lover ☕️', 'techy 💻', 'hiking 🏔️', 'optimist 😊'],
     locationPatterns: ['downtown cafes', 'tech hubs', 'mountain trails'],
@@ -715,6 +719,7 @@ export const MOCK_CHAT_MESSAGES: { [chatId: string]: ChatMessage[] } = {
 export const getCurrentUser = (): UserProfile => {
   const user = MOCK_USERS.find(user => user.id === MOCK_USER_ID);
   if (!user) {
+    // This is a fallback and should not be hit if MOCK_USER_ID is in MOCK_USERS
     return {
         id: MOCK_USER_ID,
         name: "Current User",
