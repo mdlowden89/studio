@@ -1,52 +1,65 @@
-# # Example schema for simple movie review app
+# Defines the data model for the User Profiles.
 
-# # User table is keyed by Firebase Auth UID.
-# type User @table {
-#   # `@default(expr: "auth.uid")` sets it to Firebase Auth UID during insert and upsert.
-#   id: String! @default(expr: "auth.uid")
-#   username: String! @col(dataType: "varchar(50)")
-#   # The `user: User!` field in the Review table generates the following one-to-many query field.
-#   #  reviews_on_user: [Review!]!
-#   # The `Review` join table the following many-to-many query field.
-#   #  movies_via_Review: [Movie!]!
-# }
+type Query {
+  userProfiles: [UserProfile!]
+}
 
-# # Movie is keyed by a randomly generated UUID.
-# type Movie @table {
-#   # If you do not pass a 'key' to `@table`, Data Connect automatically adds the following 'id' column.
-#   # Feel free to uncomment and customize it.
-#   #  id: UUID! @default(expr: "uuidV4()")
-#   title: String!
-#   imageUrl: String!
-#   genre: String
-# }
+"""
+Represents a user's profile in the application.
+"""
+type UserProfile @table(name: "user_profiles") {
+  id: String! @column(name: "id", primaryKey: true)
+  name: String! @column(name: "name")
+  age: Int! @column(name: "age")
+  bio: String! @column(name: "bio")
+  images: [String!]! @column(name: "images", type: "json")
+  vibeTags: [String!]! @column(name: "vibe_tags", type: "json")
+  locationPatterns: [String!] @column(name: "location_patterns", type: "json")
+  prompts: [PromptAnswer!]! @column(name: "prompts", type: "json")
+  email: String @column(name: "email")
+  work: String @column(name: "work")
+  jobTitle: String @column(name: "job_title")
+  education: String @column(name: "education")
+  ethnicity: String @column(name: "ethnicity")
+  childrenStatus: String @column(name: "children_status")
+  familyPlans: String @column(name: "family_plans")
+  height: String @column(name: "height")
+  locationAddress: String @column(name: "location_address")
+  locationName: String @column(name: "location_name")
+  locationCoordinates: Coordinates @column(name: "location_coordinates", type: "json")
+  drinking: String @column(name: "drinking")
+  smoking: String @column(name: "smoking")
+  zodiacSign: String @column(name: "zodiac_sign")
+  achievements: [Achievement!] @column(name: "achievements", type: "json")
+  onboardingComplete: Boolean! @column(name: "onboarding_complete")
+}
 
-# # MovieMetadata is a metadata attached to a Movie.
-# # Movie <-> MovieMetadata is a one-to-one relationship
-# type MovieMetadata @table {
-#   # @unique ensures each Movie can only one MovieMetadata.
-#   movie: Movie! @unique
-#   # The movie field adds the following foreign key field. Feel free to uncomment and customize it.
-#   #  movieId: UUID!
-#   rating: Float
-#   releaseYear: Int
-#   description: String
-# }
+"""
+A user's answer to a profile prompt. Stored as JSON.
+"""
+type PromptAnswer {
+  promptId: String!
+  answer: String!
+}
 
-# # Reviews is a join table between User and Movie.
-# # It has a composite primary keys `userUid` and `movieId`.
-# # A user can leave reviews for many movies. A movie can have reviews from many users.
-# # User  <-> Review is a one-to-many relationship
-# # Movie <-> Review is a one-to-many relationship
-# # Movie <-> User is a many-to-many relationship
-# type Review @table(name: "Reviews", key: ["movie", "user"]) {
-#   user: User!
-#   # The user field adds the following foreign key field. Feel free to uncomment and customize it.
-#   #  userUid: String!
-#   movie: Movie!
-#   # The movie field adds the following foreign key field. Feel free to uncomment and customize it.
-#   #  movieId: UUID!
-#   rating: Int
-#   reviewText: String
-#   reviewDate: Date! @default(expr: "request.time")
-# }
+"""
+Geographic coordinates. Stored as JSON.
+"""
+type Coordinates {
+  lat: Float!
+  lng: Float!
+}
+
+"""
+An achievement unlocked by a user. Stored as JSON.
+"""
+type Achievement {
+  id: String!
+  name: String!
+  type: String!
+  description: String!
+  icon: String!
+  achievedDate: String
+  rewards: [String!]!
+  glowEffect: Boolean
+}

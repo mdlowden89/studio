@@ -11,10 +11,10 @@ import { Badge } from "@/components/ui/badge";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { X as XIcon, MapPin, Lightbulb, Loader2, Sparkles } from "lucide-react";
 import { useToast } from "@/hooks/use-toast";
-import { MOCK_USERS, MOCK_USER_ID } from "@/lib/mock-data";
+import { MOCK_USER_ID } from "@/lib/mock-data";
 import { useRouter } from "next/navigation";
 import { GoogleMap, LoadScriptNext, StandaloneSearchBox, MarkerF } from '@react-google-maps/api';
-import { getAiSuggestedVibeTags, getAiSuggestedBio } from "@/app/actions";
+import { getAiSuggestedVibeTags, getAiSuggestedBio, updateUserProfileAction } from "@/app/actions";
 import type { VibeTagSuggestion } from "@/ai/flows/suggest-vibe-tags-flow";
 
 interface ProfileDetailsProps {
@@ -131,7 +131,6 @@ const staticTagCategories: { title: string; tags: { tag: string; emoji: string }
   },
 ];
 
-
 const CustomLoadingElement = () => (
   <div className="mt-1 text-muted-foreground flex items-center">
     <Loader2 className="h-4 w-4 animate-spin text-primary mr-2" />
@@ -165,6 +164,7 @@ export function ProfileDetails({ user }: ProfileDetailsProps) {
   const [markerPosition, setMarkerPosition] = useState<google.maps.LatLngLiteral | null>(user.locationCoordinates || null);
   const [mapCenter, setMapCenter] = useState<google.maps.LatLngLiteral>(user.locationCoordinates || { lat: 40.7128, lng: -74.0060 });
 
+  const [isSaving, setIsSaving] = useState(false);
   const [isMounted, setIsMounted] = useState(false);
   const [mapsApiKey, setMapsApiKey] = useState<string | undefined>(undefined);
 
@@ -178,8 +178,6 @@ export function ProfileDetails({ user }: ProfileDetailsProps) {
   }, []);
 
   const { toast } = useToast();
-  const router = useRouter();
-
   const heightOptions = useMemo(() => generateHeightOptions(), []);
 
   const handleRemoveTag = (tagToRemove: string) => {
@@ -215,15 +213,9 @@ export function ProfileDetails({ user }: ProfileDetailsProps) {
   
   const handleAddVibeTag = (tagSuggestion: { tag: string; emoji: string }) => {
     const fullTag = `${tagSuggestion.emoji} ${tagSuggestion.tag}`;
-    
     if (vibeTags.some(tag => tag.includes(tagSuggestion.tag))) {
-      toast({
-        title: "Vibe Already Added",
-        description: "You've already selected this vibe.",
-      });
       return;
     }
-
     setVibeTags([...vibeTags, fullTag]);
     setAiSuggestedTags(prev => prev.filter(s => s.tag !== tagSuggestion.tag));
   };
@@ -249,7 +241,6 @@ export function ProfileDetails({ user }: ProfileDetailsProps) {
     }
   };
 
-
   const onLoadSearchBox = useCallback((ref: google.maps.places.SearchBox) => {
     setSearchBox(ref);
   }, []);
@@ -264,11 +255,9 @@ export function ProfileDetails({ user }: ProfileDetailsProps) {
         const newCoords = place.geometry?.location
           ? { lat: place.geometry.location.lat(), lng: place.geometry.location.lng() }
           : null;
-
         setLocationAddress(newAddr);
         setCurrentLocationName(newName);
         setCurrentCoordinates(newCoords);
-
         if (newCoords) {
           setMapCenter(newCoords);
           setMarkerPosition(newCoords);
@@ -283,9 +272,9 @@ export function ProfileDetails({ user }: ProfileDetailsProps) {
     setMap(mapInstance);
   }, []);
 
-
-  const handleSubmit = (e: React.FormEvent) => {
+  const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
+    setIsSaving(true);
     
     if (!name.trim() || age < 18) {
       toast({
@@ -293,42 +282,34 @@ export function ProfileDetails({ user }: ProfileDetailsProps) {
         description: "Please provide your name and ensure you are at least 18.",
         variant: "destructive",
       });
+      setIsSaving(false);
       return;
     }
 
-    const currentUserIndex = MOCK_USERS.findIndex(u => u.id === MOCK_USER_ID);
-    if (currentUserIndex !== -1) {
-      const updatedUser: UserProfile = {
-        ...MOCK_USERS[currentUserIndex],
-        name,
-        email,
-        age,
-        bio,
-        vibeTags,
-        work,
-        jobTitle,
-        education,
-        ethnicity,
-        childrenStatus,
-        familyPlans,
-        height,
-        drinking,
-        smoking,
-        zodiacSign,
-        locationAddress,
-        locationName: currentLocationName || (locationAddress ? locationAddress.split(',')[0] : MOCK_USERS[currentUserIndex].locationName),
-        locationCoordinates: currentCoordinates || MOCK_USERS[currentUserIndex].locationCoordinates,
-        onboardingComplete: true,
-      };
-      MOCK_USERS.splice(currentUserIndex, 1, updatedUser);
+    const profileData: Partial<UserProfile> = {
+      name, email, age, bio, vibeTags, work, jobTitle, education,
+      ethnicity, childrenStatus, familyPlans, height, drinking, smoking,
+      zodiacSign, locationAddress, 
+      locationName: currentLocationName || (locationAddress ? locationAddress.split(',')[0] : user.locationName),
+      locationCoordinates: currentCoordinates || user.locationCoordinates,
+      onboardingComplete: true, // Mark onboarding as complete upon first save
+    };
+
+    const result = await updateUserProfileAction(user.id, profileData);
+
+    if (result.success) {
+      toast({
+        title: "Profile Updated",
+        description: "Your profile has been saved to the database.",
+      });
+    } else {
+      toast({
+        title: "Error Saving Profile",
+        description: result.message,
+        variant: "destructive",
+      });
     }
-
-    toast({
-      title: "Profile Updated",
-      description: "Your profile details have been saved.",
-    });
-
-    router.refresh();
+    setIsSaving(false);
   };
   
   const renderLocationSection = () => {
@@ -386,7 +367,6 @@ export function ProfileDetails({ user }: ProfileDetailsProps) {
       </LoadScriptNext>
     );
   };
-
 
   return (
     <form onSubmit={handleSubmit} className="space-y-8">
@@ -542,7 +522,6 @@ export function ProfileDetails({ user }: ProfileDetailsProps) {
         {renderLocationSection()}
       </div>
 
-
       <div>
         <div className="flex items-center justify-between mb-1">
           <Label htmlFor="bio">Bio</Label>
@@ -551,7 +530,7 @@ export function ProfileDetails({ user }: ProfileDetailsProps) {
             onClick={handleSuggestBio} 
             variant="outline" 
             size="sm" 
-            disabled={isLoadingBioSuggestion}
+            disabled={isLoadingBioSuggestion || isSaving}
             className="text-xs"
           >
             {isLoadingBioSuggestion ? (
@@ -568,7 +547,7 @@ export function ProfileDetails({ user }: ProfileDetailsProps) {
       <div>
         <Label>Vibe Tags</Label>
         <p className="text-xs text-muted-foreground mt-1">Your current vibes. Click a tag to remove it.</p>
-        <div className="flex flex-wrap gap-2 mt-2 mb-4">
+        <div className="flex flex-wrap gap-2 mt-2 mb-4 min-h-[2.5rem]">
           {vibeTags.length > 0 ? vibeTags.map(tag => (
             <Badge key={tag} variant="secondary" className="text-sm capitalize group relative pr-6">
               {tag}
@@ -581,7 +560,7 @@ export function ProfileDetails({ user }: ProfileDetailsProps) {
                 <XIcon className="h-3 w-3" />
               </button>
             </Badge>
-          )) : <p className="text-sm text-muted-foreground italic">No vibe tags selected yet.</p>}
+          )) : <p className="text-sm text-muted-foreground italic px-1">No vibe tags selected yet.</p>}
         </div>
 
         <div className="space-y-4 my-4">
@@ -614,7 +593,7 @@ export function ProfileDetails({ user }: ProfileDetailsProps) {
           <p className="text-xs text-muted-foreground mt-1 mb-2">
             Click the button to get AI-powered suggestions based on your bio.
           </p>
-          <Button type="button" onClick={handleSuggestVibeTags} variant="outline" size="sm" disabled={isSuggestingTags}>
+          <Button type="button" onClick={handleSuggestVibeTags} variant="outline" size="sm" disabled={isSuggestingTags || isSaving}>
             {isSuggestingTags ? (
               <>
                 <Loader2 className="mr-2 h-4 w-4 animate-spin" />
@@ -658,7 +637,10 @@ export function ProfileDetails({ user }: ProfileDetailsProps) {
         )}
       </div>
 
-      <Button type="submit" className="w-full md:w-auto bg-primary hover:bg-primary/90 text-primary-foreground">Save Changes</Button>
+      <Button type="submit" className="w-full md:w-auto bg-primary hover:bg-primary/90 text-primary-foreground" disabled={isSaving}>
+        {isSaving ? <Loader2 className="mr-2 h-4 w-4 animate-spin" /> : null}
+        {isSaving ? "Saving..." : "Save Changes"}
+      </Button>
     </form>
   );
 }

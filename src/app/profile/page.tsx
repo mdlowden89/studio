@@ -1,6 +1,4 @@
 
-"use client";
-
 import { AppLayout } from "@/components/layout/app-layout";
 import { ProfileDetails } from "@/components/profile/profile-details";
 import { ImageGallery } from "@/components/profile/image-gallery";
@@ -8,13 +6,23 @@ import { PromptEditor } from "@/components/profile/prompt-editor";
 import { Card, CardHeader, CardTitle, CardDescription, CardContent } from "@/components/ui/card";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { UserCircle, Image as ImageIcon, MessageSquareText, Trophy, Target as TargetIcon } from "lucide-react";
-import { getCurrentUser, AVAILABLE_PROMPTS } from "@/lib/mock-data";
+import { AVAILABLE_PROMPTS, MOCK_USER_ID } from "@/lib/mock-data";
 import { AchievementsSection } from "@/components/profile/achievements-section";
 import { ChallengesSection } from "@/components/challenges/challenges-section";
 import { Separator } from "@/components/ui/separator";
+import { getOrCreateUserProfile } from "@/lib/user-service";
+import { notFound } from "next/navigation";
 
-export default function ProfilePage() {
-  const currentUser = getCurrentUser();
+// This is now an async Server Component
+export default async function ProfilePage() {
+  // Fetch the current user's profile from the database
+  const currentUser = await getOrCreateUserProfile(MOCK_USER_ID);
+
+  if (!currentUser) {
+    // This can happen if the user doesn't exist and couldn't be seeded.
+    // In a real app with authentication, you'd redirect to login.
+    return notFound();
+  }
   
   return (
     <AppLayout>
@@ -63,9 +71,10 @@ export default function ProfilePage() {
             <Card className="bg-card">
               <CardHeader>
                 <CardTitle>Profile Information</CardTitle>
-                <CardDescription>Update your bio, age, and vibe tags.</CardDescription>
+                <CardDescription>Update your bio, age, and vibe tags. Changes are saved to a real database.</CardDescription>
               </CardHeader>
               <CardContent>
+                {/* Pass the fetched user data to the client component */}
                 <ProfileDetails user={currentUser} />
               </CardContent>
             </Card>
