@@ -6,40 +6,47 @@ import { suggestBioForUser, SuggestBioInput } from "@/ai/flows/suggest-bio-flow"
 import { getPlacePhoto, GetPlacePhotoInput, GetPlacePhotoOutput } from "@/ai/flows/get-place-photo-flow";
 import { getSparkSwipeInsights, SparkSwipeInput, SparkSwipeOutput } from "@/ai/flows/spark-swipe-flow";
 import type { UserProfile } from "@/lib/types";
-import { MOCK_USERS } from "@/lib/mock-data";
 import { revalidatePath } from "next/cache";
 import { db } from "@/lib/firebase";
 import { doc, getDoc, setDoc, updateDoc } from "firebase/firestore";
+import type { User } from "firebase/auth";
 
 
 // --- Firestore Database Logic ---
 
 /**
- * Creates or retrieves a user profile from Firestore. If the user doesn't exist,
- * it seeds their profile from the mock data as a one-time operation.
- * @param userId The ID of the user.
+ * Retrieves a user profile from Firestore, or creates one if it doesn't exist.
+ * This is the single source of truth for user profile creation.
+ * @param firebaseUser The authenticated user object from Firebase Auth.
  * @returns The user profile.
- * @throws An error if the user cannot be found or created.
+ * @throws An error if the profile cannot be fetched or created.
  */
-export async function getOrCreateUserProfile(userId: string): Promise<UserProfile> {
-  const userDocRef = doc(db, "users", userId);
+export async function getOrCreateUserProfile(firebaseUser: User): Promise<UserProfile> {
+  const userDocRef = doc(db, "users", firebaseUser.uid);
   const userDoc = await getDoc(userDocRef);
 
   if (userDoc.exists()) {
-    console.log(`Found user ${userId} in Firestore.`);
-    // We need to cast the data to our UserProfile type
+    console.log(`Found user ${firebaseUser.uid} in Firestore.`);
     return userDoc.data() as UserProfile;
   } else {
-    console.log(`User ${userId} not found in Firestore. Seeding from mock data...`);
-    const mockUser = MOCK_USERS.find(u => u.id === userId);
-    if (mockUser) {
-      // Use setDoc to create the new document
-      await setDoc(userDocRef, mockUser);
-      console.log(`Successfully seeded user ${userId} into Firestore.`);
-      return mockUser;
-    } else {
-      throw new Error(`Could not find mock user with ID ${userId} to seed the database.`);
-    }
+    console.log(`User ${firebaseUser.uid} not found in Firestore. Creating new profile...`);
+    const newUserProfile: UserProfile = {
+      id: firebaseUser.uid,
+      name: firebaseUser.displayName || "New User",
+      email: firebaseUser.email || "",
+      age: 18,
+      bio: "Welcome to Crossd! Tell us about yourself.",
+      images: ['https://placehold.co/400x550.png'],
+      vibeTags: [],
+      prompts: [],
+      locationPatterns: [],
+      achievements: [],
+      onboardingComplete: false,
+    };
+    
+    await setDoc(userDocRef, newUserProfile);
+    console.log(`Successfully created profile for user ${firebaseUser.uid}.`);
+    return newUserProfile;
   }
 }
 

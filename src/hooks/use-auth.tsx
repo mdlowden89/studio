@@ -25,7 +25,9 @@ export function AuthProvider({ children }: { children: ReactNode }) {
       if (firebaseUser) {
         setUser(firebaseUser);
         try {
-          const profile = await getOrCreateUserProfile(firebaseUser.uid);
+          // getOrCreateUserProfile is now the single source of truth for creating a user profile document.
+          // It will get the existing profile or create a new one if it's a first-time sign-up.
+          const profile = await getOrCreateUserProfile(firebaseUser);
           setUserProfile(profile);
         } catch (error) {
             console.error("Failed to get or create user profile:", error);

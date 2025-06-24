@@ -1,3 +1,4 @@
+
 "use client";
 
 import Link from 'next/link';
@@ -11,9 +12,7 @@ import { CrossdLogoIcon } from '@/components/icons/crossd-logo';
 import { useToast } from "@/hooks/use-toast";
 import { Eye, EyeOff, Loader2 } from 'lucide-react';
 import { createUserWithEmailAndPassword, updateProfile } from "firebase/auth";
-import { doc, setDoc } from "firebase/firestore";
-import { auth, db } from "@/lib/firebase";
-import type { UserProfile } from '@/lib/types';
+import { auth } from "@/lib/firebase";
 import { useAuth } from '@/hooks/use-auth';
 
 export default function SignUpPage() {
@@ -50,32 +49,20 @@ export default function SignUpPage() {
       const userCredential = await createUserWithEmailAndPassword(auth, email, password);
       const user = userCredential.user;
 
-      // 2. Update the new user's display name in Auth
+      // 2. Update the new user's display name in Auth. This is important so the
+      // onAuthStateChanged listener can use it to create the profile document.
       await updateProfile(user, { displayName: fullName });
 
-      // 3. Create a user profile document in Firestore
-      const newUserProfile: UserProfile = {
-        id: user.uid,
-        name: fullName,
-        email: email,
-        age: 18,
-        bio: "Welcome to Crossd! Tell us about yourself.",
-        images: ['https://placehold.co/400x550.png'],
-        vibeTags: [],
-        prompts: [],
-        locationPatterns: [],
-        achievements: [],
-        onboardingComplete: false,
-      };
-      
-      await setDoc(doc(db, "users", user.uid), newUserProfile);
+      // NOTE: The Firestore document creation is now handled by the onAuthStateChanged
+      // listener in useAuth.tsx to prevent race conditions.
 
       toast({
         title: "Sign Up Successful!",
         description: "Welcome to Crossd! Redirecting to your dashboard...",
       });
+      // Redirection is handled by the AuthHandler.
+      // setIsLoading is not set to false here because the redirection will unmount this page.
 
-      // Redirection is now handled by the AuthHandler.
     } catch (error: any) {
       console.error("Sign up error:", error);
       let errorMessage = "Something went wrong. Please try again.";
