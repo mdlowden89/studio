@@ -114,10 +114,13 @@ export default function ProfilePage() {
             <Card className="bg-card">
               <CardHeader>
                 <CardTitle>Your Photos</CardTitle>
-                <CardDescription>Add, remove, or reorder your profile pictures.</CardDescription>
+                <CardDescription>Add, remove, or reorder your profile pictures. Changes are saved automatically.</CardDescription>
               </CardHeader>
               <CardContent>
-                <ImageGallery initialImages={userProfile.images} />
+                <ImageGallery 
+                  initialImages={userProfile.images} 
+                  userId={userProfile.id}
+                />
               </CardContent>
             </Card>
           </TabsContent>

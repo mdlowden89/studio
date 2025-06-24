@@ -6,82 +6,137 @@ import Image from "next/image";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Card } from "@/components/ui/card";
-import { Trash2, UploadCloud, Replace, Info } from "lucide-react";
+import { Trash2, UploadCloud, Replace, Info, Loader2 } from "lucide-react";
 import { useToast } from "@/hooks/use-toast";
 import { Alert, AlertDescription, AlertTitle } from "@/components/ui/alert";
+import { storage } from "@/lib/firebase";
+import { ref, uploadString, getDownloadURL, deleteObject } from "firebase/storage";
+import { updateUserProfileAction } from "@/app/actions";
 
 interface ImageGalleryProps {
   initialImages: string[];
+  userId: string;
 }
 
-export function ImageGallery({ initialImages }: ImageGalleryProps) {
+export function ImageGallery({ initialImages, userId }: ImageGalleryProps) {
   const [images, setImages] = useState<string[]>(initialImages);
+  const [loadingStates, setLoadingStates] = useState<Record<number, boolean>>({});
   const { toast } = useToast();
 
-  const handleFileSelection = (file: File, index?: number) => {
-    const reader = new FileReader();
-    reader.onloadend = () => {
-      const dataUrl = reader.result as string;
-      if (typeof index === 'number') { // Replacing an existing image
-        const newImagesArray = [...images];
-        newImagesArray[index] = dataUrl;
+  const handleImageUpload = async (file: File, index?: number) => {
+    const isReplacing = typeof index === 'number';
+    const loadingIndex = isReplacing ? index : images.length;
+
+    setLoadingStates(prev => ({ ...prev, [loadingIndex]: true }));
+
+    try {
+      const reader = new FileReader();
+      reader.readAsDataURL(file);
+      reader.onloadend = async () => {
+        const dataUrl = reader.result as string;
+
+        // Create a reference to the file in Firebase Storage
+        const filePath = `users/${userId}/images/${Date.now()}-${file.name}`;
+        const storageRef = ref(storage, filePath);
+
+        // Upload the file
+        const snapshot = await uploadString(storageRef, dataUrl, 'data_url');
+        const downloadURL = await getDownloadURL(snapshot.ref);
+
+        let oldImageURL: string | null = null;
+        let newImagesArray: string[];
+
+        if (isReplacing) {
+          oldImageURL = images[index];
+          newImagesArray = [...images];
+          newImagesArray[index] = downloadURL;
+        } else {
+          newImagesArray = [...images, downloadURL];
+        }
+
+        // Update Firestore
+        await updateUserProfileAction(userId, { images: newImagesArray });
+        
+        // If replacing and the old image was a real storage image, delete it
+        if (isReplacing && oldImageURL && oldImageURL.includes('firebasestorage')) {
+          try {
+            const oldImageRef = ref(storage, oldImageURL);
+            await deleteObject(oldImageRef);
+          } catch (deleteError) {
+            console.warn("Could not delete old image, it might not exist:", deleteError);
+          }
+        }
+
         setImages(newImagesArray);
         toast({
-          title: "Image Preview Updated",
-          description: `Image ${index + 1} has been updated. This is a preview and won't be saved.`,
+          title: "Image Saved!",
+          description: `Your photo has been successfully ${isReplacing ? 'replaced' : 'added'}.`,
         });
-      } else { // Adding a new image
-        if (images.length < 6) {
-          setImages([...images, dataUrl]);
-          toast({
-            title: "Image Preview Added",
-            description: "Your new image has been added. This is a preview and won't be saved.",
-          });
-        } else {
-          toast({
-            title: "Image Limit Reached",
-            description: "You can have a maximum of 6 images.",
-            variant: "destructive",
-          });
-        }
+      };
+
+      reader.onerror = () => {
+        throw new Error("Could not read file.");
       }
-    };
-    reader.onerror = () => {
+
+    } catch (error) {
+      console.error("Error uploading image:", error);
       toast({
-        title: "Error Reading File",
-        description: "Could not read the selected image file.",
+        title: "Upload Failed",
+        description: "There was a problem uploading your image. Please try again.",
         variant: "destructive",
       });
-    };
-    reader.readAsDataURL(file);
+    } finally {
+      setLoadingStates(prev => ({ ...prev, [loadingIndex]: false }));
+    }
   };
 
   const handleAddImage = (event: React.ChangeEvent<HTMLInputElement>) => {
     if (event.target.files && event.target.files[0]) {
-      const file = event.target.files[0];
-      handleFileSelection(file);
+      handleImageUpload(event.target.files[0]);
     }
-    if (event.target) {
-      event.target.value = "";
-    }
+    if (event.target) event.target.value = "";
   };
 
   const handleReplaceImage = (index: number, event: React.ChangeEvent<HTMLInputElement>) => {
     if (event.target.files && event.target.files[0]) {
-      const file = event.target.files[0];
-      handleFileSelection(file, index);
+      handleImageUpload(event.target.files[0], index);
     }
-    if (event.target) {
-      event.target.value = "";
-    }
+    if (event.target) event.target.value = "";
   };
 
-  const handleRemoveImage = (index: number) => {
-    if (images.length > 1) {
-      setImages(images.filter((_, i) => i !== index));
-      toast({ title: "Image Preview Removed", description: `Image ${index + 1} has been removed. This is a preview.` });
-    } else {
+  const handleRemoveImage = async (index: number) => {
+    if (images.length <= 1) {
       toast({ title: "Cannot Remove", description: "You must have at least one profile image.", variant: "destructive" });
+      return;
+    }
+
+    setLoadingStates(prev => ({ ...prev, [index]: true }));
+    
+    const imageUrlToDelete = images[index];
+    const newImagesArray = images.filter((_, i) => i !== index);
+
+    try {
+      // First, update Firestore
+      await updateUserProfileAction(userId, { images: newImagesArray });
+
+      // Then, delete from Storage if it's a firebase URL
+      if (imageUrlToDelete.includes('firebasestorage')) {
+        const imageRef = ref(storage, imageUrlToDelete);
+        await deleteObject(imageRef);
+      }
+
+      setImages(newImagesArray);
+      toast({ title: "Image Removed", description: `Your photo has been removed.` });
+
+    } catch (error) {
+      console.error("Error removing image:", error);
+      toast({
+        title: "Removal Failed",
+        description: "There was a problem removing your image. Please try again.",
+        variant: "destructive",
+      });
+    } finally {
+        setLoadingStates(prev => ({ ...prev, [index]: false }));
     }
   };
 
@@ -97,14 +152,20 @@ export function ImageGallery({ initialImages }: ImageGalleryProps) {
               objectFit="cover"
               className="transition-transform duration-300 group-hover:scale-110"
               data-ai-hint="profile lifestyle"
-              unoptimized={src.startsWith('data:') || src.startsWith('https://placehold.co')}
+              unoptimized={src.startsWith('data:') || src.includes('placehold.co')}
             />
-            <div className="absolute inset-0 bg-black/30 opacity-0 group-hover:opacity-100 transition-opacity duration-300 flex flex-col items-center justify-center p-2 gap-2">
+            {loadingStates[index] && (
+              <div className="absolute inset-0 bg-black/60 flex items-center justify-center z-10">
+                <Loader2 className="h-8 w-8 text-primary animate-spin" />
+              </div>
+            )}
+            <div className="absolute inset-0 bg-black/30 opacity-0 group-hover:opacity-100 transition-opacity duration-300 flex flex-col items-center justify-center p-2 gap-2 z-20">
               <Button
                 variant="outline"
                 size="sm"
                 className="bg-background/80 hover:bg-background text-foreground border-foreground/50"
                 onClick={() => document.getElementById(`replace-input-${index}`)?.click()}
+                disabled={loadingStates[index]}
               >
                 <Replace className="h-4 w-4 mr-2" /> Replace
               </Button>
@@ -120,6 +181,7 @@ export function ImageGallery({ initialImages }: ImageGalleryProps) {
                 size="sm"
                 className="bg-destructive/80 hover:bg-destructive text-destructive-foreground"
                 onClick={() => handleRemoveImage(index)}
+                disabled={loadingStates[index]}
               >
                 <Trash2 className="h-4 w-4 mr-2" /> Remove
               </Button>
@@ -129,16 +191,27 @@ export function ImageGallery({ initialImages }: ImageGalleryProps) {
         {images.length < 6 && (
           <Card
             className="aspect-[3/4] border-2 border-dashed border-muted-foreground hover:border-primary transition-colors duration-300 flex items-center justify-center cursor-pointer bg-muted/30"
-            onClick={() => document.getElementById('add-image-input')?.click()}
+            onClick={() => {
+                if (!loadingStates[images.length]) {
+                    document.getElementById('add-image-input')?.click();
+                }
+            }}
             role="button"
             tabIndex={0}
             onKeyDown={(e) => { if (e.key === 'Enter' || e.key === ' ') document.getElementById('add-image-input')?.click(); }}
           >
-            <div className="text-center text-muted-foreground">
-              <UploadCloud className="h-12 w-12 mx-auto mb-2" />
-              <p className="text-sm font-medium">Add Photo</p>
-              <p className="text-xs">(Max {6 - images.length} remaining)</p>
-            </div>
+            {loadingStates[images.length] ? (
+                 <div className="text-center text-muted-foreground">
+                    <Loader2 className="h-12 w-12 mx-auto mb-2 animate-spin" />
+                    <p className="text-sm font-medium">Uploading...</p>
+                </div>
+            ) : (
+                <div className="text-center text-muted-foreground">
+                <UploadCloud className="h-12 w-12 mx-auto mb-2" />
+                <p className="text-sm font-medium">Add Photo</p>
+                <p className="text-xs">(Max {6 - images.length} remaining)</p>
+                </div>
+            )}
             <Input
               type="file"
               id="add-image-input"
@@ -149,11 +222,11 @@ export function ImageGallery({ initialImages }: ImageGalleryProps) {
           </Card>
         )}
       </div>
-      <Alert variant="default" className="mt-6 border-primary/30">
+       <Alert variant="default" className="mt-6 border-primary/30">
         <Info className="h-4 w-4 text-primary" />
-        <AlertTitle className="text-primary">Prototype Feature Notice</AlertTitle>
+        <AlertTitle className="text-primary">Live Data Notice</AlertTitle>
         <AlertDescription className="text-xs text-muted-foreground">
-          Image uploads and replacements are client-side previews only and will not be saved after a page refresh. In a real app, these changes would be saved to a database and file storage.
+          Image changes are now saved directly to Firebase Storage and your Firestore profile.
         </AlertDescription>
       </Alert>
     </div>
