@@ -6,9 +6,84 @@ import { suggestBioForUser, SuggestBioInput } from "@/ai/flows/suggest-bio-flow"
 import { getPlacePhoto, GetPlacePhotoInput, GetPlacePhotoOutput } from "@/ai/flows/get-place-photo-flow";
 import { getSparkSwipeInsights, SparkSwipeInput, SparkSwipeOutput } from "@/ai/flows/spark-swipe-flow";
 import type { UserProfile } from "@/lib/types";
-import { MOCK_USERS } from "@/lib/mock-data";
-import { updateUserProfile } from "@/lib/user-service";
+import { MOCK_USERS, MOCK_USER_ID } from "@/lib/mock-data";
 import { revalidatePath } from "next/cache";
+
+// --- Database Service Logic (Moved from user-service.ts) ---
+import { dataConnect } from '@/lib/firebase';
+import { UserProfile as UserProfileSDK, UserProfileQuery } from '@/lib/dataconnect/default-connector';
+
+
+/**
+ * Fetches a user profile from the database.
+ * @param userId The ID of the user to fetch.
+ * @returns The user profile, or null if not found.
+ */
+async function fetchUserProfile(userId: string): Promise<UserProfile | null> {
+  try {
+    const { data } = await UserProfileQuery.get({ id: userId }, { client: dataConnect });
+    if (!data) {
+      return null;
+    }
+    return data as UserProfile;
+  } catch (error) {
+    console.error(`Error fetching user profile for ${userId}:`, error);
+    return null;
+  }
+}
+
+/**
+ * Creates or retrieves a user profile. If the user doesn't exist in the database,
+ * it seeds their profile from the mock data as a one-time operation.
+ * This function is exported to be used by server components like the profile page.
+ * @param userId The ID of the user.
+ * @returns The user profile.
+ * @throws An error if the user cannot be found or created.
+ */
+export async function getOrCreateUserProfile(userId: string): Promise<UserProfile> {
+  let user = await fetchUserProfile(userId);
+
+  if (!user) {
+    console.log(`User ${userId} not found in DB. Seeding from mock data...`);
+    const mockUser = MOCK_USERS.find(u => u.id === userId);
+    if (mockUser) {
+      const newUser = new UserProfileSDK(mockUser);
+      await newUser.insert({ client: dataConnect });
+      console.log(`Successfully seeded user ${userId}.`);
+      return mockUser;
+    } else {
+      throw new Error(`Could not find mock user with ID ${userId} to seed the database.`);
+    }
+  }
+
+  return user;
+}
+
+
+/**
+ * Updates a user's profile in the database.
+ * @param userId The ID of the user to update.
+ * @param profileData A partial object of the user's profile data to update.
+ * @throws An error if the user is not found.
+ */
+async function updateUserProfile(userId: string, profileData: Partial<UserProfile>): Promise<void> {
+  const existingProfile = await fetchUserProfile(userId);
+
+  if (!existingProfile) {
+    throw new Error(`Cannot update: User with ID ${userId} not found.`);
+  }
+
+  const updatedData = { ...existingProfile, ...profileData };
+
+  const profileToUpdate = new UserProfileSDK(updatedData);
+  
+  await profileToUpdate.update({ client: dataConnect });
+  console.log(`Successfully updated user profile for ${userId}.`);
+}
+// --- End of Database Service Logic ---
+
+
+// --- Original AI and App Actions ---
 
 export async function getAiSuggestedVibeTags(
   userBio: string,
@@ -103,6 +178,7 @@ export async function handleUserSignUp(data: { name: string; email: string }) {
  */
 export async function updateUserProfileAction(userId: string, profileData: Partial<UserProfile>) {
   try {
+    // Now calls the local updateUserProfile function
     await updateUserProfile(userId, profileData);
     // Revalidate the profile and dashboard paths to show updated info immediately
     revalidatePath('/profile');

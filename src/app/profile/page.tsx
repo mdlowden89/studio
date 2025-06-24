@@ -10,7 +10,7 @@ import { AVAILABLE_PROMPTS, MOCK_USER_ID } from "@/lib/mock-data";
 import { AchievementsSection } from "@/components/profile/achievements-section";
 import { ChallengesSection } from "@/components/challenges/challenges-section";
 import { Separator } from "@/components/ui/separator";
-import { getOrCreateUserProfile } from "@/lib/user-service";
+import { getOrCreateUserProfile } from "@/app/actions"; // Updated import path
 import { notFound } from "next/navigation";
 
 // This is now an async Server Component
