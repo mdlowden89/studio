@@ -9,7 +9,7 @@ import { Button } from "@/components/ui/button";
 import { Label } from "@/components/ui/label";
 import { Badge } from "@/components/ui/badge";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
-import { X as XIcon, PlusCircle, MapPin, Lightbulb, Loader2, Sparkles } from "lucide-react";
+import { X as XIcon, MapPin, Lightbulb, Loader2, Sparkles } from "lucide-react";
 import { useToast } from "@/hooks/use-toast";
 import { MOCK_USERS, MOCK_USER_ID } from "@/lib/mock-data";
 import { useRouter } from "next/navigation";
@@ -662,5 +662,3 @@ export function ProfileDetails({ user }: ProfileDetailsProps) {
     </form>
   );
 }
-
-    
