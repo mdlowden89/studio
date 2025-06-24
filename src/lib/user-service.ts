@@ -1,7 +1,8 @@
 'use server';
 
 import { dataConnect } from './firebase';
-import { UserProfile as UserProfileSDK, UserProfileQuery } from '@dataconnect/default-connector';
+// Use a direct path alias that Next.js can resolve.
+import { UserProfile as UserProfileSDK, UserProfileQuery } from '@/lib/dataconnect/default-connector';
 import type { UserProfile } from './types';
 import { MOCK_USERS, MOCK_USER_ID } from './mock-data';
 
