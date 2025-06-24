@@ -7,24 +7,23 @@ import { AppLayout } from "@/components/layout/app-layout";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from "@/components/ui/card";
 import { Avatar, AvatarImage, AvatarFallback } from "@/components/ui/avatar";
-import { MOCK_USERS, getCurrentUser } from "@/lib/mock-data";
-import { HeartHandshake, MessageCircle, Sparkles, Home } from "lucide-react";
+import { MOCK_USERS } from "@/lib/mock-data";
+import { HeartHandshake, MessageCircle, Sparkles, Home, Loader2 } from "lucide-react";
 import Link from "next/link";
 import ReactConfetti from "react-confetti";
+import { useAuth } from "@/hooks/use-auth";
 
-// Using the same mock moment details for consistency in the prototype
 const MOCK_LOGGED_MOMENT_DETAILS = {
   placeName: "The Alchemist's Cafe",
-  userA_id: "user-1" // Default if params.userAId is somehow not found, though it should be
 };
 
 export default function MatchConfirmedPage() {
   const params = useParams();
   const router = useRouter();
   const userAId = params.userAId as string;
+  const { userProfile: currentUserB, isLoading } = useAuth();
 
   const userA = MOCK_USERS.find(u => u.id === userAId);
-  const currentUserB = getCurrentUser(); // This is "User B"
 
   const [showConfetti, setShowConfetti] = useState(false);
   const [windowSize, setWindowSize] = useState({ width: 0, height: 0 });
@@ -38,13 +37,13 @@ export default function MatchConfirmedPage() {
     };
 
     if (typeof window !== "undefined") {
-      handleResize(); // Set initial size
+      handleResize();
       window.addEventListener("resize", handleResize);
-      setShowConfetti(true); // Start confetti on mount
+      setShowConfetti(true);
 
       const timer = setTimeout(() => {
         setShowConfetti(false);
-      }, 7000); // Confetti for 7 seconds
+      }, 7000);
 
       return () => {
         window.removeEventListener("resize", handleResize);
@@ -54,6 +53,15 @@ export default function MatchConfirmedPage() {
     return () => {};
   }, []);
 
+  if (isLoading) {
+    return (
+      <AppLayout>
+          <div className="container mx-auto py-8 flex justify-center items-center h-full">
+              <Loader2 className="h-8 w-8 animate-spin text-primary" />
+          </div>
+      </AppLayout>
+    );
+  }
 
   if (!userA || !currentUserB) {
     return (
@@ -66,10 +74,7 @@ export default function MatchConfirmedPage() {
     );
   }
 
-  // For simplicity, we'll assume the match is for "chat-1" which involves user-1 (Alex)
-  // In a real app, you'd create a new chat or find an existing one.
   const chatLink = userA.id === 'user-1' ? '/chat/chat-1' : '/chat';
-
 
   return (
     <AppLayout>
@@ -136,4 +141,3 @@ export default function MatchConfirmedPage() {
     </AppLayout>
   );
 }
-    

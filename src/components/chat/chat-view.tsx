@@ -3,17 +3,17 @@
 
 import { useState, useRef, useEffect } from "react";
 import type { ChatConversation, ChatMessage as MessageType, UserProfile } from "@/lib/types";
-import { MOCK_USER_ID, MOCK_USERS, AVAILABLE_PROMPTS } from "@/lib/mock-data";
+import { MOCK_USERS, AVAILABLE_PROMPTS } from "@/lib/mock-data";
 import { ChatMessage } from "./chat-message";
 import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
 import { Send, ArrowLeft, Video, Mic, User as UserIcon, MessageCircle, Loader2, MapPin } from "lucide-react";
 import { ScrollArea } from "@/components/ui/scroll-area";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
-import Link from "next/link";
 import { Separator } from "@/components/ui/separator";
 import { Badge } from "@/components/ui/badge";
 import { useRouter } from "next/navigation";
+import { useAuth } from "@/hooks/use-auth";
 
 
 interface ChatViewProps {
@@ -26,14 +26,14 @@ export function ChatView({ conversation, initialMessages }: ChatViewProps) {
   const [newMessage, setNewMessage] = useState("");
   const scrollAreaRef = useRef<HTMLDivElement>(null);
   const router = useRouter();
+  const { user } = useAuth();
 
   const [showProfile, setShowProfile] = useState(false);
   const [fullOtherParticipantProfile, setFullOtherParticipantProfile] = useState<UserProfile | null>(null);
 
-  const otherParticipant = conversation.participants.find(p => p.id !== MOCK_USER_ID);
+  const otherParticipant = user ? conversation.participants.find(p => p.id !== user.uid) : null;
 
   useEffect(() => {
-    // Scroll to bottom when messages change and not showing profile
     if (!showProfile && scrollAreaRef.current) {
       const viewport = scrollAreaRef.current.querySelector('div[data-radix-scroll-area-viewport]');
       if (viewport) {
@@ -52,19 +52,19 @@ export function ChatView({ conversation, initialMessages }: ChatViewProps) {
 
   const handleSendMessage = (e: React.FormEvent) => {
     e.preventDefault();
-    if (newMessage.trim() === "" || !otherParticipant) return;
+    if (newMessage.trim() === "" || !otherParticipant || !user) return;
 
     const messageToSend: MessageType = {
       id: `msg-${Date.now()}`,
       chatId: conversation.id,
-      senderId: MOCK_USER_ID,
+      senderId: user.uid,
       receiverId: otherParticipant.id,
       text: newMessage,
       timestamp: new Date().toISOString(),
     };
     setMessages([...messages, messageToSend]);
     setNewMessage("");
-    if (showProfile) { // If sending message while profile is open, switch back to chat
+    if (showProfile) { 
       setShowProfile(false);
     }
   };

@@ -11,8 +11,6 @@ import { Badge } from "@/components/ui/badge";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { X as XIcon, MapPin, Lightbulb, Loader2, Sparkles } from "lucide-react";
 import { useToast } from "@/hooks/use-toast";
-import { MOCK_USER_ID } from "@/lib/mock-data";
-import { useRouter } from "next/navigation";
 import { GoogleMap, LoadScriptNext, StandaloneSearchBox, MarkerF } from '@react-google-maps/api';
 import { getAiSuggestedVibeTags, getAiSuggestedBio, updateUserProfileAction } from "@/app/actions";
 import type { VibeTagSuggestion } from "@/ai/flows/suggest-vibe-tags-flow";
@@ -292,7 +290,7 @@ export function ProfileDetails({ user }: ProfileDetailsProps) {
       zodiacSign, locationAddress, 
       locationName: currentLocationName || (locationAddress ? locationAddress.split(',')[0] : user.locationName),
       locationCoordinates: currentCoordinates || user.locationCoordinates,
-      onboardingComplete: true, // Mark onboarding as complete upon first save
+      onboardingComplete: true,
     };
 
     const result = await updateUserProfileAction(user.id, profileData);

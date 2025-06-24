@@ -6,14 +6,15 @@ import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from "@/components/ui/card";
 import { Separator } from "@/components/ui/separator";
 import { useToast } from "@/hooks/use-toast";
-import { getCurrentUser, MOCK_USERS, MOCK_USER_ID } from "@/lib/mock-data"; 
-import { CheckCircle, HelpCircle, Sparkles, ThumbsUp, ThumbsDown, MapPin, Clock, Palette, Users as UsersIcon, User as UserIcon, Eye, Image as ImageIcon } from "lucide-react";
+import { MOCK_USERS } from "@/lib/mock-data"; 
+import { CheckCircle, HelpCircle, Sparkles, ThumbsUp, ThumbsDown, MapPin, Clock, Palette, Users as UsersIcon, User as UserIcon, Eye, Image as ImageIcon, Loader2 } from "lucide-react";
 import { useParams, useRouter } from "next/navigation";
 import Link from "next/link";
 import { Avatar, AvatarImage, AvatarFallback } from "@/components/ui/avatar";
 import { Badge } from "@/components/ui/badge"; 
 import { format } from "date-fns";
 import { useState, useEffect } from "react"; 
+import { useAuth } from "@/hooks/use-auth";
 
 // Mock data for the moment User A logged about User B (the current user)
 // In a real app, this would be fetched based on params.momentId
@@ -33,7 +34,7 @@ export default function ConfirmMomentPage() {
   const params = useParams();
   const router = useRouter();
   const { toast } = useToast();
-  const currentUserB = getCurrentUser(); // This is User B for this demo
+  const { userProfile: currentUserB, isLoading } = useAuth();
   const [showUserAHint, setShowUserAHint] = useState(false);
   const [formattedMomentTime, setFormattedMomentTime] = useState<string>("");
 
@@ -72,12 +73,22 @@ export default function ConfirmMomentPage() {
   const handleShowHint = () => {
     setShowUserAHint(true);
   };
+  
+  if (isLoading) {
+    return (
+      <AppLayout>
+          <div className="container mx-auto py-8 flex justify-center items-center h-full">
+              <Loader2 className="h-8 w-8 animate-spin text-primary" />
+          </div>
+      </AppLayout>
+    );
+  }
 
-  if (!userA) {
+  if (!userA || !currentUserB) {
     return (
         <AppLayout>
             <div className="container mx-auto py-8 text-center">
-                <p>Error: Could not load moment details. User A not found.</p>
+                <p>Error: Could not load moment details. User details not found.</p>
             </div>
         </AppLayout>
     );
@@ -223,9 +234,3 @@ export default function ConfirmMomentPage() {
     </AppLayout>
   );
 }
-    
-
-    
-
-    
-

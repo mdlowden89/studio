@@ -2,18 +2,21 @@
 "use client";
 
 import type { ChatMessage as MessageType } from "@/lib/types";
-import { MOCK_USER_ID } from "@/lib/mock-data";
 import { cn } from "@/lib/utils";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
-import { MOCK_USERS } from "@/lib/mock-data"; // To get sender avatar
+import { MOCK_USERS } from "@/lib/mock-data"; 
 import { useState, useEffect } from "react";
+import { useAuth } from "@/hooks/use-auth";
 
 interface ChatMessageProps {
   message: MessageType;
 }
 
 export function ChatMessage({ message }: ChatMessageProps) {
-  const isCurrentUserSender = message.senderId === MOCK_USER_ID;
+  const { user } = useAuth();
+  if (!user) return null;
+
+  const isCurrentUserSender = message.senderId === user.uid;
   const sender = MOCK_USERS.find(u => u.id === message.senderId);
   const [formattedTimestamp, setFormattedTimestamp] = useState<string>("");
 

@@ -5,9 +5,9 @@ import Link from "next/link";
 import { usePathname } from "next/navigation";
 import type { ChatConversation } from "@/lib/types";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
-import { MOCK_USER_ID } from "@/lib/mock-data";
 import { cn } from "@/lib/utils";
 import { useState, useEffect } from "react";
+import { useAuth } from "@/hooks/use-auth";
 
 interface ChatListItemProps {
   conversation: ChatConversation;
@@ -15,10 +15,13 @@ interface ChatListItemProps {
 
 export function ChatListItem({ conversation }: ChatListItemProps) {
   const pathname = usePathname();
+  const { user } = useAuth();
   const isActive = pathname === `/chat/${conversation.id}`;
   const [displayedTimestamp, setDisplayedTimestamp] = useState<string>("");
 
-  const otherParticipant = conversation.participants.find(p => p.id !== MOCK_USER_ID);
+  if (!user) return null;
+
+  const otherParticipant = conversation.participants.find(p => p.id !== user.uid);
 
   useEffect(() => {
     if (conversation.lastMessage) {
@@ -50,7 +53,7 @@ export function ChatListItem({ conversation }: ChatListItemProps) {
             {displayedTimestamp && <span className="text-xs text-muted-foreground">{displayedTimestamp}</span>}
           </div>
           <p className={cn("text-sm truncate", isActive ? "text-accent-foreground/80" : "text-muted-foreground")}>
-            {conversation.lastMessage?.senderId === MOCK_USER_ID && "You: "}
+            {conversation.lastMessage?.senderId === user.uid && "You: "}
             {lastMessageText}
           </p>
         </div>

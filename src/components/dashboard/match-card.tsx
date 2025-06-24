@@ -3,7 +3,7 @@
 
 import Image from "next/image";
 import type { UserProfile, CrossedPathUser } from "@/lib/types";
-import { Card, CardContent, CardFooter, CardHeader, CardTitle, CardDescription } from "@/components/ui/card";
+import { Card, CardContent, CardFooter, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import { Heart, X, MapPin, Info, Ruler, Users, Baby, ListChecks, Wine, ChevronLeftIcon, ChevronRightIcon, Sparkles as SparklesIcon, Compass, BrainCircuit, TrendingUp, Loader2 } from "lucide-react";
@@ -11,10 +11,11 @@ import { useState } from "react";
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger } from "@/components/ui/dialog";
 import { ScrollArea } from "@/components/ui/scroll-area";
 import { Separator } from "@/components/ui/separator";
-import { AVAILABLE_PROMPTS, getCurrentUser } from "@/lib/mock-data";
+import { AVAILABLE_PROMPTS } from "@/lib/mock-data";
 import React from "react";
 import type { SparkSwipeOutput } from "@/ai/flows/spark-swipe-flow";
 import { Skeleton } from "@/components/ui/skeleton";
+import { useAuth } from "@/hooks/use-auth";
 
 interface MatchCardProps {
   user: UserProfile | CrossedPathUser;
@@ -74,6 +75,7 @@ const SparkInsightsLoader = () => (
 
 export function MatchCard({ user, onLike, onPass, showCrossedPathInfo = false, sparkInsights, isInsightsLoading = false }: MatchCardProps) {
   const [currentImageIndex, setCurrentImageIndex] = useState(0);
+  const { userProfile: currentUserProfile } = useAuth();
 
   const nextImage = (e: React.MouseEvent) => {
     e.stopPropagation();
@@ -105,8 +107,7 @@ export function MatchCard({ user, onLike, onPass, showCrossedPathInfo = false, s
   const imgForPrompt2 = imagesForSpecificPlacement[3];
   const remainingDialogImages = imagesForSpecificPlacement.slice(4);
   
-  const currentUser = getCurrentUser();
-  const commonVibeTags = currentUser.vibeTags.filter(tag => user.vibeTags.includes(tag));
+  const commonVibeTags = currentUserProfile ? currentUserProfile.vibeTags.filter(tag => user.vibeTags.includes(tag)) : [];
 
 
   return (

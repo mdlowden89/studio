@@ -1,9 +1,12 @@
 
-import { Suspense } from 'react';
+'use client';
+
+import { Suspense, useEffect } from 'react';
 import { AppLayout } from '@/components/layout/app-layout';
 import { Loader2 } from 'lucide-react';
 import { DashboardClient } from '@/components/dashboard/dashboard-client';
-import { getCurrentUser } from '@/lib/mock-data';
+import { useAuth } from '@/hooks/use-auth';
+import { useRouter } from 'next/navigation';
 
 function DashboardLoading() {
   return (
@@ -19,11 +22,22 @@ function DashboardLoading() {
 }
 
 export default function DashboardPage() {
-  const currentUser = getCurrentUser();
+  const { user, userProfile, isLoading } = useAuth();
+  const router = useRouter();
+
+  useEffect(() => {
+    if (!isLoading && !user) {
+      router.push('/login-form');
+    }
+  }, [isLoading, user, router]);
+
+  if (isLoading || !userProfile) {
+    return <DashboardLoading />;
+  }
   
   return (
     <Suspense fallback={<DashboardLoading />}>
-      <DashboardClient currentUser={currentUser} />
+      <DashboardClient currentUser={userProfile} />
     </Suspense>
   );
 }

@@ -2,7 +2,7 @@
 "use client";
 
 import { useState, useEffect } from "react"; 
-import { MOCK_USERS, MOCK_USER_ID } from "@/lib/mock-data";
+import { MOCK_USERS } from "@/lib/mock-data";
 import type { UserProfile } from "@/lib/types";
 import { MatchCard } from "./match-card";
 import { Button } from "@/components/ui/button";
@@ -20,10 +20,12 @@ import {
 } from "@/components/ui/alert-dialog";
 import ReactConfetti from 'react-confetti';
 import { CrossdPlusUpsellDialog } from "@/components/pricing/crossd-plus-upsell-dialog"; 
+import { useAuth } from "@/hooks/use-auth";
 
 const DAILY_LIKE_LIMIT = 8;
 
 export function SwipeMatchSection() {
+  const { user } = useAuth();
   const [initialUsers, setInitialUsers] = useState<UserProfile[]>([]);
   const [users, setUsers] = useState<UserProfile[]>([]);
   const [currentIndex, setCurrentIndex] = useState(0);
@@ -38,13 +40,15 @@ export function SwipeMatchSection() {
   const [likesAnimationTrigger, setLikesAnimationTrigger] = useState(0);
 
   useEffect(() => {
-    const filtered = MOCK_USERS.filter(user => user.id !== MOCK_USER_ID);
-    setInitialUsers(filtered);
-    setUsers([...filtered].sort(() => 0.5 - Math.random()));
-    setCurrentIndex(0);
-    setPreviousIndex(null);
-    setLikesUsedToday(0); 
-  }, []); 
+    if (user) {
+      const filtered = MOCK_USERS.filter(u => u.id !== user.uid);
+      setInitialUsers(filtered);
+      setUsers([...filtered].sort(() => 0.5 - Math.random()));
+      setCurrentIndex(0);
+      setPreviousIndex(null);
+      setLikesUsedToday(0); 
+    }
+  }, [user]); 
 
   useEffect(() => {
     const handleResize = () => {
@@ -78,7 +82,7 @@ export function SwipeMatchSection() {
         setMatchedUserName(actionUser.name);
         setShowMatchAnimation(true);
       } else {
-        toast({
+         toast({
             title: "Liked!",
             description: `Let's see if ${actionUser.name} likes you back! (${DAILY_LIKE_LIMIT - (likesUsedToday + 1)} likes remaining today)`,
         });
@@ -117,12 +121,14 @@ export function SwipeMatchSection() {
   };
 
   const refreshUsers = () => {
-    const newFilteredUsers = MOCK_USERS.filter(user => user.id !== MOCK_USER_ID);
-    setInitialUsers(newFilteredUsers); 
-    setUsers([...newFilteredUsers].sort(() => 0.5 - Math.random()));
-    setCurrentIndex(0);
-    setPreviousIndex(null); 
-    toast({ title: "Profiles Refreshed!", description: "Here are some new faces."});
+    if (user) {
+      const newFilteredUsers = MOCK_USERS.filter(u => u.id !== user.uid);
+      setInitialUsers(newFilteredUsers); 
+      setUsers([...newFilteredUsers].sort(() => 0.5 - Math.random()));
+      setCurrentIndex(0);
+      setPreviousIndex(null); 
+      toast({ title: "Profiles Refreshed!", description: "Here are some new faces."});
+    }
   };
 
   if (users.length === 0 && initialUsers.length === 0) { 

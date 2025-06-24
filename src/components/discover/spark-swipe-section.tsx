@@ -2,7 +2,7 @@
 "use client";
 
 import { useState, useEffect, useCallback } from "react";
-import { getCurrentUser, MOCK_USERS } from "@/lib/mock-data";
+import { MOCK_USERS } from "@/lib/mock-data";
 import type { UserProfile } from "@/lib/types";
 import { MatchCard } from "@/components/dashboard/match-card";
 import { Button } from "@/components/ui/button";
@@ -23,10 +23,12 @@ import { Card, CardHeader, CardTitle, CardDescription, CardContent } from "@/com
 import { fetchSparkSwipeInsights } from "@/app/actions";
 import type { SparkSwipeOutput, SparkSwipeInput } from "@/ai/flows/spark-swipe-flow";
 import { CrossdPlusUpsellDialog } from "@/components/pricing/crossd-plus-upsell-dialog";
+import { useAuth } from "@/hooks/use-auth";
 
 const DAILY_SPARK_LIMIT = 1;
 
 export function SparkSwipeSection() {
+  const { userProfile: currentUser } = useAuth();
   const [sparkUsers, setSparkUsers] = useState<UserProfile[]>([]);
   const [currentIndex, setCurrentIndex] = useState(0);
   const [previousIndex, setPreviousIndex] = useState<number | null>(null);
@@ -45,8 +47,12 @@ export function SparkSwipeSection() {
 
 
   const loadSparkUsers = useCallback(() => {
+    if (!currentUser) {
+        setIsLoading(false);
+        return;
+    }
     setIsLoading(true);
-    const currentUser = getCurrentUser();
+
     const currentUserPromptIds = new Set(currentUser.prompts.map(p => p.promptId));
 
     if (currentUserPromptIds.size === 0) {
@@ -79,22 +85,20 @@ export function SparkSwipeSection() {
         });
       }
     }, 750);
-  }, [toast]);
+  }, [currentUser, toast]);
 
   useEffect(() => {
     loadSparkUsers();
   }, [loadSparkUsers]);
   
   useEffect(() => {
-    if (sparkUsers.length > 0 && currentIndex < sparkUsers.length) {
-      const currentUser = getCurrentUser();
+    if (currentUser && sparkUsers.length > 0 && currentIndex < sparkUsers.length) {
       const candidateUser = sparkUsers[currentIndex];
 
       const getInsights = async () => {
         setIsInsightsLoading(true);
         setInsights(null);
         try {
-          // Construct a plain, serializable object that matches the AI flow's input schema
           const input: SparkSwipeInput = {
             currentUserProfile: {
               id: currentUser.id,
@@ -131,7 +135,7 @@ export function SparkSwipeSection() {
       
       getInsights();
     }
-  }, [currentIndex, sparkUsers, toast]);
+  }, [currentIndex, sparkUsers, toast, currentUser]);
 
   useEffect(() => {
     const handleResize = () => {
@@ -188,7 +192,6 @@ export function SparkSwipeSection() {
         title: "That's all Spark Matches for now!",
         description: "Check back later or refresh for new recommendations.",
       });
-       // To show the 'empty' state, we can advance the index past the end of the array
       setCurrentIndex(currentIndex + 1);
     }
   };
@@ -201,7 +204,6 @@ export function SparkSwipeSection() {
       const lastUser = sparkUsers[previousIndex];
       setCurrentIndex(previousIndex);
       setPreviousIndex(null);
-      // Logic to potentially 'refund' a spark swipe if undone could be added here
       if (sparksUsedToday > 0) {
         setSparksUsedToday(prev => prev - 1);
       }
@@ -216,7 +218,7 @@ export function SparkSwipeSection() {
     loadSparkUsers();
   };
 
-  if (isLoading) {
+  if (isLoading || !currentUser) {
     return (
       <Card className="bg-card shadow-xl">
         <CardHeader className="text-center">

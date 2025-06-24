@@ -8,14 +8,13 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Textarea } from "@/components/ui/textarea";
-import { Badge } from "@/components/ui/badge";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { Feather, MapPin, Clock, CheckCircle, Search, ArrowLeft, MessageSquare, UserCheck, Palette, UsersIcon, Sparkles, LogOut, Loader2 } from "lucide-react";
 import { format } from "date-fns";
 import { useToast } from "@/hooks/use-toast";
 import { GoogleMap, LoadScriptNext, StandaloneSearchBox, MarkerF } from '@react-google-maps/api';
-import { MOCK_USER_ID, getCurrentUser } from "@/lib/mock-data";
 import Link from "next/link";
+import { useAuth } from "@/hooks/use-auth";
 
 const mapContainerStyle = {
   width: '100%',
@@ -72,6 +71,7 @@ const initialMatchHairColour = "Prefer not to describe";
 
 export default function LogMomentPage() {
   const [currentStep, setCurrentStep] = useState(1);
+  const { userProfile: currentUser, isLoading: isAuthLoading } = useAuth();
 
   // Step 1 State
   const [locationName, setLocationName] = useState<string>(initialLocationName);
@@ -80,7 +80,6 @@ export default function LogMomentPage() {
   const [markerPosition, setMarkerPosition] = useState<{ lat: number; lng: number } | null>(initialCoordinates);
   const [formattedTimestamp, setFormattedTimestamp] = useState<string | null>(null);
   const [mapsApiKey, setMapsApiKey] = useState<string | undefined>(undefined);
-  const [isMounted, setIsMounted] = useState(false);
   const searchBoxRef = useRef<google.maps.places.SearchBox | null>(null);
   const mapRef = useRef<google.maps.Map | null>(null);
 
@@ -92,17 +91,14 @@ export default function LogMomentPage() {
 
 
   const { toast } = useToast();
-  const currentUser = getCurrentUser();
-  const initialMapCenter = currentUser.locationCoordinates || { lat: 40.7128, lng: -74.0060 };
+  const initialMapCenter = currentUser?.locationCoordinates || { lat: 40.7128, lng: -74.0060 };
 
   useEffect(() => {
-    setIsMounted(true);
     setMapsApiKey(process.env.NEXT_PUBLIC_GOOGLE_MAPS_API_KEY);
-
     const now = new Date();
     setFormattedTimestamp(format(now, "h:mm bbb, EEEE"));
 
-    if (currentStep === 1 && !locationName && currentUser.locationName && currentUser.locationCoordinates) {
+    if (currentStep === 1 && !locationName && currentUser?.locationName && currentUser?.locationCoordinates) {
       setLocationName(currentUser.locationName);
       setLocationAddress(currentUser.locationAddress || currentUser.locationName);
       setCoordinates(currentUser.locationCoordinates);
@@ -191,11 +187,11 @@ export default function LogMomentPage() {
       locationAddress,
       coordinates,
       timestamp: new Date().toISOString(),
-      momentDescription, // User A's general comment about the moment
-      matchEthnicity,   // User A's observation of User B's ethnicity
-      matchHairColour,  // User A's observation of User B's hair colour
-      personDescription,// User A's other observations about User B (clothing, activity etc.)
-      userId: MOCK_USER_ID,
+      momentDescription,
+      matchEthnicity,
+      matchHairColour,
+      personDescription,
+      userId: currentUser?.id,
     });
     toast({
       title: "Moment Details Logged!",
@@ -226,7 +222,7 @@ export default function LogMomentPage() {
 
   const characterLimit = 300;
 
-  if (!isMounted) {
+  if (isAuthLoading) {
     return (
         <AppLayout>
             <div className="container mx-auto py-8 flex justify-center items-center h-full">
@@ -481,7 +477,7 @@ export default function LogMomentPage() {
                   <Button
                     className="w-full bg-primary hover:bg-primary/90 text-primary-foreground"
                   >
-                    <LogOut className="mr-2 h-5 w-5 transform rotate-90" /> {/* Using LogOut rotated for "trail" icon */}
+                    <LogOut className="mr-2 h-5 w-5 transform rotate-90" />
                     View Your Trail
                   </Button>
                 </Link>
@@ -493,15 +489,3 @@ export default function LogMomentPage() {
     </AppLayout>
   );
 }
-    
-
-    
-
-
-
-    
-
-
-
-    
-

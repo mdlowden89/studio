@@ -10,7 +10,7 @@ import {
   Home,
   LogOut,
   Search,
-  Sparkles, // For glow effect
+  Sparkles,
 } from "lucide-react";
 import {
   Sidebar,
@@ -25,11 +25,13 @@ import {
 import { Button } from "@/components/ui/button";
 import { Separator } from "@/components/ui/separator";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
-import { getCurrentUser } from "@/lib/mock-data";
 import { CrossdLogoIcon } from "@/components/icons/crossd-logo";
 import { Tooltip, TooltipContent, TooltipTrigger } from "@/components/ui/tooltip";
 import { cn } from "@/lib/utils";
 import { Icon } from "@/components/icons/icon";
+import { useAuth } from "@/hooks/use-auth";
+import { Skeleton } from "@/components/ui/skeleton";
+import { auth } from "@/lib/firebase";
 
 const navItems = [
   { href: "/dashboard", label: "Dashboard", icon: Home, tooltipClassName: "bg-popover text-popover-foreground border-border shadow-md" },
@@ -42,24 +44,51 @@ const navItems = [
 export function AppSidebar() {
   const pathname = usePathname();
   const router = useRouter();
-  const { state, isMobile } = useSidebar(); 
-  const currentUser = getCurrentUser();
+  const { state, isMobile } = useSidebar();
+  const { userProfile, isLoading } = useAuth();
 
-  const handleLogout = () => {
+  const handleLogout = async () => {
+    await auth.signOut();
     router.push('/');
   };
 
-  const sortedAchievements = currentUser.achievements
-    ? [...currentUser.achievements].sort((a, b) => {
+  if (isLoading || !userProfile) {
+    return (
+      <Sidebar side="left" variant="sidebar" collapsible="none">
+        <SidebarHeader>
+          <Link href="/dashboard" className="flex items-center gap-2 text-primary hover:text-primary/90 transition-colors self-start">
+            <CrossdLogoIcon className="h-7 w-7" />
+            {state === 'expanded' && <span className="text-xl font-semibold">Crossd</span>}
+          </Link>
+        </SidebarHeader>
+        <Separator className="my-2 bg-sidebar-border" />
+        <SidebarMenu className="flex-1 p-2 space-y-2">
+          <Skeleton className="h-8 w-full" />
+          <Skeleton className="h-8 w-full" />
+          <Skeleton className="h-8 w-full" />
+        </SidebarMenu>
+        <Separator className="my-2 bg-sidebar-border" />
+        <SidebarFooter>
+          <div className="flex items-center p-2 gap-3">
+            <Skeleton className="h-10 w-10 rounded-full" />
+            {state === 'expanded' && <div className="space-y-1"><Skeleton className="h-4 w-24" /><Skeleton className="h-3 w-32" /></div>}
+          </div>
+        </SidebarFooter>
+      </Sidebar>
+    );
+  }
+
+  const sortedAchievements = userProfile.achievements
+    ? [...userProfile.achievements].sort((a, b) => {
         const dateA = a.achievedDate ? new Date(a.achievedDate).getTime() : 0;
         const dateB = b.achievedDate ? new Date(b.achievedDate).getTime() : 0;
-        return dateB - dateA; 
+        return dateB - dateA;
       })
     : [];
   const displayedAchievements = sortedAchievements.slice(0, 3);
 
-  const isGlowModeActive = currentUser.achievements?.some(
-    (ach) => ach.glowEffect // Simplified check for any achievement with glow effect
+  const isGlowModeActive = userProfile.achievements?.some(
+    (ach) => ach.glowEffect
   );
 
   return (
@@ -130,11 +159,11 @@ export function AppSidebar() {
             )}>
               <Avatar className="h-10 w-10 shrink-0">
                 <AvatarImage 
-                  src={currentUser.images[0]} 
-                  alt={currentUser.name} 
+                  src={userProfile.images[0]} 
+                  alt={userProfile.name} 
                   data-ai-hint="profile photo"
                 />
-                <AvatarFallback>{currentUser.name.substring(0, 1)}</AvatarFallback>
+                <AvatarFallback>{userProfile.name.substring(0, 1)}</AvatarFallback>
               </Avatar>
               {isGlowModeActive && state === 'expanded' && (
                   <Sparkles className="absolute -bottom-1 -right-1 h-4 w-4 text-primary bg-background/70 rounded-full p-0.5" />
@@ -142,9 +171,9 @@ export function AppSidebar() {
             </div>
             {state === 'expanded' && (
               <div className="ml-3 flex flex-col items-start text-left">
-                <span className="font-medium text-sm text-sidebar-primary">{currentUser.name}</span>
-                {currentUser.email && (
-                  <span className="text-xs text-sidebar-foreground/70 truncate max-w-[120px]">{currentUser.email}</span>
+                <span className="font-medium text-sm text-sidebar-primary">{userProfile.name}</span>
+                {userProfile.email && (
+                  <span className="text-xs text-sidebar-foreground/70 truncate max-w-[120px]">{userProfile.email}</span>
                 )}
               </div>
             )}
