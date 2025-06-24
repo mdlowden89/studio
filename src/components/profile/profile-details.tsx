@@ -105,7 +105,7 @@ const CustomLoadingElement = () => (
 );
 
 export function ProfileDetails({ user }: ProfileDetailsProps) {
-  const [name, setName] = useState(user.name);
+  const [name, setName] = useState(user.name === 'Dev User' ? '' : user.name);
   const [email, setEmail] = useState(user.email || "");
   const [age, setAge] = useState(user.age);
   const [bio, setBio] = useState(user.bio);
@@ -249,6 +249,16 @@ export function ProfileDetails({ user }: ProfileDetailsProps) {
 
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
+    
+    if (!name.trim() || age < 18) {
+      toast({
+        title: "Incomplete Profile",
+        description: "Please provide your name and ensure you are at least 18.",
+        variant: "destructive",
+      });
+      return;
+    }
+
     const currentUserIndex = MOCK_USERS.findIndex(u => u.id === MOCK_USER_ID);
     if (currentUserIndex !== -1) {
       const updatedUser: UserProfile = {
@@ -271,6 +281,7 @@ export function ProfileDetails({ user }: ProfileDetailsProps) {
         locationAddress,
         locationName: currentLocationName || (locationAddress ? locationAddress.split(',')[0] : MOCK_USERS[currentUserIndex].locationName),
         locationCoordinates: currentCoordinates || MOCK_USERS[currentUserIndex].locationCoordinates,
+        onboardingComplete: true, // Set onboarding to complete
       };
       MOCK_USERS.splice(currentUserIndex, 1, updatedUser);
     }
@@ -356,7 +367,7 @@ export function ProfileDetails({ user }: ProfileDetailsProps) {
           <Input
             id="age"
             type="number"
-            value={age === 0 && !name ? '' : age} 
+            value={age === 0 && name === '' ? '' : age} 
             onChange={(e) => {
               const rawValue = e.target.value;
               if (rawValue === "") {
@@ -584,6 +595,3 @@ export function ProfileDetails({ user }: ProfileDetailsProps) {
     </form>
   );
 }
-
-
-    

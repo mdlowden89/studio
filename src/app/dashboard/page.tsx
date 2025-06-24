@@ -3,6 +3,7 @@ import { Suspense } from 'react';
 import { AppLayout } from '@/components/layout/app-layout';
 import { Loader2 } from 'lucide-react';
 import { DashboardClient } from '@/components/dashboard/dashboard-client';
+import { getCurrentUser } from '@/lib/mock-data';
 
 function DashboardLoading() {
   return (
@@ -18,9 +19,11 @@ function DashboardLoading() {
 }
 
 export default function DashboardPage() {
+  const currentUser = getCurrentUser();
+  
   return (
     <Suspense fallback={<DashboardLoading />}>
-      <DashboardClient />
+      <DashboardClient currentUser={currentUser} />
     </Suspense>
   );
 }

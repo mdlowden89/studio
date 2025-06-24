@@ -4,15 +4,15 @@
 import { useState, useEffect, useMemo, useCallback } from "react";
 import { AppLayout } from "@/components/layout/app-layout";
 import { Card, CardContent, CardHeader, CardTitle, CardDescription, CardFooter } from "@/components/ui/card";
-import { Sparkles, PlusCircle, ClipboardList, Users, MessageSquare, Route, MapPin, CalendarDays, Users2, TrendingUp, Activity, Map, LayoutGrid, List as ListIcon, Lightbulb, Edit3, Repeat, Star, ShoppingBag, Zap, Undo2, Eye, BrainCircuit, Signal } from "lucide-react";
-import { getCurrentUser, MOCK_MOMENTS, MOCK_CROSSED_PATHS_USERS, MOCK_CHAT_CONVERSATIONS, MOCK_USER_ID, MOCK_USERS, baseDate, AVAILABLE_PROMPTS, MOCK_AVAILABLE_CHALLENGES, MOCK_HOTSPOTS } from "@/lib/mock-data";
+import { Sparkles, PlusCircle, ClipboardList, Users, MessageSquare, Route, MapPin, CalendarDays, Users2, TrendingUp, Activity, Map, LayoutGrid, List as ListIcon, Lightbulb, Edit3, Repeat, Star, ShoppingBag, Zap, Undo2, Eye, BrainCircuit, Signal, ArrowRight } from "lucide-react";
+import { MOCK_MOMENTS, MOCK_CROSSED_PATHS_USERS, MOCK_CHAT_CONVERSATIONS, MOCK_USER_ID, MOCK_USERS, baseDate, AVAILABLE_PROMPTS, MOCK_AVAILABLE_CHALLENGES, MOCK_HOTSPOTS } from "@/lib/mock-data";
 import { Button } from "@/components/ui/button";
 import { Separator } from "@/components/ui/separator";
 import { subDays, isAfter, format, getDay } from "date-fns";
 import { MomentsMap } from "@/components/dashboard/moments-map";
 import { MomentGalleryItem } from "@/components/moments/moment-gallery-item";
 import Link from "next/link";
-import type { ProfilePrompt, Challenge } from "@/lib/types";
+import type { ProfilePrompt, Challenge, UserProfile } from "@/lib/types";
 import { Progress } from "@/components/ui/progress";
 import { CrossdPlusUpsellDialog } from "@/components/pricing/crossd-plus-upsell-dialog";
 import { FreeBoostUpsellDialog } from "@/components/pricing/free-boost-upsell-dialog";
@@ -20,9 +20,11 @@ import { useSearchParams, useRouter } from "next/navigation";
 import { useToast } from "@/hooks/use-toast";
 import { EmotionalHotspotsUpsell } from "@/components/dashboard/emotional-hotspots-upsell";
 
+interface DashboardClientProps {
+    currentUser: UserProfile;
+}
 
-export function DashboardClient() {
-  const currentUser = getCurrentUser();
+export function DashboardClient({ currentUser }: DashboardClientProps) {
   const [recentPlacesViewMode, setRecentPlacesViewMode] = useState<'list' | 'imageGrid'>('list');
   const [clientFormattedTimes, setClientFormattedTimes] = useState<Record<string, string>>({});
   const [windowSize, setWindowSize] = useState({ width: 0, height: 0 });
@@ -92,9 +94,7 @@ export function DashboardClient() {
 
   useEffect(() => {
     if (searchParams.get('showBoostUpsell') === 'true') {
-      // TODO: In a real app, check if user is already premium before showing.
       setShowFreeBoostDialog(true);
-      // Clean the URL
       router.replace('/dashboard', { scroll: false });
     }
   }, [searchParams, router]);
@@ -169,6 +169,24 @@ export function DashboardClient() {
   return (
     <AppLayout>
       <div className="container mx-auto py-8">
+        {!currentUser.onboardingComplete && (
+            <Card className="mb-8 bg-gradient-to-r from-primary/20 via-card to-card border-2 border-primary shadow-lg">
+              <CardHeader>
+                <CardTitle className="text-2xl font-bold text-primary">Let's Get You Set Up!</CardTitle>
+                <CardDescription className="text-muted-foreground">
+                  Complete your profile to start finding connections. A great profile gets more attention!
+                </CardDescription>
+              </CardHeader>
+              <CardFooter>
+                <Link href="/profile" passHref>
+                  <Button className="bg-primary hover:bg-primary/90 text-primary-foreground">
+                    Complete Your Profile <ArrowRight className="ml-2 h-5 w-5" />
+                  </Button>
+                </Link>
+              </CardFooter>
+            </Card>
+        )}
+
         <Card className="mb-8 bg-card shadow-xl">
           <CardHeader>
             <div className="flex items-center gap-3">
@@ -488,7 +506,6 @@ export function DashboardClient() {
                   </Card>
                 );
               })}
-              {/* Special layout for the last, larger booster */}
               {boosters.length > 4 && (() => {
                   const lastBooster = boosters[4];
                   const BoosterIcon = lastBooster.icon;

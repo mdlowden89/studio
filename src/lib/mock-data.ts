@@ -155,6 +155,7 @@ export const MOCK_USERS: UserProfile[] = [
     smoking: "No",
     zodiacSign: "Aries",
     achievements: [],
+    onboardingComplete: true,
   },
   {
     id: 'user-2',
@@ -188,6 +189,7 @@ export const MOCK_USERS: UserProfile[] = [
     smoking: "Sometimes",
     zodiacSign: "Gemini",
     achievements: [],
+    onboardingComplete: true,
   },
   {
     id: 'user-3',
@@ -219,29 +221,23 @@ export const MOCK_USERS: UserProfile[] = [
     smoking: "Prefer Not to Say",
     zodiacSign: "Scorpio",
     achievements: [],
+    onboardingComplete: true,
   },
   {
     id: MOCK_USER_ID, 
     name: 'Dev User',
-    age: 27,
+    age: 0,
     email: 'dev@example.com',
-    bio: "Full-stack developer by day, aspiring chef by night! I love experimenting with new recipes, especially Italian and Thai. Weekends are for long bike rides, discovering hidden city gems, and maybe a bit of retro gaming. Seeking connections and new experiences. Love exploring local cafes and parks. My vibe tags are usually \"explorer\", \"optimist\", \"curious\", and \"friendly\". Let's see where our paths cross!",
+    bio: "",
     images: [
-      'https://placehold.co/400x550.png',
-      'https://placehold.co/800x600.png',
-      'https://placehold.co/500x500.png',
-      'https://placehold.co/450x600.png',
-      'https://placehold.co/700x450.png',
+      'https://placehold.co/400x550.png?text=U',
     ],
-    vibeTags: ['explorer', 'optimist', 'curious', 'friendly', 'coffee enthusiast', 'park lover'],
-    locationPatterns: ['local coffee shops', 'bookstores', 'community gardens', 'farmers markets', 'museums', 'culinary schools', 'bike paths', 'retro arcades'],
-    prompts: [
-      { promptId: 'p1', answer: 'Early bird gets the worm, but the second mouse gets the cheese.' },
-      { promptId: 'p3', answer: 'Someone genuine, kind, and open-minded.' },
-    ],
-    work: 'App Prototyper Inc.',
-    jobTitle: 'AI Assistant',
-    education: 'Firebase Studio University',
+    vibeTags: [],
+    locationPatterns: [],
+    prompts: [],
+    work: '',
+    jobTitle: '',
+    education: '',
     ethnicity: 'Prefer Not to Say',
     childrenStatus: 'Prefer Not to Say',
     familyPlans: 'Prefer Not to Say',
@@ -249,10 +245,11 @@ export const MOCK_USERS: UserProfile[] = [
     drinking: 'Prefer Not to Say',
     smoking: 'Prefer Not to Say',
     zodiacSign: 'Prefer Not to Say',
-    locationAddress: '1 Developer Way, Firebase City, FS',
-    locationName: 'Firebase City',
+    locationAddress: '',
+    locationName: '',
     locationCoordinates: { lat: 37.7749, lng: -122.4194 },
-    achievements: MOCK_ACHIEVEMENTS_FOR_CURRENT_USER, 
+    achievements: [], 
+    onboardingComplete: false,
   },
   {
     id: 'user-4',
@@ -285,6 +282,7 @@ export const MOCK_USERS: UserProfile[] = [
     smoking: "No",
     zodiacSign: "Aquarius",
     achievements: [],
+    onboardingComplete: true,
   },
   {
     id: 'user-5',
@@ -317,6 +315,7 @@ export const MOCK_USERS: UserProfile[] = [
     smoking: "No",
     zodiacSign: "Pisces",
     achievements: [],
+    onboardingComplete: true,
   },
   {
     id: 'user-6',
@@ -349,6 +348,7 @@ export const MOCK_USERS: UserProfile[] = [
     smoking: "No",
     zodiacSign: "Sagittarius",
     achievements: [],
+    onboardingComplete: true,
   },
   {
     id: 'user-7',
@@ -374,6 +374,7 @@ export const MOCK_USERS: UserProfile[] = [
     smoking: "No",
     zodiacSign: "Libra",
     achievements: [],
+    onboardingComplete: true,
   },
   {
     id: 'user-8',
@@ -399,6 +400,7 @@ export const MOCK_USERS: UserProfile[] = [
     smoking: "No",
     zodiacSign: "Taurus",
     achievements: [],
+    onboardingComplete: true,
   },
   {
     id: 'user-9',
@@ -424,6 +426,7 @@ export const MOCK_USERS: UserProfile[] = [
     smoking: "No",
     zodiacSign: "Virgo",
     achievements: [],
+    onboardingComplete: true,
   },
   {
     id: 'user-10',
@@ -449,6 +452,7 @@ export const MOCK_USERS: UserProfile[] = [
     smoking: "No",
     zodiacSign: "Cancer",
     achievements: [],
+    onboardingComplete: true,
   },
   {
     id: 'user-11',
@@ -474,6 +478,7 @@ export const MOCK_USERS: UserProfile[] = [
     smoking: "No",
     zodiacSign: "Leo",
     achievements: [],
+    onboardingComplete: true,
   },
   {
     id: 'user-12',
@@ -499,6 +504,7 @@ export const MOCK_USERS: UserProfile[] = [
     smoking: "No",
     zodiacSign: "Capricorn",
     achievements: [],
+    onboardingComplete: true,
   },
   {
     id: 'user-13',
@@ -524,6 +530,7 @@ export const MOCK_USERS: UserProfile[] = [
     smoking: "Sometimes",
     zodiacSign: "Sagittarius",
     achievements: [],
+    onboardingComplete: true,
   },
   {
     id: 'user-14',
@@ -549,6 +556,7 @@ export const MOCK_USERS: UserProfile[] = [
     smoking: "No",
     zodiacSign: "Aquarius",
     achievements: [],
+    onboardingComplete: true,
   }
 ];
 
@@ -726,7 +734,8 @@ export const getCurrentUser = (): UserProfile => {
         locationName: 'Default City',
         locationCoordinates: { lat: 0, lng: 0 },
         achievements: [],
-        locationPatterns: ['cafes', 'parks']
+        locationPatterns: ['cafes', 'parks'],
+        onboardingComplete: false,
     };
   }
   return user;

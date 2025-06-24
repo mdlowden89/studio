@@ -23,7 +23,8 @@ export interface UserProfile {
   drinking?: string;
   smoking?: string;
   zodiacSign?: string; 
-  achievements?: Achievement[]; 
+  achievements?: Achievement[];
+  onboardingComplete: boolean;
 }
 
 export interface ProfilePrompt {
