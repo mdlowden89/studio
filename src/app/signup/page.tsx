@@ -2,7 +2,7 @@
 
 import Link from 'next/link';
 import { useRouter } from 'next/navigation';
-import { useState, useEffect } from 'react';
+import { useState } from 'react';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from '@/components/ui/card';
 import { Input } from '@/components/ui/input';
@@ -22,15 +22,8 @@ export default function SignUpPage() {
   const [isLoading, setIsLoading] = useState(false);
   const [showPassword, setShowPassword] = useState(false);
   const [showConfirmPassword, setShowConfirmPassword] = useState(false);
-  const { user, isLoading: isAuthLoading } = useAuth();
+  const { isLoading: isAuthLoading } = useAuth();
 
-  useEffect(() => {
-    // If auth state is determined and there is a user, redirect to dashboard.
-    // This handles both users who are already logged in and users who just signed up.
-    if (!isAuthLoading && user) {
-      router.push('/dashboard');
-    }
-  }, [user, isAuthLoading, router]);
 
   const onSignUp = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
@@ -82,7 +75,7 @@ export default function SignUpPage() {
         description: "Welcome to Crossd! Redirecting to your dashboard...",
       });
 
-      // Redirect is now handled by the useEffect hook.
+      // Redirection is now handled by the AuthHandler.
     } catch (error: any) {
       console.error("Sign up error:", error);
       let errorMessage = "Something went wrong. Please try again.";
@@ -96,7 +89,7 @@ export default function SignUpPage() {
         description: errorMessage,
         variant: "destructive",
       });
-      setIsLoading(false); // Stop loading only on failure
+      setIsLoading(false);
     }
   };
 
@@ -105,7 +98,7 @@ export default function SignUpPage() {
      return (
       <div className="flex flex-col items-center justify-center min-h-screen bg-background">
         <Loader2 className="h-12 w-12 animate-spin text-primary" />
-        <p className="mt-4 text-muted-foreground">Loading session...</p>
+        <p className="mt-4 text-muted-foreground">Loading...</p>
       </div>
     );
   }

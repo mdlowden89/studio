@@ -1,7 +1,6 @@
 
 'use client';
 
-import { useEffect } from 'react';
 import { AppLayout } from "@/components/layout/app-layout";
 import { ProfileDetails } from "@/components/profile/profile-details";
 import { ImageGallery } from "@/components/profile/image-gallery";
@@ -13,24 +12,13 @@ import { AVAILABLE_PROMPTS } from "@/lib/mock-data";
 import { AchievementsSection } from "@/components/profile/achievements-section";
 import { ChallengesSection } from "@/components/challenges/challenges-section";
 import { Separator } from "@/components/ui/separator";
-import { Skeleton } from '@/components/ui/skeleton';
 import { useAuth } from '@/hooks/use-auth';
-import { useRouter } from 'next/navigation';
 
 
 function ProfilePageLoading() {
   return (
     <AppLayout>
       <div className="container mx-auto py-8">
-        <Card className="bg-card shadow-xl mb-8">
-            <CardHeader className="flex flex-row items-center gap-4">
-                <Skeleton className="w-10 h-10 rounded-full" />
-                <div>
-                    <Skeleton className="h-8 w-48 mb-1" />
-                    <Skeleton className="h-4 w-96" />
-                </div>
-            </CardHeader>
-        </Card>
         <div className="flex justify-center items-center h-96">
             <Loader2 className="w-16 h-16 animate-spin text-primary" />
         </div>
@@ -39,17 +27,8 @@ function ProfilePageLoading() {
   );
 }
 
-
-// This is now a client component
 export default function ProfilePage() {
-  const { user, userProfile, isLoading } = useAuth();
-  const router = useRouter();
-
-  useEffect(() => {
-    if (!isLoading && !user) {
-      router.push('/login-form');
-    }
-  }, [isLoading, user, router]);
+  const { userProfile, isLoading } = useAuth();
 
   if (isLoading || !userProfile) {
     return <ProfilePageLoading />;

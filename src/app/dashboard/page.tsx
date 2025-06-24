@@ -1,12 +1,11 @@
 
 'use client';
 
-import { Suspense, useEffect } from 'react';
+import { Suspense } from 'react';
 import { AppLayout } from '@/components/layout/app-layout';
 import { Loader2 } from 'lucide-react';
 import { DashboardClient } from '@/components/dashboard/dashboard-client';
 import { useAuth } from '@/hooks/use-auth';
-import { useRouter } from 'next/navigation';
 
 function DashboardLoading() {
   return (
@@ -22,14 +21,7 @@ function DashboardLoading() {
 }
 
 export default function DashboardPage() {
-  const { user, userProfile, isLoading } = useAuth();
-  const router = useRouter();
-
-  useEffect(() => {
-    if (!isLoading && !user) {
-      router.push('/login-form');
-    }
-  }, [isLoading, user, router]);
+  const { userProfile, isLoading } = useAuth();
 
   if (isLoading || !userProfile) {
     return <DashboardLoading />;
