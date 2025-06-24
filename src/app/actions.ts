@@ -11,7 +11,7 @@ import { revalidatePath } from "next/cache";
 
 // --- Database Service Logic (Moved from user-service.ts) ---
 import { dataConnect } from '@/lib/firebase';
-import { UserProfile as UserProfileSDK, UserProfileQuery } from '@/lib/dataconnect/default-connector';
+import { UserProfile as UserProfileSDK, UserProfileQuery } from '../lib/dataconnect/default-connector';
 
 
 /**
