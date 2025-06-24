@@ -1,27 +1,85 @@
 
+'use client';
+
+import { useState, useEffect } from 'react';
+import type { UserProfile } from '@/lib/types';
 import { AppLayout } from "@/components/layout/app-layout";
 import { ProfileDetails } from "@/components/profile/profile-details";
 import { ImageGallery } from "@/components/profile/image-gallery";
 import { PromptEditor } from "@/components/profile/prompt-editor";
 import { Card, CardHeader, CardTitle, CardDescription, CardContent } from "@/components/ui/card";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
-import { UserCircle, Image as ImageIcon, MessageSquareText, Trophy, Target as TargetIcon } from "lucide-react";
+import { UserCircle, Image as ImageIcon, MessageSquareText, Trophy, Target as TargetIcon, Loader2, Frown } from "lucide-react";
 import { AVAILABLE_PROMPTS, MOCK_USER_ID } from "@/lib/mock-data";
 import { AchievementsSection } from "@/components/profile/achievements-section";
 import { ChallengesSection } from "@/components/challenges/challenges-section";
 import { Separator } from "@/components/ui/separator";
-import { getOrCreateUserProfile } from "@/app/actions"; // Updated import path
-import { notFound } from "next/navigation";
+import { getOrCreateUserProfile } from "@/app/actions";
+import { Skeleton } from '@/components/ui/skeleton';
 
-// This is now an async Server Component
-export default async function ProfilePage() {
-  // Fetch the current user's profile from the database
-  const currentUser = await getOrCreateUserProfile(MOCK_USER_ID);
 
-  if (!currentUser) {
-    // This can happen if the user doesn't exist and couldn't be seeded.
-    // In a real app with authentication, you'd redirect to login.
-    return notFound();
+function ProfilePageLoading() {
+  return (
+    <AppLayout>
+      <div className="container mx-auto py-8">
+        <Card className="bg-card shadow-xl mb-8">
+            <CardHeader className="flex flex-row items-center gap-4">
+                <Skeleton className="w-10 h-10 rounded-full" />
+                <div>
+                    <Skeleton className="h-8 w-48 mb-1" />
+                    <Skeleton className="h-4 w-96" />
+                </div>
+            </CardHeader>
+        </Card>
+        <div className="flex justify-center items-center h-96">
+            <Loader2 className="w-16 h-16 animate-spin text-primary" />
+        </div>
+      </div>
+    </AppLayout>
+  );
+}
+
+
+// This is now a client component
+export default function ProfilePage() {
+  const [currentUser, setCurrentUser] = useState<UserProfile | null>(null);
+  const [isLoading, setIsLoading] = useState(true);
+  const [error, setError] = useState<string | null>(null);
+
+  useEffect(() => {
+    const fetchUser = async () => {
+      try {
+        const user = await getOrCreateUserProfile(MOCK_USER_ID);
+        if (user) {
+            setCurrentUser(user);
+        } else {
+            throw new Error("User profile not found.");
+        }
+      } catch (err: any) {
+        console.error("Failed to fetch user profile:", err);
+        setError(err.message || "An unexpected error occurred while loading your profile.");
+      } finally {
+        setIsLoading(false);
+      }
+    };
+
+    fetchUser();
+  }, []);
+
+  if (isLoading) {
+    return <ProfilePageLoading />;
+  }
+
+  if (error || !currentUser) {
+    return (
+        <AppLayout>
+            <div className="container mx-auto py-8 flex flex-col items-center justify-center h-full text-center">
+                <Frown className="w-24 h-24 text-destructive mb-4" />
+                <h2 className="text-2xl font-bold text-destructive">Failed to Load Profile</h2>
+                <p className="text-muted-foreground mt-2 max-w-md">{error || "We couldn't retrieve your profile information. Please try refreshing the page."}</p>
+            </div>
+        </AppLayout>
+    );
   }
   
   return (
@@ -74,7 +132,6 @@ export default async function ProfilePage() {
                 <CardDescription>Update your bio, age, and vibe tags. Changes are saved to a real database.</CardDescription>
               </CardHeader>
               <CardContent>
-                {/* Pass the fetched user data to the client component */}
                 <ProfileDetails user={currentUser} />
               </CardContent>
             </Card>
