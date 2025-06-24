@@ -1,7 +1,7 @@
 import { initializeApp, getApps, getApp, type FirebaseOptions } from 'firebase/app';
 import { getAuth } from 'firebase/auth';
+import { getFirestore } from 'firebase/firestore';
 import { getStorage } from 'firebase/storage';
-import { getDataConnect } from '@firebase/data-connect';
 
 const firebaseConfig: FirebaseOptions = {
   apiKey: process.env.NEXT_PUBLIC_FIREBASE_API_KEY,
@@ -17,10 +17,6 @@ const app = !getApps().length ? initializeApp(firebaseConfig) : getApp();
 
 const auth = getAuth(app);
 const storage = getStorage(app);
+const db = getFirestore(app);
 
-// Initialize DataConnect
-const dataConnect = getDataConnect(app, {
-  connector: 'default', // This must match the connectorId in your connector.yaml
-});
-
-export { app, auth, storage, dataConnect };
+export { app, auth, db, storage };

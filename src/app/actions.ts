@@ -6,53 +6,65 @@ import { suggestBioForUser, SuggestBioInput } from "@/ai/flows/suggest-bio-flow"
 import { getPlacePhoto, GetPlacePhotoInput, GetPlacePhotoOutput } from "@/ai/flows/get-place-photo-flow";
 import { getSparkSwipeInsights, SparkSwipeInput, SparkSwipeOutput } from "@/ai/flows/spark-swipe-flow";
 import type { UserProfile } from "@/lib/types";
-import { MOCK_USERS, MOCK_USER_ID, getCurrentUser } from "@/lib/mock-data";
+import { MOCK_USERS } from "@/lib/mock-data";
 import { revalidatePath } from "next/cache";
+import { db } from "@/lib/firebase";
+import { doc, getDoc, setDoc, updateDoc } from "firebase/firestore";
 
 
-// --- Mocked Database Logic ---
+// --- Firestore Database Logic ---
 
 /**
- * Mocks creating or retrieving a user profile. In a real app, this would interact
- * with a database. Here, it just finds a user from the mock data.
+ * Creates or retrieves a user profile from Firestore. If the user doesn't exist,
+ * it seeds their profile from the mock data as a one-time operation.
  * @param userId The ID of the user.
  * @returns The user profile.
- * @throws An error if the user cannot be found.
+ * @throws An error if the user cannot be found or created.
  */
 export async function getOrCreateUserProfile(userId: string): Promise<UserProfile> {
-  console.log(`Simulating getOrCreateUserProfile for user ID: ${userId}`);
-  const user = MOCK_USERS.find(u => u.id === userId);
-  if (user) {
-    return Promise.resolve(user);
+  const userDocRef = doc(db, "users", userId);
+  const userDoc = await getDoc(userDocRef);
+
+  if (userDoc.exists()) {
+    console.log(`Found user ${userId} in Firestore.`);
+    // We need to cast the data to our UserProfile type
+    return userDoc.data() as UserProfile;
+  } else {
+    console.log(`User ${userId} not found in Firestore. Seeding from mock data...`);
+    const mockUser = MOCK_USERS.find(u => u.id === userId);
+    if (mockUser) {
+      // Use setDoc to create the new document
+      await setDoc(userDocRef, mockUser);
+      console.log(`Successfully seeded user ${userId} into Firestore.`);
+      return mockUser;
+    } else {
+      throw new Error(`Could not find mock user with ID ${userId} to seed the database.`);
+    }
   }
-  // This part is a fallback and should ideally not be hit if MOCK_USER_ID is valid.
-  const currentUser = getCurrentUser();
-  if (currentUser) {
-      return Promise.resolve(currentUser);
-  }
-  throw new Error(`Mock user with ID ${userId} not found.`);
 }
 
 /**
- * Server action to update the user's profile.
- * This is a mock implementation.
+ * Server action to update the user's profile in Firestore.
  * @param userId The ID of the user to update.
  * @param profileData The data to update.
  */
 export async function updateUserProfileAction(userId: string, profileData: Partial<UserProfile>) {
   try {
-    console.log(`Simulating update for user ${userId} with data:`, profileData);
-    // In a real app, this would update the database. Here we just log and revalidate.
+    const userDocRef = doc(db, "users", userId);
+    await updateDoc(userDocRef, profileData);
+    console.log(`Successfully updated profile for user ${userId} in Firestore.`);
+    
+    // Revalidate the profile page to show the new data
     revalidatePath('/profile');
-    revalidatePath('/dashboard');
-    return { success: true, message: "Profile updated successfully (simulated)." };
+    
+    return { success: true, message: "Profile updated successfully." };
   } catch (error: any) {
-    console.error("Error in updateUserProfileAction (simulated):", error);
+    console.error("Error in updateUserProfileAction:", error);
     return { success: false, message: error.message || "An unexpected error occurred." };
   }
 }
 
-// --- End of Mocked Database Logic ---
+// --- End of Firestore Database Logic ---
 
 
 // --- Original AI and App Actions ---
