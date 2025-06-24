@@ -8,18 +8,50 @@ import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { CrossdLogoIcon } from '@/components/icons/crossd-logo';
 import { useState } from 'react';
-import { Eye, EyeOff } from 'lucide-react';
+import { Eye, EyeOff, Loader2 } from 'lucide-react';
+import { signInWithEmailAndPassword } from "firebase/auth";
+import { auth } from "@/lib/firebase";
+import { useToast } from "@/hooks/use-toast";
+
 
 export default function LoginFormPage() {
   const router = useRouter();
+  const { toast } = useToast();
+  const [isLoading, setIsLoading] = useState(false);
   const [showPassword, setShowPassword] = useState(false);
 
-  const handleLogin = (e: React.FormEvent) => {
+  const handleLogin = async (e: React.FormEvent) => {
     e.preventDefault();
-    // In a real app, you'd handle form submission, validation, and API calls here.
-    // For now, we'll just navigate to the dashboard and trigger the upsell dialog.
-    router.push('/dashboard');
-    window.location.reload();
+    setIsLoading(true);
+
+    const formData = new FormData(e.currentTarget as HTMLFormElement);
+    const email = formData.get('email') as string;
+    const password = formData.get('password') as string;
+
+    if (!email || !password) {
+        toast({ title: "Login Failed", description: "Please enter both email and password.", variant: "destructive" });
+        setIsLoading(false);
+        return;
+    }
+
+    try {
+      await signInWithEmailAndPassword(auth, email, password);
+      toast({ title: "Login Successful!", description: "Welcome back!" });
+      router.push('/dashboard');
+    } catch (error: any) {
+      console.error("Login error:", error);
+      let errorMessage = "Invalid credentials. Please try again.";
+      if (error.code === 'auth/user-not-found' || error.code === 'auth/wrong-password' || error.code === 'auth/invalid-credential') {
+        errorMessage = "Invalid email or password. Please check your credentials.";
+      }
+      toast({
+        title: "Login Failed",
+        description: errorMessage,
+        variant: "destructive",
+      });
+    } finally {
+      setIsLoading(false);
+    }
   };
 
   return (
@@ -53,13 +85,14 @@ export default function LoginFormPage() {
             <form className="space-y-4" onSubmit={handleLogin}>
               <div>
                 <Label htmlFor="email">Email Address</Label>
-                <Input id="email" type="email" placeholder="you@example.com" required className="mt-1 bg-input" />
+                <Input id="email" name="email" type="email" placeholder="you@example.com" required className="mt-1 bg-input" />
               </div>
               <div>
                 <Label htmlFor="password">Password</Label>
                 <div className="relative">
                   <Input
                     id="password"
+                    name="password"
                     type={showPassword ? "text" : "password"}
                     placeholder="••••••••"
                     required
@@ -75,8 +108,15 @@ export default function LoginFormPage() {
                   </button>
                 </div>
               </div>
-              <Button type="submit" className="w-full bg-primary hover:bg-primary/90 text-primary-foreground">
-                Log In
+              <Button type="submit" className="w-full bg-primary hover:bg-primary/90 text-primary-foreground" disabled={isLoading}>
+                 {isLoading ? (
+                  <>
+                    <Loader2 className="mr-2 h-4 w-4 animate-spin" />
+                    Logging In...
+                  </>
+                ) : (
+                  'Log In'
+                )}
               </Button>
             </form>
           </CardContent>

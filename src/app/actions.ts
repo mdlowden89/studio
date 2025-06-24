@@ -131,26 +131,3 @@ export async function fetchSparkSwipeInsights(
     return null;
   }
 }
-
-export async function handleUserSignUp(data: { name: string; email: string }) {
-  // In a real app, you would query your database here. For now, we still check mocks.
-  console.log(`Checking for existing user with email: ${data.email}`);
-  
-  const existingUser = MOCK_USERS.find(user => user.email?.toLowerCase() === data.email.toLowerCase());
-
-  if (existingUser) {
-    console.error(`Sign up failed: User with email ${data.email} already exists.`);
-    throw new Error("A user with this email address already exists.");
-  }
-  
-  console.log(`Simulating user sign up for: ${data.name} (${data.email})`);
-
-  try {
-    console.log(`Simulating sending confirmation email to ${data.email}...`);
-    console.log("Confirmation email sequence initiated.");
-    return { success: true, message: "User signed up and email process started." };
-  } catch (error) {
-    console.error("Failed to initiate confirmation email:", error);
-    throw new Error("User signed up, but email failed.");
-  }
-}

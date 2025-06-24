@@ -9,8 +9,11 @@ import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { CrossdLogoIcon } from '@/components/icons/crossd-logo';
 import { useToast } from "@/hooks/use-toast";
-import { handleUserSignUp } from "@/app/actions";
 import { Eye, EyeOff, Loader2 } from 'lucide-react';
+import { createUserWithEmailAndPassword, updateProfile } from "firebase/auth";
+import { doc, setDoc } from "firebase/firestore";
+import { auth, db } from "@/lib/firebase";
+import type { UserProfile } from '@/lib/types';
 
 export default function SignUpPage() {
   const router = useRouter();
@@ -40,33 +43,51 @@ export default function SignUpPage() {
     }
     
     try {
-      await handleUserSignUp({ name: fullName, email: email });
+      // 1. Create user in Firebase Auth
+      const userCredential = await createUserWithEmailAndPassword(auth, email, password);
+      const user = userCredential.user;
+
+      // 2. Update the new user's display name in Auth
+      await updateProfile(user, { displayName: fullName });
+
+      // 3. Create a user profile document in Firestore
+      const newUserProfile: UserProfile = {
+        id: user.uid,
+        name: fullName,
+        email: email,
+        age: 18,
+        bio: "Welcome to Crossd! Tell us about yourself.",
+        images: ['https://placehold.co/400x550.png'],
+        vibeTags: [],
+        prompts: [],
+        locationPatterns: [],
+        achievements: [],
+        onboardingComplete: false,
+      };
       
+      await setDoc(doc(db, "users", user.uid), newUserProfile);
+
       toast({
         title: "Sign Up Successful!",
-        description: "Welcome to Crossd! A confirmation email is on its way.",
+        description: "Welcome to Crossd! You're now being redirected.",
       });
 
-      // In a real app, you might wait for email verification.
-      // For now, we'll just navigate to the dashboard and trigger the upsell dialog.
+      // Redirect to dashboard. The app will now have an authenticated user.
       router.push('/dashboard');
-      window.location.reload();
 
-    } catch (error) {
-      console.error(error);
-      if (error instanceof Error && error.message.includes("already exists")) {
-        toast({
-          title: "Sign Up Failed",
-          description: error.message, // Display the specific error from the action
-          variant: "destructive",
-        });
-      } else {
-        toast({
-          title: "Sign Up Failed",
-          description: "Something went wrong. Please try again.",
-          variant: "destructive",
-        });
+    } catch (error: any) {
+      console.error("Sign up error:", error);
+      let errorMessage = "Something went wrong. Please try again.";
+      if (error.code === 'auth/email-already-in-use') {
+        errorMessage = "This email address is already in use by another account.";
+      } else if (error.code === 'auth/weak-password') {
+        errorMessage = "The password is too weak. Please use at least 6 characters.";
       }
+      toast({
+        title: "Sign Up Failed",
+        description: errorMessage,
+        variant: "destructive",
+      });
     } finally {
       setIsLoading(false);
     }
