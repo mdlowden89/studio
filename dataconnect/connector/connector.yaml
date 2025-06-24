@@ -2,4 +2,3 @@ connectorId: default
 generate:
   javascriptSdk:
     outputDir: ../../src/lib/dataconnect
-    react: true
