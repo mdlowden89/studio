@@ -6,8 +6,9 @@ import Image from "next/image";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Card } from "@/components/ui/card";
-import { Trash2, UploadCloud, Replace } from "lucide-react";
+import { Trash2, UploadCloud, Replace, Info } from "lucide-react";
 import { useToast } from "@/hooks/use-toast";
+import { Alert, AlertDescription, AlertTitle } from "@/components/ui/alert";
 
 interface ImageGalleryProps {
   initialImages: string[];
@@ -27,14 +28,14 @@ export function ImageGallery({ initialImages }: ImageGalleryProps) {
         setImages(newImagesArray);
         toast({
           title: "Image Preview Updated",
-          description: `Image ${index + 1} has been updated. Save your profile to make it permanent.`,
+          description: `Image ${index + 1} has been updated. This is a preview and won't be saved.`,
         });
       } else { // Adding a new image
         if (images.length < 6) {
           setImages([...images, dataUrl]);
           toast({
             title: "Image Preview Added",
-            description: "Your new image has been added. Save your profile to make it permanent.",
+            description: "Your new image has been added. This is a preview and won't be saved.",
           });
         } else {
           toast({
@@ -78,7 +79,7 @@ export function ImageGallery({ initialImages }: ImageGalleryProps) {
   const handleRemoveImage = (index: number) => {
     if (images.length > 1) {
       setImages(images.filter((_, i) => i !== index));
-      toast({ title: "Image Removed", description: `Image ${index + 1} has been removed. Save profile to confirm.` });
+      toast({ title: "Image Preview Removed", description: `Image ${index + 1} has been removed. This is a preview.` });
     } else {
       toast({ title: "Cannot Remove", description: "You must have at least one profile image.", variant: "destructive" });
     }
@@ -148,11 +149,13 @@ export function ImageGallery({ initialImages }: ImageGalleryProps) {
           </Card>
         )}
       </div>
-      <p className="text-xs text-muted-foreground text-center">
-        Click on an image to replace or remove it. New image uploads are client-side previews.
-        <br />
-        In a real app, you would hit "Save Profile" to make these changes permanent.
-      </p>
+      <Alert variant="default" className="mt-6 border-primary/30">
+        <Info className="h-4 w-4 text-primary" />
+        <AlertTitle className="text-primary">Prototype Feature Notice</AlertTitle>
+        <AlertDescription className="text-xs text-muted-foreground">
+          Image uploads and replacements are client-side previews only and will not be saved after a page refresh. In a real app, these changes would be saved to a database and file storage.
+        </AlertDescription>
+      </Alert>
     </div>
   );
 }
