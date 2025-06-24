@@ -145,7 +145,6 @@ export function ProfileDetails({ user }: ProfileDetailsProps) {
   const [age, setAge] = useState(user.age);
   const [bio, setBio] = useState(user.bio);
   const [vibeTags, setVibeTags] = useState<string[]>(user.vibeTags);
-  const [newTag, setNewTag] = useState("");
   const [work, setWork] = useState(user.work || "");
   const [jobTitle, setJobTitle] = useState(user.jobTitle || "");
   const [education, setEducation] = useState(user.education || "");
@@ -183,14 +182,6 @@ export function ProfileDetails({ user }: ProfileDetailsProps) {
 
   const heightOptions = useMemo(() => generateHeightOptions(), []);
 
-  const handleAddTagManually = () => {
-    const tagToAdd = newTag.trim().toLowerCase();
-    if (tagToAdd !== "" && !vibeTags.includes(tagToAdd)) {
-      setVibeTags([...vibeTags, tagToAdd]);
-      setNewTag("");
-    }
-  };
-
   const handleRemoveTag = (tagToRemove: string) => {
     setVibeTags(vibeTags.filter(tag => tag !== tagToRemove));
   };
@@ -200,7 +191,9 @@ export function ProfileDetails({ user }: ProfileDetailsProps) {
     setAiSuggestedTags([]);
     try {
       const suggestions = await getAiSuggestedVibeTags(bio, vibeTags);
-      const newSuggestions = suggestions.filter(s => !vibeTags.includes(s.tag));
+      const newSuggestions = suggestions.filter(
+        s => !vibeTags.some(existing => existing.includes(s.tag))
+      );
       setAiSuggestedTags(newSuggestions);
       if (newSuggestions.length === 0) {
         toast({
@@ -221,9 +214,17 @@ export function ProfileDetails({ user }: ProfileDetailsProps) {
   };
   
   const handleAddVibeTag = (tagSuggestion: { tag: string; emoji: string }) => {
-    if (!vibeTags.includes(tagSuggestion.tag)) {
-      setVibeTags([...vibeTags, tagSuggestion.tag]);
+    const fullTag = `${tagSuggestion.emoji} ${tagSuggestion.tag}`;
+    
+    if (vibeTags.some(tag => tag.includes(tagSuggestion.tag))) {
+      toast({
+        title: "Vibe Already Added",
+        description: "You've already selected this vibe.",
+      });
+      return;
     }
+
+    setVibeTags([...vibeTags, fullTag]);
     setAiSuggestedTags(prev => prev.filter(s => s.tag !== tagSuggestion.tag));
   };
 
@@ -317,7 +318,7 @@ export function ProfileDetails({ user }: ProfileDetailsProps) {
         locationAddress,
         locationName: currentLocationName || (locationAddress ? locationAddress.split(',')[0] : MOCK_USERS[currentUserIndex].locationName),
         locationCoordinates: currentCoordinates || MOCK_USERS[currentUserIndex].locationCoordinates,
-        onboardingComplete: true, // Set onboarding to complete
+        onboardingComplete: true,
       };
       MOCK_USERS.splice(currentUserIndex, 1, updatedUser);
     }
@@ -589,7 +590,7 @@ export function ProfileDetails({ user }: ProfileDetailsProps) {
               <h4 className="text-sm font-medium text-muted-foreground mb-2">{category.title}</h4>
               <div className="flex flex-wrap gap-2">
                 {category.tags.map(suggestion => (
-                  !vibeTags.includes(suggestion.tag) && (
+                  !vibeTags.some(vt => vt.includes(suggestion.tag)) && (
                     <Badge
                       key={suggestion.tag}
                       variant="outline"
@@ -608,23 +609,25 @@ export function ProfileDetails({ user }: ProfileDetailsProps) {
           ))}
         </div>
 
-        <p className="text-sm text-muted-foreground mb-2">Or add your own / get more AI suggestions:</p>
-        <div className="flex gap-2 items-center">
-          <Input
-            placeholder="Add a vibe tag (e.g., foodie)"
-            value={newTag}
-            onChange={(e) => setNewTag(e.target.value)}
-            onKeyPress={(e) => { if (e.key === 'Enter') { e.preventDefault(); handleAddTagManually(); }}}
-            className="bg-input flex-grow"
-          />
-          <Button type="button" onClick={handleAddTagManually} variant="outline" size="icon" aria-label="Add Tag Manually">
-            <PlusCircle className="h-5 w-5" />
-          </Button>
-          <Button type="button" onClick={handleSuggestVibeTags} variant="outline" size="icon" aria-label="Suggest Tags with AI" disabled={isSuggestingTags}>
-            {isSuggestingTags ? <Loader2 className="h-5 w-5 animate-spin" /> : <Lightbulb className="h-5 w-5" />}
+        <div className="mt-6 pt-6 border-t border-border">
+          <Label>Need More Inspiration?</Label>
+          <p className="text-xs text-muted-foreground mt-1 mb-2">
+            Click the button to get AI-powered suggestions based on your bio.
+          </p>
+          <Button type="button" onClick={handleSuggestVibeTags} variant="outline" size="sm" disabled={isSuggestingTags}>
+            {isSuggestingTags ? (
+              <>
+                <Loader2 className="mr-2 h-4 w-4 animate-spin" />
+                Thinking...
+              </>
+            ) : (
+              <>
+                <Lightbulb className="mr-2 h-4 w-4" />
+                Get AI Suggestions
+              </>
+            )}
           </Button>
         </div>
-        <p className="text-xs text-muted-foreground mt-1">Press Enter or click '+' to add a tag manually, or click the lightbulb for more AI suggestions based on your bio.</p>
 
         {isSuggestingTags && (
           <div className="text-sm text-muted-foreground flex items-center my-2">
