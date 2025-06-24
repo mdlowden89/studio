@@ -1,7 +1,7 @@
 'use server';
 
 import { dataConnect } from './firebase';
-import { UserProfile as UserProfileSDK, UserProfileQuery } from '@firebasegen/default-connector';
+import { UserProfile as UserProfileSDK, UserProfileQuery } from '../../dataconnect-generated/js/default-connector';
 import type { UserProfile } from './types';
 import { MOCK_USERS, MOCK_USER_ID } from './mock-data';
 
