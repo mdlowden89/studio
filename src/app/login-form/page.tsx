@@ -1,3 +1,4 @@
+
 "use client";
 
 import Link from 'next/link';
@@ -12,16 +13,12 @@ import { Eye, EyeOff, Loader2 } from 'lucide-react';
 import { signInWithEmailAndPassword } from "firebase/auth";
 import { auth } from "@/lib/firebase";
 import { useToast } from "@/hooks/use-toast";
-import { useAuth } from '@/hooks/use-auth';
-
 
 export default function LoginFormPage() {
   const router = useRouter();
   const { toast } = useToast();
   const [isLoading, setIsLoading] = useState(false);
   const [showPassword, setShowPassword] = useState(false);
-  const { isLoading: isAuthLoading } = useAuth();
-
 
   const handleLogin = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -39,8 +36,9 @@ export default function LoginFormPage() {
 
     try {
       await signInWithEmailAndPassword(auth, email, password);
-      // Redirection is now handled by AuthHandler
+      // Redirection is now handled by AuthHandler.
       toast({ title: "Login Successful!", description: "Welcome back! Redirecting to your dashboard..." });
+      // We no longer call router.push here.
     } catch (error: any) {
       console.error("Login error:", error);
       let errorMessage = "Invalid credentials. Please try again.";
@@ -55,16 +53,6 @@ export default function LoginFormPage() {
       setIsLoading(false);
     } 
   };
-
-  // Render a loading state while checking for an existing session.
-  if (isAuthLoading) {
-     return (
-      <div className="flex flex-col items-center justify-center min-h-screen bg-background">
-        <Loader2 className="h-12 w-12 animate-spin text-primary" />
-        <p className="mt-4 text-muted-foreground">Loading...</p>
-      </div>
-    );
-  }
 
   return (
     <div className="flex flex-col min-h-screen bg-background text-foreground">

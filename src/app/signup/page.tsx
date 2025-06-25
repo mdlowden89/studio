@@ -13,7 +13,6 @@ import { useToast } from "@/hooks/use-toast";
 import { Eye, EyeOff, Loader2 } from 'lucide-react';
 import { createUserWithEmailAndPassword, updateProfile } from "firebase/auth";
 import { auth } from "@/lib/firebase";
-import { useAuth } from '@/hooks/use-auth';
 
 export default function SignUpPage() {
   const router = useRouter();
@@ -21,8 +20,6 @@ export default function SignUpPage() {
   const [isLoading, setIsLoading] = useState(false);
   const [showPassword, setShowPassword] = useState(false);
   const [showConfirmPassword, setShowConfirmPassword] = useState(false);
-  const { isLoading: isAuthLoading } = useAuth();
-
 
   const onSignUp = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
@@ -79,16 +76,6 @@ export default function SignUpPage() {
       setIsLoading(false);
     }
   };
-
-  // Render a loading state while checking for an existing session.
-  if (isAuthLoading) {
-     return (
-      <div className="flex flex-col items-center justify-center min-h-screen bg-background">
-        <Loader2 className="h-12 w-12 animate-spin text-primary" />
-        <p className="mt-4 text-muted-foreground">Loading...</p>
-      </div>
-    );
-  }
 
   return (
     <div className="flex flex-col min-h-screen bg-background text-foreground">
