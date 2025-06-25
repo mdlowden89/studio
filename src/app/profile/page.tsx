@@ -14,6 +14,7 @@ import { ChallengesSection } from "@/components/challenges/challenges-section";
 import { Separator } from "@/components/ui/separator";
 import { useAuth } from '@/hooks/use-auth';
 
+export const dynamic = 'force-dynamic';
 
 function ProfilePageLoading() {
   return (
