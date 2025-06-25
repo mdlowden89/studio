@@ -3,9 +3,9 @@
 
 import { useState, useEffect, createContext, useContext, ReactNode } from 'react';
 import { onAuthStateChanged, User } from 'firebase/auth';
-import { auth } from '@/lib/firebase';
-import { getOrCreateUserProfile } from '@/app/actions';
+import { auth, db } from '@/lib/firebase';
 import type { UserProfile } from '@/lib/types';
+import { doc, getDoc, setDoc } from 'firebase/firestore';
 
 interface AuthContextType {
   user: User | null;
@@ -25,12 +25,46 @@ export function AuthProvider({ children }: { children: ReactNode }) {
       if (firebaseUser) {
         setUser(firebaseUser);
         try {
-          // getOrCreateUserProfile is now the single source of truth for creating a user profile document.
-          // It will get the existing profile or create a new one if it's a first-time sign-up.
-          const profile = await getOrCreateUserProfile(firebaseUser);
-          setUserProfile(profile);
+          const userDocRef = doc(db, "users", firebaseUser.uid);
+          const userDoc = await getDoc(userDocRef);
+
+          if (userDoc.exists()) {
+            console.log(`Found user ${firebaseUser.uid} in Firestore.`);
+            setUserProfile(userDoc.data() as UserProfile);
+          } else {
+            console.log(`User ${firebaseUser.uid} not found in Firestore. Creating new profile...`);
+            
+            const getInitialName = () => {
+              if (firebaseUser.displayName) {
+                return firebaseUser.displayName;
+              }
+              if (firebaseUser.email) {
+                const emailName = firebaseUser.email.split('@')[0];
+                return emailName.charAt(0).toUpperCase() + emailName.slice(1);
+              }
+              return "New User";
+            };
+
+            const newUserProfile: UserProfile = {
+              id: firebaseUser.uid,
+              name: getInitialName(),
+              email: firebaseUser.email || "",
+              age: 18,
+              bio: "Welcome to Crossd! Tell us about yourself.",
+              images: ['https://placehold.co/400x550.png'],
+              vibeTags: [],
+              prompts: [],
+              locationPatterns: [],
+              achievements: [],
+              onboardingComplete: false,
+            };
+            
+            await setDoc(userDocRef, newUserProfile);
+            console.log(`Successfully created profile for user ${firebaseUser.uid} with name: ${newUserProfile.name}`);
+            setUserProfile(newUserProfile);
+          }
         } catch (error) {
-            console.error("Failed to get or create user profile:", error);
+            console.error("Failed to get or create user profile in useAuth:", error);
             // If profile fails to load, sign the user out to prevent being in a broken state.
             await auth.signOut();
             setUser(null);

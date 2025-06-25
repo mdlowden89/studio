@@ -8,59 +8,10 @@ import { getSparkSwipeInsights, SparkSwipeInput, SparkSwipeOutput } from "@/ai/f
 import type { UserProfile } from "@/lib/types";
 import { revalidatePath } from "next/cache";
 import { db } from "@/lib/firebase";
-import { doc, getDoc, setDoc, updateDoc } from "firebase/firestore";
-import type { User } from "firebase/auth";
+import { doc, updateDoc } from "firebase/firestore";
 
 
 // --- Firestore Database Logic ---
-
-/**
- * Retrieves a user profile from Firestore, or creates one if it doesn't exist.
- * This is the single source of truth for user profile creation.
- * @param firebaseUser The authenticated user object from Firebase Auth.
- * @returns The user profile.
- * @throws An error if the profile cannot be fetched or created.
- */
-export async function getOrCreateUserProfile(firebaseUser: User): Promise<UserProfile> {
-  const userDocRef = doc(db, "users", firebaseUser.uid);
-  const userDoc = await getDoc(userDocRef);
-
-  if (userDoc.exists()) {
-    console.log(`Found user ${firebaseUser.uid} in Firestore.`);
-    return userDoc.data() as UserProfile;
-  } else {
-    console.log(`User ${firebaseUser.uid} not found in Firestore. Creating new profile...`);
-    
-    const getInitialName = () => {
-      if (firebaseUser.displayName) {
-        return firebaseUser.displayName;
-      }
-      if (firebaseUser.email) {
-        const emailName = firebaseUser.email.split('@')[0];
-        return emailName.charAt(0).toUpperCase() + emailName.slice(1);
-      }
-      return "New User";
-    };
-
-    const newUserProfile: UserProfile = {
-      id: firebaseUser.uid,
-      name: getInitialName(),
-      email: firebaseUser.email || "",
-      age: 18,
-      bio: "Welcome to Crossd! Tell us about yourself.",
-      images: ['https://placehold.co/400x550.png'],
-      vibeTags: [],
-      prompts: [],
-      locationPatterns: [],
-      achievements: [],
-      onboardingComplete: false,
-    };
-    
-    await setDoc(userDocRef, newUserProfile);
-    console.log(`Successfully created profile for user ${firebaseUser.uid} with name: ${newUserProfile.name}`);
-    return newUserProfile;
-  }
-}
 
 /**
  * Server action to update the user's profile in Firestore.
