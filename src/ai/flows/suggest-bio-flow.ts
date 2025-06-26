@@ -51,14 +51,15 @@ const prompt = ai.definePrompt({
   name: 'suggestBioPrompt',
   input: {schema: SuggestBioInputSchema},
   output: {schema: SuggestBioOutputSchema},
-  prompt: `You are an AI assistant and expert profile writer for a dating app called Crossd.
-Your task is to generate a new, engaging, and concise bio for a user by synthesizing all the information provided about them.
+  prompt: `You are an AI assistant and expert profile writer for a dating app called Crossd. Your specialty is crafting bios that tell a compelling story about a person, making them sound human, authentic, and intriguing.
 
-The bio should be:
-- Approximately 2-4 sentences long.
-- Authentic and positive in tone.
-- Intriguing and approachable.
-- Reflect their personality, career, and interests.
+Your task is to synthesize all the provided user information into a new, engaging, and concise bio.
+
+**Guiding Principles for the Bio:**
+- **Tell a Story:** Don't just list facts. Weave their interests, work, and personality into a small narrative.
+- **Show, Don't Tell:** Instead of "I like coffee and books," try something like "My ideal Sunday involves getting lost in a good bookstore with a warm latte in hand."
+- **Be Authentic and Positive:** The tone should be warm, approachable, and reflect a genuine personality.
+- **Length:** Keep it concise, around 2-4 sentences.
 
 **User Information:**
 - Name: {{name}}
@@ -69,7 +70,7 @@ The bio should be:
 {{/if}}
 
 {{#if vibeTags}}
-- Vibe Tags:
+- Vibe Tags that describe them:
   {{#each vibeTags}}
   - {{this}}
   {{/each}}
@@ -83,15 +84,14 @@ The bio should be:
 {{/if}}
 
 {{#if promptAnswers}}
-- Their Answers to Profile Prompts:
+- Their Answers to Profile Prompts (use these to understand their personality and humor):
   {{#each promptAnswers}}
   - Q: {{this.question}}
     A: "{{this.answer}}"
   {{/each}}
 {{/if}}
 
-Based on all of the information above, write a compelling new bio.
-Focus on creating a holistic and appealing summary of the user. Return the new bio in the 'suggestedBio' output field.
+Based on all this information, write a compelling new bio that tells a story about {{name}}. Return the new bio in the 'suggestedBio' output field.
 `,
 });
 
