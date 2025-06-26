@@ -413,22 +413,18 @@ export function ProfileDetails({ user }: ProfileDetailsProps) {
         </div>
         <div>
           <Label htmlFor="age">Age</Label>
-          <Input
-            id="age"
-            type="number"
-            value={age === 0 && name === '' ? '' : age} 
-            onChange={(e) => {
-              const rawValue = e.target.value;
-              if (rawValue === "") {
-                setAge(0); 
-              } else {
-                const parsedAge = parseInt(rawValue, 10);
-                setAge(isNaN(parsedAge) || parsedAge < 0 ? 0 : parsedAge);
-              }
-            }}
-            className="mt-1 bg-input"
-            min="0"
-          />
+          <Select value={String(age)} onValueChange={(value) => setAge(parseInt(value, 10))}>
+            <SelectTrigger id="age" className="mt-1 bg-input">
+              <SelectValue placeholder="Select your age" />
+            </SelectTrigger>
+            <SelectContent className="bg-popover max-h-60">
+              {Array.from({ length: 43 }, (_, i) => 18 + i).map((ageOption) => (
+                <SelectItem key={ageOption} value={String(ageOption)}>
+                  {ageOption}
+                </SelectItem>
+              ))}
+            </SelectContent>
+          </Select>
         </div>
         <div>
           <Label htmlFor="work">Work</Label>
