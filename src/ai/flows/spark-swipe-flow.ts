@@ -90,7 +90,7 @@ Generate a JSON object that adheres to the output schema. Follow these instructi
 3.  **locationAnalysis**:
     -   'compatibilityReasoning': Analyze their 'locationPatterns'. Don't just list them. Create a compelling sentence about their lifestyle overlap. Example: "You both frequent similar types of places on weekends, like cozy cafés and bookstores."
 4.  **collaborativeFilteringAnalysis**:
-    -   'recommendationReasoning': Invent a plausible-sounding collaborative filtering insight. Use the format "Users like you who matched with [some user type] also matched with [Candidate's Name]." Example: "Users like you who vibe with thoughtful introverts also tend to spark with artsy adventurers like {{candidateUserProfile.name}}."
+    -   'recommendationReasoning': Invent a plausible-sounding collaborative filtering insight. Use the format "Users like you who matched with [some user type] also matched with this person." Do not use the candidate's actual name in the output. For example: "Users like you who vibe with thoughtful introverts also tend to spark with artsy adventurers."
 5.  **sparkFlowScore**: Provide a compatibility score between 60 and 95. Be realistic.
 
 Your entire response must be a single, valid JSON object matching the requested schema.

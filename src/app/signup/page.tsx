@@ -26,7 +26,7 @@ export default function SignUpPage() {
     setIsLoading(true);
 
     const formData = new FormData(e.currentTarget);
-    const fullName = formData.get('fullName') as string;
+    const firstName = formData.get('firstName') as string;
     const email = formData.get('email') as string;
     const password = formData.get('password') as string;
     const confirmPassword = formData.get('confirmPassword') as string;
@@ -48,7 +48,7 @@ export default function SignUpPage() {
 
       // 2. Update the new user's display name in Auth. This is important so the
       // onAuthStateChanged listener can use it to create the profile document.
-      await updateProfile(user, { displayName: fullName });
+      await updateProfile(user, { displayName: firstName });
 
       // NOTE: The Firestore document creation is now handled by the onAuthStateChanged
       // listener in useAuth.tsx to prevent race conditions.
@@ -107,8 +107,8 @@ export default function SignUpPage() {
           <CardContent className="space-y-6">
             <form className="space-y-4" onSubmit={onSignUp}>
               <div>
-                <Label htmlFor="fullName">Full Name</Label>
-                <Input id="fullName" name="fullName" type="text" placeholder="John Doe" required className="mt-1 bg-input" />
+                <Label htmlFor="firstName">First Name</Label>
+                <Input id="firstName" name="firstName" type="text" placeholder="Alex" required className="mt-1 bg-input" />
               </div>
               <div>
                 <Label htmlFor="email">Email Address</Label>

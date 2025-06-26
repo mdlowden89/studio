@@ -171,7 +171,7 @@ export function AppSidebar() {
             </div>
             {state === 'expanded' && (
               <div className="ml-3 flex flex-col items-start text-left">
-                <span className="font-medium text-sm text-sidebar-primary">{userProfile.name}</span>
+                <span className="font-medium text-sm text-sidebar-primary">{userProfile.name.split(' ')[0]}</span>
                 {userProfile.email && (
                   <span className="text-xs text-sidebar-foreground/70 truncate max-w-[120px]">{userProfile.email}</span>
                 )}

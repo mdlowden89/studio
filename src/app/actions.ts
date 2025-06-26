@@ -186,10 +186,10 @@ export async function logMoment(momentData: MomentLog): Promise<{ success: boole
         await addDoc(collection(db, "notifications"), {
           userId: matchedUserId,
           senderId: loggerData.id,
-          senderName: loggerData.name,
+          senderName: loggerData.name.split(' ')[0],
           senderImage: loggerData.images[0] || null,
           type: 'MOMENT_CONFIRMATION',
-          title: `Did you cross paths with ${loggerData.name}?`,
+          title: `Did you cross paths with ${loggerData.name.split(' ')[0]}?`,
           message: `Someone who might be you was noticed at ${momentData.placeName}.`,
           href: `/confirm-moment/${momentDocRef.id}`, // Link to User 1's moment
           read: false,
@@ -204,10 +204,10 @@ export async function logMoment(momentData: MomentLog): Promise<{ success: boole
           await addDoc(collection(db, "notifications"), {
             userId: loggerData.id,
             senderId: matchedUserData.id,
-            senderName: matchedUserData.name,
+            senderName: matchedUserData.name.split(' ')[0],
             senderImage: matchedUserData.images[0] || null,
             type: 'MOMENT_CONFIRMATION',
-            title: `Did you cross paths with ${matchedUserData.name}?`,
+            title: `Did you cross paths with ${matchedUserData.name.split(' ')[0]}?`,
             message: `Someone who might be you was also at ${matchedMomentData.placeName}.`,
             href: `/confirm-moment/${matchedMomentDoc.id}`, // Link to User 2's moment
             read: false,
@@ -297,8 +297,8 @@ export async function getOrCreateChat(userId1: string, userId2: string): Promise
     const newChat: Omit<Chat, 'id'> = {
       participantIds: participants,
       participants: [
-        { id: user1Profile.id, name: user1Profile.name, images: user1Profile.images },
-        { id: user2Profile.id, name: user2Profile.name, images: user2Profile.images }
+        { id: user1Profile.id, name: user1Profile.name, images: user1.images },
+        { id: user2Profile.id, name: user2Profile.name, images: user2.images }
       ],
       createdAt: serverTimestamp(),
       lastMessage: null,

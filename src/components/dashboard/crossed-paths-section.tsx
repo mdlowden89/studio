@@ -51,18 +51,18 @@ export function CrossedPathsSection() {
     if (action === "like") {
       const isMutualMatch = Math.random() < 0.33;
       if (isMutualMatch) {
-        setMatchedUserName(actionUser.name);
+        setMatchedUserName(actionUser.name.split(' ')[0]);
         setShowMatchAnimation(true);
       } else {
          toast({
             title: "Interest Sent!",
-            description: `You've expressed interest in ${actionUser.name}. If they feel the same, it's a match!`,
+            description: `You've expressed interest in ${actionUser.name.split(' ')[0]}. If they feel the same, it's a match!`,
         });
       }
     } else {
         toast({
             title: "Passed",
-            description: `You've passed on ${actionUser.name}.`,
+            description: `You've passed on ${actionUser.name.split(' ')[0]}.`,
             variant: "default",
         });
     }

@@ -141,7 +141,7 @@ function ChatViewComponent({ chat }: ChatViewProps) {
            <AvatarImage src={otherParticipant.images[0]} alt={otherParticipant.name} data-ai-hint="profile avatar"/>
            <AvatarFallback>{otherParticipant.name.substring(0,1)}</AvatarFallback>
         </Avatar>
-        <h2 className="text-lg font-semibold ml-3 text-foreground">{otherParticipant.name}</h2>
+        <h2 className="text-lg font-semibold ml-3 text-foreground">{otherParticipant.name.split(' ')[0]}</h2>
         <div className="ml-auto flex items-center gap-1">
             <Button variant="ghost" size="icon" aria-label="Video Call">
                 <Video className="h-5 w-5 text-primary" />
@@ -166,7 +166,7 @@ function ChatViewComponent({ chat }: ChatViewProps) {
                   <AvatarFallback>{fullOtherParticipantProfile.name.substring(0,1)}</AvatarFallback>
                 </Avatar>
                 <div className="text-center">
-                    <h2 className="text-2xl font-bold text-foreground">{fullOtherParticipantProfile.name}, {fullOtherParticipantProfile.age}</h2>
+                    <h2 className="text-2xl font-bold text-foreground">{fullOtherParticipantProfile.name.split(' ')[0]}, {fullOtherParticipantProfile.age}</h2>
                     {fullOtherParticipantProfile.locationName && (
                         <div className="flex items-center justify-center text-sm text-muted-foreground mt-1">
                         <MapPin className="w-4 h-4 mr-1.5 text-primary/80" />

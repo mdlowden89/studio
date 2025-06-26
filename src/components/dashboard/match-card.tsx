@@ -145,7 +145,7 @@ export function MatchCard({ user, onLike, onPass, showCrossedPathInfo = false, s
             </>
           )}
           <div className="absolute bottom-0 left-0 right-0 p-4 bg-gradient-to-t from-black/80 via-black/40 to-transparent">
-            <CardTitle className="text-3xl font-bold text-white">{user.name}, {user.age}</CardTitle>
+            <CardTitle className="text-3xl font-bold text-white">{user.name.split(' ')[0]}, {user.age}</CardTitle>
             {showCrossedPathInfo && crossedPathUser.location && (
               <div className="flex items-center text-sm text-gray-200 mt-1">
                 <MapPin className="w-4 h-4 mr-1" />
@@ -194,7 +194,7 @@ export function MatchCard({ user, onLike, onPass, showCrossedPathInfo = false, s
       <DialogContent className="sm:max-w-2xl bg-card text-card-foreground p-0">
         <ScrollArea className="h-[80vh] max-h-[700px]">
           <DialogHeader className="p-6 pb-0 sticky top-0 bg-card z-10">
-            <DialogTitle className="text-3xl font-bold text-primary">{user.name}, {user.age}</DialogTitle>
+            <DialogTitle className="text-3xl font-bold text-primary">{user.name.split(' ')[0]}, {user.age}</DialogTitle>
             {showCrossedPathInfo && crossedPathUser.location && (
                 <div className="flex items-center text-sm text-muted-foreground pt-1">
                   <MapPin className="w-4 h-4 mr-1.5 text-primary/70" />
@@ -207,7 +207,7 @@ export function MatchCard({ user, onLike, onPass, showCrossedPathInfo = false, s
             <div className="relative w-full max-w-xs aspect-[4/5] rounded-lg overflow-hidden shadow-lg mx-auto">
               <Image
                 src={dialogTopImage}
-                alt={`${user.name}'s main photo`}
+                alt={`${user.name.split(' ')[0]}'s main photo`}
                 layout="fill"
                 objectFit="cover"
                 data-ai-hint="profile photo"
@@ -247,7 +247,7 @@ export function MatchCard({ user, onLike, onPass, showCrossedPathInfo = false, s
           
           <div className="px-6 pb-6 flex flex-col space-y-4"> 
             <div className="space-y-2 w-full">
-              <h3 className="text-lg font-semibold text-primary">About {user.name}</h3>
+              <h3 className="text-lg font-semibold text-primary">About {user.name.split(' ')[0]}</h3>
               <p className="text-muted-foreground whitespace-pre-line">{user.bio}</p>
             </div>
             
@@ -257,7 +257,7 @@ export function MatchCard({ user, onLike, onPass, showCrossedPathInfo = false, s
                   <div className="relative aspect-[4/5] rounded-md overflow-hidden shadow w-full">
                     <Image
                       src={imgAfterBio1}
-                      alt={`${user.name}'s photo - after bio 1`}
+                      alt={`${user.name.split(' ')[0]}'s photo - after bio 1`}
                       layout="fill"
                       objectFit="cover"
                       data-ai-hint="profile photo lifestyle"
@@ -269,7 +269,7 @@ export function MatchCard({ user, onLike, onPass, showCrossedPathInfo = false, s
                   <div className="relative aspect-[4/5] rounded-md overflow-hidden shadow w-full">
                     <Image
                       src={imgAfterBio2}
-                      alt={`${user.name}'s photo - after bio 2`}
+                      alt={`${user.name.split(' ')[0]}'s photo - after bio 2`}
                       layout="fill"
                       objectFit="cover"
                       data-ai-hint="profile photo lifestyle"
@@ -295,7 +295,7 @@ export function MatchCard({ user, onLike, onPass, showCrossedPathInfo = false, s
                           <div className="relative aspect-[4/5] rounded-md overflow-hidden shadow w-full">
                             <Image
                               src={imgForPrompt1}
-                              alt={`${user.name}'s photo - after prompt 1`}
+                              alt={`${user.name.split(' ')[0]}'s photo - after prompt 1`}
                               layout="fill"
                               objectFit="cover"
                               data-ai-hint="profile photo activity"
@@ -307,7 +307,7 @@ export function MatchCard({ user, onLike, onPass, showCrossedPathInfo = false, s
                           <div className="relative aspect-[4/5] rounded-md overflow-hidden shadow w-full">
                             <Image
                               src={imgForPrompt2}
-                              alt={`${user.name}'s photo - after prompt 2`}
+                              alt={`${user.name.split(' ')[0]}'s photo - after prompt 2`}
                               layout="fill"
                               objectFit="cover"
                               data-ai-hint="profile photo activity"
@@ -329,7 +329,7 @@ export function MatchCard({ user, onLike, onPass, showCrossedPathInfo = false, s
                     <div key={`remaining-${idx}`} className="relative aspect-[4/5] rounded-md overflow-hidden shadow">
                       <Image
                         src={img}
-                        alt={`${user.name} profile image ${idx + 5}`}
+                        alt={`${user.name.split(' ')[0]} profile image ${idx + 5}`}
                         layout="fill"
                         objectFit="cover"
                         data-ai-hint="lifestyle photo"

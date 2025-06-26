@@ -51,7 +51,7 @@ export function ChatListItem({ conversation }: ChatListItemProps) {
         </Avatar>
         <div className="flex-1 overflow-hidden">
           <div className="flex justify-between items-center">
-            <h3 className="font-semibold truncate">{otherParticipant.name}</h3>
+            <h3 className="font-semibold truncate">{otherParticipant.name.split(' ')[0]}</h3>
             {displayedTimestamp && <span className="text-xs text-muted-foreground">{displayedTimestamp}</span>}
           </div>
           <p className={cn("text-sm truncate", isActive ? "text-accent-foreground/80" : "text-muted-foreground")}>

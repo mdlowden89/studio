@@ -404,7 +404,7 @@ export function ProfileDetails({ user }: ProfileDetailsProps) {
     <form onSubmit={handleSubmit} className="space-y-8">
       <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
         <div>
-          <Label htmlFor="name">Name</Label>
+          <Label htmlFor="name">First Name</Label>
           <Input id="name" value={name} onChange={(e) => setName(e.target.value)} className="mt-1 bg-input" />
         </div>
          <div>

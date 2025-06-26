@@ -267,7 +267,7 @@ export function DashboardClient({ currentUser }: DashboardClientProps) {
               <Sparkles className="w-8 h-8 text-primary animate-pulse" />
               <div>
                 <CardTitle className="text-2xl font-bold">
-                  Welcome back, {currentUser.name}!
+                  Welcome back, {currentUser.name.split(' ')[0]}!
                 </CardTitle>
                 <CardDescription className="text-muted-foreground mt-1">
                   Here's what's new on Crossd. Did you see anyone interesting today?
@@ -514,7 +514,7 @@ export function DashboardClient({ currentUser }: DashboardClientProps) {
                           {matchedUser ? (
                             <div className="flex items-center gap-2 text-xs text-green-400 bg-green-500/10 p-2 rounded-md">
                               <Users2 className="w-4 h-4" />
-                              <span>Crossed paths with {matchedUser.name}!</span>
+                              <span>Crossed paths with {matchedUser.name.split(' ')[0]}!</span>
                             </div>
                           ) : (
                              <p className="text-xs text-muted-foreground italic">You visited this place.</p>

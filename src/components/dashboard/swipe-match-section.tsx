@@ -79,18 +79,18 @@ export function SwipeMatchSection() {
       setLikesAnimationTrigger(prev => prev + 1); // Trigger animation
       const isMutualMatch = Math.random() < 0.4; 
       if (isMutualMatch) {
-        setMatchedUserName(actionUser.name);
+        setMatchedUserName(actionUser.name.split(' ')[0]);
         setShowMatchAnimation(true);
       } else {
          toast({
             title: "Liked!",
-            description: `Let's see if ${actionUser.name} likes you back! (${DAILY_LIKE_LIMIT - (likesUsedToday + 1)} likes remaining today)`,
+            description: `Let's see if ${actionUser.name.split(' ')[0]} likes you back! (${DAILY_LIKE_LIMIT - (likesUsedToday + 1)} likes remaining today)`,
         });
       }
     } else {
         toast({
             title: "Passed",
-            description: `You've passed on ${actionUser.name}.`,
+            description: `You've passed on ${actionUser.name.split(' ')[0]}.`,
             variant: "default"
         });
     }
@@ -114,7 +114,7 @@ export function SwipeMatchSection() {
       const lastUser = users[previousIndex];
       setCurrentIndex(previousIndex);
       setPreviousIndex(null); 
-      toast({ title: "Undo Successful", description: `You are now viewing ${lastUser?.name}'s profile again.` });
+      toast({ title: "Undo Successful", description: `You are now viewing ${lastUser?.name.split(' ')[0]}'s profile again.` });
     } else {
       toast({ title: "Nothing to Undo", description: "You haven't swiped anyone yet or already undid.", variant: "destructive" });
     }

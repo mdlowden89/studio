@@ -165,18 +165,18 @@ export function SparkSwipeSection() {
     if (action === "like") {
       const isMutualMatch = Math.random() < 0.5;
       if (isMutualMatch) {
-        setMatchedUserName(actionUser.name);
+        setMatchedUserName(actionUser.name.split(' ')[0]);
         setShowMatchAnimation(true);
       } else {
         toast({
           title: "Spark Sent!",
-          description: `You've shown interest in ${actionUser.name}. Let's see if the spark is mutual!`,
+          description: `You've shown interest in ${actionUser.name.split(' ')[0]}. Let's see if the spark is mutual!`,
         });
       }
     } else {
       toast({
         title: "Passed",
-        description: `You've passed on ${actionUser.name}.`,
+        description: `You've passed on ${actionUser.name.split(' ')[0]}.`,
         variant: "default",
       });
     }
@@ -207,7 +207,7 @@ export function SparkSwipeSection() {
       if (sparksUsedToday > 0) {
         setSparksUsedToday(prev => prev - 1);
       }
-      toast({ title: "Undo Successful", description: `Viewing ${lastUser?.name}'s profile again.` });
+      toast({ title: "Undo Successful", description: `Viewing ${lastUser?.name.split(' ')[0]}'s profile again.` });
     } else {
       toast({ title: "Nothing to Undo", description: "No previous Spark profile to go back to.", variant: "destructive" });
     }

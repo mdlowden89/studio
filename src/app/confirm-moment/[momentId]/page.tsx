@@ -60,7 +60,7 @@ export default function ConfirmMomentPage() {
     if (result.success && result.loggerId) {
       toast({
         title: "Match Confirmed!",
-        description: `Great! You and ${logger.name} both acknowledged this moment.`,
+        description: `Great! You and ${logger.name.split(' ')[0]} both acknowledged this moment.`,
         duration: 3000,
       });
       router.push(`/match-confirmed/${result.loggerId}?chatId=${result.chatId}`);
@@ -129,7 +129,7 @@ export default function ConfirmMomentPage() {
                     <AvatarFallback>{logger.name.substring(0,1)}</AvatarFallback>
                 </Avatar>
                 <p className="text-lg text-foreground text-center">
-                    <span className="font-semibold text-primary">{logger.name}</span> is wondering if you crossed paths at:
+                    <span className="font-semibold text-primary">{logger.name.split(' ')[0]}</span> is wondering if you crossed paths at:
                 </p>
             </div>
             
@@ -149,7 +149,7 @@ export default function ConfirmMomentPage() {
             <div>
               <h3 className="text-xl font-semibold mb-2 text-primary flex items-center gap-2">
                 <UserIcon className="w-5 h-5" />
-                How {logger.name} described you:
+                How {logger.name.split(' ')[0]} described you:
               </h3>
               <ul className="space-y-2 list-disc list-inside text-muted-foreground pl-2">
                 {moment.descriptors.ethnicity && moment.descriptors.ethnicity !== 'Prefer not to describe' && (
@@ -177,7 +177,7 @@ export default function ConfirmMomentPage() {
               <div>
                 <h3 className="text-xl font-semibold mb-2 text-primary flex items-center gap-2">
                     <Sparkles className="w-5 h-5" /> 
-                    {logger.name}'s Reflection:
+                    {logger.name.split(' ')[0]}'s Reflection:
                 </h3>
                 <p className="text-muted-foreground italic bg-muted/30 p-3 rounded-md">
                   &quot;{moment.momentDescription}&quot;
@@ -189,7 +189,7 @@ export default function ConfirmMomentPage() {
                 <div className="p-4 border border-primary/50 rounded-lg bg-primary/5 space-y-4 mt-4">
                     <div className="flex items-center gap-2">
                         <Eye className="w-6 h-6 text-primary" />
-                        <h3 className="text-lg font-semibold text-primary">A little about {logger.name}:</h3>
+                        <h3 className="text-lg font-semibold text-primary">A little about {logger.name.split(' ')[0]}:</h3>
                     </div>
                     <div className="flex flex-col sm:flex-row items-center sm:items-start gap-4">
                         {logger.images && logger.images.length > 0 && (
@@ -224,7 +224,7 @@ export default function ConfirmMomentPage() {
 
 
             <p className="text-sm text-center text-muted-foreground pt-4">
-              Does this sound like a moment you experienced? Your profile details will only be fully shared with {logger.name} if you confirm.
+              Does this sound like a moment you experienced? Your profile details will only be fully shared with {logger.name.split(' ')[0]} if you confirm.
             </p>
 
           </CardContent>

@@ -111,7 +111,7 @@ export default function MatchConfirmedPage() {
             </div>
             <CardTitle className="text-3xl font-bold text-primary">Connection Sparked!</CardTitle>
             <CardDescription className="text-muted-foreground text-lg mt-1">
-              You and <span className="font-semibold text-foreground">{userA.name}</span> have both confirmed your paths crossed at <span className="font-semibold text-foreground">{MOCK_LOGGED_MOMENT_DETAILS.placeName}</span>!
+              You and <span className="font-semibold text-foreground">{userA.name.split(' ')[0]}</span> have both confirmed your paths crossed at <span className="font-semibold text-foreground">{MOCK_LOGGED_MOMENT_DETAILS.placeName}</span>!
             </CardDescription>
           </CardHeader>
           <CardContent className="space-y-6">
@@ -121,7 +121,7 @@ export default function MatchConfirmedPage() {
                   <AvatarImage src={currentUserB.images[0]} alt={currentUserB.name} data-ai-hint="profile avatar current user"/>
                   <AvatarFallback>{currentUserB.name.substring(0, 1)}</AvatarFallback>
                 </Avatar>
-                <p className="font-semibold text-foreground">{currentUserB.name}</p>
+                <p className="font-semibold text-foreground">{currentUserB.name.split(' ')[0]}</p>
               </div>
               <Sparkles className="w-10 h-10 text-primary" />
               <div className="flex flex-col items-center gap-2">
@@ -129,7 +129,7 @@ export default function MatchConfirmedPage() {
                   <AvatarImage src={userA.images[0]} alt={userA.name} data-ai-hint="profile avatar matched user"/>
                   <AvatarFallback>{userA.name.substring(0, 1)}</AvatarFallback>
                 </Avatar>
-                <p className="font-semibold text-foreground">{userA.name}</p>
+                <p className="font-semibold text-foreground">{userA.name.split(' ')[0]}</p>
               </div>
             </div>
             <p className="text-muted-foreground">
@@ -146,7 +146,7 @@ export default function MatchConfirmedPage() {
             <Button asChild className="w-full sm:w-auto bg-primary hover:bg-primary/90 text-primary-foreground">
                 <Link href={chatLink}>
                     <MessageCircle className="mr-2 h-5 w-5" />
-                    Message {userA.name}
+                    Message {userA.name.split(' ')[0]}
                 </Link>
             </Button>
           </CardFooter>
