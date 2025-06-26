@@ -82,9 +82,10 @@ export const MOCK_AVAILABLE_CHALLENGES: Challenge[] = [
     description: 'Log a Moment 7 days in a row.',
     icon: 'CalendarCheck2',
     rewardPreview: 'Exclusive "Marathoner" Badge, 1 Week Crossd+ Trial',
-    progress: { current: MOCK_ACHIEVEMENTS_FOR_CURRENT_USER.find(a => a.id === 'achieve-1') ? 3 : 1, target: 7, unit: 'days logged' }, // User has logged 3 days already if "Daily Logger" is achieved
+    progress: { current: MOCK_ACHIEVEMENTS_FOR_CURRENT_USER.find(a => a.id === 'achieve-1') ? 3 : 1, target: 7, unit: 'days logged' },
     status: 'active',
     timeLimit: 'Ongoing',
+    triggerAction: 'LOGGED_MOMENT',
   },
   {
     id: 'challenge-2',
@@ -96,6 +97,7 @@ export const MOCK_AVAILABLE_CHALLENGES: Challenge[] = [
     progress: { current: 1, target: 5, unit: 'matches replied' },
     status: 'active',
     timeLimit: '48 hours per match',
+    triggerAction: 'REPLIED_TO_MATCH',
   },
   {
     id: 'challenge-3',
@@ -107,6 +109,7 @@ export const MOCK_AVAILABLE_CHALLENGES: Challenge[] = [
     progress: { current: 2, target: 5, unit: 'districts visited' },
     status: 'not_started',
     timeLimit: 'Ends this month',
+    triggerAction: 'LOGGED_MOMENT_NEW_DISTRICT',
   },
   {
     id: 'challenge-4',
@@ -117,6 +120,7 @@ export const MOCK_AVAILABLE_CHALLENGES: Challenge[] = [
     rewardPreview: '"Serendipity" Badge, Extended Chat Features',
     progress: { current: MOCK_ACHIEVEMENTS_FOR_CURRENT_USER.find(a => a.id === 'achieve-4') ? 1 : 0, target: 3, unit: 'double sparks' },
     status: 'active',
+    triggerAction: 'QUICK_MATCH_AND_CHAT',
   },
 ];
 

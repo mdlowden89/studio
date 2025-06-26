@@ -7,7 +7,7 @@ import { getPlacePhoto, GetPlacePhotoInput, GetPlacePhotoOutput } from "@/ai/flo
 import { getSparkSwipeInsights, SparkSwipeInput, SparkSwipeOutput } from "@/ai/flows/spark-swipe-flow";
 import { db } from "@/lib/firebase";
 import { doc, getDoc, updateDoc } from "firebase/firestore";
-import type { UserProfile, Achievement } from "@/lib/types";
+import type { UserProfile, Achievement, Challenge } from "@/lib/types";
 
 
 export async function getAiSuggestedVibeTags(
@@ -73,8 +73,9 @@ export async function fetchSparkSwipeInsights(
   }
 }
 
+export type ChallengeAction = 'LOGGED_MOMENT' | 'REPLIED_TO_MATCH' | 'LOGGED_MOMENT_NEW_DISTRICT' | 'QUICK_MATCH_AND_CHAT';
 
-export async function updateChallengeProgress(userId: string, challengeType: 'MomentLogging') {
+export async function updateChallengeProgress(userId: string, action: ChallengeAction, details?: any) {
   const userDocRef = doc(db, 'users', userId);
   try {
     const userDocSnap = await getDoc(userDocRef);
@@ -87,47 +88,61 @@ export async function updateChallengeProgress(userId: string, challengeType: 'Mo
     const challenges = userProfile.challenges || [];
     let achievements = userProfile.achievements || [];
     let challengesUpdated = false;
-    let achievementAwarded = false;
+    const awardedAchievements: Achievement[] = [];
 
-    // Find the "Moment Marathon" challenge, which is a Streak type.
-    const challengeIndex = challenges.findIndex(c => c.type === 'Streak' && c.status === 'active');
+    // Find all active challenges triggered by this action
+    const relevantChallenges = challenges.filter(c => c.triggerAction === action && c.status === 'active');
 
-    if (challengeIndex !== -1) {
-      const challenge = challenges[challengeIndex];
-      if (challenge.progress) {
-        challenge.progress.current += 1;
-        challengesUpdated = true;
-
-        if (challenge.progress.current >= challenge.progress.target) {
-          challenge.status = 'completed';
-          
-          const achievementId = `achieve-challenge-${challenge.id}`;
-          // Check if this achievement has already been awarded
-          if (!achievements.some(ach => ach.id.startsWith(achievementId))) {
-             const newAchievement: Achievement = {
-              id: `${achievementId}-${Date.now()}`,
-              name: `${challenge.name} Complete`,
-              type: 'Challenge Completion',
-              description: `You successfully completed the "${challenge.name}" challenge!`,
-              icon: 'Award', // Generic achievement icon
-              achievedDate: new Date().toISOString(),
-              rewards: [challenge.rewardPreview],
-              glowEffect: true,
-            };
-            achievements.push(newAchievement);
-            achievementAwarded = true;
-          }
-        }
-      }
+    if (relevantChallenges.length === 0) {
+      // It's normal for an action to not trigger a challenge, so this log can be for debugging.
+      // console.log(`No active challenges for action: ${action} for user ${userId}`);
+      return;
     }
 
-    if (challengesUpdated) {
-      const updateData: { challenges: any[]; achievements?: any[] } = { challenges };
-      if (achievementAwarded) {
-        updateData.achievements = achievements;
+    relevantChallenges.forEach(challenge => {
+      // This is where more complex logic for different challenge types would go.
+      // For now, we assume simple progress increment for any matched action.
+      if (action === 'LOGGED_MOMENT') {
+         if (challenge.progress) {
+          challenge.progress.current += 1;
+          challengesUpdated = true;
+          console.log(`Progress for challenge "${challenge.name}" for user ${userId} is now ${challenge.progress.current}/${challenge.progress.target}`);
+         }
       }
-      await updateDoc(userDocRef, updateData);
-      console.log(`Updated challenges for user ${userId}. Achievement awarded: ${achievementAwarded}`);
+      // Example for future:
+      // if (action === 'LOGGED_MOMENT_NEW_DISTRICT' && details?.isNewDistrict) {
+      //   // increment progress
+      // }
+
+      // Check for completion
+      if (challenge.progress && challenge.progress.current >= challenge.progress.target) {
+        challenge.status = 'completed';
+        
+        const achievementIdBase = `achieve-challenge-${challenge.id}`;
+        // Ensure this specific challenge achievement hasn't already been awarded
+        if (!achievements.some(ach => ach.id.startsWith(achievementIdBase))) {
+           const newAchievement: Achievement = {
+            id: `${achievementIdBase}-${Date.now()}`,
+            name: `${challenge.name} Complete`,
+            type: 'Challenge Completion',
+            description: `You successfully completed the "${challenge.name}" challenge!`,
+            icon: 'Award', // Generic achievement icon
+            achievedDate: new Date().toISOString(),
+            rewards: [challenge.rewardPreview],
+            glowEffect: true,
+          };
+          awardedAchievements.push(newAchievement);
+        }
+      }
+    });
+
+    if (challengesUpdated) {
+      const updatePayload: { challenges: Challenge[]; achievements?: Achievement[] } = { challenges };
+      if (awardedAchievements.length > 0) {
+        updatePayload.achievements = [...achievements, ...awardedAchievements];
+      }
+      await updateDoc(userDocRef, updatePayload as any); // Use `as any` to avoid deep type issues with Firestore SDK
+      console.log(`Updated challenge data for user ${userId}. Awarded achievements: ${awardedAchievements.length}`);
     }
 
   } catch (error) {

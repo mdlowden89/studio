@@ -197,8 +197,8 @@ export default function LogMomentPage() {
             userId: currentUser.id,
         });
 
-        // Trigger challenge progress update
-        await updateChallengeProgress(currentUser.id, 'MomentLogging');
+        // Trigger challenge progress update for the specific action
+        await updateChallengeProgress(currentUser.id, 'LOGGED_MOMENT');
     }
 
     toast({

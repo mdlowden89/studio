@@ -113,6 +113,7 @@ export interface Challenge {
   progress?: ChallengeProgress;
   status?: 'active' | 'not_started' | 'completed'; 
   timeLimit?: string; // e.g., "Ends in 2 days", "24 hours remaining"
+  triggerAction?: string; // The action that triggers progress for this challenge
 }
 
 export interface Hotspot {
