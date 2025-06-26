@@ -141,7 +141,7 @@ export async function logMoment(momentData: MomentLog): Promise<{ success: boole
     const momentToSave: Omit<Moment, 'id'> = {
       ...momentData,
       status: 'pending',
-      loggedAt: serverTimestamp(),
+      loggedAt: momentData.loggedAt ? Timestamp.fromDate(new Date(momentData.loggedAt)) : serverTimestamp(),
     };
     
     const momentDocRef = await addDoc(collection(db, "moments"), momentToSave);
@@ -150,7 +150,7 @@ export async function logMoment(momentData: MomentLog): Promise<{ success: boole
     // --- NEW MATCHING LOGIC ---
     // Find a potential match by looking for another user's moment at the same place around the same time.
     const twoHours = 2 * 60 * 60 * 1000;
-    const loggedAtDate = new Date(); // Approximate client time of logging
+    const loggedAtDate = momentData.loggedAt ? new Date(momentData.loggedAt) : new Date(); // Use provided time for matching window
     const twoHoursBefore = new Date(loggedAtDate.getTime() - twoHours);
     const twoHoursAfter = new Date(loggedAtDate.getTime() + twoHours);
 
@@ -297,8 +297,8 @@ export async function getOrCreateChat(userId1: string, userId2: string): Promise
     const newChat: Omit<Chat, 'id'> = {
       participantIds: participants,
       participants: [
-        { id: user1Profile.id, name: user1Profile.name, images: user1.images },
-        { id: user2Profile.id, name: user2Profile.name, images: user2.images }
+        { id: user1Profile.id, name: user1Profile.name, images: user1Profile.images },
+        { id: user2Profile.id, name: user2Profile.name, images: user2Profile.images }
       ],
       createdAt: serverTimestamp(),
       lastMessage: null,
@@ -452,3 +452,5 @@ export async function fetchNotificationsForUser(userId: string): Promise<Notific
     return [];
   }
 }
+
+  

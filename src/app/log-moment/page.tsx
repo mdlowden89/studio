@@ -81,7 +81,13 @@ export default function LogMomentPage() {
   const [locationAddress, setLocationAddress] = useState<string>(initialLocationAddress);
   const [coordinates, setCoordinates] = useState<{ lat: number; lng: number } | null>(initialCoordinates);
   const [markerPosition, setMarkerPosition] = useState<{ lat: number; lng: number } | null>(initialCoordinates);
-  const [formattedTimestamp, setFormattedTimestamp] = useState<string | null>(null);
+  const [momentDate, setMomentDate] = useState(() => {
+    const now = new Date();
+    now.setMinutes(Math.floor(now.getMinutes() / 5) * 5); // Round down to nearest 5 mins
+    now.setSeconds(0);
+    now.setMilliseconds(0);
+    return now;
+  });
   const [mapsApiKey, setMapsApiKey] = useState<string | undefined>(undefined);
   const searchBoxRef = useRef<google.maps.places.SearchBox | null>(null);
   const mapRef = useRef<google.maps.Map | null>(null);
@@ -98,8 +104,6 @@ export default function LogMomentPage() {
 
   useEffect(() => {
     setMapsApiKey(process.env.NEXT_PUBLIC_GOOGLE_MAPS_API_KEY);
-    const now = new Date();
-    setFormattedTimestamp(format(now, "h:mm bbb, EEEE"));
 
     if (currentStep === 1 && !locationName && currentUser?.locationName && currentUser?.locationCoordinates) {
       setLocationName(currentUser.locationName);
@@ -206,7 +210,8 @@ export default function LogMomentPage() {
         ethnicity: matchEthnicity,
         hairColour: matchHairColour,
         otherDetails: personDescription
-      }
+      },
+      loggedAt: momentDate.toISOString(),
     };
     
     const result = await logMoment(momentToLog);
@@ -246,7 +251,11 @@ export default function LogMomentPage() {
     setMatchHairColour(initialMatchHairColour);
 
     const now = new Date();
-    setFormattedTimestamp(format(now, "h:mm bbb, EEEE"));
+    now.setMinutes(Math.floor(now.getMinutes() / 5) * 5);
+    now.setSeconds(0);
+    now.setMilliseconds(0);
+    setMomentDate(now);
+    
     setCurrentStep(1);
   };
 
@@ -346,22 +355,62 @@ export default function LogMomentPage() {
                     </div>
                   </div>
                 )}
-
-                {formattedTimestamp && (
-                  <div className="flex items-center gap-3 p-4 bg-muted/50 rounded-lg shadow-sm">
-                    <Clock className="w-6 h-6 text-primary flex-shrink-0" />
+                
+                <div className="flex items-center gap-3 p-4 bg-muted/50 rounded-lg shadow-sm">
+                    <Clock className="w-6 h-6 text-primary flex-shrink-0 self-start mt-1" />
                     <div>
-                      <p className="text-sm text-muted-foreground">Current Time:</p>
-                      <p className="text-lg font-semibold text-foreground">{formattedTimestamp}</p>
+                        <Label className="text-sm text-muted-foreground" htmlFor="hour-select">Time of Moment</Label>
+                        <div className="flex items-center gap-2 mt-1">
+                        <Select
+                            value={String(momentDate.getHours())}
+                            onValueChange={(value) => {
+                            const newDate = new Date(momentDate);
+                            newDate.setHours(parseInt(value, 10));
+                            setMomentDate(newDate);
+                            }}
+                        >
+                            <SelectTrigger id="hour-select" className="w-[80px] bg-input h-9">
+                            <SelectValue />
+                            </SelectTrigger>
+                            <SelectContent className="bg-popover max-h-60">
+                            {Array.from({ length: 24 }, (_, i) => (
+                                <SelectItem key={i} value={String(i)}>
+                                {String(i).padStart(2, '0')}
+                                </SelectItem>
+                            ))}
+                            </SelectContent>
+                        </Select>
+                        <span className="font-bold text-lg">:</span>
+                        <Select
+                            value={String(momentDate.getMinutes())}
+                            onValueChange={(value) => {
+                            const newDate = new Date(momentDate);
+                            newDate.setMinutes(parseInt(value, 10));
+                            setMomentDate(newDate);
+                            }}
+                        >
+                            <SelectTrigger className="w-[80px] bg-input h-9">
+                            <SelectValue />
+                            </SelectTrigger>
+                            <SelectContent className="bg-popover max-h-60">
+                            {Array.from({ length: 12 }, (_, i) => i * 5).map((minute) => (
+                                <SelectItem key={minute} value={String(minute)}>
+                                {String(minute).padStart(2, '0')}
+                                </SelectItem>
+                            ))}
+                            </SelectContent>
+                        </Select>
+                        <p className="ml-2 text-muted-foreground">{format(momentDate, "EEEE")}</p>
+                        </div>
                     </div>
-                  </div>
-                )}
+                </div>
+
               </CardContent>
               <CardFooter className="border-t pt-6">
                 <Button
                   onClick={handleConfirmLocation}
                   className="w-full bg-primary hover:bg-primary/90 text-primary-foreground"
-                  disabled={!locationName || !coordinates || !formattedTimestamp || !mapsApiKey}
+                  disabled={!locationName || !coordinates || !mapsApiKey}
                 >
                   <CheckCircle className="mr-2 h-5 w-5" />
                   Confirm Location & Proceed
@@ -525,3 +574,5 @@ export default function LogMomentPage() {
     </AppLayout>
   );
 }
+
+  

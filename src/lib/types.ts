@@ -53,6 +53,7 @@ export interface MomentLog {
     hairColour: string;
     otherDetails: string;
   };
+  loggedAt?: string;
 }
 
 // Data structure for how a moment is stored in Firestore
@@ -175,3 +176,5 @@ export interface Hotspot {
   description: string;
   coordinates: { lat: number; lng: number };
 }
+
+  
