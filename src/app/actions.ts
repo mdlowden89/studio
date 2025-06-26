@@ -30,20 +30,15 @@ export async function getAiSuggestedVibeTags(
 }
 
 export async function getAiSuggestedBio(
-  currentBio: string,
-  vibeTags: string[]
+  input: SuggestBioInput
 ): Promise<string> {
   try {
-    const input: SuggestBioInput = {
-      currentBio: currentBio || undefined, 
-      vibeTags: vibeTags.length > 0 ? vibeTags : undefined,
-    };
     const result = await suggestBioForUser(input);
     return result.suggestedBio;
   } catch (error)
      {
     console.error("Error in getAiSuggestedBio:", error);
-    return currentBio || "Could not generate a bio suggestion at this time. Please try again.";
+    return input.currentBio || "Could not generate a bio suggestion at this time. Please try again.";
   }
 }
 

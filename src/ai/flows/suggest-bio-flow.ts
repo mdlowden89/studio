@@ -11,12 +11,26 @@
 import {ai} from '@/ai/genkit';
 import {z} from 'genkit';
 
+const PromptAnswerSchema = z.object({
+  question: z.string(),
+  answer: z.string(),
+});
+
 const SuggestBioInputSchema = z.object({
+  name: z.string().describe("The user's name."),
+  age: z.number().describe("The user's age."),
   currentBio: z.string().optional().describe('The current biography of the user, if any.'),
   vibeTags: z
     .array(z.string())
     .optional()
     .describe('An array of vibe tags describing the user.'),
+  work: z.string().optional().describe("The user's place of work."),
+  jobTitle: z.string().optional().describe("The user's job title."),
+  education: z.string().optional().describe("The user's education."),
+  promptAnswers: z
+    .array(PromptAnswerSchema)
+    .optional()
+    .describe("A list of questions the user has answered and their answers."),
 });
 export type SuggestBioInput = z.infer<typeof SuggestBioInputSchema>;
 
@@ -37,29 +51,47 @@ const prompt = ai.definePrompt({
   name: 'suggestBioPrompt',
   input: {schema: SuggestBioInputSchema},
   output: {schema: SuggestBioOutputSchema},
-  prompt: `You are an AI assistant specializing in crafting compelling user profiles for a dating app called Crossd.
-Your task is to generate a new, engaging, and concise bio for a user.
+  prompt: `You are an AI assistant and expert profile writer for a dating app called Crossd.
+Your task is to generate a new, engaging, and concise bio for a user by synthesizing all the information provided about them.
 
-Consider the user's vibe tags (if provided) to capture their personality and interests.
-{{#if vibeTags}}
-User's Vibe Tags:
-{{#each vibeTags}}
-- {{this}}
-{{/each}}
-{{/if}}
+The bio should be:
+- Approximately 2-4 sentences long.
+- Authentic and positive in tone.
+- Intriguing and approachable.
+- Reflect their personality, career, and interests.
+
+**User Information:**
+- Name: {{name}}
+- Age: {{age}}
 
 {{#if currentBio}}
-User's Current Bio (you can choose to refine this or write a new one):
-"{{currentBio}}"
-
-Based on the above, suggest a new bio that is approximately 2-4 sentences long. It should be authentic, slightly intriguing, and positive in tone.
-Focus on making the user sound approachable and interesting.
-{{else}}
-Based on the vibe tags (if any), write a new bio that is approximately 2-4 sentences long. It should be authentic, slightly intriguing, and positive in tone.
-Focus on making the user sound approachable and interesting. If no vibe tags are provided, create a general, friendly bio.
+- Current Bio (to refine or replace): "{{currentBio}}"
 {{/if}}
 
-Return the bio in the 'suggestedBio' output field.
+{{#if vibeTags}}
+- Vibe Tags:
+  {{#each vibeTags}}
+  - {{this}}
+  {{/each}}
+{{/if}}
+
+{{#if work}}
+- Work: {{work}}{{#if jobTitle}} ({{jobTitle}}){{/if}}
+{{/if}}
+{{#if education}}
+- Education: {{education}}
+{{/if}}
+
+{{#if promptAnswers}}
+- Their Answers to Profile Prompts:
+  {{#each promptAnswers}}
+  - Q: {{this.question}}
+    A: "{{this.answer}}"
+  {{/each}}
+{{/if}}
+
+Based on all of the information above, write a compelling new bio.
+Focus on creating a holistic and appealing summary of the user. Return the new bio in the 'suggestedBio' output field.
 `,
 });
 

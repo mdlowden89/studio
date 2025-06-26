@@ -13,10 +13,12 @@ import { X as XIcon, MapPin, Lightbulb, Loader2, Sparkles } from "lucide-react";
 import { useToast } from "@/hooks/use-toast";
 import { GoogleMap, LoadScriptNext, StandaloneSearchBox, MarkerF } from '@react-google-maps/api';
 import { getAiSuggestedVibeTags, getAiSuggestedBio } from "@/app/actions";
+import type { SuggestBioInput } from "@/ai/flows/suggest-bio-flow";
 import type { VibeTagSuggestion } from "@/ai/flows/suggest-vibe-tags-flow";
 import { useRouter } from "next/navigation";
 import { db } from "@/lib/firebase";
 import { doc, updateDoc } from "firebase/firestore";
+import { AVAILABLE_PROMPTS } from "@/lib/mock-data";
 
 interface ProfileDetailsProps {
   user: UserProfile;
@@ -226,7 +228,27 @@ export function ProfileDetails({ user }: ProfileDetailsProps) {
   const handleSuggestBio = async () => {
     setIsLoadingBioSuggestion(true);
     try {
-      const suggested = await getAiSuggestedBio(bio, vibeTags);
+      // We need the prompt questions, not just IDs, for the AI.
+      const promptAnswersWithQuestions = user.prompts.map(userPrompt => {
+          const promptDetail = AVAILABLE_PROMPTS.find(p => p.id === userPrompt.promptId);
+          return {
+              question: promptDetail?.question || "A prompt",
+              answer: userPrompt.answer,
+          };
+      }).filter(p => p.answer.trim() !== "");
+
+      const input: SuggestBioInput = {
+          name: name,
+          age: age,
+          currentBio: bio || undefined,
+          vibeTags: vibeTags.length > 0 ? vibeTags : undefined,
+          work: work || undefined,
+          jobTitle: jobTitle || undefined,
+          education: education || undefined,
+          promptAnswers: promptAnswersWithQuestions.length > 0 ? promptAnswersWithQuestions : undefined,
+      };
+
+      const suggested = await getAiSuggestedBio(input);
       setBio(suggested);
       toast({
         title: "AI Bio Suggestion Applied!",
