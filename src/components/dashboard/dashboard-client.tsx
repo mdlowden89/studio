@@ -5,7 +5,7 @@ import { useState, useEffect, useMemo, useCallback } from "react";
 import { AppLayout } from "@/components/layout/app-layout";
 import { Card, CardContent, CardHeader, CardTitle, CardDescription, CardFooter } from "@/components/ui/card";
 import { Sparkles, PlusCircle, ClipboardList, Users, MessageSquare, Route, MapPin, CalendarDays, Users2, TrendingUp, Activity, Map, LayoutGrid, List as ListIcon, Lightbulb, Edit3, Repeat, Star, ShoppingBag, Zap, Undo2, Eye, BrainCircuit, Signal, ArrowRight } from "lucide-react";
-import { MOCK_MOMENTS, MOCK_CROSSED_PATHS_USERS, MOCK_CHAT_CONVERSATIONS, MOCK_USER_ID, MOCK_USERS, baseDate, AVAILABLE_PROMPTS, MOCK_AVAILABLE_CHALLENGES, MOCK_HOTSPOTS } from "@/lib/mock-data";
+import { MOCK_MOMENTS, MOCK_CROSSED_PATHS_USERS, MOCK_CHAT_CONVERSATIONS, MOCK_USER_ID, MOCK_USERS, baseDate, AVAILABLE_PROMPTS, MOCK_HOTSPOTS } from "@/lib/mock-data";
 import { Button } from "@/components/ui/button";
 import { Separator } from "@/components/ui/separator";
 import { subDays, isAfter, format, getDay } from "date-fns";
@@ -122,11 +122,14 @@ export function DashboardClient({ currentUser }: DashboardClientProps) {
   }, [momentsThisWeek]);
   
   const activeStreakChallenge = useMemo(() => {
-    return MOCK_AVAILABLE_CHALLENGES.find(
+    if (!currentUser.challenges) {
+      return null;
+    }
+    return currentUser.challenges.find(
       (challenge) => challenge.type === "Streak" && challenge.status === "active"
     );
-  }, []);
-
+  }, [currentUser.challenges]);
+  
   const boosters = [
     {
       icon: Zap,
