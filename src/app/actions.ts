@@ -148,7 +148,7 @@ export async function logMoment(momentData: MomentLog): Promise<{ success: boole
     console.log("Moment logged successfully with ID:", momentDocRef.id);
 
     // --- NEW MATCHING LOGIC ---
-    // Instead of simulating, we'll find a real potential match.
+    // Find a potential match by looking for another user's moment at the same place around the same time.
     const twoHours = 2 * 60 * 60 * 1000;
     const loggedAtDate = new Date(); // Approximate client time of logging
     const twoHoursBefore = new Date(loggedAtDate.getTime() - twoHours);
@@ -297,7 +297,7 @@ export async function getOrCreateChat(userId1: string, userId2: string): Promise
     const newChat: Omit<Chat, 'id'> = {
       participantIds: participants,
       participants: [
-        { id: user1Profile.id, name: user1Profile.name, images: user1_profile.images },
+        { id: user1Profile.id, name: user1Profile.name, images: user1Profile.images },
         { id: user2Profile.id, name: user2Profile.name, images: user2Profile.images }
       ],
       createdAt: serverTimestamp(),
