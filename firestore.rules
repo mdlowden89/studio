@@ -3,43 +3,30 @@ rules_version = '2';
 
 service cloud.firestore {
   match /databases/{database}/documents {
-
-    // Helper functions
-    function isSignedIn() {
-      return request.auth != null;
-    }
-    
-    function isOwner(userId) {
-      return request.auth.uid == userId;
-    }
-
-    // Rules for the 'users' collection
+    // Users can read anyone's profile, but only write to their own.
     match /users/{userId} {
-      // Anyone can read a user's profile
-      allow read: if isSignedIn();
-      
-      // Only the user themselves can create their own profile
-      allow create: if isOwner(userId);
-
-      // Only the user themselves can update their own profile
-      allow update, delete: if isOwner(userId);
+      allow read: if true;
+      allow write: if request.auth.uid == userId;
     }
 
-    // Rules for the 'moments' collection
+    // Moments can be read by anyone, but only created by the logger.
+    // Any authenticated user can update a moment (to confirm/deny it).
     match /moments/{momentId} {
-      // Anyone signed in can read moments (for potential matching)
-      // This could be tightened later if needed.
-      allow read: if isSignedIn();
+      allow read: if true;
+      allow create: if request.auth.uid == request.resource.data.loggerId;
+      allow update: if request.auth.uid != null;
+    }
 
-      // A user can only create a moment if they are the logger.
-      allow create: if isSignedIn() && isOwner(request.resource.data.loggerId);
+    // Notifications can only be created by an authenticated user.
+    // A user can only read or update their own notifications.
+    match /notifications/{notificationId} {
+      allow create: if request.auth.uid != null;
+      allow read, update, delete: if request.auth.uid == resource.data.userId;
+    }
 
-      // Anyone signed in can update a moment (e.g., to confirm a match).
-      // A more secure rule would check if the updater is the potential confirmed user.
-      allow update: if isSignedIn();
-
-      // For now, nobody can delete moments directly.
-      allow delete: if false;
+    // Default deny all other collections
+    match /{document=**} {
+      allow read, write: if false;
     }
   }
 }

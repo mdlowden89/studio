@@ -6,7 +6,7 @@ import { suggestBioForUser, SuggestBioInput } from "@/ai/flows/suggest-bio-flow"
 import { getPlacePhoto, GetPlacePhotoInput, GetPlacePhotoOutput } from "@/ai/flows/get-place-photo-flow";
 import { getSparkSwipeInsights, SparkSwipeInput, SparkSwipeOutput } from "@/ai/flows/spark-swipe-flow";
 import { db } from "@/lib/firebase";
-import { doc, getDoc, updateDoc, collection, addDoc, serverTimestamp } from "firebase/firestore";
+import { doc, getDoc, updateDoc, collection, addDoc, serverTimestamp, query, where, limit, getDocs } from "firebase/firestore";
 import type { UserProfile, Achievement, Challenge, Moment, MomentLog } from "@/lib/types";
 
 
@@ -85,43 +85,30 @@ export async function updateChallengeProgress(userId: string, action: ChallengeA
     let challengesUpdated = false;
     const awardedAchievements: Achievement[] = [];
 
-    // Find all active challenges triggered by this action
     const relevantChallenges = challenges.filter(c => c.triggerAction === action && c.status === 'active');
 
     if (relevantChallenges.length === 0) {
-      // It's normal for an action to not trigger a challenge, so this log can be for debugging.
-      // console.log(`No active challenges for action: ${action} for user ${userId}`);
       return;
     }
 
     relevantChallenges.forEach(challenge => {
-      // This is where more complex logic for different challenge types would go.
-      // For now, we assume simple progress increment for any matched action.
-      if (action === 'LOGGED_MOMENT') {
-         if (challenge.progress) {
-          challenge.progress.current += 1;
-          challengesUpdated = true;
-          console.log(`Progress for challenge "${challenge.name}" for user ${userId} is now ${challenge.progress.current}/${challenge.progress.target}`);
-         }
+      if (action === 'LOGGED_MOMENT' && challenge.progress) {
+        challenge.progress.current += 1;
+        challengesUpdated = true;
+        console.log(`Progress for challenge "${challenge.name}" for user ${userId} is now ${challenge.progress.current}/${challenge.progress.target}`);
       }
-      // Example for future:
-      // if (action === 'LOGGED_MOMENT_NEW_DISTRICT' && details?.isNewDistrict) {
-      //   // increment progress
-      // }
 
-      // Check for completion
       if (challenge.progress && challenge.progress.current >= challenge.progress.target) {
         challenge.status = 'completed';
         
         const achievementIdBase = `achieve-challenge-${challenge.id}`;
-        // Ensure this specific challenge achievement hasn't already been awarded
         if (!achievements.some(ach => ach.id.startsWith(achievementIdBase))) {
            const newAchievement: Achievement = {
             id: `${achievementIdBase}-${Date.now()}`,
             name: `${challenge.name} Complete`,
             type: 'Challenge Completion',
             description: `You successfully completed the "${challenge.name}" challenge!`,
-            icon: 'Award', // Generic achievement icon
+            icon: 'Award',
             achievedDate: new Date().toISOString(),
             rewards: [challenge.rewardPreview],
             glowEffect: true,
@@ -136,7 +123,7 @@ export async function updateChallengeProgress(userId: string, action: ChallengeA
       if (awardedAchievements.length > 0) {
         updatePayload.achievements = [...achievements, ...awardedAchievements];
       }
-      await updateDoc(userDocRef, updatePayload as any); // Use `as any` to avoid deep type issues with Firestore SDK
+      await updateDoc(userDocRef, updatePayload as any);
       console.log(`Updated challenge data for user ${userId}. Awarded achievements: ${awardedAchievements.length}`);
     }
 
@@ -157,12 +144,111 @@ export async function logMoment(momentData: MomentLog): Promise<{ success: boole
       loggedAt: serverTimestamp(),
     };
     
-    const docRef = await addDoc(collection(db, "moments"), momentToSave);
-    console.log("Moment logged successfully with ID:", docRef.id);
-    return { success: true, id: docRef.id };
+    const momentDocRef = await addDoc(collection(db, "moments"), momentToSave);
+    console.log("Moment logged successfully with ID:", momentDocRef.id);
+
+    const usersRef = collection(db, "users");
+    const q = query(
+        usersRef, 
+        where("id", "!=", momentData.loggerId), 
+        where("ethnicity", "==", momentData.descriptors.ethnicity),
+        limit(1)
+    );
+    const querySnapshot = await getDocs(q);
+
+    if (!querySnapshot.empty) {
+      const matchedUser = querySnapshot.docs[0].data() as UserProfile;
+      const loggerProfileSnap = await getDoc(doc(db, 'users', momentData.loggerId));
+
+      if (loggerProfileSnap.exists()) {
+        const loggerData = loggerProfileSnap.data() as UserProfile;
+        await addDoc(collection(db, "notifications"), {
+          userId: matchedUser.id,
+          senderId: loggerData.id,
+          senderName: loggerData.name,
+          senderImage: loggerData.images[0] || null,
+          type: 'MOMENT_CONFIRMATION',
+          title: `Did you cross paths with ${loggerData.name}?`,
+          message: `Someone who might be you was noticed at ${momentData.placeName}.`,
+          href: `/confirm-moment/${momentDocRef.id}`,
+          read: false,
+          createdAt: serverTimestamp(),
+        });
+        console.log(`Notification created for user ${matchedUser.id} for moment ${momentDocRef.id}`);
+      }
+    }
+
+    await updateChallengeProgress(momentData.loggerId, 'LOGGED_MOMENT');
+    
+    return { success: true, id: momentDocRef.id };
     
   } catch (error: any) {
     console.error("Error logging moment to Firestore:", error);
     return { success: false, error: error.message || "Failed to log moment." };
   }
+}
+
+export async function fetchMomentForConfirmation(momentId: string): Promise<{moment: Moment, logger: UserProfile} | null> {
+    try {
+        const momentRef = doc(db, 'moments', momentId);
+        const momentSnap = await getDoc(momentRef);
+
+        if (!momentSnap.exists()) {
+            console.error(`Moment ${momentId} not found.`);
+            return null;
+        }
+
+        const moment = { id: momentSnap.id, ...momentSnap.data() } as Moment;
+
+        const loggerRef = doc(db, 'users', moment.loggerId);
+        const loggerSnap = await getDoc(loggerRef);
+
+        if (!loggerSnap.exists()) {
+            console.error(`Logger user ${moment.loggerId} not found.`);
+            return null;
+        }
+        const logger = loggerSnap.data() as UserProfile;
+        return { moment, logger };
+
+    } catch (error) {
+        console.error("Error fetching moment for confirmation:", error);
+        return null;
+    }
+}
+
+export async function confirmMomentMatch(momentId: string, confirmedByUserId: string): Promise<{success: boolean, loggerId?: string}> {
+    try {
+        const momentRef = doc(db, 'moments', momentId);
+        const momentSnap = await getDoc(momentRef);
+        if (!momentSnap.exists()) {
+            throw new Error("Moment not found");
+        }
+        
+        await updateDoc(momentRef, {
+            status: 'confirmed',
+            confirmedUserId: confirmedByUserId
+        });
+
+        // Here you would also create the chat, notify the original logger, etc.
+        // For now, just confirming is enough to complete the flow.
+        
+        return { success: true, loggerId: momentSnap.data().loggerId };
+
+    } catch (error: any) {
+        console.error("Error confirming moment match:", error);
+        return { success: false };
+    }
+}
+
+export async function denyMomentMatch(momentId: string): Promise<{success: boolean}> {
+    try {
+        const momentRef = doc(db, 'moments', momentId);
+         await updateDoc(momentRef, {
+            status: 'rejected'
+        });
+        return { success: true };
+    } catch(error: any) {
+        console.error("Error denying moment match:", error);
+        return { success: false };
+    }
 }

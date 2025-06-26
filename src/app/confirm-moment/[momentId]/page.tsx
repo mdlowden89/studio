@@ -6,7 +6,6 @@ import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from "@/components/ui/card";
 import { Separator } from "@/components/ui/separator";
 import { useToast } from "@/hooks/use-toast";
-import { MOCK_USERS } from "@/lib/mock-data"; 
 import { CheckCircle, HelpCircle, Sparkles, ThumbsUp, ThumbsDown, MapPin, Clock, Palette, Users as UsersIcon, User as UserIcon, Eye, Image as ImageIcon, Loader2 } from "lucide-react";
 import { useParams, useRouter } from "next/navigation";
 import Link from "next/link";
@@ -15,87 +14,102 @@ import { Badge } from "@/components/ui/badge";
 import { format } from "date-fns";
 import { useState, useEffect } from "react"; 
 import { useAuth } from "@/hooks/use-auth";
-
-// Mock data for the moment User A logged about User B (the current user)
-// In a real app, this would be fetched based on params.momentId
-const MOCK_LOGGED_MOMENT_DETAILS = {
-  placeName: "The Alchemist's Cafe",
-  timestamp: new Date(Date.now() - 2 * 60 * 60 * 1000).toISOString(), // Approx 2 hours ago
-  userADescriptionOfUserB: { // What User A observed about User B
-    ethnicity: "White/Caucasian", 
-    hairColour: "Brown",        
-    otherDetails: "They were reading 'The Midnight Library' and had a friendly smile.",
-  },
-  userA_momentDescription: "It was a cozy evening, and I noticed someone interesting by the window.", // User A's general comment about the moment
-  userA_id: "user-1" // ID of user A who logged the moment
-};
+import type { Moment, UserProfile } from "@/lib/types";
+import { fetchMomentForConfirmation, confirmMomentMatch, denyMomentMatch } from "@/app/actions";
 
 export default function ConfirmMomentPage() {
   const params = useParams();
   const router = useRouter();
   const { toast } = useToast();
-  const { userProfile: currentUserB, isLoading } = useAuth();
+  const { userProfile: currentUser, isLoading: isAuthLoading } = useAuth();
+
+  const [isLoadingMoment, setIsLoadingMoment] = useState(true);
+  const [moment, setMoment] = useState<Moment | null>(null);
+  const [logger, setLogger] = useState<UserProfile | null>(null);
+
   const [showUserAHint, setShowUserAHint] = useState(false);
   const [formattedMomentTime, setFormattedMomentTime] = useState<string>("");
 
   const momentId = params.momentId as string;
-  const loggedMoment = MOCK_LOGGED_MOMENT_DETAILS; 
-  const userA = MOCK_USERS.find(u => u.id === loggedMoment.userA_id);
-
-  const momentDate = new Date(loggedMoment.timestamp);
 
   useEffect(() => {
-    if (momentDate) {
-      setFormattedMomentTime(format(momentDate, 'p'));
+    if (!momentId) return;
+
+    const getMomentDetails = async () => {
+      setIsLoadingMoment(true);
+      const data = await fetchMomentForConfirmation(momentId);
+      if (data) {
+        setMoment(data.moment);
+        setLogger(data.logger);
+        if (data.moment.loggedAt && 'seconds' in data.moment.loggedAt) {
+          const date = new Date((data.moment.loggedAt as any).seconds * 1000);
+          setFormattedMomentTime(format(date, 'p'));
+        }
+      } else {
+        toast({ title: "Error", description: "Could not load moment details.", variant: "destructive" });
+      }
+      setIsLoadingMoment(false);
+    };
+
+    getMomentDetails();
+  }, [momentId, toast]);
+
+  const handleConfirmMatch = async () => {
+    if (!logger || !currentUser) return;
+    const result = await confirmMomentMatch(momentId, currentUser.id);
+    if (result.success) {
+      toast({
+        title: "Match Confirmed!",
+        description: `Great! You and ${logger.name} both acknowledged this moment.`,
+        duration: 3000,
+      });
+      router.push(`/match-confirmed/${logger.id}`);
+    } else {
+       toast({ title: "Error", description: "Could not confirm the match. Please try again.", variant: "destructive"});
     }
-  }, [momentDate]);
-
-
-  const handleConfirmMatch = () => {
-    if (!userA) return;
-    toast({
-      title: "Match Confirmed!",
-      description: `Great! You and ${userA.name} both acknowledged this moment.`,
-      duration: 3000,
-    });
-    router.push(`/match-confirmed/${userA.id}`);
   };
 
-  const handleDenyMatch = () => {
-    toast({
-      title: "Not a Match",
-      description: "No problem! Thanks for letting us know.",
-      variant: "default",
-    });
-    router.push("/dashboard");
+  const handleDenyMatch = async () => {
+    const result = await denyMomentMatch(momentId);
+     if (result.success) {
+        toast({
+            title: "Not a Match",
+            description: "No problem! Thanks for letting us know.",
+            variant: "default",
+        });
+        router.push("/dashboard");
+     } else {
+        toast({ title: "Error", description: "Could not deny the match. Please try again.", variant: "destructive"});
+     }
   };
 
   const handleShowHint = () => {
     setShowUserAHint(true);
   };
-  
-  if (isLoading) {
+
+  if (isAuthLoading || isLoadingMoment) {
     return (
       <AppLayout>
           <div className="container mx-auto py-8 flex justify-center items-center h-full">
-              <Loader2 className="h-8 w-8 animate-spin text-primary" />
+              <Loader2 className="h-12 w-12 animate-spin text-primary" />
           </div>
       </AppLayout>
     );
   }
 
-  if (!userA || !currentUserB) {
+  if (!logger || !moment || !currentUser) {
     return (
         <AppLayout>
             <div className="container mx-auto py-8 text-center">
-                <p>Error: Could not load moment details. User details not found.</p>
+                <p>Error: Could not load moment details. Data not found.</p>
+                 <Button onClick={() => router.push('/dashboard')}>Go to Dashboard</Button>
             </div>
         </AppLayout>
     );
   }
 
-  const userABioSnippet = userA.bio.split('.').slice(0, 1).join('.') + (userA.bio.includes('.') ? '.' : '');
-
+  const momentDate = moment.loggedAt && 'seconds' in moment.loggedAt ? new Date((moment.loggedAt as any).seconds * 1000) : new Date();
+  const loggerBioSnippet = logger.bio.split('.').slice(0, 1).join('.') + (logger.bio.includes('.') ? '.' : '');
 
   return (
     <AppLayout>
@@ -111,18 +125,18 @@ export default function ConfirmMomentPage() {
           <CardContent className="space-y-6 pt-6">
             <div className="flex flex-col items-center space-y-3 p-4 bg-muted/30 rounded-lg shadow-sm">
                 <Avatar className="h-20 w-20 border-2 border-primary">
-                    <AvatarImage src={userA.images[0]} alt={userA.name} data-ai-hint="profile avatar"/>
-                    <AvatarFallback>{userA.name.substring(0,1)}</AvatarFallback>
+                    <AvatarImage src={logger.images[0]} alt={logger.name} data-ai-hint="profile avatar"/>
+                    <AvatarFallback>{logger.name.substring(0,1)}</AvatarFallback>
                 </Avatar>
                 <p className="text-lg text-foreground text-center">
-                    <span className="font-semibold text-primary">{userA.name}</span> is wondering if you crossed paths at:
+                    <span className="font-semibold text-primary">{logger.name}</span> is wondering if you crossed paths at:
                 </p>
             </div>
             
             <div className="p-4 border border-border rounded-lg bg-card/50 space-y-3">
               <div className="flex items-center gap-2">
                 <MapPin className="w-5 h-5 text-primary" />
-                <p><span className="font-semibold text-foreground">Place:</span> {loggedMoment.placeName}</p>
+                <p><span className="font-semibold text-foreground">Place:</span> {moment.placeName}</p>
               </div>
               <div className="flex items-center gap-2">
                 <Clock className="w-5 h-5 text-primary" />
@@ -135,38 +149,38 @@ export default function ConfirmMomentPage() {
             <div>
               <h3 className="text-xl font-semibold mb-2 text-primary flex items-center gap-2">
                 <UserIcon className="w-5 h-5" />
-                How {userA.name} described you:
+                How {logger.name} described you:
               </h3>
               <ul className="space-y-2 list-disc list-inside text-muted-foreground pl-2">
-                {loggedMoment.userADescriptionOfUserB.ethnicity && (
+                {moment.descriptors.ethnicity && moment.descriptors.ethnicity !== 'Prefer not to describe' && (
                   <li className="flex items-start gap-2">
                     <UsersIcon className="w-5 h-5 text-foreground/70 mt-0.5 shrink-0" />
-                    <span>They thought your ethnicity might be <span className="font-medium text-foreground/90">{loggedMoment.userADescriptionOfUserB.ethnicity}</span>.</span>
+                    <span>They thought your ethnicity might be <span className="font-medium text-foreground/90">{moment.descriptors.ethnicity}</span>.</span>
                   </li>
                 )}
-                {loggedMoment.userADescriptionOfUserB.hairColour && (
+                {moment.descriptors.hairColour && moment.descriptors.hairColour !== 'Prefer not to describe' && (
                   <li className="flex items-start gap-2">
                     <Palette className="w-5 h-5 text-foreground/70 mt-0.5 shrink-0" />
-                    <span>They noticed your hair colour as <span className="font-medium text-foreground/90">{loggedMoment.userADescriptionOfUserB.hairColour}</span>.</span>
+                    <span>They noticed your hair colour as <span className="font-medium text-foreground/90">{moment.descriptors.hairColour}</span>.</span>
                   </li>
                 )}
-                 {loggedMoment.userADescriptionOfUserB.otherDetails && (
+                 {moment.descriptors.otherDetails && (
                   <li className="flex items-start gap-2">
                      <HelpCircle className="w-5 h-5 text-foreground/70 mt-0.5 shrink-0" />
-                    <span>Other details: <span className="italic text-foreground/90">&quot;{loggedMoment.userADescriptionOfUserB.otherDetails}&quot;</span></span>
+                    <span>Other details: <span className="italic text-foreground/90">&quot;{moment.descriptors.otherDetails}&quot;</span></span>
                   </li>
                 )}
               </ul>
             </div>
 
-            {loggedMoment.userA_momentDescription && (
+            {moment.momentDescription && (
               <div>
                 <h3 className="text-xl font-semibold mb-2 text-primary flex items-center gap-2">
                     <Sparkles className="w-5 h-5" /> 
-                    {userA.name}'s Reflection:
+                    {logger.name}'s Reflection:
                 </h3>
                 <p className="text-muted-foreground italic bg-muted/30 p-3 rounded-md">
-                  &quot;{loggedMoment.userA_momentDescription}&quot;
+                  &quot;{moment.momentDescription}&quot;
                 </p>
               </div>
             )}
@@ -175,32 +189,32 @@ export default function ConfirmMomentPage() {
                 <div className="p-4 border border-primary/50 rounded-lg bg-primary/5 space-y-4 mt-4">
                     <div className="flex items-center gap-2">
                         <Eye className="w-6 h-6 text-primary" />
-                        <h3 className="text-lg font-semibold text-primary">A little about {userA.name}:</h3>
+                        <h3 className="text-lg font-semibold text-primary">A little about {logger.name}:</h3>
                     </div>
                     <div className="flex flex-col sm:flex-row items-center sm:items-start gap-4">
-                        {userA.images && userA.images.length > 0 && (
+                        {logger.images && logger.images.length > 0 && (
                             <Avatar className="h-24 w-24 border-2 border-primary/50 flex-shrink-0">
-                                <AvatarImage src={userA.images[0]} alt={userA.name} data-ai-hint="profile avatar hint"/>
-                                <AvatarFallback>{userA.name.substring(0,1)}</AvatarFallback>
+                                <AvatarImage src={logger.images[0]} alt={logger.name} data-ai-hint="profile avatar hint"/>
+                                <AvatarFallback>{logger.name.substring(0,1)}</AvatarFallback>
                             </Avatar>
                         )}
                         <div className="space-y-2 text-sm text-center sm:text-left">
                             <p className="text-foreground">
-                                <span className="font-medium">Age:</span> {userA.age}
+                                <span className="font-medium">Age:</span> {logger.age}
                             </p>
-                            {userA.vibeTags && userA.vibeTags.length > 0 && (
+                            {logger.vibeTags && logger.vibeTags.length > 0 && (
                                 <div>
                                     <span className="font-medium text-foreground">Vibes:</span>
                                     <div className="flex flex-wrap gap-1.5 mt-1 justify-center sm:justify-start">
-                                        {userA.vibeTags.slice(0, 3).map(tag => (
+                                        {logger.vibeTags.slice(0, 3).map(tag => (
                                             <Badge key={tag} variant="secondary" className="capitalize text-xs">{tag}</Badge>
                                         ))}
                                     </div>
                                 </div>
                             )}
-                            {userA.bio && (
+                            {logger.bio && (
                                 <p className="text-foreground">
-                                    <span className="font-medium">Bio Snippet:</span> <span className="italic text-muted-foreground">&quot;{userABioSnippet}&quot;</span>
+                                    <span className="font-medium">Bio Snippet:</span> <span className="italic text-muted-foreground">&quot;{loggerBioSnippet}&quot;</span>
                                 </p>
                             )}
                         </div>
@@ -210,7 +224,7 @@ export default function ConfirmMomentPage() {
 
 
             <p className="text-sm text-center text-muted-foreground pt-4">
-              Does this sound like a moment you experienced? Your profile details will only be fully shared with {userA.name} if you confirm.
+              Does this sound like a moment you experienced? Your profile details will only be fully shared with {logger.name} if you confirm.
             </p>
 
           </CardContent>

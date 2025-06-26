@@ -72,6 +72,20 @@ export interface Moment {
   confirmedUserId?: string;
 }
 
+export interface Notification {
+  id: string;
+  userId: string; // The user who receives the notification
+  senderId?: string; // The user who triggered the notification
+  senderName?: string;
+  senderImage?: string;
+  type: 'MOMENT_CONFIRMATION' | 'NEW_MATCH' | 'NEW_MESSAGE' | 'GENERIC';
+  title: string;
+  message: string;
+  href: string; // Link to the relevant page
+  read: boolean;
+  createdAt: FieldValue;
+}
+
 
 export interface ChatMessage {
   id:string;
