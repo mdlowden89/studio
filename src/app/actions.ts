@@ -5,9 +5,10 @@ import { suggestVibeTagsForUser, SuggestVibeTagsInput, VibeTagSuggestion } from 
 import { suggestBioForUser, SuggestBioInput } from "@/ai/flows/suggest-bio-flow";
 import { getPlacePhoto, GetPlacePhotoInput, GetPlacePhotoOutput } from "@/ai/flows/get-place-photo-flow";
 import { getSparkSwipeInsights, SparkSwipeInput, SparkSwipeOutput } from "@/ai/flows/spark-swipe-flow";
+import { db } from "@/lib/firebase";
+import { doc, getDoc, updateDoc } from "firebase/firestore";
+import type { UserProfile, Achievement } from "@/lib/types";
 
-// All the Firestore update logic is now handled on the client-side in the relevant components.
-// The server actions are now purely for AI-related flows.
 
 export async function getAiSuggestedVibeTags(
   userBio: string,
@@ -69,5 +70,67 @@ export async function fetchSparkSwipeInsights(
   } catch (error) {
     console.error("Error in fetchSparkSwipeInsights action:", error);
     return null;
+  }
+}
+
+
+export async function updateChallengeProgress(userId: string, challengeType: 'MomentLogging') {
+  const userDocRef = doc(db, 'users', userId);
+  try {
+    const userDocSnap = await getDoc(userDocRef);
+    if (!userDocSnap.exists()) {
+      console.error(`User ${userId} not found for challenge update.`);
+      return;
+    }
+
+    const userProfile = userDocSnap.data() as UserProfile;
+    const challenges = userProfile.challenges || [];
+    let achievements = userProfile.achievements || [];
+    let challengesUpdated = false;
+    let achievementAwarded = false;
+
+    // Find the "Moment Marathon" challenge, which is a Streak type.
+    const challengeIndex = challenges.findIndex(c => c.type === 'Streak' && c.status === 'active');
+
+    if (challengeIndex !== -1) {
+      const challenge = challenges[challengeIndex];
+      if (challenge.progress) {
+        challenge.progress.current += 1;
+        challengesUpdated = true;
+
+        if (challenge.progress.current >= challenge.progress.target) {
+          challenge.status = 'completed';
+          
+          const achievementId = `achieve-challenge-${challenge.id}`;
+          // Check if this achievement has already been awarded
+          if (!achievements.some(ach => ach.id.startsWith(achievementId))) {
+             const newAchievement: Achievement = {
+              id: `${achievementId}-${Date.now()}`,
+              name: `${challenge.name} Complete`,
+              type: 'Challenge Completion',
+              description: `You successfully completed the "${challenge.name}" challenge!`,
+              icon: 'Award', // Generic achievement icon
+              achievedDate: new Date().toISOString(),
+              rewards: [challenge.rewardPreview],
+              glowEffect: true,
+            };
+            achievements.push(newAchievement);
+            achievementAwarded = true;
+          }
+        }
+      }
+    }
+
+    if (challengesUpdated) {
+      const updateData: { challenges: any[]; achievements?: any[] } = { challenges };
+      if (achievementAwarded) {
+        updateData.achievements = achievements;
+      }
+      await updateDoc(userDocRef, updateData);
+      console.log(`Updated challenges for user ${userId}. Achievement awarded: ${achievementAwarded}`);
+    }
+
+  } catch (error) {
+    console.error("Error updating challenge progress:", error);
   }
 }

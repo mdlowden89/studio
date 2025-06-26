@@ -111,7 +111,7 @@ export interface Challenge {
   icon: string; 
   rewardPreview: string; // e.g., "Glow Badge, Priority Visibility"
   progress?: ChallengeProgress;
-  status?: 'active' | 'not_started'; 
+  status?: 'active' | 'not_started' | 'completed'; 
   timeLimit?: string; // e.g., "Ends in 2 days", "24 hours remaining"
 }
 

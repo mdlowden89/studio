@@ -15,6 +15,7 @@ import { useToast } from "@/hooks/use-toast";
 import { GoogleMap, LoadScriptNext, StandaloneSearchBox, MarkerF } from '@react-google-maps/api';
 import Link from "next/link";
 import { useAuth } from "@/hooks/use-auth";
+import { updateChallengeProgress } from "@/app/actions";
 
 const mapContainerStyle = {
   width: '100%',
@@ -172,7 +173,7 @@ export default function LogMomentPage() {
     setCurrentStep(2);
   };
 
-  const handleSaveMoment = () => {
+  const handleSaveMoment = async () => {
     if (momentDescription.trim() === "") {
         toast({
             title: "Description Missing",
@@ -181,21 +182,28 @@ export default function LogMomentPage() {
         });
         return;
     }
-    // In a real app, this data would be sent to a backend.
-    console.log("Moment Saved:", {
-      locationName,
-      locationAddress,
-      coordinates,
-      timestamp: new Date().toISOString(),
-      momentDescription,
-      matchEthnicity,
-      matchHairColour,
-      personDescription,
-      userId: currentUser?.id,
-    });
+
+    if (currentUser) {
+       // In a real app, this data would be sent to a backend.
+        console.log("Moment Saved:", {
+            locationName,
+            locationAddress,
+            coordinates,
+            timestamp: new Date().toISOString(),
+            momentDescription,
+            matchEthnicity,
+            matchHairColour,
+            personDescription,
+            userId: currentUser.id,
+        });
+
+        // Trigger challenge progress update
+        await updateChallengeProgress(currentUser.id, 'MomentLogging');
+    }
+
     toast({
       title: "Moment Details Logged!",
-      description: `Location: ${locationName}. We'll keep an eye out!`,
+      description: `Location: ${locationName}. We'll keep an eye out! Your challenge progress may have updated.`,
     });
     setCurrentStep(3);
   };

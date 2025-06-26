@@ -28,10 +28,13 @@ export function ChallengeCard({ challenge }: ChallengeCardProps) {
             </div>
           </div>
           {challenge.status === 'active' && (
-            <Badge variant="secondary" className="text-xs bg-green-500/20 text-green-400 border-green-500/50">Active</Badge>
+            <Badge variant="secondary" className="text-xs bg-blue-500/20 text-blue-400 border-blue-500/50">Active</Badge>
           )}
            {challenge.status === 'not_started' && (
             <Badge variant="outline" className="text-xs">Not Started</Badge>
+          )}
+          {challenge.status === 'completed' && (
+            <Badge variant="secondary" className="text-xs bg-green-500/20 text-green-400 border-green-500/50">Completed</Badge>
           )}
         </div>
       </CardHeader>
@@ -75,6 +78,12 @@ export function ChallengeCard({ challenge }: ChallengeCardProps) {
              <Button variant="default" size="sm" className="w-full bg-primary/80 hover:bg-primary text-primary-foreground" disabled>
                 <CheckCircle className="mr-2 h-4 w-4"/>
                 In Progress
+            </Button>
+        )}
+         {challenge.status === 'completed' && (
+            <Button variant="default" size="sm" className="w-full bg-green-600 hover:bg-green-600/90 text-primary-foreground" disabled>
+                <CheckCircle className="mr-2 h-4 w-4"/>
+                Completed
             </Button>
         )}
       </CardFooter>
