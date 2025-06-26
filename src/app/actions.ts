@@ -6,8 +6,8 @@ import { suggestBioForUser, SuggestBioInput } from "@/ai/flows/suggest-bio-flow"
 import { getPlacePhoto, GetPlacePhotoInput, GetPlacePhotoOutput } from "@/ai/flows/get-place-photo-flow";
 import { getSparkSwipeInsights, SparkSwipeInput, SparkSwipeOutput } from "@/ai/flows/spark-swipe-flow";
 import { db } from "@/lib/firebase";
-import { doc, getDoc, updateDoc } from "firebase/firestore";
-import type { UserProfile, Achievement, Challenge } from "@/lib/types";
+import { doc, getDoc, updateDoc, collection, addDoc, serverTimestamp } from "firebase/firestore";
+import type { UserProfile, Achievement, Challenge, Moment, MomentLog } from "@/lib/types";
 
 
 export async function getAiSuggestedVibeTags(
@@ -142,5 +142,27 @@ export async function updateChallengeProgress(userId: string, action: ChallengeA
 
   } catch (error) {
     console.error("Error updating challenge progress:", error);
+  }
+}
+
+export async function logMoment(momentData: MomentLog): Promise<{ success: boolean; id?: string; error?: string }> {
+  if (!momentData.loggerId) {
+    return { success: false, error: "User is not authenticated." };
+  }
+  
+  try {
+    const momentToSave: Omit<Moment, 'id'> = {
+      ...momentData,
+      status: 'pending',
+      loggedAt: serverTimestamp(),
+    };
+    
+    const docRef = await addDoc(collection(db, "moments"), momentToSave);
+    console.log("Moment logged successfully with ID:", docRef.id);
+    return { success: true, id: docRef.id };
+    
+  } catch (error: any) {
+    console.error("Error logging moment to Firestore:", error);
+    return { success: false, error: error.message || "Failed to log moment." };
   }
 }

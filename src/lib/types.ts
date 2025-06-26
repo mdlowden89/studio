@@ -1,4 +1,6 @@
+
 import type { LucideIcon } from 'lucide-react';
+import type { FieldValue } from 'firebase/firestore';
 
 export interface UserProfile {
   id: string;
@@ -38,14 +40,38 @@ export interface ProfilePromptAnswer {
   answer: string;
 }
 
+// Data structure for what the user submits from the form
+export interface MomentLog {
+  loggerId: string;
+  placeName: string;
+  locationAddress: string | null;
+  coordinates: { lat: number, lng: number } | null;
+  momentDescription: string;
+  descriptors: {
+    ethnicity: string;
+    hairColour: string;
+    otherDetails: string;
+  };
+}
+
+// Data structure for how a moment is stored in Firestore
 export interface Moment {
   id: string;
-  userId: string; // User who experienced this moment
-  potentialMatchId?: string; // If a potential match was nearby
+  loggerId: string;
   placeName: string;
-  timestamp: string; // ISO date string
-  coordinates?: { lat: number; lng: number };
+  locationAddress: string | null;
+  coordinates: { lat: number, lng: number } | null;
+  momentDescription: string;
+  descriptors: {
+    ethnicity: string;
+    hairColour: string;
+    otherDetails: string;
+  };
+  loggedAt: FieldValue; // serverTimestamp
+  status: 'pending' | 'confirmed' | 'rejected';
+  confirmedUserId?: string;
 }
+
 
 export interface ChatMessage {
   id:string;

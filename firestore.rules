@@ -1,11 +1,45 @@
+
 rules_version = '2';
+
 service cloud.firestore {
   match /databases/{database}/documents {
+
+    // Helper functions
+    function isSignedIn() {
+      return request.auth != null;
+    }
+    
+    function isOwner(userId) {
+      return request.auth.uid == userId;
+    }
+
+    // Rules for the 'users' collection
     match /users/{userId} {
-      // Anyone can read a user's profile.
-      allow read: if true;
-      // Only the authenticated user can write to their own profile.
-      allow write: if request.auth != null && request.auth.uid == userId;
+      // Anyone can read a user's profile
+      allow read: if isSignedIn();
+      
+      // Only the user themselves can create their own profile
+      allow create: if isOwner(userId);
+
+      // Only the user themselves can update their own profile
+      allow update, delete: if isOwner(userId);
+    }
+
+    // Rules for the 'moments' collection
+    match /moments/{momentId} {
+      // Anyone signed in can read moments (for potential matching)
+      // This could be tightened later if needed.
+      allow read: if isSignedIn();
+
+      // A user can only create a moment if they are the logger.
+      allow create: if isSignedIn() && isOwner(request.resource.data.loggerId);
+
+      // Anyone signed in can update a moment (e.g., to confirm a match).
+      // A more secure rule would check if the updater is the potential confirmed user.
+      allow update: if isSignedIn();
+
+      // For now, nobody can delete moments directly.
+      allow delete: if false;
     }
   }
 }

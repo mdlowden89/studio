@@ -15,7 +15,8 @@ import { useToast } from "@/hooks/use-toast";
 import { GoogleMap, LoadScriptNext, StandaloneSearchBox, MarkerF } from '@react-google-maps/api';
 import Link from "next/link";
 import { useAuth } from "@/hooks/use-auth";
-import { updateChallengeProgress } from "@/app/actions";
+import { updateChallengeProgress, logMoment } from "@/app/actions";
+import type { MomentLog } from "@/lib/types";
 
 const mapContainerStyle = {
   width: '100%',
@@ -73,6 +74,7 @@ const initialMatchHairColour = "Prefer not to describe";
 export default function LogMomentPage() {
   const [currentStep, setCurrentStep] = useState(1);
   const { userProfile: currentUser, isLoading: isAuthLoading } = useAuth();
+  const [isSaving, setIsSaving] = useState(false);
 
   // Step 1 State
   const [locationName, setLocationName] = useState<string>(initialLocationName);
@@ -183,29 +185,49 @@ export default function LogMomentPage() {
         return;
     }
 
-    if (currentUser) {
-       // In a real app, this data would be sent to a backend.
-        console.log("Moment Saved:", {
-            locationName,
-            locationAddress,
-            coordinates,
-            timestamp: new Date().toISOString(),
-            momentDescription,
-            matchEthnicity,
-            matchHairColour,
-            personDescription,
-            userId: currentUser.id,
-        });
-
-        // Trigger challenge progress update for the specific action
-        await updateChallengeProgress(currentUser.id, 'LOGGED_MOMENT');
+    if (!currentUser) {
+       toast({
+          title: "Not Logged In",
+          description: "You must be logged in to save a moment.",
+          variant: "destructive",
+      });
+      return;
     }
 
-    toast({
-      title: "Moment Details Logged!",
-      description: `Location: ${locationName}. We'll keep an eye out! Your challenge progress may have updated.`,
-    });
-    setCurrentStep(3);
+    setIsSaving(true);
+    
+    const momentToLog: MomentLog = {
+      loggerId: currentUser.id,
+      placeName: locationName,
+      locationAddress: locationAddress,
+      coordinates: coordinates,
+      momentDescription: momentDescription,
+      descriptors: {
+        ethnicity: matchEthnicity,
+        hairColour: matchHairColour,
+        otherDetails: personDescription
+      }
+    };
+    
+    const result = await logMoment(momentToLog);
+
+    if (result.success) {
+      // Trigger challenge progress update for the specific action
+      await updateChallengeProgress(currentUser.id, 'LOGGED_MOMENT');
+      toast({
+        title: "Moment Details Logged!",
+        description: `Location: ${locationName}. We'll keep an eye out! Your challenge progress may have updated.`,
+      });
+      setCurrentStep(3);
+    } else {
+      toast({
+        title: "Error Saving Moment",
+        description: result.error || "An unknown error occurred. Please try again.",
+        variant: "destructive",
+      });
+    }
+
+    setIsSaving(false);
   };
 
   const handleLogAnother = () => {
@@ -442,6 +464,7 @@ export default function LogMomentPage() {
                 <Button
                   onClick={() => setCurrentStep(1)}
                   variant="outline"
+                  disabled={isSaving}
                 >
                   <ArrowLeft className="mr-2 h-5 w-5" />
                   Back to Location
@@ -449,9 +472,14 @@ export default function LogMomentPage() {
                 <Button
                   onClick={handleSaveMoment}
                   className="bg-primary hover:bg-primary/90 text-primary-foreground"
+                  disabled={isSaving}
                 >
-                  <CheckCircle className="mr-2 h-5 w-5" />
-                  Save Moment
+                  {isSaving ? (
+                    <Loader2 className="mr-2 h-5 w-5 animate-spin" />
+                  ) : (
+                    <CheckCircle className="mr-2 h-5 w-5" />
+                  )}
+                  {isSaving ? "Saving..." : "Save Moment"}
                 </Button>
               </CardFooter>
             </>
