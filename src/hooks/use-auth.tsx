@@ -53,13 +53,17 @@ export function AuthProvider({ children }: { children: ReactNode }) {
                 return "New User";
               };
 
-              const initialChallenges: Challenge[] = MOCK_AVAILABLE_CHALLENGES.map(challenge => ({
-                ...challenge,
-                status: 'not_started',
-                progress: challenge.progress
-                  ? { ...challenge.progress, current: 0 }
-                  : undefined,
-              }));
+              const initialChallenges: Challenge[] = MOCK_AVAILABLE_CHALLENGES.map(challenge => {
+                // Set Streak and Connection challenges to active by default
+                const isActiveByDefault = challenge.type === 'Streak' || challenge.type === 'Connection' || challenge.type === 'Timed Challenge';
+                return {
+                  ...challenge,
+                  status: isActiveByDefault ? 'active' : 'not_started',
+                  progress: challenge.progress
+                    ? { ...challenge.progress, current: 0 }
+                    : undefined,
+                };
+              });
 
               const newUserProfile: UserProfile = {
                 id: firebaseUser.uid,
