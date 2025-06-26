@@ -147,41 +147,77 @@ export async function logMoment(momentData: MomentLog): Promise<{ success: boole
     const momentDocRef = await addDoc(collection(db, "moments"), momentToSave);
     console.log("Moment logged successfully with ID:", momentDocRef.id);
 
-    // This is where server-side matching logic would go.
-    // For now, we simulate finding a match and sending a notification.
-    const usersRef = collection(db, "users");
-    const q = query(
-        usersRef, 
-        where("id", "!=", momentData.loggerId), 
-        where("ethnicity", "==", momentData.descriptors.ethnicity),
-        // In a real app, you might add more complex logic here,
-        // like checking location history or other profile traits.
-        limit(1)
+    // --- NEW MATCHING LOGIC ---
+    // Instead of simulating, we'll find a real potential match.
+    const twoHours = 2 * 60 * 60 * 1000;
+    const loggedAtDate = new Date(); // Approximate client time of logging
+    const twoHoursBefore = new Date(loggedAtDate.getTime() - twoHours);
+    const twoHoursAfter = new Date(loggedAtDate.getTime() + twoHours);
+
+    const momentsRef = collection(db, "moments");
+    // Query for moments from other users at the same place within a 4-hour window (+/- 2 hours)
+    const matchQuery = query(
+      momentsRef,
+      where("placeName", "==", momentData.placeName),
+      where("loggedAt", ">=", twoHoursBefore),
+      where("loggedAt", "<=", twoHoursAfter),
+      limit(20) // Limit to a reasonable number to check to avoid excessive reads
     );
-    const querySnapshot = await getDocs(q);
 
-    if (!querySnapshot.empty) {
-      const matchedUser = querySnapshot.docs[0].data() as UserProfile;
+    const matchSnapshot = await getDocs(matchQuery);
+
+    // Filter out moments from the same user and moments that have already been matched/rejected
+    const potentialMatchMoments = matchSnapshot.docs.filter(docSnap => {
+      const data = docSnap.data();
+      return data.loggerId !== momentData.loggerId && data.status === 'pending';
+    });
+
+    if (potentialMatchMoments.length > 0) {
+      // Found at least one potential match. Let's take the first one for this implementation.
+      const matchedMomentDoc = potentialMatchMoments[0];
+      const matchedMomentData = matchedMomentDoc.data() as Moment;
+      const matchedUserId = matchedMomentData.loggerId;
+      
       const loggerProfileSnap = await getDoc(doc(db, 'users', momentData.loggerId));
-
       if (loggerProfileSnap.exists()) {
         const loggerData = loggerProfileSnap.data() as UserProfile;
-        // Create a real notification
+        
+        // Notify User 2 (the matched user) about User 1's moment
         await addDoc(collection(db, "notifications"), {
-          userId: matchedUser.id, // The user receiving the notification
+          userId: matchedUserId,
           senderId: loggerData.id,
           senderName: loggerData.name,
           senderImage: loggerData.images[0] || null,
           type: 'MOMENT_CONFIRMATION',
           title: `Did you cross paths with ${loggerData.name}?`,
           message: `Someone who might be you was noticed at ${momentData.placeName}.`,
-          href: `/confirm-moment/${momentDocRef.id}`, // Link to the confirmation page for THIS moment
+          href: `/confirm-moment/${momentDocRef.id}`, // Link to User 1's moment
           read: false,
           createdAt: serverTimestamp(),
         });
-        console.log(`Notification created for user ${matchedUser.id} for moment ${momentDocRef.id}`);
+        console.log(`Notification created for user ${matchedUserId} for moment ${momentDocRef.id}`);
+
+        // Notify User 1 (the logger) about User 2's moment
+        const matchedUserSnap = await getDoc(doc(db, 'users', matchedUserId));
+        if (matchedUserSnap.exists()){
+          const matchedUserData = matchedUserSnap.data() as UserProfile;
+          await addDoc(collection(db, "notifications"), {
+            userId: loggerData.id,
+            senderId: matchedUserData.id,
+            senderName: matchedUserData.name,
+            senderImage: matchedUserData.images[0] || null,
+            type: 'MOMENT_CONFIRMATION',
+            title: `Did you cross paths with ${matchedUserData.name}?`,
+            message: `Someone who might be you was also at ${matchedMomentData.placeName}.`,
+            href: `/confirm-moment/${matchedMomentDoc.id}`, // Link to User 2's moment
+            read: false,
+            createdAt: serverTimestamp(),
+          });
+          console.log(`Notification created for user ${loggerData.id} for moment ${matchedMomentDoc.id}`);
+        }
       }
     }
+    // --- END OF NEW LOGIC ---
 
     await updateChallengeProgress(momentData.loggerId, 'LOGGED_MOMENT');
     
@@ -261,7 +297,7 @@ export async function getOrCreateChat(userId1: string, userId2: string): Promise
     const newChat: Omit<Chat, 'id'> = {
       participantIds: participants,
       participants: [
-        { id: user1Profile.id, name: user1Profile.name, images: user1Profile.images },
+        { id: user1Profile.id, name: user1Profile.name, images: user1_profile.images },
         { id: user2Profile.id, name: user2Profile.name, images: user2Profile.images }
       ],
       createdAt: serverTimestamp(),

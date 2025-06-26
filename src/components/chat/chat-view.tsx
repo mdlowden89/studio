@@ -17,6 +17,7 @@ import { useAuth } from "@/hooks/use-auth";
 import { collection, doc, onSnapshot, orderBy, query } from "firebase/firestore";
 import { db } from "@/lib/firebase";
 import { AVAILABLE_PROMPTS } from "@/lib/mock-data";
+import { Skeleton } from "@/components/ui/skeleton";
 
 interface ChatViewProps {
   chat: Chat;
