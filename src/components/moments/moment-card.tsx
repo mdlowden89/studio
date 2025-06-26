@@ -1,4 +1,3 @@
-
 "use client";
 
 import { useState, useEffect } from 'react';
@@ -16,15 +15,16 @@ interface MomentCardProps {
 
 export function MomentCard({ moment, potentialMatchUser }: MomentCardProps) {
   const [formattedTime, setFormattedTime] = useState<string>("..."); // Initial placeholder for time
+  const [momentDate, setMomentDate] = useState<Date | null>(null);
 
   useEffect(() => {
     // This effect runs only on the client after hydration
-    const date = new Date(moment.timestamp);
-    setFormattedTime(format(date, "p")); // "p" is for localized time, e.g., 2:30 PM
-  }, [moment.timestamp]); // Re-run if the moment timestamp changes
-
-  // Calculate momentDate directly, as date formatting like "MMM d, yyyy" is less sensitive to hydration issues
-  const momentDate = new Date(moment.timestamp);
+    if (moment.loggedAt) {
+      const date = new Date(moment.loggedAt as string);
+      setMomentDate(date);
+      setFormattedTime(format(date, "p")); // "p" is for localized time, e.g., 2:30 PM
+    }
+  }, [moment.loggedAt]); // Re-run if the moment loggedAt changes
 
   return (
     <Card className="bg-card/50 hover:shadow-lg transition-shadow duration-300">
@@ -36,7 +36,7 @@ export function MomentCard({ moment, potentialMatchUser }: MomentCardProps) {
           </CardTitle>
           <div className="text-xs text-muted-foreground flex items-center gap-1">
             <CalendarDays className="w-3 h-3"/>
-            {format(momentDate, "MMM d, yyyy")} - {formattedTime}
+            {momentDate ? `${format(momentDate, "MMM d, yyyy")} - ${formattedTime}` : '...'}
           </div>
         </div>
       </CardHeader>

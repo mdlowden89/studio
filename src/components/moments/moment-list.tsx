@@ -1,7 +1,6 @@
-
 "use client";
 
-import { MOCK_MOMENTS, MOCK_USERS } from "@/lib/mock-data";
+import { MOCK_USERS } from "@/lib/mock-data";
 import type { Moment as MomentType } from "@/lib/types";
 import { MomentCard } from "./moment-card";
 import { MomentGalleryItem } from "./moment-gallery-item";
@@ -12,11 +11,10 @@ import type { ViewMode } from "@/app/moments/page";
 
 interface MomentListProps {
   viewMode: ViewMode;
+  moments: MomentType[];
 }
 
-export function MomentList({ viewMode }: MomentListProps) {
-  const moments = MOCK_MOMENTS;
-
+export function MomentList({ viewMode, moments }: MomentListProps) {
   if (moments.length === 0) {
     return (
       <div className="text-center py-10 flex flex-col items-center text-muted-foreground">
@@ -28,7 +26,11 @@ export function MomentList({ viewMode }: MomentListProps) {
   }
 
   // Sort moments by timestamp, most recent first
-  const sortedMoments = [...moments].sort((a, b) => new Date(b.timestamp).getTime() - new Date(a.timestamp).getTime());
+  const sortedMoments = [...moments].sort((a, b) => {
+    const dateA = new Date(a.loggedAt as string).getTime();
+    const dateB = new Date(b.loggedAt as string).getTime();
+    return dateB - dateA;
+  });
 
   if (viewMode === 'list') {
     return (
