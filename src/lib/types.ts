@@ -70,6 +70,7 @@ export interface Moment {
   loggedAt: FieldValue | Timestamp | string; // serverTimestamp, Firestore Timestamp on read, or ISO string on client
   status: 'pending' | 'confirmed' | 'rejected';
   confirmedUserId?: string;
+  chatId?: string;
   // This field is from mock data, we keep it for components that haven't been migrated
   timestamp?: string;
   potentialMatchId?: string; 
@@ -86,7 +87,7 @@ export interface Notification {
   message: string;
   href: string; // Link to the relevant page
   read: boolean;
-  createdAt: FieldValue;
+  createdAt: FieldValue | Timestamp | string;
 }
 
 

@@ -7,7 +7,7 @@ import { getPlacePhoto, GetPlacePhotoInput, GetPlacePhotoOutput } from "@/ai/flo
 import { getSparkSwipeInsights, SparkSwipeInput, SparkSwipeOutput } from "@/ai/flows/spark-swipe-flow";
 import { db } from "@/lib/firebase";
 import { doc, getDoc, updateDoc, collection, addDoc, serverTimestamp, query, where, limit, getDocs, orderBy, Timestamp, getCountFromServer } from "firebase/firestore";
-import type { UserProfile, Achievement, Challenge, Moment, MomentLog, Chat } from "@/lib/types";
+import type { UserProfile, Achievement, Challenge, Moment, MomentLog, Chat, Notification } from "@/lib/types";
 
 
 export async function getAiSuggestedVibeTags(
@@ -331,7 +331,7 @@ export async function fetchMomentsForUser(userId: string): Promise<any[]> {
       return {
         id: doc.id,
         ...data,
-        loggedAt: loggedAtTimestamp.toDate().toISOString(),
+        loggedAt: loggedAtTimestamp ? loggedAtTimestamp.toDate().toISOString() : new Date().toISOString(),
       };
     });
     return moments;
@@ -386,5 +386,33 @@ export async function fetchUserChatCount(userId: string): Promise<number> {
   } catch (error) {
     console.error("Error fetching user chat count:", error);
     return 0;
+  }
+}
+
+export async function fetchNotificationsForUser(userId: string): Promise<Notification[]> {
+  if (!userId) return [];
+  try {
+    const notificationsRef = collection(db, 'notifications');
+    const q = query(
+      notificationsRef,
+      where("userId", "==", userId),
+      orderBy("createdAt", "desc")
+    );
+    const querySnapshot = await getDocs(q);
+
+    const notifications = querySnapshot.docs.map(doc => {
+      const data = doc.data();
+      const createdAtTimestamp = data.createdAt as Timestamp;
+      return {
+        id: doc.id,
+        ...data,
+        createdAt: createdAtTimestamp ? createdAtTimestamp.toDate().toISOString() : new Date().toISOString(),
+      } as Notification;
+    });
+
+    return notifications;
+  } catch (error) {
+    console.error(`Error fetching notifications for user ${userId}:`, error);
+    return [];
   }
 }
