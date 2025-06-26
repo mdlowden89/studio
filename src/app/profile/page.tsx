@@ -129,7 +129,7 @@ export default function ProfilePage() {
               <CardContent className="space-y-8">
                 <div>
                   <h3 className="text-xl font-semibold mb-4 text-primary">Active Challenges</h3>
-                  <ChallengesSection />
+                  <ChallengesSection challenges={userProfile.challenges || []} />
                 </div>
                 <Separator className="my-6 bg-border/50" />
                 <div>

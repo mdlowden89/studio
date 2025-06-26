@@ -4,8 +4,9 @@
 import { useState, useEffect, createContext, useContext, ReactNode } from 'react';
 import { onAuthStateChanged, User } from 'firebase/auth';
 import { auth, db } from '@/lib/firebase';
-import type { UserProfile } from '@/lib/types';
+import type { UserProfile, Challenge } from '@/lib/types';
 import { doc, setDoc, onSnapshot } from 'firebase/firestore';
+import { MOCK_AVAILABLE_CHALLENGES } from '@/lib/mock-data';
 
 interface AuthContextType {
   user: User | null;
@@ -52,6 +53,14 @@ export function AuthProvider({ children }: { children: ReactNode }) {
                 return "New User";
               };
 
+              const initialChallenges: Challenge[] = MOCK_AVAILABLE_CHALLENGES.map(challenge => ({
+                ...challenge,
+                status: 'not_started',
+                progress: challenge.progress
+                  ? { ...challenge.progress, current: 0 }
+                  : undefined,
+              }));
+
               const newUserProfile: UserProfile = {
                 id: firebaseUser.uid,
                 name: getInitialName(),
@@ -63,6 +72,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
                 prompts: [],
                 locationPatterns: [],
                 achievements: [],
+                challenges: initialChallenges,
                 onboardingComplete: false,
               };
               

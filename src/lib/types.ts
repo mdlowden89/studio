@@ -24,6 +24,7 @@ export interface UserProfile {
   smoking?: string;
   zodiacSign?: string; 
   achievements?: Achievement[];
+  challenges?: Challenge[];
   onboardingComplete: boolean;
 }
 
