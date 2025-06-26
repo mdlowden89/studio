@@ -6,7 +6,7 @@ import { suggestBioForUser, SuggestBioInput } from "@/ai/flows/suggest-bio-flow"
 import { getPlacePhoto, GetPlacePhotoInput, GetPlacePhotoOutput } from "@/ai/flows/get-place-photo-flow";
 import { getSparkSwipeInsights, SparkSwipeInput, SparkSwipeOutput } from "@/ai/flows/spark-swipe-flow";
 import { db } from "@/lib/firebase";
-import { doc, getDoc, updateDoc, collection, addDoc, serverTimestamp, query, where, limit, getDocs, orderBy, Timestamp } from "firebase/firestore";
+import { doc, getDoc, updateDoc, collection, addDoc, serverTimestamp, query, where, limit, getDocs, orderBy, Timestamp, getCountFromServer } from "firebase/firestore";
 import type { UserProfile, Achievement, Challenge, Moment, MomentLog, Chat } from "@/lib/types";
 
 
@@ -147,11 +147,15 @@ export async function logMoment(momentData: MomentLog): Promise<{ success: boole
     const momentDocRef = await addDoc(collection(db, "moments"), momentToSave);
     console.log("Moment logged successfully with ID:", momentDocRef.id);
 
+    // This is where server-side matching logic would go.
+    // For now, we simulate finding a match and sending a notification.
     const usersRef = collection(db, "users");
     const q = query(
         usersRef, 
         where("id", "!=", momentData.loggerId), 
         where("ethnicity", "==", momentData.descriptors.ethnicity),
+        // In a real app, you might add more complex logic here,
+        // like checking location history or other profile traits.
         limit(1)
     );
     const querySnapshot = await getDocs(q);
@@ -162,15 +166,16 @@ export async function logMoment(momentData: MomentLog): Promise<{ success: boole
 
       if (loggerProfileSnap.exists()) {
         const loggerData = loggerProfileSnap.data() as UserProfile;
+        // Create a real notification
         await addDoc(collection(db, "notifications"), {
-          userId: matchedUser.id,
+          userId: matchedUser.id, // The user receiving the notification
           senderId: loggerData.id,
           senderName: loggerData.name,
           senderImage: loggerData.images[0] || null,
           type: 'MOMENT_CONFIRMATION',
           title: `Did you cross paths with ${loggerData.name}?`,
           message: `Someone who might be you was noticed at ${momentData.placeName}.`,
-          href: `/confirm-moment/${momentDocRef.id}`,
+          href: `/confirm-moment/${momentDocRef.id}`, // Link to the confirmation page for THIS moment
           read: false,
           createdAt: serverTimestamp(),
         });
@@ -199,6 +204,7 @@ export async function fetchMomentForConfirmation(momentId: string): Promise<{mom
         }
 
         const momentData = momentSnap.data();
+        // Convert Firestore Timestamp to string for client-side serialization
         const moment: Moment = {
           id: momentSnap.id,
           ...momentData,
@@ -226,7 +232,6 @@ export async function getUserProfile(userId: string): Promise<UserProfile | null
     const userDocRef = doc(db, 'users', userId);
     const userDocSnap = await getDoc(userDocRef);
     if (userDocSnap.exists()) {
-        // We need to return an object with a compatible id property.
         const data = userDocSnap.data();
         return { ...data, id: userDocSnap.id } as UserProfile;
     }
@@ -237,17 +242,20 @@ export async function getOrCreateChat(userId1: string, userId2: string): Promise
   const participants = [userId1, userId2].sort();
   const chatsRef = collection(db, 'chats');
 
+  // Check if a chat between these two users already exists
   const q = query(chatsRef, where('participantIds', '==', participants));
   const querySnapshot = await getDocs(q);
 
   if (!querySnapshot.empty) {
+    // Chat already exists, return its ID
     return querySnapshot.docs[0].id;
   } else {
+    // Chat doesn't exist, create a new one
     const user1Profile = await getUserProfile(userId1);
     const user2Profile = await getUserProfile(userId2);
 
     if (!user1Profile || !user2Profile) {
-      throw new Error("Could not find profiles for chat creation.");
+      throw new Error("Could not find profiles for one or both users to create a chat.");
     }
 
     const newChat: Omit<Chat, 'id'> = {
@@ -264,6 +272,7 @@ export async function getOrCreateChat(userId1: string, userId2: string): Promise
   }
 }
 
+
 export async function confirmMomentMatch(momentId: string, confirmedByUserId: string): Promise<{success: boolean, loggerId?: string, chatId?: string}> {
     try {
         const momentRef = doc(db, 'moments', momentId);
@@ -275,13 +284,17 @@ export async function confirmMomentMatch(momentId: string, confirmedByUserId: st
         const momentData = momentSnap.data();
         const loggerId = momentData.loggerId;
 
+        // Create or get existing chat between the two users
         const chatId = await getOrCreateChat(loggerId, confirmedByUserId);
         
+        // Update the moment to confirmed status
         await updateDoc(momentRef, {
             status: 'confirmed',
             confirmedUserId: confirmedByUserId,
-            chatId: chatId,
+            chatId: chatId, // Store chat ID for reference
         });
+        
+        // You could also create a notification for loggerId here to inform them of the match.
         
         return { success: true, loggerId: momentData.loggerId, chatId };
 
@@ -344,8 +357,10 @@ export async function sendMessage(chatId: string, senderId: string, receiverId: 
       isRead: false
     };
 
+    // Add the new message to the 'messages' subcollection
     await addDoc(messagesRef, messageData);
     
+    // Update the 'lastMessage' field on the parent chat document
     await updateDoc(chatRef, {
       lastMessage: {
         text,
@@ -358,5 +373,18 @@ export async function sendMessage(chatId: string, senderId: string, receiverId: 
   } catch (error: any) {
     console.error("Error sending message:", error);
     return { success: false, error: error.message || "Failed to send message." };
+  }
+}
+
+export async function fetchUserChatCount(userId: string): Promise<number> {
+  if (!userId) return 0;
+  try {
+    const chatsRef = collection(db, 'chats');
+    const q = query(chatsRef, where('participantIds', 'array-contains', userId));
+    const snapshot = await getCountFromServer(q);
+    return snapshot.data().count;
+  } catch (error) {
+    console.error("Error fetching user chat count:", error);
+    return 0;
   }
 }

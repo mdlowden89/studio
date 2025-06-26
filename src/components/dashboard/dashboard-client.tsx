@@ -5,7 +5,7 @@ import { useState, useEffect, useMemo, useCallback } from "react";
 import { AppLayout } from "@/components/layout/app-layout";
 import { Card, CardContent, CardHeader, CardTitle, CardDescription, CardFooter } from "@/components/ui/card";
 import { Sparkles, PlusCircle, ClipboardList, Users, MessageSquare, Route, MapPin, CalendarDays, Users2, TrendingUp, Activity, Map, LayoutGrid, List as ListIcon, Lightbulb, Edit3, Repeat, Star, ShoppingBag, Zap, Undo2, Eye, BrainCircuit, Signal, ArrowRight, Loader2 } from "lucide-react";
-import { MOCK_CROSSED_PATHS_USERS, MOCK_CHAT_CONVERSATIONS, MOCK_USERS, AVAILABLE_PROMPTS, MOCK_HOTSPOTS } from "@/lib/mock-data";
+import { MOCK_USERS, AVAILABLE_PROMPTS, MOCK_HOTSPOTS } from "@/lib/mock-data";
 import { Button } from "@/components/ui/button";
 import { Separator } from "@/components/ui/separator";
 import { subDays, isAfter, format, getDay } from "date-fns";
@@ -19,7 +19,7 @@ import { FreeBoostUpsellDialog } from "@/components/pricing/free-boost-upsell-di
 import { useSearchParams, useRouter } from "next/navigation";
 import { useToast } from "@/hooks/use-toast";
 import { EmotionalHotspotsUpsell } from "@/components/dashboard/emotional-hotspots-upsell";
-import { fetchMomentsForUser } from "@/app/actions";
+import { fetchMomentsForUser, fetchUserChatCount } from "@/app/actions";
 import { Skeleton } from "@/components/ui/skeleton";
 
 interface DashboardClientProps {
@@ -43,6 +43,18 @@ const MomentsLoadingSkeleton = () => (
   </div>
 );
 
+const StatsLoadingSkeleton = () => (
+    <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+        {[...Array(3)].map((_, i) => (
+            <div key={i} className="bg-muted/50 p-6 rounded-lg flex flex-col items-center text-center shadow-md">
+                <Skeleton className="w-10 h-10 mb-3 rounded-full" />
+                <Skeleton className="w-20 h-8 mb-1" />
+                <Skeleton className="w-24 h-4" />
+            </div>
+        ))}
+    </div>
+);
+
 
 export function DashboardClient({ currentUser }: DashboardClientProps) {
   const [recentPlacesViewMode, setRecentPlacesViewMode] = useState<'list' | 'imageGrid'>('list');
@@ -51,20 +63,23 @@ export function DashboardClient({ currentUser }: DashboardClientProps) {
   const [promptOfTheDay, setPromptOfTheDay] = useState<ProfilePrompt | null>(null);
   const [showUpsellDialog, setShowUpsellDialog] = useState(false);
   const [showFreeBoostDialog, setShowFreeBoostDialog] = useState(false);
+  
   const [userMoments, setUserMoments] = useState<Moment[]>([]);
+  const [activeChatsCount, setActiveChatsCount] = useState(0);
+
   const [isLoadingMoments, setIsLoadingMoments] = useState(true);
+  const [isLoadingChats, setIsLoadingChats] = useState(true);
 
   const searchParams = useSearchParams();
   const router = useRouter();
   const { toast } = useToast();
 
   const momentsLoggedCount = useMemo(() => userMoments.length, [userMoments]);
-  const potentialMatchesCount = MOCK_CROSSED_PATHS_USERS.length;
-  const activeChatsCount = MOCK_CHAT_CONVERSATIONS.length;
+  const pendingMomentsCount = useMemo(() => userMoments.filter(m => m.status === 'pending').length, [userMoments]);
 
   const stats = [
     { title: "Moments Logged", value: momentsLoggedCount, icon: ClipboardList, color: "text-blue-500" },
-    { title: "Potential Matches", value: potentialMatchesCount, icon: Users, color: "text-green-500" },
+    { title: "Pending Moments", value: pendingMomentsCount, icon: Users, color: "text-amber-500" },
     { title: "Active Chats", value: activeChatsCount, icon: MessageSquare, color: "text-purple-500" },
   ];
 
@@ -83,6 +98,23 @@ export function DashboardClient({ currentUser }: DashboardClientProps) {
         })
         .finally(() => {
           setIsLoadingMoments(false);
+        });
+    }
+  }, [currentUser.id, toast]);
+
+  useEffect(() => {
+    if (currentUser.id) {
+      setIsLoadingChats(true);
+      fetchUserChatCount(currentUser.id)
+        .then(count => {
+          setActiveChatsCount(count);
+        })
+        .catch(err => {
+          console.error("Failed to fetch chat count:", err);
+          toast({ title: "Error", description: "Could not load your chat count.", variant: "destructive" });
+        })
+        .finally(() => {
+          setIsLoadingChats(false);
         });
     }
   }, [currentUser.id, toast]);
@@ -263,15 +295,19 @@ export function DashboardClient({ currentUser }: DashboardClientProps) {
                 </CardDescription>
               </CardHeader>
               <CardContent>
-                <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
-                  {stats.map((stat, index) => (
-                    <div key={index} className="bg-muted/50 p-6 rounded-lg flex flex-col items-center text-center shadow-md">
-                      <stat.icon className={`w-10 h-10 mb-3 ${stat.color}`} />
-                      <p className="text-3xl font-bold text-foreground">{stat.value}</p>
-                      <p className="text-sm text-muted-foreground mt-1">{stat.title}</p>
-                    </div>
-                  ))}
-                </div>
+                {isLoadingMoments || isLoadingChats ? (
+                  <StatsLoadingSkeleton />
+                ) : (
+                  <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+                    {stats.map((stat, index) => (
+                      <div key={index} className="bg-muted/50 p-6 rounded-lg flex flex-col items-center text-center shadow-md">
+                        <stat.icon className={`w-10 h-10 mb-3 ${stat.color}`} />
+                        <p className="text-3xl font-bold text-foreground">{stat.value}</p>
+                        <p className="text-sm text-muted-foreground mt-1">{stat.title}</p>
+                      </div>
+                    ))}
+                  </div>
+                )}
               </CardContent>
             </Card>
           </div>
