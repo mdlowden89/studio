@@ -19,6 +19,9 @@ import { useRouter } from "next/navigation";
 import { db } from "@/lib/firebase";
 import { doc, updateDoc } from "firebase/firestore";
 import { AVAILABLE_PROMPTS } from "@/lib/mock-data";
+import { Switch } from "@/components/ui/switch";
+import { Separator } from "@/components/ui/separator";
+
 
 interface ProfileDetailsProps {
   user: UserProfile;
@@ -158,6 +161,7 @@ export function ProfileDetails({ user }: ProfileDetailsProps) {
   const [smoking, setSmoking] = useState(user.smoking || "Prefer Not to Say");
   const [zodiacSign, setZodiacSign] = useState(user.zodiacSign || "Prefer Not to Say");
 
+  const [locationServicesEnabled, setLocationServicesEnabled] = useState(user.locationServicesEnabled ?? false);
   const [locationAddress, setLocationAddress] = useState(user.locationAddress || "");
   const [currentLocationName, setCurrentLocationName] = useState<string>(user.locationName || "");
   const [currentCoordinates, setCurrentCoordinates] = useState<google.maps.LatLngLiteral | null>(user.locationCoordinates || null);
@@ -317,6 +321,7 @@ export function ProfileDetails({ user }: ProfileDetailsProps) {
       zodiacSign, locationAddress, 
       locationName: currentLocationName || (locationAddress ? locationAddress.split(',')[0] : user.locationName),
       locationCoordinates: currentCoordinates || user.locationCoordinates,
+      locationServicesEnabled,
       onboardingComplete: true,
     };
 
@@ -548,6 +553,29 @@ export function ProfileDetails({ user }: ProfileDetailsProps) {
         <Label htmlFor="locationAddress">Location (Address, Area, or Postcode)</Label>
         {renderLocationSection()}
       </div>
+      
+      <Separator />
+
+      <div>
+        <h3 className="text-lg font-medium text-foreground">Privacy Settings</h3>
+        <p className="text-sm text-muted-foreground">Control how your data is used within the app.</p>
+        <div className="mt-4 rounded-lg border bg-card p-4 flex items-center justify-between shadow-sm">
+          <div className="space-y-0.5">
+            <Label htmlFor="location-services" className="font-semibold text-base">Location Services</Label>
+            <p className="text-sm text-muted-foreground pr-4">
+              Allow Crossd to access your device's location to find potential connections where your paths cross.
+            </p>
+          </div>
+          <Switch
+            id="location-services"
+            checked={locationServicesEnabled}
+            onCheckedChange={setLocationServicesEnabled}
+            aria-label="Toggle location services"
+          />
+        </div>
+      </div>
+      
+      <Separator />
 
       <div>
         <div className="flex items-center justify-between mb-1">

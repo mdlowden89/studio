@@ -77,6 +77,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
                 locationPatterns: [],
                 achievements: [],
                 challenges: initialChallenges,
+                locationServicesEnabled: false,
                 onboardingComplete: false,
               };
               

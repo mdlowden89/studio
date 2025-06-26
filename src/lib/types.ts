@@ -27,6 +27,7 @@ export interface UserProfile {
   zodiacSign?: string; 
   achievements?: Achievement[];
   challenges?: Challenge[];
+  locationServicesEnabled?: boolean;
   onboardingComplete: boolean;
 }
 
