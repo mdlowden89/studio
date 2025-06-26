@@ -92,19 +92,26 @@ export interface Notification {
 
 export interface ChatMessage {
   id:string;
-  chatId: string;
+  chatId?: string; // Optional since it's the parent doc id
   senderId: string;
   receiverId: string;
   text: string;
-  timestamp: string; // ISO date string
+  timestamp: FieldValue | Timestamp | string;
   isRead?: boolean;
 }
 
-export interface ChatConversation {
+export type ChatParticipant = Pick<UserProfile, 'id' | 'name' | 'images'>;
+
+export interface Chat {
   id: string;
   participantIds: string[];
-  participants: Pick<UserProfile, 'id' | 'name' | 'images'>[];
-  lastMessage?: Pick<ChatMessage, 'text' | 'timestamp' | 'senderId'>;
+  participants: ChatParticipant[];
+  createdAt: FieldValue | Timestamp;
+  lastMessage: {
+    text: string;
+    timestamp: FieldValue | Timestamp;
+    senderId: string;
+  } | null;
 }
 
 export interface CrossedPathUser extends UserProfile {

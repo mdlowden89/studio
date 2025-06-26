@@ -7,7 +7,7 @@ import { getPlacePhoto, GetPlacePhotoInput, GetPlacePhotoOutput } from "@/ai/flo
 import { getSparkSwipeInsights, SparkSwipeInput, SparkSwipeOutput } from "@/ai/flows/spark-swipe-flow";
 import { db } from "@/lib/firebase";
 import { doc, getDoc, updateDoc, collection, addDoc, serverTimestamp, query, where, limit, getDocs, orderBy, Timestamp } from "firebase/firestore";
-import type { UserProfile, Achievement, Challenge, Moment, MomentLog } from "@/lib/types";
+import type { UserProfile, Achievement, Challenge, Moment, MomentLog, Chat } from "@/lib/types";
 
 
 export async function getAiSuggestedVibeTags(
@@ -222,7 +222,49 @@ export async function fetchMomentForConfirmation(momentId: string): Promise<{mom
     }
 }
 
-export async function confirmMomentMatch(momentId: string, confirmedByUserId: string): Promise<{success: boolean, loggerId?: string}> {
+export async function getUserProfile(userId: string): Promise<UserProfile | null> {
+    const userDocRef = doc(db, 'users', userId);
+    const userDocSnap = await getDoc(userDocRef);
+    if (userDocSnap.exists()) {
+        // We need to return an object with a compatible id property.
+        const data = userDocSnap.data();
+        return { ...data, id: userDocSnap.id } as UserProfile;
+    }
+    return null;
+}
+
+export async function getOrCreateChat(userId1: string, userId2: string): Promise<string> {
+  const participants = [userId1, userId2].sort();
+  const chatsRef = collection(db, 'chats');
+
+  const q = query(chatsRef, where('participantIds', '==', participants));
+  const querySnapshot = await getDocs(q);
+
+  if (!querySnapshot.empty) {
+    return querySnapshot.docs[0].id;
+  } else {
+    const user1Profile = await getUserProfile(userId1);
+    const user2Profile = await getUserProfile(userId2);
+
+    if (!user1Profile || !user2Profile) {
+      throw new Error("Could not find profiles for chat creation.");
+    }
+
+    const newChat: Omit<Chat, 'id'> = {
+      participantIds: participants,
+      participants: [
+        { id: user1Profile.id, name: user1Profile.name, images: user1Profile.images },
+        { id: user2Profile.id, name: user2Profile.name, images: user2Profile.images }
+      ],
+      createdAt: serverTimestamp(),
+      lastMessage: null,
+    };
+    const chatDocRef = await addDoc(chatsRef, newChat);
+    return chatDocRef.id;
+  }
+}
+
+export async function confirmMomentMatch(momentId: string, confirmedByUserId: string): Promise<{success: boolean, loggerId?: string, chatId?: string}> {
     try {
         const momentRef = doc(db, 'moments', momentId);
         const momentSnap = await getDoc(momentRef);
@@ -230,15 +272,18 @@ export async function confirmMomentMatch(momentId: string, confirmedByUserId: st
             throw new Error("Moment not found");
         }
         
+        const momentData = momentSnap.data();
+        const loggerId = momentData.loggerId;
+
+        const chatId = await getOrCreateChat(loggerId, confirmedByUserId);
+        
         await updateDoc(momentRef, {
             status: 'confirmed',
-            confirmedUserId: confirmedByUserId
+            confirmedUserId: confirmedByUserId,
+            chatId: chatId,
         });
-
-        // Here you would also create the chat, notify the original logger, etc.
-        // For now, just confirming is enough to complete the flow.
         
-        return { success: true, loggerId: momentSnap.data().loggerId };
+        return { success: true, loggerId: momentData.loggerId, chatId };
 
     } catch (error: any) {
         console.error("Error confirming moment match:", error);
@@ -280,5 +325,38 @@ export async function fetchMomentsForUser(userId: string): Promise<any[]> {
   } catch (error) {
     console.error("Error fetching moments for user:", error);
     return [];
+  }
+}
+
+export async function sendMessage(chatId: string, senderId: string, receiverId: string, text: string): Promise<{ success: boolean; error?: string }> {
+  if (!chatId || !senderId || !text.trim()) {
+    return { success: false, error: "Missing required message data." };
+  }
+  try {
+    const chatRef = doc(db, 'chats', chatId);
+    const messagesRef = collection(chatRef, 'messages');
+    
+    const messageData = {
+      senderId,
+      receiverId,
+      text,
+      timestamp: serverTimestamp(),
+      isRead: false
+    };
+
+    await addDoc(messagesRef, messageData);
+    
+    await updateDoc(chatRef, {
+      lastMessage: {
+        text,
+        timestamp: serverTimestamp(),
+        senderId,
+      }
+    });
+
+    return { success: true };
+  } catch (error: any) {
+    console.error("Error sending message:", error);
+    return { success: false, error: error.message || "Failed to send message." };
   }
 }

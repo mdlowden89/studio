@@ -1,28 +1,30 @@
 
 "use client";
 
-import type { ChatMessage as MessageType } from "@/lib/types";
+import type { ChatMessage, ChatParticipant } from "@/lib/types";
 import { cn } from "@/lib/utils";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
-import { MOCK_USERS } from "@/lib/mock-data"; 
 import { useState, useEffect } from "react";
 import { useAuth } from "@/hooks/use-auth";
+import { Timestamp } from "firebase/firestore";
 
 interface ChatMessageProps {
-  message: MessageType;
+  message: ChatMessage;
+  participants: ChatParticipant[];
 }
 
-export function ChatMessage({ message }: ChatMessageProps) {
+export function ChatMessage({ message, participants }: ChatMessageProps) {
   const { user } = useAuth();
   if (!user) return null;
 
   const isCurrentUserSender = message.senderId === user.uid;
-  const sender = MOCK_USERS.find(u => u.id === message.senderId);
+  const sender = participants.find(p => p.id === message.senderId);
   const [formattedTimestamp, setFormattedTimestamp] = useState<string>("");
 
   useEffect(() => {
+    const date = (message.timestamp as Timestamp)?.toDate() || new Date();
     setFormattedTimestamp(
-      new Date(message.timestamp).toLocaleTimeString([], {
+      date.toLocaleTimeString([], {
         hour: "2-digit",
         minute: "2-digit",
       })

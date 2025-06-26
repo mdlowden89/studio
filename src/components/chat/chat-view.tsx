@@ -2,8 +2,8 @@
 "use client";
 
 import { useState, useRef, useEffect } from "react";
-import type { ChatConversation, ChatMessage as MessageType, UserProfile } from "@/lib/types";
-import { MOCK_USERS, AVAILABLE_PROMPTS } from "@/lib/mock-data";
+import type { Chat, ChatMessage as MessageType, UserProfile } from "@/lib/types";
+import { getUserProfile, sendMessage } from "@/app/actions";
 import { ChatMessage } from "./chat-message";
 import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
@@ -14,27 +14,72 @@ import { Separator } from "@/components/ui/separator";
 import { Badge } from "@/components/ui/badge";
 import { useRouter } from "next/navigation";
 import { useAuth } from "@/hooks/use-auth";
-
+import { collection, doc, onSnapshot, orderBy, query } from "firebase/firestore";
+import { db } from "@/lib/firebase";
+import { AVAILABLE_PROMPTS } from "@/lib/mock-data";
 
 interface ChatViewProps {
-  conversation: ChatConversation;
-  initialMessages: MessageType[];
+  chat: Chat;
 }
 
-export function ChatView({ conversation, initialMessages }: ChatViewProps) {
-  const [messages, setMessages] = useState<MessageType[]>(initialMessages);
+function ChatViewLoading() {
+  return (
+    <div className="flex h-full flex-col">
+       <div className="flex items-center p-3 border-b border-border bg-card/50">
+        <Skeleton className="h-10 w-10 rounded-full" />
+        <Skeleton className="h-6 w-24 ml-3" />
+      </div>
+      <div className="flex-1 p-4 flex items-center justify-center">
+        <Loader2 className="h-8 w-8 animate-spin text-primary" />
+        <p className="ml-2 text-muted-foreground">Loading messages...</p>
+      </div>
+      <div className="p-3 border-t border-border bg-card/50">
+        <Skeleton className="h-10 w-full" />
+      </div>
+    </div>
+  );
+}
+
+
+function ChatViewComponent({ chat }: ChatViewProps) {
+  const [messages, setMessages] = useState<MessageType[]>([]);
   const [newMessage, setNewMessage] = useState("");
+  const [isSending, setIsSending] = useState(false);
   const scrollAreaRef = useRef<HTMLDivElement>(null);
   const router = useRouter();
   const { user } = useAuth();
+  const [isLoadingMessages, setIsLoadingMessages] = useState(true);
 
   const [showProfile, setShowProfile] = useState(false);
   const [fullOtherParticipantProfile, setFullOtherParticipantProfile] = useState<UserProfile | null>(null);
 
-  const otherParticipant = user ? conversation.participants.find(p => p.id !== user.uid) : null;
+  const otherParticipant = user ? chat.participants.find(p => p.id !== user.uid) : null;
 
   useEffect(() => {
-    if (!showProfile && scrollAreaRef.current) {
+    if (!chat.id) return;
+    setIsLoadingMessages(true);
+
+    const messagesRef = collection(db, 'chats', chat.id, 'messages');
+    const q = query(messagesRef, orderBy('timestamp', 'asc'));
+
+    const unsubscribe = onSnapshot(q, (querySnapshot) => {
+      const newMessages: MessageType[] = [];
+      querySnapshot.forEach((doc) => {
+        newMessages.push({ id: doc.id, ...doc.data() } as MessageType);
+      });
+      setMessages(newMessages);
+      setIsLoadingMessages(false);
+    }, (error) => {
+      console.error("Error fetching messages:", error);
+      setIsLoadingMessages(false);
+    });
+
+    return () => unsubscribe();
+  }, [chat.id]);
+
+
+  useEffect(() => {
+    if (scrollAreaRef.current) {
       const viewport = scrollAreaRef.current.querySelector('div[data-radix-scroll-area-viewport]');
       if (viewport) {
         viewport.scrollTop = viewport.scrollHeight;
@@ -44,29 +89,32 @@ export function ChatView({ conversation, initialMessages }: ChatViewProps) {
 
   useEffect(() => {
     if (showProfile && otherParticipant && !fullOtherParticipantProfile) {
-      const fullProfile = MOCK_USERS.find(u => u.id === otherParticipant.id);
-      setFullOtherParticipantProfile(fullProfile || null);
+      getUserProfile(otherParticipant.id).then(profile => {
+        setFullOtherParticipantProfile(profile);
+      });
     }
   }, [showProfile, otherParticipant, fullOtherParticipantProfile]);
 
 
-  const handleSendMessage = (e: React.FormEvent) => {
+  const handleSendMessage = async (e: React.FormEvent) => {
     e.preventDefault();
-    if (newMessage.trim() === "" || !otherParticipant || !user) return;
+    if (newMessage.trim() === "" || !otherParticipant || !user || isSending) return;
 
-    const messageToSend: MessageType = {
-      id: `msg-${Date.now()}`,
-      chatId: conversation.id,
-      senderId: user.uid,
-      receiverId: otherParticipant.id,
-      text: newMessage,
-      timestamp: new Date().toISOString(),
-    };
-    setMessages([...messages, messageToSend]);
+    setIsSending(true);
+    const tempMessage = newMessage;
     setNewMessage("");
+
+    const result = await sendMessage(chat.id, user.uid, otherParticipant.id, tempMessage);
+
+    if (!result.success) {
+      console.error("Failed to send message:", result.error);
+      setNewMessage(tempMessage); // Restore message on failure
+    }
+    
     if (showProfile) { 
       setShowProfile(false);
     }
+    setIsSending(false);
   };
   
   if (!otherParticipant) {
@@ -166,11 +214,16 @@ export function ChatView({ conversation, initialMessages }: ChatViewProps) {
               <p className="ml-2 text-muted-foreground">Loading profile...</p>
             </div>
           )
+        ) : isLoadingMessages ? (
+          <div className="flex items-center justify-center h-full">
+              <Loader2 className="h-8 w-8 animate-spin text-primary" />
+              <p className="ml-2 text-muted-foreground">Loading messages...</p>
+          </div>
         ) : (
           <ScrollArea className="h-full p-4" ref={scrollAreaRef}>
             <div className="space-y-4">
               {messages.map((msg) => (
-                <ChatMessage key={msg.id} message={msg} />
+                <ChatMessage key={msg.id} message={msg} participants={chat.participants}/>
               ))}
             </div>
           </ScrollArea>
@@ -189,12 +242,17 @@ export function ChatView({ conversation, initialMessages }: ChatViewProps) {
             onChange={(e) => setNewMessage(e.target.value)}
             className="flex-1 bg-input text-foreground placeholder:text-muted-foreground"
             aria-label="Chat message input"
+            disabled={isSending}
           />
-          <Button type="submit" size="icon" className="bg-primary text-primary-foreground hover:bg-primary/90 rounded-full" aria-label="Send message">
-            <Send className="h-5 w-5" />
+          <Button type="submit" size="icon" className="bg-primary text-primary-foreground hover:bg-primary/90 rounded-full" aria-label="Send message" disabled={isSending || newMessage.trim() === ''}>
+            {isSending ? <Loader2 className="h-5 w-5 animate-spin" /> : <Send className="h-5 w-5" />}
           </Button>
         </div>
       </form>
     </div>
   );
 }
+
+export const ChatView = Object.assign(ChatViewComponent, {
+  Loading: ChatViewLoading,
+});

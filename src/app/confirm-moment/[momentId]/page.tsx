@@ -57,13 +57,13 @@ export default function ConfirmMomentPage() {
   const handleConfirmMatch = async () => {
     if (!logger || !currentUser) return;
     const result = await confirmMomentMatch(momentId, currentUser.id);
-    if (result.success) {
+    if (result.success && result.loggerId) {
       toast({
         title: "Match Confirmed!",
         description: `Great! You and ${logger.name} both acknowledged this moment.`,
         duration: 3000,
       });
-      router.push(`/match-confirmed/${logger.id}`);
+      router.push(`/match-confirmed/${result.loggerId}?chatId=${result.chatId}`);
     } else {
        toast({ title: "Error", description: "Could not confirm the match. Please try again.", variant: "destructive"});
     }

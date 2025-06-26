@@ -2,16 +2,17 @@
 "use client";
 
 import { useState, useEffect } from "react";
-import { useParams, useRouter } from "next/navigation";
+import { useParams, useRouter, useSearchParams } from "next/navigation";
 import { AppLayout } from "@/components/layout/app-layout";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from "@/components/ui/card";
 import { Avatar, AvatarImage, AvatarFallback } from "@/components/ui/avatar";
-import { MOCK_USERS } from "@/lib/mock-data";
 import { HeartHandshake, MessageCircle, Sparkles, Home, Loader2 } from "lucide-react";
 import Link from "next/link";
 import ReactConfetti from "react-confetti";
 import { useAuth } from "@/hooks/use-auth";
+import type { UserProfile } from "@/lib/types";
+import { getUserProfile } from "@/app/actions";
 
 const MOCK_LOGGED_MOMENT_DETAILS = {
   placeName: "The Alchemist's Cafe",
@@ -19,14 +20,27 @@ const MOCK_LOGGED_MOMENT_DETAILS = {
 
 export default function MatchConfirmedPage() {
   const params = useParams();
+  const searchParams = useSearchParams();
   const router = useRouter();
   const userAId = params.userAId as string;
-  const { userProfile: currentUserB, isLoading } = useAuth();
+  const chatId = searchParams.get('chatId');
 
-  const userA = MOCK_USERS.find(u => u.id === userAId);
+  const { userProfile: currentUserB, isLoading: isAuthLoading } = useAuth();
+  const [userA, setUserA] = useState<UserProfile | null>(null);
+  const [isLoadingUserA, setIsLoadingUserA] = useState(true);
 
   const [showConfetti, setShowConfetti] = useState(false);
   const [windowSize, setWindowSize] = useState({ width: 0, height: 0 });
+
+  useEffect(() => {
+    if (userAId) {
+      setIsLoadingUserA(true);
+      getUserProfile(userAId).then(profile => {
+        setUserA(profile);
+        setIsLoadingUserA(false);
+      });
+    }
+  }, [userAId]);
 
   useEffect(() => {
     const handleResize = () => {
@@ -53,7 +67,7 @@ export default function MatchConfirmedPage() {
     return () => {};
   }, []);
 
-  if (isLoading) {
+  if (isAuthLoading || isLoadingUserA) {
     return (
       <AppLayout>
           <div className="container mx-auto py-8 flex justify-center items-center h-full">
@@ -74,7 +88,7 @@ export default function MatchConfirmedPage() {
     );
   }
 
-  const chatLink = userA.id === 'user-1' ? '/chat/chat-1' : '/chat';
+  const chatLink = chatId ? `/chat/${chatId}` : '/chat';
 
   return (
     <AppLayout>

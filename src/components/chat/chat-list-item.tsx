@@ -3,14 +3,15 @@
 
 import Link from "next/link";
 import { usePathname } from "next/navigation";
-import type { ChatConversation } from "@/lib/types";
+import type { Chat } from "@/lib/types";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { cn } from "@/lib/utils";
 import { useState, useEffect } from "react";
 import { useAuth } from "@/hooks/use-auth";
+import { Timestamp } from "firebase/firestore";
 
 interface ChatListItemProps {
-  conversation: ChatConversation;
+  conversation: Chat;
 }
 
 export function ChatListItem({ conversation }: ChatListItemProps) {
@@ -25,7 +26,8 @@ export function ChatListItem({ conversation }: ChatListItemProps) {
 
   useEffect(() => {
     if (conversation.lastMessage) {
-      setDisplayedTimestamp(new Date(conversation.lastMessage.timestamp).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' }));
+      const date = (conversation.lastMessage.timestamp as Timestamp).toDate();
+      setDisplayedTimestamp(date.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' }));
     } else {
       setDisplayedTimestamp("");
     }
