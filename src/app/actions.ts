@@ -136,7 +136,7 @@ export async function updateChallengeProgress(userId: string, action: ChallengeA
       }
     });
 
-    if (challengesUpdated) {
+    if (challengesUpdated || awardedAchievements.length > 0) {
       const updatePayload: { challenges: Challenge[]; achievements?: Achievement[] } = { challenges };
       if (awardedAchievements.length > 0) {
         updatePayload.achievements = [...achievements, ...awardedAchievements];
