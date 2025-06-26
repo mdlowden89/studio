@@ -8,9 +8,10 @@ import { Card } from "@/components/ui/card";
 import { Trash2, UploadCloud, Replace, Info, Loader2 } from "lucide-react";
 import { useToast } from "@/hooks/use-toast";
 import { Alert, AlertDescription, AlertTitle } from "@/components/ui/alert";
-import { storage } from "@/lib/firebase";
+import { db, storage } from "@/lib/firebase";
 import { ref, uploadString, getDownloadURL, deleteObject } from "firebase/storage";
-import { updateUserProfileAction } from "@/app/actions";
+import { doc, updateDoc } from "firebase/firestore";
+import { useRouter } from "next/navigation";
 
 interface ImageGalleryProps {
   initialImages: string[];
@@ -21,6 +22,7 @@ export function ImageGallery({ initialImages, userId }: ImageGalleryProps) {
   const [images, setImages] = useState<string[]>(initialImages);
   const [loadingStates, setLoadingStates] = useState<Record<number, boolean>>({});
   const { toast } = useToast();
+  const router = useRouter();
 
   const handleImageUpload = async (file: File, index?: number) => {
     const isReplacing = typeof index === 'number';
@@ -54,7 +56,8 @@ export function ImageGallery({ initialImages, userId }: ImageGalleryProps) {
         }
 
         // Update Firestore
-        await updateUserProfileAction(userId, { images: newImagesArray });
+        const userDocRef = doc(db, "users", userId);
+        await updateDoc(userDocRef, { images: newImagesArray });
         
         // If replacing and the old image was a real storage image, delete it
         if (isReplacing && oldImageURL && oldImageURL.includes('firebasestorage')) {
@@ -71,6 +74,7 @@ export function ImageGallery({ initialImages, userId }: ImageGalleryProps) {
           title: "Image Saved!",
           description: `Your photo has been successfully ${isReplacing ? 'replaced' : 'added'}.`,
         });
+        router.refresh();
       };
 
       reader.onerror = () => {
@@ -116,7 +120,8 @@ export function ImageGallery({ initialImages, userId }: ImageGalleryProps) {
 
     try {
       // First, update Firestore
-      await updateUserProfileAction(userId, { images: newImagesArray });
+      const userDocRef = doc(db, "users", userId);
+      await updateDoc(userDocRef, { images: newImagesArray });
 
       // Then, delete from Storage if it's a firebase URL
       if (imageUrlToDelete.includes('firebasestorage')) {
@@ -126,7 +131,7 @@ export function ImageGallery({ initialImages, userId }: ImageGalleryProps) {
 
       setImages(newImagesArray);
       toast({ title: "Image Removed", description: `Your photo has been removed.` });
-
+      router.refresh();
     } catch (error) {
       console.error("Error removing image:", error);
       toast({

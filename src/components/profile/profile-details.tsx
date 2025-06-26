@@ -12,8 +12,11 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@
 import { X as XIcon, MapPin, Lightbulb, Loader2, Sparkles } from "lucide-react";
 import { useToast } from "@/hooks/use-toast";
 import { GoogleMap, LoadScriptNext, StandaloneSearchBox, MarkerF } from '@react-google-maps/api';
-import { getAiSuggestedVibeTags, getAiSuggestedBio, updateUserProfileAction } from "@/app/actions";
+import { getAiSuggestedVibeTags, getAiSuggestedBio } from "@/app/actions";
 import type { VibeTagSuggestion } from "@/ai/flows/suggest-vibe-tags-flow";
+import { useRouter } from "next/navigation";
+import { db } from "@/lib/firebase";
+import { doc, updateDoc } from "firebase/firestore";
 
 interface ProfileDetailsProps {
   user: UserProfile;
@@ -169,6 +172,8 @@ export function ProfileDetails({ user }: ProfileDetailsProps) {
   const [aiSuggestedTags, setAiSuggestedTags] = useState<VibeTagSuggestion[]>([]);
   const [isSuggestingTags, setIsSuggestingTags] = useState(false);
   const [isLoadingBioSuggestion, setIsLoadingBioSuggestion] = useState(false);
+  
+  const router = useRouter();
 
   useEffect(() => {
     setIsMounted(true);
@@ -293,21 +298,24 @@ export function ProfileDetails({ user }: ProfileDetailsProps) {
       onboardingComplete: true,
     };
 
-    const result = await updateUserProfileAction(user.id, profileData);
-
-    if (result.success) {
+    try {
+      const userDocRef = doc(db, "users", user.id);
+      await updateDoc(userDocRef, profileData);
       toast({
         title: "Profile Updated",
-        description: "Your profile has been saved to the database.",
+        description: "Your changes have been saved.",
       });
-    } else {
+      router.refresh();
+    } catch (error: any) {
+      console.error("Error updating profile:", error);
       toast({
         title: "Error Saving Profile",
-        description: result.message,
+        description: error.message || "Could not save your changes. Please try again.",
         variant: "destructive",
       });
+    } finally {
+      setIsSaving(false);
     }
-    setIsSaving(false);
   };
   
   const renderLocationSection = () => {

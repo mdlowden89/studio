@@ -5,39 +5,9 @@ import { suggestVibeTagsForUser, SuggestVibeTagsInput, VibeTagSuggestion } from 
 import { suggestBioForUser, SuggestBioInput } from "@/ai/flows/suggest-bio-flow";
 import { getPlacePhoto, GetPlacePhotoInput, GetPlacePhotoOutput } from "@/ai/flows/get-place-photo-flow";
 import { getSparkSwipeInsights, SparkSwipeInput, SparkSwipeOutput } from "@/ai/flows/spark-swipe-flow";
-import type { UserProfile } from "@/lib/types";
-import { revalidatePath } from "next/cache";
-import { db } from "@/lib/firebase";
-import { doc, updateDoc } from "firebase/firestore";
 
-
-// --- Firestore Database Logic ---
-
-/**
- * Server action to update the user's profile in Firestore.
- * @param userId The ID of the user to update.
- * @param profileData The data to update.
- */
-export async function updateUserProfileAction(userId: string, profileData: Partial<UserProfile>) {
-  try {
-    const userDocRef = doc(db, "users", userId);
-    await updateDoc(userDocRef, profileData);
-    console.log(`Successfully updated profile for user ${userId} in Firestore.`);
-    
-    // Revalidate the profile page to show the new data
-    revalidatePath('/profile');
-    
-    return { success: true, message: "Profile updated successfully." };
-  } catch (error: any) {
-    console.error("Error in updateUserProfileAction:", error);
-    return { success: false, message: error.message || "An unexpected error occurred." };
-  }
-}
-
-// --- End of Firestore Database Logic ---
-
-
-// --- Original AI and App Actions ---
+// All the Firestore update logic is now handled on the client-side in the relevant components.
+// The server actions are now purely for AI-related flows.
 
 export async function getAiSuggestedVibeTags(
   userBio: string,
