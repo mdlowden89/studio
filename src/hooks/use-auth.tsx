@@ -5,7 +5,7 @@ import { useState, useEffect, createContext, useContext, ReactNode } from 'react
 import { onAuthStateChanged, User } from 'firebase/auth';
 import { auth, db } from '@/lib/firebase';
 import type { UserProfile } from '@/lib/types';
-import { doc, getDoc, setDoc } from 'firebase/firestore';
+import { doc, setDoc, onSnapshot } from 'firebase/firestore';
 
 interface AuthContextType {
   user: User | null;
@@ -21,63 +21,75 @@ export function AuthProvider({ children }: { children: ReactNode }) {
   const [isLoading, setIsLoading] = useState(true);
 
   useEffect(() => {
-    const unsubscribe = onAuthStateChanged(auth, async (firebaseUser) => {
+    let profileUnsubscribe: (() => void) | undefined;
+
+    const authUnsubscribe = onAuthStateChanged(auth, async (firebaseUser) => {
+      if (profileUnsubscribe) {
+        profileUnsubscribe();
+      }
+
       if (firebaseUser) {
         setUser(firebaseUser);
-        try {
-          const userDocRef = doc(db, "users", firebaseUser.uid);
-          const userDoc = await getDoc(userDocRef);
+        const userDocRef = doc(db, "users", firebaseUser.uid);
 
-          if (userDoc.exists()) {
-            console.log(`Found user ${firebaseUser.uid} in Firestore.`);
-            setUserProfile(userDoc.data() as UserProfile);
-          } else {
-            console.log(`User ${firebaseUser.uid} not found in Firestore. Creating new profile...`);
-            
-            const getInitialName = () => {
-              if (firebaseUser.displayName) {
-                return firebaseUser.displayName;
-              }
-              if (firebaseUser.email) {
-                const emailName = firebaseUser.email.split('@')[0];
-                return emailName.charAt(0).toUpperCase() + emailName.slice(1);
-              }
-              return "New User";
-            };
+        profileUnsubscribe = onSnapshot(
+          userDocRef,
+          async (docSnapshot) => {
+            if (docSnapshot.exists()) {
+              setUserProfile(docSnapshot.data() as UserProfile);
+            } else {
+              console.log(`User ${firebaseUser.uid} not found in Firestore. Creating new profile...`);
+              
+              const getInitialName = () => {
+                if (firebaseUser.displayName) {
+                  return firebaseUser.displayName;
+                }
+                if (firebaseUser.email) {
+                  const emailName = firebaseUser.email.split('@')[0];
+                  // Capitalize the first letter
+                  return emailName.charAt(0).toUpperCase() + emailName.slice(1);
+                }
+                return "New User";
+              };
 
-            const newUserProfile: UserProfile = {
-              id: firebaseUser.uid,
-              name: getInitialName(),
-              email: firebaseUser.email || "",
-              age: 18,
-              bio: "Welcome to Crossd! Tell us about yourself.",
-              images: ['https://placehold.co/400x550.png'],
-              vibeTags: [],
-              prompts: [],
-              locationPatterns: [],
-              achievements: [],
-              onboardingComplete: false,
-            };
-            
-            await setDoc(userDocRef, newUserProfile);
-            console.log(`Successfully created profile for user ${firebaseUser.uid} with name: ${newUserProfile.name}`);
-            setUserProfile(newUserProfile);
-          }
-        } catch (error) {
-            console.error("Failed to get or create user profile in useAuth:", error);
-            // If profile fails to load, sign the user out to prevent being in a broken state.
-            await auth.signOut();
-            setUser(null);
+              const newUserProfile: UserProfile = {
+                id: firebaseUser.uid,
+                name: getInitialName(),
+                email: firebaseUser.email || "",
+                age: 18,
+                bio: "Welcome to Crossd! Tell us about yourself.",
+                images: ['https://placehold.co/400x550.png'],
+                vibeTags: [],
+                prompts: [],
+                locationPatterns: [],
+                achievements: [],
+                onboardingComplete: false,
+              };
+              
+              await setDoc(userDocRef, newUserProfile);
+              // The onSnapshot listener will be triggered by setDoc, so no need to setUserProfile here.
+            }
+            setIsLoading(false);
+          },
+          (error) => {
+            console.error("Error listening to user profile:", error);
             setUserProfile(null);
-        }
+            setIsLoading(false);
+          }
+        );
       } else {
         setUser(null);
         setUserProfile(null);
+        setIsLoading(false);
       }
-      setIsLoading(false);
     });
 
-    return () => unsubscribe();
+    return () => {
+      authUnsubscribe();
+      if (profileUnsubscribe) {
+        profileUnsubscribe();
+      }
+    };
   }, []);
 
   return (

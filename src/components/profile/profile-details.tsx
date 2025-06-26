@@ -305,7 +305,6 @@ export function ProfileDetails({ user }: ProfileDetailsProps) {
         title: "Profile Updated",
         description: "Your changes have been saved.",
       });
-      router.refresh();
     } catch (error: any) {
       console.error("Error updating profile:", error);
       toast({
