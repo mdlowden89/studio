@@ -1,6 +1,6 @@
 
 import type { LucideIcon } from 'lucide-react';
-import type { FieldValue } from 'firebase/firestore';
+import type { FieldValue, Timestamp } from 'firebase/firestore';
 
 export interface UserProfile {
   id: string;
@@ -67,9 +67,12 @@ export interface Moment {
     hairColour: string;
     otherDetails: string;
   };
-  loggedAt: FieldValue; // serverTimestamp
+  loggedAt: FieldValue | Timestamp | string; // serverTimestamp, Firestore Timestamp on read, or ISO string on client
   status: 'pending' | 'confirmed' | 'rejected';
   confirmedUserId?: string;
+  // This field is from mock data, we keep it for components that haven't been migrated
+  timestamp?: string;
+  potentialMatchId?: string; 
 }
 
 export interface Notification {

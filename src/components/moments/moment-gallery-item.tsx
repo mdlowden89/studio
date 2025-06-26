@@ -1,3 +1,4 @@
+
 "use client";
 
 import { useState, useEffect } from 'react';
@@ -76,7 +77,7 @@ export function MomentGalleryItem({ moment }: MomentGalleryItemProps) {
     loadPhoto();
   }, [moment.placeName, moment.coordinates, moment.id]);
 
-  const momentDate = new Date(moment.timestamp);
+  const momentDate = new Date(moment.loggedAt as string);
 
   return (
     <Card className="bg-card/60 hover:shadow-primary/20 transition-shadow duration-300 flex flex-col overflow-hidden">

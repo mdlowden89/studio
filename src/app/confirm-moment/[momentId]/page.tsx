@@ -41,8 +41,8 @@ export default function ConfirmMomentPage() {
       if (data) {
         setMoment(data.moment);
         setLogger(data.logger);
-        if (data.moment.loggedAt && 'seconds' in data.moment.loggedAt) {
-          const date = new Date((data.moment.loggedAt as any).seconds * 1000);
+        if (data.moment.loggedAt) {
+          const date = new Date(data.moment.loggedAt as string);
           setFormattedMomentTime(format(date, 'p'));
         }
       } else {
@@ -108,7 +108,7 @@ export default function ConfirmMomentPage() {
     );
   }
 
-  const momentDate = moment.loggedAt && 'seconds' in moment.loggedAt ? new Date((moment.loggedAt as any).seconds * 1000) : new Date();
+  const momentDate = new Date(moment.loggedAt as string);
   const loggerBioSnippet = logger.bio.split('.').slice(0, 1).join('.') + (logger.bio.includes('.') ? '.' : '');
 
   return (

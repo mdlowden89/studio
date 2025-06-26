@@ -4,25 +4,45 @@
 import { useState, useEffect, useMemo, useCallback } from "react";
 import { AppLayout } from "@/components/layout/app-layout";
 import { Card, CardContent, CardHeader, CardTitle, CardDescription, CardFooter } from "@/components/ui/card";
-import { Sparkles, PlusCircle, ClipboardList, Users, MessageSquare, Route, MapPin, CalendarDays, Users2, TrendingUp, Activity, Map, LayoutGrid, List as ListIcon, Lightbulb, Edit3, Repeat, Star, ShoppingBag, Zap, Undo2, Eye, BrainCircuit, Signal, ArrowRight } from "lucide-react";
-import { MOCK_MOMENTS, MOCK_CROSSED_PATHS_USERS, MOCK_CHAT_CONVERSATIONS, MOCK_USER_ID, MOCK_USERS, baseDate, AVAILABLE_PROMPTS, MOCK_HOTSPOTS } from "@/lib/mock-data";
+import { Sparkles, PlusCircle, ClipboardList, Users, MessageSquare, Route, MapPin, CalendarDays, Users2, TrendingUp, Activity, Map, LayoutGrid, List as ListIcon, Lightbulb, Edit3, Repeat, Star, ShoppingBag, Zap, Undo2, Eye, BrainCircuit, Signal, ArrowRight, Loader2 } from "lucide-react";
+import { MOCK_CROSSED_PATHS_USERS, MOCK_CHAT_CONVERSATIONS, MOCK_USERS, AVAILABLE_PROMPTS, MOCK_HOTSPOTS } from "@/lib/mock-data";
 import { Button } from "@/components/ui/button";
 import { Separator } from "@/components/ui/separator";
 import { subDays, isAfter, format, getDay } from "date-fns";
 import { MomentsMap } from "@/components/dashboard/moments-map";
 import { MomentGalleryItem } from "@/components/moments/moment-gallery-item";
 import Link from "next/link";
-import type { ProfilePrompt, Challenge, UserProfile } from "@/lib/types";
+import type { ProfilePrompt, Challenge, UserProfile, Moment } from "@/lib/types";
 import { Progress } from "@/components/ui/progress";
 import { CrossdPlusUpsellDialog } from "@/components/pricing/crossd-plus-upsell-dialog";
 import { FreeBoostUpsellDialog } from "@/components/pricing/free-boost-upsell-dialog";
 import { useSearchParams, useRouter } from "next/navigation";
 import { useToast } from "@/hooks/use-toast";
 import { EmotionalHotspotsUpsell } from "@/components/dashboard/emotional-hotspots-upsell";
+import { fetchMomentsForUser } from "@/app/actions";
+import { Skeleton } from "@/components/ui/skeleton";
 
 interface DashboardClientProps {
     currentUser: UserProfile;
 }
+
+const MomentsLoadingSkeleton = () => (
+  <div className="space-y-4">
+    <div className="flex items-center justify-between">
+      <Skeleton className="h-6 w-1/2" />
+      <div className="flex items-center gap-2">
+        <Skeleton className="h-8 w-8" />
+        <Skeleton className="h-8 w-8" />
+      </div>
+    </div>
+    <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-3">
+      <Skeleton className="h-24 w-full" />
+      <Skeleton className="h-24 w-full" />
+      <Skeleton className="h-24 w-full" />
+    </div>
+  </div>
+);
+
 
 export function DashboardClient({ currentUser }: DashboardClientProps) {
   const [recentPlacesViewMode, setRecentPlacesViewMode] = useState<'list' | 'imageGrid'>('list');
@@ -31,12 +51,14 @@ export function DashboardClient({ currentUser }: DashboardClientProps) {
   const [promptOfTheDay, setPromptOfTheDay] = useState<ProfilePrompt | null>(null);
   const [showUpsellDialog, setShowUpsellDialog] = useState(false);
   const [showFreeBoostDialog, setShowFreeBoostDialog] = useState(false);
+  const [userMoments, setUserMoments] = useState<Moment[]>([]);
+  const [isLoadingMoments, setIsLoadingMoments] = useState(true);
 
   const searchParams = useSearchParams();
   const router = useRouter();
   const { toast } = useToast();
 
-  const momentsLoggedCount = MOCK_MOMENTS.filter(moment => moment.userId === MOCK_USER_ID).length;
+  const momentsLoggedCount = useMemo(() => userMoments.length, [userMoments]);
   const potentialMatchesCount = MOCK_CROSSED_PATHS_USERS.length;
   const activeChatsCount = MOCK_CHAT_CONVERSATIONS.length;
 
@@ -46,22 +68,39 @@ export function DashboardClient({ currentUser }: DashboardClientProps) {
     { title: "Active Chats", value: activeChatsCount, icon: MessageSquare, color: "text-purple-500" },
   ];
 
-  const oneWeekAgo = useMemo(() => subDays(baseDate, 7), []);
+  const oneWeekAgo = useMemo(() => subDays(new Date(), 7), []);
+
+  useEffect(() => {
+    if (currentUser.id) {
+      setIsLoadingMoments(true);
+      fetchMomentsForUser(currentUser.id)
+        .then(data => {
+          setUserMoments(data as Moment[]);
+        })
+        .catch(err => {
+          console.error("Failed to fetch user moments:", err);
+          toast({ title: "Error", description: "Could not load your moments.", variant: "destructive" });
+        })
+        .finally(() => {
+          setIsLoadingMoments(false);
+        });
+    }
+  }, [currentUser.id, toast]);
 
   const momentsThisWeek = useMemo(() => {
-    return MOCK_MOMENTS
-      .filter(moment => moment.userId === MOCK_USER_ID && isAfter(new Date(moment.timestamp), oneWeekAgo))
-      .sort((a, b) => new Date(b.timestamp).getTime() - new Date(a.timestamp).getTime());
-  }, [oneWeekAgo]);
+    return userMoments
+      .filter(moment => isAfter(new Date(moment.loggedAt as string), oneWeekAgo))
+      .sort((a, b) => new Date(b.loggedAt as string).getTime() - new Date(a.loggedAt as string).getTime());
+  }, [userMoments, oneWeekAgo]);
 
   const momentsTimestampsKey = useMemo(() => {
-    return momentsThisWeek.map(m => `${m.id}-${m.timestamp}`).join(',');
+    return momentsThisWeek.map(m => `${m.id}-${m.loggedAt}`).join(',');
   }, [momentsThisWeek]);
 
   useEffect(() => {
     const newFormattedTimes: Record<string, string> = {};
     momentsThisWeek.forEach(moment => {
-      newFormattedTimes[moment.id] = format(new Date(moment.timestamp), "p");
+      newFormattedTimes[moment.id] = format(new Date(moment.loggedAt as string), "p");
     });
     setClientFormattedTimes(newFormattedTimes);
   }, [momentsTimestampsKey, momentsThisWeek]); 
@@ -104,7 +143,7 @@ export function DashboardClient({ currentUser }: DashboardClientProps) {
 
   const { mostActiveDay } = useMemo(() => {
     const dayCounts = momentsThisWeek.reduce((acc, moment) => {
-      const day = getDay(new Date(moment.timestamp));
+      const day = getDay(new Date(moment.loggedAt as string));
       acc[day] = (acc[day] || 0) + 1;
       return acc;
     }, {} as Record<number, number>);
@@ -308,7 +347,9 @@ export function DashboardClient({ currentUser }: DashboardClientProps) {
             <div className="aspect-[2/1] w-full bg-muted rounded-lg overflow-hidden mb-4 shadow-inner">
               <MomentsMap moments={momentsThisWeek.filter(m => m.coordinates)} hotspots={MOCK_HOTSPOTS} />
             </div>
-            {momentsThisWeek.length > 0 ? (
+            {isLoadingMoments ? (
+              <MomentsLoadingSkeleton />
+            ) : momentsThisWeek.length > 0 ? (
               <div>
                 <div className="flex items-center justify-between mb-3">
                   <h4 className="text-md font-semibold text-foreground">Recent Places This Week:</h4>
@@ -337,7 +378,7 @@ export function DashboardClient({ currentUser }: DashboardClientProps) {
                 {recentPlacesViewMode === 'list' ? (
                   <ul className="space-y-2">
                     {momentsThisWeek.map(moment => {
-                      const datePart = format(new Date(moment.timestamp), "MMM d");
+                      const datePart = format(new Date(moment.loggedAt as string), "MMM d");
                       const timePart = clientFormattedTimes[moment.id]; 
                       return (
                         <li key={moment.id} className="flex items-center gap-2 p-2 bg-muted/30 rounded-md text-sm">
@@ -360,7 +401,7 @@ export function DashboardClient({ currentUser }: DashboardClientProps) {
               </div>
             ) : (
               <p className="text-muted-foreground text-center py-4">
-                No moments logged in the past week with location data. Go out and explore!
+                No moments logged in the past week. Go out and explore!
               </p>
             )}
           </CardContent>
@@ -396,7 +437,12 @@ export function DashboardClient({ currentUser }: DashboardClientProps) {
             </div>
           </CardHeader>
           <CardContent className="space-y-6">
-            {momentsThisWeek.length > 0 ? (
+            {isLoadingMoments ? (
+              <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 mb-6">
+                <Skeleton className="h-24 w-full" />
+                <Skeleton className="h-24 w-full" />
+              </div>
+            ) : momentsThisWeek.length > 0 ? (
               <>
                 <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 mb-6">
                   <div className="bg-muted/50 p-4 rounded-lg shadow-md flex items-center gap-3">
@@ -420,7 +466,7 @@ export function DashboardClient({ currentUser }: DashboardClientProps) {
                   <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
                     {momentsThisWeek.map(moment => {
                       const matchedUser = moment.potentialMatchId ? MOCK_USERS.find(u => u.id === moment.potentialMatchId) : null;
-                      const datePart = format(new Date(moment.timestamp), "EEE, MMM d");
+                      const datePart = format(new Date(moment.loggedAt as string), "EEE, MMM d");
                       const timePart = clientFormattedTimes[moment.id] ? `at ${clientFormattedTimes[moment.id]}` : "";
                       return (
                         <div key={moment.id} className="bg-muted/30 p-4 rounded-lg shadow hover:shadow-primary/20 transition-shadow">

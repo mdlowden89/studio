@@ -6,7 +6,7 @@ import { suggestBioForUser, SuggestBioInput } from "@/ai/flows/suggest-bio-flow"
 import { getPlacePhoto, GetPlacePhotoInput, GetPlacePhotoOutput } from "@/ai/flows/get-place-photo-flow";
 import { getSparkSwipeInsights, SparkSwipeInput, SparkSwipeOutput } from "@/ai/flows/spark-swipe-flow";
 import { db } from "@/lib/firebase";
-import { doc, getDoc, updateDoc, collection, addDoc, serverTimestamp, query, where, limit, getDocs } from "firebase/firestore";
+import { doc, getDoc, updateDoc, collection, addDoc, serverTimestamp, query, where, limit, getDocs, orderBy, Timestamp } from "firebase/firestore";
 import type { UserProfile, Achievement, Challenge, Moment, MomentLog } from "@/lib/types";
 
 
@@ -198,7 +198,13 @@ export async function fetchMomentForConfirmation(momentId: string): Promise<{mom
             return null;
         }
 
-        const moment = { id: momentSnap.id, ...momentSnap.data() } as Moment;
+        const momentData = momentSnap.data();
+        const moment: Moment = {
+          id: momentSnap.id,
+          ...momentData,
+          loggedAt: (momentData.loggedAt as Timestamp).toDate().toISOString(),
+        } as Moment;
+
 
         const loggerRef = doc(db, 'users', moment.loggerId);
         const loggerSnap = await getDoc(loggerRef);
@@ -251,4 +257,28 @@ export async function denyMomentMatch(momentId: string): Promise<{success: boole
         console.error("Error denying moment match:", error);
         return { success: false };
     }
+}
+
+export async function fetchMomentsForUser(userId: string): Promise<any[]> {
+  try {
+    const momentsRef = collection(db, 'moments');
+    const q = query(momentsRef, where("loggerId", "==", userId), orderBy("loggedAt", "desc"));
+    const querySnapshot = await getDocs(q);
+
+    const moments = querySnapshot.docs.map(doc => {
+      const data = doc.data();
+      // Firestore Timestamps are not serializable, so convert to ISO string
+      // for the client component.
+      const loggedAtTimestamp = data.loggedAt as Timestamp;
+      return {
+        id: doc.id,
+        ...data,
+        loggedAt: loggedAtTimestamp.toDate().toISOString(),
+      };
+    });
+    return moments;
+  } catch (error) {
+    console.error("Error fetching moments for user:", error);
+    return [];
+  }
 }
