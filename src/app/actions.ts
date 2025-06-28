@@ -7,7 +7,7 @@ import { getPlacePhoto, GetPlacePhotoInput, GetPlacePhotoOutput } from "@/ai/flo
 import { getSparkSwipeInsights, SparkSwipeInput, SparkSwipeOutput } from "@/ai/flows/spark-swipe-flow";
 import { db } from "@/lib/firebase";
 import { doc, getDoc, updateDoc, collection, addDoc, serverTimestamp, query, where, limit, getDocs, orderBy, Timestamp, getCountFromServer } from "firebase/firestore";
-import type { UserProfile, Achievement, Challenge, Moment, MomentLog, Chat, Notification } from "@/lib/types";
+import type { UserProfile, Achievement, Challenge, Moment, MomentLog, Chat, Notification, ChatMessage } from "@/lib/types";
 
 
 export async function getAiSuggestedVibeTags(
@@ -303,146 +303,170 @@ export async function getOrCreateChat(userId1: string, userId2: string): Promise
       createdAt: serverTimestamp(),
       lastMessage: null,
     };
-    const chatDocRef = await addDoc(chatsRef, newChat);
-    return chatDocRef.id;
+
+    const docRef = await addDoc(chatsRef, newChat);
+    return docRef.id;
   }
 }
 
-
-export async function confirmMomentMatch(momentId: string, confirmedByUserId: string): Promise<{success: boolean, loggerId?: string, chatId?: string}> {
+export async function confirmMomentMatch(momentId: string, confirmeeId: string): Promise<{ success: boolean; loggerId?: string; chatId?: string; error?: string }> {
+    const momentRef = doc(db, 'moments', momentId);
     try {
-        const momentRef = doc(db, 'moments', momentId);
         const momentSnap = await getDoc(momentRef);
         if (!momentSnap.exists()) {
-            throw new Error("Moment not found");
+            return { success: false, error: 'Moment not found.' };
         }
         
-        const momentData = momentSnap.data();
+        const momentData = momentSnap.data() as Moment;
         const loggerId = momentData.loggerId;
 
-        // Create or get existing chat between the two users
-        const chatId = await getOrCreateChat(loggerId, confirmedByUserId);
+        if (momentData.status === 'confirmed') {
+            return { success: true, loggerId, chatId: momentData.chatId };
+        }
+
+        const chatId = await getOrCreateChat(loggerId, confirmeeId);
         
-        // Update the moment to confirmed status
         await updateDoc(momentRef, {
             status: 'confirmed',
-            confirmedUserId: confirmedByUserId,
-            chatId: chatId, // Store chat ID for reference
+            confirmedUserId: confirmeeId,
+            chatId: chatId
         });
-        
-        // You could also create a notification for loggerId here to inform them of the match.
-        
+
+        // Also update the "other" moment if it exists (the one logged by the other user)
+        // This is a simple fire-and-forget for now to avoid complexity, but could be made more robust.
+        const twoHours = 2 * 60 * 60 * 1000;
+        const loggedAtDate = new Date(momentData.loggedAt as string);
+        const twoHoursBefore = new Date(loggedAtDate.getTime() - twoHours);
+        const twoHoursAfter = new Date(loggedAtDate.getTime() + twoHours);
+        const momentsRef = collection(db, "moments");
+        const otherMomentQuery = query(
+            momentsRef,
+            where("placeName", "==", momentData.placeName),
+            where("loggerId", "==", confirmeeId), // The other user
+            where("loggedAt", ">=", twoHoursBefore),
+            where("loggedAt", "<=", twoHoursAfter),
+            limit(1)
+        );
+        const otherMomentSnapshot = await getDocs(otherMomentQuery);
+        if (!otherMomentSnapshot.empty) {
+            const otherMomentDoc = otherMomentSnapshot.docs[0];
+            await updateDoc(otherMomentDoc.ref, {
+                status: 'confirmed',
+                confirmedUserId: loggerId,
+                chatId: chatId,
+            });
+        }
+
+        // Create a 'NEW_MATCH' notification for both users
+        const loggerProfile = await getUserProfile(loggerId);
+        const confirmeeProfile = await getUserProfile(confirmeeId);
+
+        if (loggerProfile && confirmeeProfile) {
+            // Notification for logger
+            await addDoc(collection(db, "notifications"), {
+                userId: loggerId,
+                senderId: confirmeeId,
+                senderName: confirmeeProfile.name.split(' ')[0],
+                senderImage: confirmeeProfile.images[0] || null,
+                type: 'NEW_MATCH',
+                title: `You have a new match with ${confirmeeProfile.name.split(' ')[0]}!`,
+                message: `You both confirmed your moment at ${momentData.placeName}.`,
+                href: `/chat/${chatId}`,
+                read: false,
+                createdAt: serverTimestamp(),
+            });
+            // Notification for confirmee
+            await addDoc(collection(db, "notifications"), {
+                userId: confirmeeId,
+                senderId: loggerId,
+                senderName: loggerProfile.name.split(' ')[0],
+                senderImage: loggerProfile.images[0] || null,
+                type: 'NEW_MATCH',
+                title: `You have a new match with ${loggerProfile.name.split(' ')[0]}!`,
+                message: `You both confirmed your moment at ${momentData.placeName}.`,
+                href: `/chat/${chatId}`,
+                read: false,
+                createdAt: serverTimestamp(),
+            });
+        }
+
+
         return { success: true, loggerId: momentData.loggerId, chatId };
 
     } catch (error: any) {
         console.error("Error confirming moment match:", error);
-        return { success: false };
+        return { success: false, error: error.message };
     }
 }
 
-export async function denyMomentMatch(momentId: string): Promise<{success: boolean}> {
+export async function denyMomentMatch(momentId: string): Promise<{ success: boolean; error?: string }> {
+    const momentRef = doc(db, 'moments', momentId);
     try {
-        const momentRef = doc(db, 'moments', momentId);
-         await updateDoc(momentRef, {
-            status: 'rejected'
-        });
+        const momentSnap = await getDoc(momentRef);
+        if (!momentSnap.exists()) {
+            return { success: false, error: 'Moment not found.' };
+        }
+        await updateDoc(momentRef, { status: 'rejected' });
         return { success: true };
-    } catch(error: any) {
+    } catch (error: any) {
         console.error("Error denying moment match:", error);
-        return { success: false };
+        return { success: false, error: error.message };
     }
 }
 
-export async function fetchMomentsForUser(userId: string): Promise<any[]> {
-  try {
-    const momentsRef = collection(db, 'moments');
-    const q = query(momentsRef, where("loggerId", "==", userId), orderBy("loggedAt", "desc"));
-    const querySnapshot = await getDocs(q);
+export async function fetchMomentsForUser(userId: string): Promise<Moment[]> {
+    try {
+        const momentsRef = collection(db, "moments");
+        const q = query(momentsRef, where("loggerId", "==", userId), orderBy("loggedAt", "desc"));
+        const querySnapshot = await getDocs(q);
+        
+        const moments = querySnapshot.docs.map(doc => {
+            const data = doc.data();
+            return {
+                id: doc.id,
+                ...data,
+                loggedAt: (data.loggedAt as Timestamp).toDate().toISOString(),
+            } as Moment;
+        });
 
-    const moments = querySnapshot.docs.map(doc => {
-      const data = doc.data();
-      // Firestore Timestamps are not serializable, so convert to ISO string
-      // for the client component.
-      const loggedAtTimestamp = data.loggedAt as Timestamp;
-      return {
-        id: doc.id,
-        ...data,
-        loggedAt: loggedAtTimestamp ? loggedAtTimestamp.toDate().toISOString() : new Date().toISOString(),
-      };
-    });
-    return moments;
-  } catch (error) {
-    console.error("Error fetching moments for user:", error);
-    return [];
-  }
-}
-
-export async function sendMessage(chatId: string, senderId: string, receiverId: string, text: string): Promise<{ success: boolean; error?: string }> {
-  if (!chatId || !senderId || !text.trim()) {
-    return { success: false, error: "Missing required message data." };
-  }
-  try {
-    const chatRef = doc(db, 'chats', chatId);
-    const messagesRef = collection(chatRef, 'messages');
-    
-    const messageData = {
-      senderId,
-      receiverId,
-      text,
-      timestamp: serverTimestamp(),
-      isRead: false
-    };
-
-    // Add the new message to the 'messages' subcollection
-    await addDoc(messagesRef, messageData);
-    
-    // Update the 'lastMessage' field on the parent chat document
-    await updateDoc(chatRef, {
-      lastMessage: {
-        text,
-        timestamp: serverTimestamp(),
-        senderId,
-      }
-    });
-
-    return { success: true };
-  } catch (error: any) {
-    console.error("Error sending message:", error);
-    return { success: false, error: error.message || "Failed to send message." };
-  }
+        return moments;
+    } catch (error) {
+        console.error(`Error fetching moments for user ${userId}:`, error);
+        return [];
+    }
 }
 
 export async function fetchUserChatCount(userId: string): Promise<number> {
-  if (!userId) return 0;
-  try {
-    const chatsRef = collection(db, 'chats');
-    const q = query(chatsRef, where('participantIds', 'array-contains', userId));
-    const snapshot = await getCountFromServer(q);
-    return snapshot.data().count;
-  } catch (error) {
-    console.error("Error fetching user chat count:", error);
-    return 0;
-  }
+    try {
+        const chatsRef = collection(db, "chats");
+        const q = query(chatsRef, where("participantIds", "array-contains", userId));
+        const snapshot = await getCountFromServer(q);
+        return snapshot.data().count;
+    } catch (error) {
+        console.error(`Error fetching chat count for user ${userId}:`, error);
+        return 0;
+    }
 }
+
 
 export async function fetchNotificationsForUser(userId: string): Promise<Notification[]> {
   if (!userId) return [];
   try {
-    const notificationsRef = collection(db, 'notifications');
+    const notificationsRef = collection(db, "notifications");
     const q = query(
       notificationsRef,
       where("userId", "==", userId),
-      orderBy("createdAt", "desc")
+      orderBy("createdAt", "desc"),
+      limit(20)
     );
     const querySnapshot = await getDocs(q);
 
     const notifications = querySnapshot.docs.map(doc => {
       const data = doc.data();
-      const createdAtTimestamp = data.createdAt as Timestamp;
       return {
         id: doc.id,
         ...data,
-        createdAt: createdAtTimestamp ? createdAtTimestamp.toDate().toISOString() : new Date().toISOString(),
+        createdAt: (data.createdAt as Timestamp)?.toDate().toISOString() || new Date().toISOString(),
       } as Notification;
     });
 
@@ -453,4 +477,57 @@ export async function fetchNotificationsForUser(userId: string): Promise<Notific
   }
 }
 
-  
+export async function sendMessage(chatId: string, senderId: string, receiverId: string, text: string): Promise<{ success: boolean, error?: string }> {
+  if (!text.trim()) {
+    return { success: false, error: "Message text cannot be empty." };
+  }
+
+  try {
+    const chatRef = doc(db, 'chats', chatId);
+    const messagesRef = collection(chatRef, 'messages');
+
+    const newMessage: Omit<ChatMessage, 'id'> = {
+      senderId,
+      receiverId,
+      text,
+      timestamp: serverTimestamp(),
+      isRead: false
+    };
+
+    await addDoc(messagesRef, newMessage);
+
+    // Update the lastMessage field on the chat document for previews
+    await updateDoc(chatRef, {
+      lastMessage: {
+        text,
+        timestamp: serverTimestamp(),
+        senderId
+      }
+    });
+
+    return { success: true };
+  } catch (error: any) {
+    console.error("Error sending message:", error);
+    return { success: false, error: error.message };
+  }
+}
+
+export async function getUsersForSwiping(currentUserId: string): Promise<UserProfile[]> {
+  try {
+    const usersRef = collection(db, "users");
+    // In a real app, you'd have more complex filtering (e.g., location, preferences, not already matched)
+    // For now, we fetch all users except the current one.
+    const q = query(usersRef, where("id", "!=", currentUserId), limit(50));
+    
+    const querySnapshot = await getDocs(q);
+    
+    const users = querySnapshot.docs.map(doc => doc.data() as UserProfile);
+
+    // Simple shuffle for variety
+    return users.sort(() => Math.random() - 0.5);
+
+  } catch (error) {
+    console.error("Error fetching users for swiping:", error);
+    return [];
+  }
+}
