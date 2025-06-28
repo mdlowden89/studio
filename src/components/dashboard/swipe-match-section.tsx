@@ -20,7 +20,7 @@ import {
 import ReactConfetti from 'react-confetti';
 import { CrossdPlusUpsellDialog } from "@/components/pricing/crossd-plus-upsell-dialog";
 import { useAuth } from "@/hooks/use-auth";
-import { getUsersForSwiping } from "@/app/actions";
+import { getUsersForSwiping, recordLike } from "@/app/actions";
 
 const DAILY_LIKE_LIMIT = 8;
 
@@ -88,9 +88,9 @@ export function SwipeMatchSection() {
     return () => {};
   }, []);
 
-  const handleAction = (userId: string, action: "like" | "pass") => {
+  const handleAction = async (userId: string, action: "like" | "pass") => {
     const actionUser = users.find(u => u.id === userId);
-    if (!actionUser) return;
+    if (!actionUser || !user) return;
 
     if (action === "like") {
       if (likesUsedToday >= DAILY_LIKE_LIMIT) {
@@ -99,16 +99,26 @@ export function SwipeMatchSection() {
       }
       setLikesUsedToday(prev => prev + 1);
       setLikesAnimationTrigger(prev => prev + 1); // Trigger animation
-      const isMutualMatch = Math.random() < 0.4; 
-      if (isMutualMatch) {
-        setMatchedUserName(actionUser.name.split(' ')[0]);
-        setShowMatchAnimation(true);
-      } else {
-         toast({
+      
+      try {
+        const result = await recordLike(user.uid, actionUser.id);
+        
+        if (result.match) {
+          setMatchedUserName(actionUser.name.split(' ')[0]);
+          setShowMatchAnimation(true);
+        } else {
+          toast({
             title: "Liked!",
             description: `Let's see if ${actionUser.name.split(' ')[0]} likes you back! (${DAILY_LIKE_LIMIT - (likesUsedToday + 1)} likes remaining today)`,
-        });
+          });
+        }
+      } catch (error) {
+        console.error("Error recording like:", error);
+        toast({ title: "Error", description: "Could not record your like. Please try again.", variant: "destructive" });
+        setLikesUsedToday(prev => prev - 1); // Revert optimistic update
+        return; // Don't advance to the next user on error
       }
+
     } else {
         toast({
             title: "Passed",

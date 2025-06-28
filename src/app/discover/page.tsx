@@ -12,25 +12,49 @@ import { Separator } from "@/components/ui/separator";
 import { BlurredLikesSection } from "@/components/discover/blurred-likes-section";
 import { ReceivedLikeUpsellDialog } from "@/components/discover/received-like-upsell-dialog";
 import { CrossdPlusUpsellDialog } from "@/components/pricing/crossd-plus-upsell-dialog";
+import { useAuth } from "@/hooks/use-auth";
+import { checkForNewLikes } from "@/app/actions";
 
 export default function DiscoverPage() {
   const [showNewLikeUpsell, setShowNewLikeUpsell] = useState(false);
   const [showPremiumUpsell, setShowPremiumUpsell] = useState(false);
+  const { user } = useAuth();
 
   useEffect(() => {
-    // Simulate checking for new likes and non-premium status
-    // In a real app, replace this with actual logic
-    const hasNewLikes = true; 
-    const isPremium = false; 
-
-    if (hasNewLikes && !isPremium) {
-      // Delay slightly to allow page to render first, then show dialog
-      const timer = setTimeout(() => {
-        setShowNewLikeUpsell(true);
-      }, 500);
-      return () => clearTimeout(timer);
+    // Don't show the popup if the user is not logged in.
+    if (!user) {
+      return;
     }
-  }, []);
+    
+    // In a real app, you might also check premium status here and not show this.
+
+    const checkAndShowPopup = async () => {
+      // Check session storage to prevent showing the popup on every page navigation within a session.
+      const hasSeenPopup = sessionStorage.getItem('hasSeenNewLikePopup');
+      if (hasSeenPopup) {
+        return;
+      }
+
+      try {
+        const hasNewLikes = await checkForNewLikes(user.uid);
+        if (hasNewLikes) {
+          // Delay slightly to allow page to render first, then show dialog
+          const timer = setTimeout(() => {
+            setShowNewLikeUpsell(true);
+            // Mark that the popup has been shown for this session.
+            sessionStorage.setItem('hasSeenNewLikePopup', 'true');
+          }, 1500); // A slightly longer delay can feel less abrupt.
+          return () => clearTimeout(timer);
+        }
+      } catch (error) {
+        console.error("Failed to check for new likes:", error);
+      }
+    };
+    
+    checkAndShowPopup();
+
+  }, [user]);
+
 
   const handleUpgradeFromNewLikeDialog = () => {
     setShowNewLikeUpsell(false);

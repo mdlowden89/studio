@@ -6,7 +6,7 @@ import { suggestBioForUser, SuggestBioInput } from "@/ai/flows/suggest-bio-flow"
 import { getPlacePhoto, GetPlacePhotoInput, GetPlacePhotoOutput } from "@/ai/flows/get-place-photo-flow";
 import { getSparkSwipeInsights, SparkSwipeInput, SparkSwipeOutput } from "@/ai/flows/spark-swipe-flow";
 import { db } from "@/lib/firebase";
-import { doc, getDoc, updateDoc, collection, addDoc, serverTimestamp, query, where, limit, getDocs, orderBy, Timestamp, getCountFromServer } from "firebase/firestore";
+import { doc, getDoc, updateDoc, collection, addDoc, serverTimestamp, query, where, limit, getDocs, orderBy, Timestamp, getCountFromServer, writeBatch } from "firebase/firestore";
 import type { UserProfile, Achievement, Challenge, Moment, MomentLog, Chat, Notification, ChatMessage } from "@/lib/types";
 
 
@@ -530,4 +530,93 @@ export async function getUsersForSwiping(currentUserId: string): Promise<UserPro
     console.error("Error fetching users for swiping:", error);
     return [];
   }
+}
+
+export async function recordLike(likerId: string, likedUserId: string): Promise<{ match: boolean; chatId?: string }> {
+  const likesRef = collection(db, 'likes');
+
+  // Check if the other user has already liked the current user (a pending like from B to A)
+  const reverseLikeQuery = query(likesRef, 
+    where('likerId', '==', likedUserId), 
+    where('likedUserId', '==', likerId), 
+    where('status', '==', 'pending')
+  );
+  const reverseLikeSnapshot = await getDocs(reverseLikeQuery);
+
+  if (!reverseLikeSnapshot.empty) {
+    // It's a match!
+    const batch = writeBatch(db);
+    const reverseLikeDoc = reverseLikeSnapshot.docs[0];
+    
+    // Update the existing like to 'matched' status.
+    batch.update(reverseLikeDoc.ref, { status: 'matched' });
+    
+    const chatId = await getOrCreateChat(likerId, likedUserId);
+
+    // Create notifications for both users
+    const likerProfile = await getUserProfile(likerId);
+    const likedUserProfile = await getUserProfile(likedUserId);
+
+    if (likerProfile && likedUserProfile) {
+      // Notification for liker (user A)
+      const notifForLikerRef = doc(collection(db, "notifications"));
+      batch.set(notifForLikerRef, {
+        userId: likerId,
+        senderId: likedUserId,
+        senderName: likedUserProfile.name.split(' ')[0],
+        senderImage: likedUserProfile.images[0] || null,
+        type: 'NEW_MATCH',
+        title: `You have a new match with ${likedUserProfile.name.split(' ')[0]}!`,
+        message: 'You both liked each other. Start a conversation!',
+        href: `/chat/${chatId}`,
+        read: false,
+        createdAt: serverTimestamp(),
+      });
+
+      // Notification for liked user (user B)
+      const notifForLikedUserRef = doc(collection(db, "notifications"));
+      batch.set(notifForLikedUserRef, {
+        userId: likedUserId,
+        senderId: likerId,
+        senderName: likerProfile.name.split(' ')[0],
+        senderImage: likerProfile.images[0] || null,
+        type: 'NEW_MATCH',
+        title: `You have a new match with ${likerProfile.name.split(' ')[0]}!`,
+        message: 'You both liked each other. Start a conversation!',
+        href: `/chat/${chatId}`,
+        read: false,
+        createdAt: serverTimestamp(),
+      });
+    }
+    
+    await batch.commit();
+    return { match: true, chatId };
+
+  } else {
+    // It's not a match yet. Record the new "like" from A to B.
+    // First, check if A already liked B to avoid duplicates.
+    const likeQuery = query(likesRef, 
+      where('likerId', '==', likerId), 
+      where('likedUserId', '==', likedUserId)
+    );
+    const likeSnapshot = await getDocs(likeQuery);
+
+    if (likeSnapshot.empty) {
+      await addDoc(likesRef, {
+        likerId,
+        likedUserId,
+        timestamp: serverTimestamp(),
+        status: 'pending',
+      });
+    }
+    return { match: false };
+  }
+}
+
+export async function checkForNewLikes(userId: string): Promise<boolean> {
+  const likesRef = collection(db, 'likes');
+  // Query for likes where the current user is the one being liked, and the like is still pending.
+  const q = query(likesRef, where('likedUserId', '==', userId), where('status', '==', 'pending'), limit(1));
+  const snapshot = await getDocs(q);
+  return !snapshot.empty;
 }
