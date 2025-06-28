@@ -3,47 +3,54 @@ rules_version = '2';
 
 service cloud.firestore {
   match /databases/{database}/documents {
+    
+    // Helper functions should be defined within this scope
+    function getPathUserId(path) {
+      // path is a list of path segments
+      return path[1];
+    }
 
-    // Users can read public profiles, but only write to their own.
     match /users/{userId} {
+      // Any authenticated user can view profiles for swiping/discovery
       allow read: if request.auth != null;
-      allow write: if request.auth.uid == userId;
+      // A user can only create their own profile
+      allow create: if request.auth.uid != null && request.auth.uid == userId;
+      // A user can only update their own profile
+      allow update: if request.auth.uid == userId;
     }
-
-    // Moments can be created by any authenticated user.
-    // They can be read/updated by the logger or confirmed user.
-    // list allows the server action to query for matches.
+    
     match /moments/{momentId} {
-      allow create: if request.auth != null && request.resource.data.loggerId == request.auth.uid;
-      allow read, update: if request.auth != null && (request.auth.uid == resource.data.loggerId || request.auth.uid == resource.data.confirmedUserId);
-      allow list: if request.auth != null;
+      // Any authenticated user can create or read any moment for the matching logic to work
+      allow read, create: if request.auth != null;
+      // Any authenticated user can update a moment. This is broad, but necessary
+      // for the confirmation flow where a user who is not the logger needs to
+      // update the moment's status.
+      // TODO: Refine this rule to be more specific if possible.
+      allow update: if request.auth != null;
     }
 
-    // Likes can be created by authenticated users.
-    // They can be read/updated by either the liker or the liked user.
-    // list allows server actions to query for matches.
     match /likes/{likeId} {
-      allow create: if request.auth != null && request.resource.data.likerId == request.auth.uid;
-      allow read, update: if request.auth != null && (request.auth.uid == resource.data.likerId || request.auth.uid == resource.data.likedUserId);
-      allow list: if request.auth != null;
+      allow read, create: if request.auth != null;
+      // Any authenticated user can update a 'like' record to 'matched'.
+      // This is needed for the mutual like logic.
+      allow update: if request.auth != null;
     }
 
-    // Chat documents can be read/updated if the user is a participant.
     match /chats/{chatId} {
-      allow read, update, create: if request.auth != null && request.auth.uid in resource.data.participantIds;
-
-      // Messages can be read by participants, and created by the sender.
-      match /messages/{messageId} {
-        allow read: if request.auth != null && get(/databases/$(database)/documents/chats/$(chatId)).data.participantIds.hasAny([request.auth.uid]);
-        allow create: if request.auth != null && request.resource.data.senderId == request.auth.uid && get(/databases/$(database)/documents/chats/$(chatId)).data.participantIds.hasAny([request.auth.uid]);
-      }
+      // Users can only interact with chats they are a part of.
+      allow read, create, update: if request.auth.uid in resource.data.participantIds;
     }
-
-    // Notifications can be read/updated by the user they are intended for.
-    // They can be created by any authenticated user (e.g., via a server action).
+    
+    match /chats/{chatId}/messages/{messageId} {
+      // Users can only read/write messages in chats they are a part of.
+       allow read, create: if request.auth.uid in get(/databases/$(database)/documents/chats/$(chatId)).data.participantIds;
+    }
+    
     match /notifications/{notificationId} {
-      allow read, update: if request.auth != null && request.auth.uid == resource.data.userId;
+      // Anyone can create a notification (e.g., system, another user sending a like)
       allow create: if request.auth != null;
+      // Only the intended recipient can read or update their notification
+      allow read, update: if request.auth.uid == resource.data.userId;
     }
   }
 }
