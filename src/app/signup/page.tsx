@@ -12,7 +12,11 @@ import { CrossdLogoIcon } from '@/components/icons/crossd-logo';
 import { useToast } from "@/hooks/use-toast";
 import { Eye, EyeOff, Loader2 } from 'lucide-react';
 import { createUserWithEmailAndPassword, updateProfile } from "firebase/auth";
-import { auth } from "@/lib/firebase";
+import { auth, db } from "@/lib/firebase";
+import { doc, setDoc } from 'firebase/firestore';
+import type { UserProfile, Challenge } from '@/lib/types';
+import { MOCK_AVAILABLE_CHALLENGES } from '@/lib/mock-data';
+import { Select, SelectTrigger, SelectValue, SelectContent, SelectItem } from '@/components/ui/select';
 
 export default function SignUpPage() {
   const router = useRouter();
@@ -30,6 +34,7 @@ export default function SignUpPage() {
     const email = formData.get('email') as string;
     const password = formData.get('password') as string;
     const confirmPassword = formData.get('confirmPassword') as string;
+    const gender = formData.get('gender') as UserProfile['gender'];
 
     if (password !== confirmPassword) {
       toast({
@@ -41,24 +46,60 @@ export default function SignUpPage() {
       return;
     }
     
+    if (!firstName || !gender || gender === 'select') {
+       toast({
+        title: "Incomplete Form",
+        description: "Please provide your first name and gender.",
+        variant: "destructive",
+      });
+      setIsLoading(false);
+      return;
+    }
+
     try {
       // 1. Create user in Firebase Auth
       const userCredential = await createUserWithEmailAndPassword(auth, email, password);
       const user = userCredential.user;
 
-      // 2. Update the new user's display name in Auth. This is important so the
-      // onAuthStateChanged listener can use it to create the profile document.
+      // 2. Update the new user's display name in Auth
       await updateProfile(user, { displayName: firstName });
+      
+      // 3. Create the user's profile document in Firestore
+      const initialChallenges: Challenge[] = MOCK_AVAILABLE_CHALLENGES.map(challenge => {
+        const isActiveByDefault = challenge.type === 'Streak' || challenge.type === 'Connection' || challenge.type === 'Timed Challenge';
+        return {
+          ...challenge,
+          status: isActiveByDefault ? 'active' : 'not_started',
+          progress: challenge.progress
+            ? { ...challenge.progress, current: 0 }
+            : undefined,
+        };
+      });
 
-      // NOTE: The Firestore document creation is now handled by the onAuthStateChanged
-      // listener in useAuth.tsx to prevent race conditions.
+      const newUserProfile: UserProfile = {
+        id: user.uid,
+        name: firstName,
+        email: user.email || "",
+        age: 18,
+        gender: gender,
+        bio: "Welcome to Crossd! Tell us about yourself.",
+        images: ['https://placehold.co/400x550.png'],
+        vibeTags: [],
+        prompts: [],
+        locationPatterns: [],
+        achievements: [],
+        challenges: initialChallenges,
+        locationServicesEnabled: false,
+        onboardingComplete: false,
+      };
+
+      await setDoc(doc(db, "users", user.uid), newUserProfile);
 
       toast({
         title: "Sign Up Successful!",
         description: "Welcome to Crossd! Redirecting to your dashboard...",
       });
       // Redirection is handled by the AuthHandler.
-      // setIsLoading is not set to false here because the redirection will unmount this page.
 
     } catch (error: any) {
       console.error("Sign up error:", error);
@@ -106,9 +147,25 @@ export default function SignUpPage() {
           </CardHeader>
           <CardContent className="space-y-6">
             <form className="space-y-4" onSubmit={onSignUp}>
-              <div>
-                <Label htmlFor="firstName">First Name</Label>
-                <Input id="firstName" name="firstName" type="text" placeholder="Alex" required className="mt-1 bg-input" />
+              <div className="grid grid-cols-2 gap-4">
+                <div>
+                  <Label htmlFor="firstName">First Name</Label>
+                  <Input id="firstName" name="firstName" type="text" placeholder="Alex" required className="mt-1 bg-input" />
+                </div>
+                 <div>
+                  <Label htmlFor="gender">Gender</Label>
+                   <Select name="gender" required>
+                      <SelectTrigger id="gender" className="mt-1 bg-input">
+                        <SelectValue placeholder="Select..." />
+                      </SelectTrigger>
+                      <SelectContent className="bg-popover">
+                        <SelectItem value="male">Male</SelectItem>
+                        <SelectItem value="female">Female</SelectItem>
+                        <SelectItem value="other">Other</SelectItem>
+                        <SelectItem value="prefer_not_to_say">Prefer not to say</SelectItem>
+                      </SelectContent>
+                    </Select>
+                </div>
               </div>
               <div>
                 <Label htmlFor="email">Email Address</Label>
@@ -121,7 +178,7 @@ export default function SignUpPage() {
                     id="password"
                     name="password"
                     type={showPassword ? "text" : "password"}
-                    placeholder="••••••••"
+                    placeholder="•••••••• (min. 6 characters)"
                     required
                     className="mt-1 bg-input pr-10"
                   />

@@ -4,9 +4,8 @@
 import { useState, useEffect, createContext, useContext, ReactNode } from 'react';
 import { onAuthStateChanged, User } from 'firebase/auth';
 import { auth, db } from '@/lib/firebase';
-import type { UserProfile, Challenge } from '@/lib/types';
-import { doc, setDoc, onSnapshot } from 'firebase/firestore';
-import { MOCK_AVAILABLE_CHALLENGES } from '@/lib/mock-data';
+import type { UserProfile } from '@/lib/types';
+import { doc, onSnapshot } from 'firebase/firestore';
 
 interface AuthContextType {
   user: User | null;
@@ -35,54 +34,15 @@ export function AuthProvider({ children }: { children: ReactNode }) {
 
         profileUnsubscribe = onSnapshot(
           userDocRef,
-          async (docSnapshot) => {
+          (docSnapshot) => {
             if (docSnapshot.exists()) {
               setUserProfile(docSnapshot.data() as UserProfile);
             } else {
-              console.log(`User ${firebaseUser.uid} not found in Firestore. Creating new profile...`);
-              
-              const getInitialName = () => {
-                if (firebaseUser.displayName) {
-                  return firebaseUser.displayName;
-                }
-                if (firebaseUser.email) {
-                  const emailName = firebaseUser.email.split('@')[0];
-                  // Capitalize the first letter
-                  return emailName.charAt(0).toUpperCase() + emailName.slice(1);
-                }
-                return "New User";
-              };
-
-              const initialChallenges: Challenge[] = MOCK_AVAILABLE_CHALLENGES.map(challenge => {
-                // Set Streak and Connection challenges to active by default
-                const isActiveByDefault = challenge.type === 'Streak' || challenge.type === 'Connection' || challenge.type === 'Timed Challenge';
-                return {
-                  ...challenge,
-                  status: isActiveByDefault ? 'active' : 'not_started',
-                  progress: challenge.progress
-                    ? { ...challenge.progress, current: 0 }
-                    : undefined,
-                };
-              });
-
-              const newUserProfile: UserProfile = {
-                id: firebaseUser.uid,
-                name: getInitialName(),
-                email: firebaseUser.email || "",
-                age: 18,
-                bio: "Welcome to Crossd! Tell us about yourself.",
-                images: ['https://placehold.co/400x550.png'],
-                vibeTags: [],
-                prompts: [],
-                locationPatterns: [],
-                achievements: [],
-                challenges: initialChallenges,
-                locationServicesEnabled: false,
-                onboardingComplete: false,
-              };
-              
-              await setDoc(userDocRef, newUserProfile);
-              // The onSnapshot listener will be triggered by setDoc, so no need to setUserProfile here.
+              // If the doc doesn't exist yet, it's likely being created by the sign-up process.
+              // We'll wait for the listener to fire again once the document is created.
+              // We set isLoading to false here to unblock the UI for public pages.
+              // AuthHandler will prevent access to protected routes if userProfile remains null.
+              setUserProfile(null);
             }
             setIsLoading(false);
           },

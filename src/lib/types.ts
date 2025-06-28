@@ -16,6 +16,7 @@ export interface UserProfile {
   jobTitle?: string;
   education?: string;
   ethnicity?: string;
+  gender?: 'male' | 'female' | 'other' | 'prefer_not_to_say';
   childrenStatus?: string;
   familyPlans?: string;
   height?: string;

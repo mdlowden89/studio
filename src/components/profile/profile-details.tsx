@@ -41,6 +41,13 @@ const ethnicityOptions = [
   "Prefer Not to Say",
 ];
 
+const genderOptions = [
+  { value: 'male', label: 'Male' },
+  { value: 'female', label: 'Female' },
+  { value: 'other', label: 'Other' },
+  { value: 'prefer_not_to_say', label: 'Prefer Not to Say' },
+];
+
 const childrenStatusOptions = [
   "Don't have children",
   "Have Children",
@@ -148,6 +155,7 @@ export function ProfileDetails({ user }: ProfileDetailsProps) {
   const [name, setName] = useState(user.name);
   const [email, setEmail] = useState(user.email || "");
   const [age, setAge] = useState(user.age);
+  const [gender, setGender] = useState(user.gender || 'prefer_not_to_say');
   const [bio, setBio] = useState(user.bio);
   const [vibeTags, setVibeTags] = useState<string[]>(user.vibeTags);
   const [work, setWork] = useState(user.work || "");
@@ -317,7 +325,7 @@ export function ProfileDetails({ user }: ProfileDetailsProps) {
 
     const profileData: Partial<UserProfile> = {
       name, email, age, bio, vibeTags, work, jobTitle, education,
-      ethnicity, childrenStatus, familyPlans, height, drinking, smoking,
+      gender, ethnicity, childrenStatus, familyPlans, height, drinking, smoking,
       zodiacSign, locationAddress, 
       locationName: currentLocationName || (locationAddress ? locationAddress.split(',')[0] : user.locationName),
       locationCoordinates: currentCoordinates || user.locationCoordinates,
@@ -421,6 +429,21 @@ export function ProfileDetails({ user }: ProfileDetailsProps) {
               {Array.from({ length: 43 }, (_, i) => 18 + i).map((ageOption) => (
                 <SelectItem key={ageOption} value={String(ageOption)}>
                   {ageOption}
+                </SelectItem>
+              ))}
+            </SelectContent>
+          </Select>
+        </div>
+        <div>
+          <Label htmlFor="gender">Gender</Label>
+           <Select value={gender} onValueChange={(value: UserProfile['gender']) => setGender(value)}>
+            <SelectTrigger id="gender" className="mt-1 bg-input">
+              <SelectValue placeholder="Select your gender" />
+            </SelectTrigger>
+            <SelectContent className="bg-popover">
+              {genderOptions.map((option) => (
+                <SelectItem key={option.value} value={option.value}>
+                  {option.label}
                 </SelectItem>
               ))}
             </SelectContent>

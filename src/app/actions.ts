@@ -6,7 +6,7 @@ import { suggestBioForUser, SuggestBioInput } from "@/ai/flows/suggest-bio-flow"
 import { getPlacePhoto, GetPlacePhotoInput, GetPlacePhotoOutput } from "@/ai/flows/get-place-photo-flow";
 import { getSparkSwipeInsights, SparkSwipeInput, SparkSwipeOutput } from "@/ai/flows/spark-swipe-flow";
 import { db } from "@/lib/firebase";
-import { doc, getDoc, updateDoc, collection, addDoc, serverTimestamp, query, where, limit, getDocs, orderBy, Timestamp, getCountFromServer, writeBatch } from "firebase/firestore";
+import { doc, getDoc, updateDoc, collection, addDoc, serverTimestamp, query, where, limit, getDocs, orderBy, Timestamp, getCountFromServer, writeBatch, Query } from "firebase/firestore";
 import type { UserProfile, Achievement, Challenge, Moment, MomentLog, Chat, Notification, ChatMessage } from "@/lib/types";
 
 
@@ -335,7 +335,7 @@ export async function confirmMomentMatch(momentId: string, confirmeeId: string):
         // Also update the "other" moment if it exists (the one logged by the other user)
         // This is a simple fire-and-forget for now to avoid complexity, but could be made more robust.
         const twoHours = 2 * 60 * 60 * 1000;
-        const loggedAtDate = new Date(momentData.loggedAt as string);
+        const loggedAtDate = (momentData.loggedAt as Timestamp).toDate();
         const twoHoursBefore = new Date(loggedAtDate.getTime() - twoHours);
         const twoHoursAfter = new Date(loggedAtDate.getTime() + twoHours);
         const momentsRef = collection(db, "moments");
@@ -514,13 +514,31 @@ export async function sendMessage(chatId: string, senderId: string, receiverId: 
 
 export async function getUsersForSwiping(currentUserId: string): Promise<UserProfile[]> {
   try {
+    const currentUserProfile = await getUserProfile(currentUserId);
+    if (!currentUserProfile) {
+      console.warn("getUsersForSwiping: Could not find current user profile.");
+      return [];
+    }
+
     const usersRef = collection(db, "users");
-    // In a real app, you'd have more complex filtering (e.g., location, preferences, not already matched)
-    // For now, we fetch all users except the current one.
-    const q = query(usersRef, where("id", "!=", currentUserId), limit(50));
+    let q: Query;
+
+    const userGender = currentUserProfile.gender;
+    
+    // Base query constraints: not the current user, and not already matched.
+    const baseQueryConstraints = [where("id", "!=", currentUserId)];
+
+    if (userGender === 'male') {
+      q = query(usersRef, ...baseQueryConstraints, where('gender', '==', 'female'), limit(50));
+    } else if (userGender === 'female') {
+      q = query(usersRef, ...baseQueryConstraints, where('gender', '==', 'male'), limit(50));
+    } else {
+      // For 'other', 'prefer_not_to_say', or undefined, fetch everyone.
+      // A more advanced preference system would be needed for a real app.
+      q = query(usersRef, ...baseQueryConstraints, limit(50));
+    }
     
     const querySnapshot = await getDocs(q);
-    
     const users = querySnapshot.docs.map(doc => doc.data() as UserProfile);
 
     // Simple shuffle for variety
@@ -531,6 +549,7 @@ export async function getUsersForSwiping(currentUserId: string): Promise<UserPro
     return [];
   }
 }
+
 
 export async function recordLike(likerId: string, likedUserId: string): Promise<{ match: boolean; chatId?: string }> {
   const likesRef = collection(db, 'likes');
