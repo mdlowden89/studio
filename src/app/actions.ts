@@ -6,9 +6,18 @@ import { suggestBioForUser, SuggestBioInput } from "@/ai/flows/suggest-bio-flow"
 import { getPlacePhoto, GetPlacePhotoInput, GetPlacePhotoOutput } from "@/ai/flows/get-place-photo-flow";
 import { getSparkSwipeInsights, SparkSwipeInput, SparkSwipeOutput } from "@/ai/flows/spark-swipe-flow";
 import { db } from "@/lib/firebase";
-import { doc, getDoc, updateDoc, collection, addDoc, serverTimestamp, query, where, limit, getDocs, orderBy, Timestamp, getCountFromServer, writeBatch, Query } from "firebase/firestore";
+import { doc, getDoc, updateDoc, collection, addDoc, serverTimestamp, query, where, limit, getDocs, orderBy, Timestamp, getCountFromServer, writeBatch, Query, collectionGroup, startAfter, QueryConstraint } from "firebase/firestore";
 import type { UserProfile, Achievement, Challenge, Moment, MomentLog, Chat, Notification, ChatMessage } from "@/lib/types";
 
+// This type should align with the filter component's state
+export interface UserFilters {
+  ageRange: [number, number];
+  heightRange: [number, number]; // in inches
+  datingIntentions: string;
+  ethnicity: string;
+  religion: string;
+  relationshipType: string;
+}
 
 export async function getAiSuggestedVibeTags(
   userBio: string,
@@ -186,10 +195,10 @@ export async function logMoment(momentData: MomentLog): Promise<{ success: boole
         await addDoc(collection(db, "notifications"), {
           userId: matchedUserId,
           senderId: loggerData.id,
-          senderName: loggerData.name.split(' ')[0],
+          senderName: loggerData.name,
           senderImage: loggerData.images[0] || null,
           type: 'MOMENT_CONFIRMATION',
-          title: `Did you cross paths with ${loggerData.name.split(' ')[0]}?`,
+          title: `Did you cross paths with ${loggerData.name}?`,
           message: `Someone who might be you was noticed at ${momentData.placeName}.`,
           href: `/confirm-moment/${momentDocRef.id}`, // Link to User 1's moment
           read: false,
@@ -204,10 +213,10 @@ export async function logMoment(momentData: MomentLog): Promise<{ success: boole
           await addDoc(collection(db, "notifications"), {
             userId: loggerData.id,
             senderId: matchedUserData.id,
-            senderName: matchedUserData.name.split(' ')[0],
+            senderName: matchedUserData.name,
             senderImage: matchedUserData.images[0] || null,
             type: 'MOMENT_CONFIRMATION',
-            title: `Did you cross paths with ${matchedUserData.name.split(' ')[0]}?`,
+            title: `Did you cross paths with ${matchedUserData.name}?`,
             message: `Someone who might be you was also at ${matchedMomentData.placeName}.`,
             href: `/confirm-moment/${matchedMomentDoc.id}`, // Link to User 2's moment
             read: false,
@@ -304,7 +313,7 @@ export async function getOrCreateChat(userId1: string, userId2: string): Promise
       lastMessage: null,
     };
 
-    const docRef = await addDoc(chatsRef, newChat);
+    const docRef = await await addDoc(chatsRef, newChat);
     return docRef.id;
   }
 }
@@ -366,10 +375,10 @@ export async function confirmMomentMatch(momentId: string, confirmeeId: string):
             await addDoc(collection(db, "notifications"), {
                 userId: loggerId,
                 senderId: confirmeeId,
-                senderName: confirmeeProfile.name.split(' ')[0],
+                senderName: confirmeeProfile.name,
                 senderImage: confirmeeProfile.images[0] || null,
                 type: 'NEW_MATCH',
-                title: `You have a new match with ${confirmeeProfile.name.split(' ')[0]}!`,
+                title: `You have a new match with ${confirmeeProfile.name}!`,
                 message: `You both confirmed your moment at ${momentData.placeName}.`,
                 href: `/chat/${chatId}`,
                 read: false,
@@ -379,10 +388,10 @@ export async function confirmMomentMatch(momentId: string, confirmeeId: string):
             await addDoc(collection(db, "notifications"), {
                 userId: confirmeeId,
                 senderId: loggerId,
-                senderName: loggerProfile.name.split(' ')[0],
+                senderName: loggerProfile.name,
                 senderImage: loggerProfile.images[0] || null,
                 type: 'NEW_MATCH',
-                title: `You have a new match with ${loggerProfile.name.split(' ')[0]}!`,
+                title: `You have a new match with ${loggerProfile.name}!`,
                 message: `You both confirmed your moment at ${momentData.placeName}.`,
                 href: `/chat/${chatId}`,
                 read: false,
@@ -512,7 +521,7 @@ export async function sendMessage(chatId: string, senderId: string, receiverId: 
   }
 }
 
-export async function getUsersForSwiping(currentUserId: string): Promise<UserProfile[]> {
+export async function getUsersForSwiping(currentUserId: string, filters: UserFilters): Promise<UserProfile[]> {
   try {
     const currentUserProfile = await getUserProfile(currentUserId);
     if (!currentUserProfile) {
@@ -521,31 +530,80 @@ export async function getUsersForSwiping(currentUserId: string): Promise<UserPro
     }
 
     const usersRef = collection(db, "users");
-    let q: Query;
+    const queryConstraints: QueryConstraint[] = [];
 
-    const userGender = currentUserProfile.gender;
+    // --- Basic Exclusions ---
+    // Exclude the current user
+    queryConstraints.push(where("id", "!=", currentUserId));
     
-    // Base query constraints: not the current user, and not already matched.
-    const baseQueryConstraints = [where("id", "!=", currentUserId)];
+    // TODO: Exclude users already matched with or passed by the current user.
+    // This requires tracking likes/passes, which is a separate feature.
 
-    if (userGender === 'male') {
-      q = query(usersRef, ...baseQueryConstraints, where('gender', '==', 'female'), limit(50));
-    } else if (userGender === 'female') {
-      q = query(usersRef, ...baseQueryConstraints, where('gender', '==', 'male'), limit(50));
-    } else {
-      // For 'other', 'prefer_not_to_say', or undefined, fetch everyone.
-      // A more advanced preference system would be needed for a real app.
-      q = query(usersRef, ...baseQueryConstraints, limit(50));
+    // --- Gender/Interest Filtering ---
+    const userGender = currentUserProfile.gender;
+    const interestedIn = currentUserProfile.interestedIn;
+
+    if (interestedIn === 'men') {
+        queryConstraints.push(where('gender', '==', 'man'));
+        // Also ensure the other person is interested in the current user's gender
+        queryConstraints.push(where('interestedIn', 'in', ['men', 'everyone']));
+    } else if (interestedIn === 'women') {
+        queryConstraints.push(where('gender', '==', 'woman'));
+        // Also ensure the other person is interested in the current user's gender
+        queryConstraints.push(where('interestedIn', 'in', ['women', 'everyone']));
+    }
+    // If interestedIn is 'everyone', we don't filter by gender, but we should
+    // still check if the other person's interest includes the current user's gender.
+    else if (userGender === 'man') {
+        queryConstraints.push(where('interestedIn', 'in', ['men', 'everyone']));
+    } else if (userGender === 'woman') {
+        queryConstraints.push(where('interestedIn', 'in', ['women', 'everyone']));
+    }
+    // Note: This logic gets more complex with more gender identities and preferences.
+    // For non-binary users or those interested in everyone, the logic is simplified here.
+
+    // --- Attribute Filtering (Firestore Queries) ---
+    // Firestore only allows one range filter per query. We'll use it on age.
+    const [minAge, maxAge] = filters.ageRange;
+    queryConstraints.push(where("age", ">=", minAge));
+    queryConstraints.push(where("age", "<=", maxAge));
+
+    if (filters.datingIntentions !== 'any') {
+      queryConstraints.push(where("datingIntentions", "==", filters.datingIntentions));
+    }
+    if (filters.ethnicity !== 'any') {
+      queryConstraints.push(where("ethnicity", "==", filters.ethnicity));
+    }
+    if (filters.religion !== 'any') {
+      queryConstraints.push(where("religion", "==", filters.religion));
+    }
+    if (filters.relationshipType !== 'any') {
+      queryConstraints.push(where("relationshipType", "==", filters.relationshipType));
     }
     
+    // The query is built. Note that Firestore may require you to create composite indexes
+    // for these queries to work. The error message in the Firebase console will provide a link
+    // to create the required index if one is missing.
+    const q = query(usersRef, ...queryConstraints, limit(100));
+    
     const querySnapshot = await getDocs(q);
-    const users = querySnapshot.docs.map(doc => doc.data() as UserProfile);
+    const usersFromDb = querySnapshot.docs.map(doc => doc.data() as UserProfile);
+
+    // --- In-Memory Filtering (for things Firestore can't do in one query) ---
+    // We filter by height in code because we already used our one range filter on age.
+    const [minHeight, maxHeight] = filters.heightRange;
+    const finalFilteredUsers = usersFromDb.filter(user => {
+      if (!user.heightInches) return true; // Don't filter out users who haven't set height
+      return user.heightInches >= minHeight && user.heightInches <= maxHeight;
+    });
 
     // Simple shuffle for variety
-    return users.sort(() => Math.random() - 0.5);
+    return finalFilteredUsers.sort(() => Math.random() - 0.5);
 
   } catch (error) {
     console.error("Error fetching users for swiping:", error);
+    // This could be a permissions error or an error indicating a missing index.
+    // Check the server logs (where this action runs) for details.
     return [];
   }
 }
@@ -582,10 +640,10 @@ export async function recordLike(likerId: string, likedUserId: string): Promise<
       batch.set(notifForLikerRef, {
         userId: likerId,
         senderId: likedUserId,
-        senderName: likedUserProfile.name.split(' ')[0],
+        senderName: likedUserProfile.name,
         senderImage: likedUserProfile.images[0] || null,
         type: 'NEW_MATCH',
-        title: `You have a new match with ${likedUserProfile.name.split(' ')[0]}!`,
+        title: `You have a new match with ${likedUserProfile.name}!`,
         message: 'You both liked each other. Start a conversation!',
         href: `/chat/${chatId}`,
         read: false,
@@ -597,10 +655,10 @@ export async function recordLike(likerId: string, likedUserId: string): Promise<
       batch.set(notifForLikedUserRef, {
         userId: likedUserId,
         senderId: likerId,
-        senderName: likerProfile.name.split(' ')[0],
+        senderName: likerProfile.name,
         senderImage: likerProfile.images[0] || null,
         type: 'NEW_MATCH',
-        title: `You have a new match with ${likerProfile.name.split(' ')[0]}!`,
+        title: `You have a new match with ${likerProfile.name}!`,
         message: 'You both liked each other. Start a conversation!',
         href: `/chat/${chatId}`,
         read: false,

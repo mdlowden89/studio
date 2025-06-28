@@ -5,7 +5,7 @@ import { useState, useEffect, useCallback } from "react";
 import type { UserProfile } from "@/lib/types";
 import { MatchCard } from "./match-card";
 import { Button } from "@/components/ui/button";
-import { RefreshCw, Users, Undo2, HeartHandshake as HeartHandshakeIcon, Loader2 } from "lucide-react";
+import { RefreshCw, Users, Undo2, HeartHandshake as HeartHandshakeIcon, Loader2, Filter } from "lucide-react";
 import { useToast } from "@/hooks/use-toast";
 import {
   AlertDialog,
@@ -20,9 +20,19 @@ import {
 import ReactConfetti from 'react-confetti';
 import { CrossdPlusUpsellDialog } from "@/components/pricing/crossd-plus-upsell-dialog";
 import { useAuth } from "@/hooks/use-auth";
-import { getUsersForSwiping, recordLike } from "@/app/actions";
+import { getUsersForSwiping } from "@/app/actions";
+import { DiscoverFilters, type AppliedFilters } from "@/components/discover/discover-filters";
 
 const DAILY_LIKE_LIMIT = 8;
+
+const defaultFilters: AppliedFilters = {
+  ageRange: [18, 40],
+  heightRange: [54, 84], // 4'6" to 7'0"
+  datingIntentions: 'any',
+  ethnicity: 'any',
+  religion: 'any',
+  relationshipType: 'any',
+};
 
 export function SwipeMatchSection() {
   const { user } = useAuth();
@@ -38,6 +48,8 @@ export function SwipeMatchSection() {
   const [likesUsedToday, setLikesUsedToday] = useState(0);
   const [showUpsellDialog, setShowUpsellDialog] = useState(false);
   const [likesAnimationTrigger, setLikesAnimationTrigger] = useState(0);
+  
+  const [filters, setFilters] = useState<AppliedFilters>(defaultFilters);
 
   const loadUsers = useCallback(async () => {
     if (!user) {
@@ -46,12 +58,12 @@ export function SwipeMatchSection() {
     }
     setIsLoading(true);
     try {
-      const fetchedUsers = await getUsersForSwiping(user.uid);
+      const fetchedUsers = await getUsersForSwiping(user.uid, filters);
       setUsers(fetchedUsers);
       if (fetchedUsers.length === 0) {
         toast({
-          title: "No one new nearby",
-          description: "Check back later for new profiles!",
+          title: "No one new matches your filters",
+          description: "Try broadening your search or check back later!",
         });
       }
     } catch (error) {
@@ -66,7 +78,7 @@ export function SwipeMatchSection() {
       setPreviousIndex(null);
       setIsLoading(false);
     }
-  }, [user, toast]);
+  }, [user, toast, filters]);
 
   useEffect(() => {
     loadUsers();
@@ -88,6 +100,23 @@ export function SwipeMatchSection() {
     return () => {};
   }, []);
 
+  const handleApplyFilters = (newFilters: AppliedFilters) => {
+    setFilters(newFilters);
+    // The `loadUsers` effect will automatically run because `filters` is a dependency.
+     toast({
+        title: "Filters Applied",
+        description: "Searching for profiles with your new preferences.",
+      });
+  };
+  
+  const handleResetFilters = () => {
+      setFilters(defaultFilters);
+      toast({
+          title: "Filters Reset",
+          description: "Showing all profiles again.",
+        });
+  }
+
   const handleAction = async (userId: string, action: "like" | "pass") => {
     const actionUser = users.find(u => u.id === userId);
     if (!actionUser || !user) return;
@@ -104,12 +133,12 @@ export function SwipeMatchSection() {
         const result = await recordLike(user.uid, actionUser.id);
         
         if (result.match) {
-          setMatchedUserName(actionUser.name.split(' ')[0]);
+          setMatchedUserName(actionUser.name);
           setShowMatchAnimation(true);
         } else {
           toast({
             title: "Liked!",
-            description: `Let's see if ${actionUser.name.split(' ')[0]} likes you back! (${DAILY_LIKE_LIMIT - (likesUsedToday + 1)} likes remaining today)`,
+            description: `Let's see if ${actionUser.name} likes you back! (${DAILY_LIKE_LIMIT - (likesUsedToday + 1)} likes remaining today)`,
           });
         }
       } catch (error) {
@@ -122,7 +151,7 @@ export function SwipeMatchSection() {
     } else {
         toast({
             title: "Passed",
-            description: `You've passed on ${actionUser.name.split(' ')[0]}.`,
+            description: `You've passed on ${actionUser.name}.`,
             variant: "default"
         });
     }
@@ -148,7 +177,7 @@ export function SwipeMatchSection() {
       const lastUser = users[previousIndex];
       setCurrentIndex(previousIndex);
       setPreviousIndex(null); 
-      toast({ title: "Undo Successful", description: `You are now viewing ${lastUser?.name.split(' ')[0]}'s profile again.` });
+      toast({ title: "Undo Successful", description: `You are now viewing ${lastUser?.name}'s profile again.` });
     } else {
       toast({ title: "Nothing to Undo", description: "You haven't swiped anyone yet or already undid.", variant: "destructive" });
     }
@@ -173,11 +202,9 @@ export function SwipeMatchSection() {
       <div className="text-center py-10 flex flex-col items-center">
         <Users className="w-16 h-16 text-muted-foreground mb-4" />
         <h3 className="text-xl font-semibold mb-2">No More Profiles</h3>
-        <p className="text-muted-foreground mb-4">You've seen everyone for now. Try refreshing or check back later.</p>
+        <p className="text-muted-foreground mb-4 max-w-sm">You've seen everyone who matches your current filters. Try expanding your search or check back later.</p>
         <div className="flex gap-2 mt-4">
-            <Button onClick={handleUndo} variant="outline" disabled={previousIndex === null}>
-                <Undo2 className="mr-2 h-4 w-4" /> Undo
-            </Button>
+            <DiscoverFilters onApplyFilters={handleApplyFilters} onResetFilters={handleResetFilters} initialFilters={defaultFilters} />
             <Button onClick={refreshUsers} variant="outline">
                 <RefreshCw className="mr-2 h-4 w-4" /> Refresh Profiles
             </Button>
@@ -200,9 +227,7 @@ export function SwipeMatchSection() {
         <Button onClick={handleUndo} variant="outline" disabled={previousIndex === null}>
           <Undo2 className="mr-2 h-4 w-4" /> Undo
         </Button>
-        <Button onClick={refreshUsers} variant="outline">
-          <RefreshCw className="mr-2 h-4 w-4" /> Refresh
-        </Button>
+        <DiscoverFilters onApplyFilters={handleApplyFilters} onResetFilters={handleResetFilters} initialFilters={filters} />
       </div>
       <p className="text-sm text-muted-foreground">
         Likes remaining today:{" "}

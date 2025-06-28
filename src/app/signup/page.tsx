@@ -17,6 +17,7 @@ import { doc, setDoc } from 'firebase/firestore';
 import type { UserProfile, Challenge } from '@/lib/types';
 import { MOCK_AVAILABLE_CHALLENGES } from '@/lib/mock-data';
 import { Select, SelectTrigger, SelectValue, SelectContent, SelectItem } from '@/components/ui/select';
+import { genderOptions, interestedInOptions } from '@/lib/options';
 
 export default function SignUpPage() {
   const router = useRouter();
@@ -35,6 +36,7 @@ export default function SignUpPage() {
     const password = formData.get('password') as string;
     const confirmPassword = formData.get('confirmPassword') as string;
     const gender = formData.get('gender') as UserProfile['gender'];
+    const interestedIn = formData.get('interestedIn') as UserProfile['interestedIn'];
 
     if (password !== confirmPassword) {
       toast({
@@ -46,10 +48,10 @@ export default function SignUpPage() {
       return;
     }
     
-    if (!firstName || !gender || gender === 'select') {
+    if (!firstName || !gender || gender === 'select' || !interestedIn || interestedIn === 'select') {
        toast({
         title: "Incomplete Form",
-        description: "Please provide your first name and gender.",
+        description: "Please provide your first name, gender, and who you're interested in.",
         variant: "destructive",
       });
       setIsLoading(false);
@@ -82,6 +84,7 @@ export default function SignUpPage() {
         email: user.email || "",
         age: 18,
         gender: gender,
+        interestedIn: interestedIn,
         bio: "Welcome to Crossd! Tell us about yourself.",
         images: ['https://placehold.co/400x550.png'],
         vibeTags: [],
@@ -147,24 +150,38 @@ export default function SignUpPage() {
           </CardHeader>
           <CardContent className="space-y-6">
             <form className="space-y-4" onSubmit={onSignUp}>
-              <div className="grid grid-cols-2 gap-4">
+              <div className="space-y-4">
                 <div>
                   <Label htmlFor="firstName">First Name</Label>
                   <Input id="firstName" name="firstName" type="text" placeholder="Alex" required className="mt-1 bg-input" />
                 </div>
-                 <div>
-                  <Label htmlFor="gender">Gender</Label>
-                   <Select name="gender" required>
-                      <SelectTrigger id="gender" className="mt-1 bg-input">
-                        <SelectValue placeholder="Select..." />
-                      </SelectTrigger>
-                      <SelectContent className="bg-popover">
-                        <SelectItem value="male">Male</SelectItem>
-                        <SelectItem value="female">Female</SelectItem>
-                        <SelectItem value="other">Other</SelectItem>
-                        <SelectItem value="prefer_not_to_say">Prefer not to say</SelectItem>
-                      </SelectContent>
-                    </Select>
+                <div className="grid grid-cols-2 gap-4">
+                  <div>
+                    <Label htmlFor="gender">I am a...</Label>
+                    <Select name="gender" required>
+                        <SelectTrigger id="gender" className="mt-1 bg-input">
+                          <SelectValue placeholder="Select..." />
+                        </SelectTrigger>
+                        <SelectContent className="bg-popover">
+                          {genderOptions.map(option => (
+                            <SelectItem key={option.value} value={option.value}>{option.label}</SelectItem>
+                          ))}
+                        </SelectContent>
+                      </Select>
+                  </div>
+                  <div>
+                    <Label htmlFor="interestedIn">Looking for...</Label>
+                    <Select name="interestedIn" required>
+                        <SelectTrigger id="interestedIn" className="mt-1 bg-input">
+                          <SelectValue placeholder="Select..." />
+                        </SelectTrigger>
+                        <SelectContent className="bg-popover">
+                          {interestedInOptions.map(option => (
+                            <SelectItem key={option.value} value={option.value}>{option.label}</SelectItem>
+                          ))}
+                        </SelectContent>
+                      </Select>
+                  </div>
                 </div>
               </div>
               <div>

@@ -16,16 +16,21 @@ export interface UserProfile {
   jobTitle?: string;
   education?: string;
   ethnicity?: string;
-  gender?: 'male' | 'female' | 'other' | 'prefer_not_to_say';
+  gender?: 'man' | 'woman' | 'non-binary' | 'prefer_not_to_say';
   childrenStatus?: string;
   familyPlans?: string;
-  height?: string;
+  height?: string; // e.g., "5'11\""
+  heightInches?: number; // e.g., 71
   locationAddress?: string;
   locationName?: string;
   locationCoordinates?: { lat: number; lng: number };
   drinking?: string;
   smoking?: string;
-  zodiacSign?: string; 
+  zodiacSign?: string;
+  datingIntentions?: 'Life Partner' | 'Long-term relationship' | 'Short-term relationship' | 'Figuring it out' | 'Prefer Not to Say';
+  religion?: 'Agnostic' | 'Atheist' | 'Buddhist' | 'Catholic' | 'Christian' | 'Hindu' | 'Jain' | 'Jewish' | 'Mormon' | 'Muslim' | 'Sikh' | 'Spiritual' | 'Zoroastrian' | 'Other' | 'Prefer Not to Say';
+  relationshipType?: 'Monogamy' | 'Polyamory' | 'Open to exploring' | 'Prefer Not to Say';
+  interestedIn?: 'men' | 'women' | 'everyone';
   achievements?: Achievement[];
   challenges?: Challenge[];
   locationServicesEnabled?: boolean;
@@ -177,5 +182,3 @@ export interface Hotspot {
   description: string;
   coordinates: { lat: number; lng: number };
 }
-
-  

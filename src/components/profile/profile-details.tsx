@@ -21,76 +21,25 @@ import { doc, updateDoc } from "firebase/firestore";
 import { AVAILABLE_PROMPTS } from "@/lib/mock-data";
 import { Switch } from "@/components/ui/switch";
 import { Separator } from "@/components/ui/separator";
+import {
+  ethnicityOptions as defaultEthnicityOptions,
+  genderOptions,
+  childrenStatusOptions,
+  familyPlansOptions,
+  drinkingOptions,
+  smokingOptions,
+  zodiacSignOptions,
+  generateHeightOptions,
+  datingIntentionsOptions,
+  religionOptions,
+  relationshipTypeOptions,
+  interestedInOptions,
+} from '@/lib/options';
 
 
 interface ProfileDetailsProps {
   user: UserProfile;
 }
-
-const ethnicityOptions = [
-  "White/Caucasian",
-  "Black/African Descent",
-  "East Asian",
-  "Hispanic/Latino",
-  "Middle Eastern",
-  "Native American",
-  "Pacific Islander",
-  "South Asian",
-  "Southeast Asian",
-  "Other",
-  "Prefer Not to Say",
-];
-
-const genderOptions = [
-  { value: 'male', label: 'Male' },
-  { value: 'female', label: 'Female' },
-  { value: 'other', label: 'Other' },
-  { value: 'prefer_not_to_say', label: 'Prefer Not to Say' },
-];
-
-const childrenStatusOptions = [
-  "Don't have children",
-  "Have Children",
-  "Prefer Not to Say",
-];
-
-const familyPlansOptions = [
-  "Don't want children",
-  "Want children",
-  "Not Sure",
-  "Prefer Not to Say",
-];
-
-const drinkingOptions = [
-  "Yes",
-  "Sometimes",
-  "No",
-  "Prefer Not to Say",
-];
-
-const smokingOptions = [
-  "Yes",
-  "Sometimes",
-  "No",
-  "Prefer Not to Say",
-];
-
-const zodiacSignOptions = [
-  "Aries", "Taurus", "Gemini", "Cancer", "Leo", "Virgo",
-  "Libra", "Scorpio", "Sagittarius", "Capricorn", "Aquarius", "Pisces",
-  "Prefer Not to Say"
-];
-
-const generateHeightOptions = () => {
-  const options = ["Prefer Not to Say"];
-  for (let feet = 3; feet <= 7; feet++) {
-    for (let inches = 0; inches <= 11; inches++) {
-      if (feet === 7 && inches > 0) break;
-      options.push(`${feet}'${inches}"`);
-    }
-  }
-  return options;
-};
 
 const mapStyles = [
   { elementType: 'geometry', stylers: [{ color: '#000000' }] },
@@ -144,6 +93,12 @@ const staticTagCategories: { title: string; tags: { tag: string; emoji: string }
   },
 ];
 
+const ethnicityOptions = ["Prefer Not to Say", ...defaultEthnicityOptions];
+const allReligionOptions = ["Prefer Not to Say", ...religionOptions];
+const allDatingIntentionsOptions = ["Prefer Not to Say", ...datingIntentionsOptions];
+const allRelationshipTypeOptions = ["Prefer Not to Say", ...relationshipTypeOptions];
+
+
 const CustomLoadingElement = () => (
   <div className="mt-1 text-muted-foreground flex items-center">
     <Loader2 className="h-4 w-4 animate-spin text-primary mr-2" />
@@ -156,6 +111,7 @@ export function ProfileDetails({ user }: ProfileDetailsProps) {
   const [email, setEmail] = useState(user.email || "");
   const [age, setAge] = useState(user.age);
   const [gender, setGender] = useState(user.gender || 'prefer_not_to_say');
+  const [interestedIn, setInterestedIn] = useState(user.interestedIn || 'everyone');
   const [bio, setBio] = useState(user.bio);
   const [vibeTags, setVibeTags] = useState<string[]>(user.vibeTags);
   const [work, setWork] = useState(user.work || "");
@@ -164,10 +120,14 @@ export function ProfileDetails({ user }: ProfileDetailsProps) {
   const [ethnicity, setEthnicity] = useState(user.ethnicity || "Prefer Not to Say");
   const [childrenStatus, setChildrenStatus] = useState(user.childrenStatus || "Prefer Not to Say");
   const [familyPlans, setFamilyPlans] = useState(user.familyPlans || "Prefer Not to Say");
-  const [height, setHeight] = useState(user.height || "Prefer Not to Say");
+  const [heightInches, setHeightInches] = useState<number | undefined>(user.heightInches);
   const [drinking, setDrinking] = useState(user.drinking || "Prefer Not to Say");
   const [smoking, setSmoking] = useState(user.smoking || "Prefer Not to Say");
   const [zodiacSign, setZodiacSign] = useState(user.zodiacSign || "Prefer Not to Say");
+  const [datingIntentions, setDatingIntentions] = useState(user.datingIntentions || "Prefer Not to Say");
+  const [religion, setReligion] = useState(user.religion || "Prefer Not to Say");
+  const [relationshipType, setRelationshipType] = useState(user.relationshipType || "Prefer Not to Say");
+
 
   const [locationServicesEnabled, setLocationServicesEnabled] = useState(user.locationServicesEnabled ?? false);
   const [locationAddress, setLocationAddress] = useState(user.locationAddress || "");
@@ -323,10 +283,14 @@ export function ProfileDetails({ user }: ProfileDetailsProps) {
       return;
     }
 
+    const selectedHeightOption = heightOptions.find(h => h.value === heightInches);
+
     const profileData: Partial<UserProfile> = {
       name, email, age, bio, vibeTags, work, jobTitle, education,
-      gender, ethnicity, childrenStatus, familyPlans, height, drinking, smoking,
-      zodiacSign, locationAddress, 
+      gender, interestedIn, ethnicity, childrenStatus, familyPlans, heightInches,
+      height: selectedHeightOption ? selectedHeightOption.label : "Prefer Not to Say",
+      drinking, smoking, zodiacSign, datingIntentions, religion, relationshipType,
+      locationAddress, 
       locationName: currentLocationName || (locationAddress ? locationAddress.split(',')[0] : user.locationName),
       locationCoordinates: currentCoordinates || user.locationCoordinates,
       locationServicesEnabled,
@@ -410,12 +374,13 @@ export function ProfileDetails({ user }: ProfileDetailsProps) {
 
   return (
     <form onSubmit={handleSubmit} className="space-y-8">
+      {/* Basic Info */}
       <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
         <div>
           <Label htmlFor="name">First Name</Label>
           <Input id="name" value={name} onChange={(e) => setName(e.target.value)} className="mt-1 bg-input" />
         </div>
-         <div>
+        <div>
           <Label htmlFor="email">Email Address</Label>
           <Input id="email" type="email" value={email} onChange={(e) => setEmail(e.target.value)} className="mt-1 bg-input" />
         </div>
@@ -450,6 +415,44 @@ export function ProfileDetails({ user }: ProfileDetailsProps) {
           </Select>
         </div>
         <div>
+          <Label htmlFor="interestedIn">I'm interested in...</Label>
+           <Select value={interestedIn} onValueChange={(value: UserProfile['interestedIn']) => setInterestedIn(value)}>
+            <SelectTrigger id="interestedIn" className="mt-1 bg-input">
+              <SelectValue placeholder="Select..." />
+            </SelectTrigger>
+            <SelectContent className="bg-popover">
+              {interestedInOptions.map((option) => (
+                <SelectItem key={option.value} value={option.value}>
+                  {option.label}
+                </SelectItem>
+              ))}
+            </SelectContent>
+          </Select>
+        </div>
+        <div>
+          <Label htmlFor="height">Height</Label>
+          <Select value={heightInches ? String(heightInches) : "Prefer Not to Say"} onValueChange={(val) => setHeightInches(val === "Prefer Not to Say" ? undefined : Number(val))}>
+            <SelectTrigger className="mt-1 bg-input">
+              <SelectValue placeholder="Select your height" />
+            </SelectTrigger>
+            <SelectContent className="bg-popover max-h-60">
+                <SelectItem value={"Prefer Not to Say"}>Prefer Not to Say</SelectItem>
+              {heightOptions.map((option) => (
+                <SelectItem key={option.value} value={String(option.value)}>
+                  {option.label}
+                </SelectItem>
+              ))}
+            </SelectContent>
+          </Select>
+        </div>
+      </div>
+
+      <Separator />
+
+      {/* Work & Education */}
+      <h3 className="text-lg font-medium text-foreground -mb-4">Work & Education</h3>
+      <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+        <div>
           <Label htmlFor="work">Work</Label>
           <Input id="work" value={work} onChange={(e) => setWork(e.target.value)} className="mt-1 bg-input" placeholder="e.g., Company Name" />
         </div>
@@ -457,10 +460,17 @@ export function ProfileDetails({ user }: ProfileDetailsProps) {
           <Label htmlFor="jobTitle">Job Title</Label>
           <Input id="jobTitle" value={jobTitle} onChange={(e) => setJobTitle(e.target.value)} className="mt-1 bg-input" placeholder="e.g., Software Engineer" />
         </div>
-        <div>
+        <div className="md:col-span-2">
           <Label htmlFor="education">College/University</Label>
           <Input id="education" value={education} onChange={(e) => setEducation(e.target.value)} className="mt-1 bg-input" placeholder="e.g., State University" />
         </div>
+      </div>
+
+      <Separator />
+
+      {/* Lifestyle */}
+      <h3 className="text-lg font-medium text-foreground -mb-4">Lifestyle & Background</h3>
+      <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
         <div>
           <Label htmlFor="ethnicity">Ethnicity</Label>
           <Select value={ethnicity} onValueChange={setEthnicity}>
@@ -477,13 +487,13 @@ export function ProfileDetails({ user }: ProfileDetailsProps) {
           </Select>
         </div>
         <div>
-          <Label htmlFor="childrenStatus">Children</Label>
-          <Select value={childrenStatus} onValueChange={setChildrenStatus}>
-            <SelectTrigger className="mt-1 bg-input">
-              <SelectValue placeholder="Your children status" />
+          <Label htmlFor="religion">Religion</Label>
+          <Select value={religion} onValueChange={(val: UserProfile['religion']) => setReligion(val)}>
+            <SelectTrigger id="religion" className="mt-1 bg-input">
+              <SelectValue placeholder="Select your religion" />
             </SelectTrigger>
             <SelectContent className="bg-popover">
-              {childrenStatusOptions.map((option) => (
+              {allReligionOptions.map((option) => (
                 <SelectItem key={option} value={option}>
                   {option}
                 </SelectItem>
@@ -492,28 +502,13 @@ export function ProfileDetails({ user }: ProfileDetailsProps) {
           </Select>
         </div>
         <div>
-          <Label htmlFor="familyPlans">Family Plans</Label>
-          <Select value={familyPlans} onValueChange={setFamilyPlans}>
+          <Label htmlFor="zodiacSign">Zodiac Sign</Label>
+          <Select value={zodiacSign} onValueChange={setZodiacSign}>
             <SelectTrigger className="mt-1 bg-input">
-              <SelectValue placeholder="Your family plans" />
+              <SelectValue placeholder="Your zodiac sign" />
             </SelectTrigger>
             <SelectContent className="bg-popover">
-              {familyPlansOptions.map((option) => (
-                <SelectItem key={option} value={option}>
-                  {option}
-                </SelectItem>
-              ))}
-            </SelectContent>
-          </Select>
-        </div>
-        <div>
-          <Label htmlFor="height">Height</Label>
-          <Select value={height} onValueChange={setHeight}>
-            <SelectTrigger className="mt-1 bg-input">
-              <SelectValue placeholder="Select your height" />
-            </SelectTrigger>
-            <SelectContent className="bg-popover max-h-60">
-              {heightOptions.map((option) => (
+              {zodiacSignOptions.map((option) => (
                 <SelectItem key={option} value={option}>
                   {option}
                 </SelectItem>
@@ -551,14 +546,66 @@ export function ProfileDetails({ user }: ProfileDetailsProps) {
             </SelectContent>
           </Select>
         </div>
+      </div>
+
+      <Separator />
+
+      {/* Dating & Relationship */}
+      <h3 className="text-lg font-medium text-foreground -mb-4">Dating & Relationships</h3>
+      <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
         <div>
-          <Label htmlFor="zodiacSign">Zodiac Sign</Label>
-          <Select value={zodiacSign} onValueChange={setZodiacSign}>
-            <SelectTrigger className="mt-1 bg-input">
-              <SelectValue placeholder="Your zodiac sign" />
+          <Label htmlFor="relationshipType">Relationship Type</Label>
+          <Select value={relationshipType} onValueChange={(val: UserProfile['relationshipType']) => setRelationshipType(val)}>
+            <SelectTrigger id="relationshipType" className="mt-1 bg-input">
+              <SelectValue placeholder="Select..." />
             </SelectTrigger>
             <SelectContent className="bg-popover">
-              {zodiacSignOptions.map((option) => (
+              {allRelationshipTypeOptions.map((option) => (
+                <SelectItem key={option} value={option}>
+                  {option}
+                </SelectItem>
+              ))}
+            </SelectContent>
+          </Select>
+        </div>
+        <div>
+          <Label htmlFor="datingIntentions">Dating Intentions</Label>
+          <Select value={datingIntentions} onValueChange={(val: UserProfile['datingIntentions']) => setDatingIntentions(val)}>
+            <SelectTrigger id="datingIntentions" className="mt-1 bg-input">
+              <SelectValue placeholder="Select..." />
+            </SelectTrigger>
+            <SelectContent className="bg-popover">
+              {allDatingIntentionsOptions.map((option) => (
+                <SelectItem key={option} value={option}>
+                  {option}
+                </SelectItem>
+              ))}
+            </SelectContent>
+          </Select>
+        </div>
+         <div>
+          <Label htmlFor="childrenStatus">Children</Label>
+          <Select value={childrenStatus} onValueChange={setChildrenStatus}>
+            <SelectTrigger className="mt-1 bg-input">
+              <SelectValue placeholder="Your children status" />
+            </SelectTrigger>
+            <SelectContent className="bg-popover">
+              {childrenStatusOptions.map((option) => (
+                <SelectItem key={option} value={option}>
+                  {option}
+                </SelectItem>
+              ))}
+            </SelectContent>
+          </Select>
+        </div>
+        <div>
+          <Label htmlFor="familyPlans">Family Plans</Label>
+          <Select value={familyPlans} onValueChange={setFamilyPlans}>
+            <SelectTrigger className="mt-1 bg-input">
+              <SelectValue placeholder="Your family plans" />
+            </SelectTrigger>
+            <SelectContent className="bg-popover">
+              {familyPlansOptions.map((option) => (
                 <SelectItem key={option} value={option}>
                   {option}
                 </SelectItem>
@@ -568,8 +615,11 @@ export function ProfileDetails({ user }: ProfileDetailsProps) {
         </div>
       </div>
 
+      <Separator />
+      
       <div>
-        <Label htmlFor="locationAddress">Location (Address, Area, or Postcode)</Label>
+        <h3 className="text-lg font-medium text-foreground">Location</h3>
+        <p className="text-sm text-muted-foreground">Set your primary location.</p>
         {renderLocationSection()}
       </div>
       
