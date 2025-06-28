@@ -1,56 +1,49 @@
 
 rules_version = '2';
-
 service cloud.firestore {
   match /databases/{database}/documents {
     
-    // Helper functions should be defined within this scope
-    function getPathUserId(path) {
-      // path is a list of path segments
-      return path[1];
-    }
-
+    // Rules for user profiles
     match /users/{userId} {
-      // Any authenticated user can view profiles for swiping/discovery
+      // Any authenticated user can read user profiles (for swiping, viewing matches, etc.)
       allow read: if request.auth != null;
-      // A user can only create their own profile
-      allow create: if request.auth.uid != null && request.auth.uid == userId;
-      // A user can only update their own profile
-      allow update: if request.auth.uid == userId;
+      // A user can only write to their own profile
+      allow write: if request.auth.uid == userId;
     }
     
+    // Moments can be created by any logged in user
     match /moments/{momentId} {
-      // Any authenticated user can create or read any moment for the matching logic to work
-      allow read, create: if request.auth != null;
-      // Any authenticated user can update a moment. This is broad, but necessary
-      // for the confirmation flow where a user who is not the logger needs to
-      // update the moment's status.
-      // TODO: Refine this rule to be more specific if possible.
-      allow update: if request.auth != null;
-    }
-
-    match /likes/{likeId} {
-      allow read, create: if request.auth != null;
-      // Any authenticated user can update a 'like' record to 'matched'.
-      // This is needed for the mutual like logic.
-      allow update: if request.auth != null;
-    }
-
-    match /chats/{chatId} {
-      // Users can only interact with chats they are a part of.
-      allow read, create, update: if request.auth.uid in resource.data.participantIds;
-    }
-    
-    match /chats/{chatId}/messages/{messageId} {
-      // Users can only read/write messages in chats they are a part of.
-       allow read, create: if request.auth.uid in get(/databases/$(database)/documents/chats/$(chatId)).data.participantIds;
-    }
-    
-    match /notifications/{notificationId} {
-      // Anyone can create a notification (e.g., system, another user sending a like)
       allow create: if request.auth != null;
-      // Only the intended recipient can read or update their notification
-      allow read, update: if request.auth.uid == resource.data.userId;
+      // Any authenticated user can confirm/deny a moment (simplification for matching)
+      allow update: if request.auth != null;
+      // Users can read moments to confirm them
+      allow read: if request.auth != null;
+    }
+
+    // Likes can be created by any logged in user
+    match /likes/{likeId} {
+      allow create: if request.auth != null;
+      // A user can read/update a like they sent or one they received.
+      allow read, update, delete: if request.auth != null && (request.auth.uid == resource.data.likerId || request.auth.uid == resource.data.likedUserId);
+    }
+    
+    // Chat and message rules
+    match /chats/{chatId} {
+      // Users can only access chats they are a part of.
+      allow read, write: if request.auth.uid in resource.data.participantIds;
+      
+      // Messages can only be accessed by chat participants.
+      match /messages/{messageId} {
+        allow read, create: if request.auth.uid in get(/databases/$(database)/documents/chats/$(chatId)).data.participantIds;
+      }
+    }
+
+    // Notification rules
+    match /notifications/{notificationId} {
+      // Server actions (trusted) can create notifications.
+      allow create: if request.auth != null; 
+      // Users can only read or update their own notifications (e.g., mark as read).
+      allow read, write: if request.auth.uid == resource.data.userId;
     }
   }
 }
