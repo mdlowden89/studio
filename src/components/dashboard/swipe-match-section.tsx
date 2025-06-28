@@ -1,12 +1,11 @@
 
 "use client";
 
-import { useState, useEffect } from "react"; 
-import { MOCK_USERS } from "@/lib/mock-data";
+import { useState, useEffect, useCallback } from "react";
 import type { UserProfile } from "@/lib/types";
 import { MatchCard } from "./match-card";
 import { Button } from "@/components/ui/button";
-import { RefreshCw, Users, Undo2, HeartHandshake as HeartHandshakeIcon } from "lucide-react";
+import { RefreshCw, Users, Undo2, HeartHandshake as HeartHandshakeIcon, Loader2 } from "lucide-react";
 import { useToast } from "@/hooks/use-toast";
 import {
   AlertDialog,
@@ -19,17 +18,18 @@ import {
   AlertDialogTitle,
 } from "@/components/ui/alert-dialog";
 import ReactConfetti from 'react-confetti';
-import { CrossdPlusUpsellDialog } from "@/components/pricing/crossd-plus-upsell-dialog"; 
+import { CrossdPlusUpsellDialog } from "@/components/pricing/crossd-plus-upsell-dialog";
 import { useAuth } from "@/hooks/use-auth";
+import { getUsersForSwiping } from "@/app/actions";
 
 const DAILY_LIKE_LIMIT = 8;
 
 export function SwipeMatchSection() {
   const { user } = useAuth();
-  const [initialUsers, setInitialUsers] = useState<UserProfile[]>([]);
   const [users, setUsers] = useState<UserProfile[]>([]);
+  const [isLoading, setIsLoading] = useState(true);
   const [currentIndex, setCurrentIndex] = useState(0);
-  const [previousIndex, setPreviousIndex] = useState<number | null>(null); 
+  const [previousIndex, setPreviousIndex] = useState<number | null>(null);
   const { toast } = useToast();
   const [showMatchAnimation, setShowMatchAnimation] = useState(false);
   const [matchedUserName, setMatchedUserName] = useState("");
@@ -39,16 +39,38 @@ export function SwipeMatchSection() {
   const [showUpsellDialog, setShowUpsellDialog] = useState(false);
   const [likesAnimationTrigger, setLikesAnimationTrigger] = useState(0);
 
-  useEffect(() => {
-    if (user) {
-      const filtered = MOCK_USERS.filter(u => u.id !== user.uid);
-      setInitialUsers(filtered);
-      setUsers([...filtered].sort(() => 0.5 - Math.random()));
+  const loadUsers = useCallback(async () => {
+    if (!user) {
+      setIsLoading(false);
+      return;
+    }
+    setIsLoading(true);
+    try {
+      const fetchedUsers = await getUsersForSwiping(user.uid);
+      setUsers(fetchedUsers);
+      if (fetchedUsers.length === 0) {
+        toast({
+          title: "No one new nearby",
+          description: "Check back later for new profiles!",
+        });
+      }
+    } catch (error) {
+      console.error("Failed to fetch users for swiping:", error);
+      toast({
+        title: "Error fetching profiles",
+        description: "Could not load new profiles. Please try again later.",
+        variant: "destructive",
+      });
+    } finally {
       setCurrentIndex(0);
       setPreviousIndex(null);
-      setLikesUsedToday(0); 
+      setIsLoading(false);
     }
-  }, [user]); 
+  }, [user, toast]);
+
+  useEffect(() => {
+    loadUsers();
+  }, [loadUsers]);
 
   useEffect(() => {
     const handleResize = () => {
@@ -103,6 +125,8 @@ export function SwipeMatchSection() {
         title: "That's everyone for now!",
         description: "Check back later for new profiles.",
       });
+      // Move to a state where no users are left
+      setCurrentIndex(users.length);
     }
   };
 
@@ -121,21 +145,15 @@ export function SwipeMatchSection() {
   };
 
   const refreshUsers = () => {
-    if (user) {
-      const newFilteredUsers = MOCK_USERS.filter(u => u.id !== user.uid);
-      setInitialUsers(newFilteredUsers); 
-      setUsers([...newFilteredUsers].sort(() => 0.5 - Math.random()));
-      setCurrentIndex(0);
-      setPreviousIndex(null); 
-      toast({ title: "Profiles Refreshed!", description: "Here are some new faces."});
-    }
+    toast({ title: "Refreshing...", description: "Looking for new profiles."});
+    loadUsers();
   };
 
-  if (users.length === 0 && initialUsers.length === 0) { 
+  if (isLoading) {
     return (
       <div className="text-center py-10 flex flex-col items-center">
-        <Users className="w-16 h-16 text-muted-foreground mb-4 animate-pulse" />
-        <h3 className="text-xl font-semibold mb-2">Loading Profiles...</h3>
+        <Loader2 className="w-16 h-16 text-primary animate-spin mb-4" />
+        <h3 className="text-xl font-semibold mb-2">Finding People Nearby...</h3>
       </div>
     );
   }

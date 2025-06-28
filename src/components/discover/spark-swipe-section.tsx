@@ -2,7 +2,6 @@
 "use client";
 
 import { useState, useEffect, useCallback } from "react";
-import { MOCK_USERS } from "@/lib/mock-data";
 import type { UserProfile } from "@/lib/types";
 import { MatchCard } from "@/components/dashboard/match-card";
 import { Button } from "@/components/ui/button";
@@ -20,7 +19,7 @@ import {
 } from "@/components/ui/alert-dialog";
 import ReactConfetti from 'react-confetti';
 import { Card, CardHeader, CardTitle, CardDescription, CardContent } from "@/components/ui/card";
-import { fetchSparkSwipeInsights } from "@/app/actions";
+import { fetchSparkSwipeInsights, getUsersForSwiping } from "@/app/actions";
 import type { SparkSwipeOutput, SparkSwipeInput } from "@/ai/flows/spark-swipe-flow";
 import { CrossdPlusUpsellDialog } from "@/components/pricing/crossd-plus-upsell-dialog";
 import { useAuth } from "@/hooks/use-auth";
@@ -46,7 +45,7 @@ export function SparkSwipeSection() {
   const [sparksAnimationTrigger, setSparksAnimationTrigger] = useState(0);
 
 
-  const loadSparkUsers = useCallback(() => {
+  const loadSparkUsers = useCallback(async () => {
     if (!currentUser) {
         setIsLoading(false);
         return;
@@ -66,17 +65,17 @@ export function SparkSwipeSection() {
       return;
     }
 
-    setTimeout(() => {
-      const potentialMatches = MOCK_USERS.filter(user => {
-        if (user.id === currentUser.id) return false;
+    try {
+      const allUsers = await getUsersForSwiping(currentUser.id);
+      
+      const potentialMatches = allUsers.filter(user => {
         return user.prompts.some(p => currentUserPromptIds.has(p.promptId));
       });
 
       setSparkUsers([...potentialMatches].sort(() => 0.5 - Math.random()));
       setCurrentIndex(0);
       setPreviousIndex(null);
-      setIsLoading(false);
-
+      
       if (potentialMatches.length === 0) {
         toast({
           title: "No Spark Matches Found",
@@ -84,7 +83,16 @@ export function SparkSwipeSection() {
           duration: 4000,
         });
       }
-    }, 750);
+    } catch (error) {
+      console.error("Error loading spark users:", error);
+       toast({
+        title: "Error",
+        description: "Could not load Spark Matches. Please try again later.",
+        variant: "destructive",
+      });
+    } finally {
+        setIsLoading(false);
+    }
   }, [currentUser, toast]);
 
   useEffect(() => {
