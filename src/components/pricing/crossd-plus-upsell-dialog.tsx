@@ -190,4 +190,7 @@ export function CrossdPlusUpsellDialog({ isOpen, onOpenChange }: CrossdPlusUpsel
             )}
           </Button>
         </DialogFooter>
-      </DialogContent
+      </DialogContent>
+    </Dialog>
+  );
+}
