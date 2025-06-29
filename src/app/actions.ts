@@ -521,7 +521,7 @@ export async function sendMessage(chatId: string, senderId: string, receiverId: 
   }
 }
 
-export async function getUsersForSwiping(currentUserId: string, filters: UserFilters): Promise<UserProfile[]> {
+export async function getUsersForSwiping(currentUserId: string, filters?: UserFilters): Promise<UserProfile[]> {
   try {
     const currentUserProfile = await getUserProfile(currentUserId);
     if (!currentUserProfile) {
@@ -532,53 +532,47 @@ export async function getUsersForSwiping(currentUserId: string, filters: UserFil
     const usersRef = collection(db, "users");
     const queryConstraints: QueryConstraint[] = [];
 
-    // --- Basic Exclusions ---
-    // Exclude the current user
-    queryConstraints.push(where("id", "!=", currentUserId));
-    
-    // TODO: Exclude users already matched with or passed by the current user.
-    // This requires tracking likes/passes, which is a separate feature.
-
     // --- Gender/Interest Filtering ---
-    const userGender = currentUserProfile.gender;
-    const interestedIn = currentUserProfile.interestedIn;
+    if (currentUserProfile.interestedIn && currentUserProfile.gender) {
+        const interestedIn = currentUserProfile.interestedIn;
+        const userGender = currentUserProfile.gender;
 
-    if (interestedIn === 'men') {
-        queryConstraints.push(where('gender', '==', 'man'));
-        // Also ensure the other person is interested in the current user's gender
-        queryConstraints.push(where('interestedIn', 'in', ['men', 'everyone']));
-    } else if (interestedIn === 'women') {
-        queryConstraints.push(where('gender', '==', 'woman'));
-        // Also ensure the other person is interested in the current user's gender
-        queryConstraints.push(where('interestedIn', 'in', ['women', 'everyone']));
+        if (interestedIn === 'men') {
+            queryConstraints.push(where('gender', '==', 'man'));
+            queryConstraints.push(where('interestedIn', 'in', [userGender, 'everyone']));
+        } else if (interestedIn === 'women') {
+            queryConstraints.push(where('gender', '==', 'woman'));
+            queryConstraints.push(where('interestedIn', 'in', [userGender, 'everyone']));
+        } else if (interestedIn === 'everyone') {
+             if (userGender === 'man') {
+                queryConstraints.push(where('interestedIn', 'in', ['men', 'everyone']));
+            } else if (userGender === 'woman') {
+                queryConstraints.push(where('interestedIn', 'in', ['women', 'everyone']));
+            }
+            // If current user is non-binary and interested in everyone, we don't add a gender/interest filter here,
+            // as we assume they want to see everyone who is open to seeing them.
+            // This could be made more granular with more preference options.
+        }
     }
-    // If interestedIn is 'everyone', we don't filter by gender, but we should
-    // still check if the other person's interest includes the current user's gender.
-    else if (userGender === 'man') {
-        queryConstraints.push(where('interestedIn', 'in', ['men', 'everyone']));
-    } else if (userGender === 'woman') {
-        queryConstraints.push(where('interestedIn', 'in', ['women', 'everyone']));
-    }
-    // Note: This logic gets more complex with more gender identities and preferences.
-    // For non-binary users or those interested in everyone, the logic is simplified here.
+    
+    // --- Attribute Filtering (if filters are provided) ---
+    if (filters) {
+        const [minAge, maxAge] = filters.ageRange;
+        queryConstraints.push(where("age", ">=", minAge));
+        queryConstraints.push(where("age", "<=", maxAge));
 
-    // --- Attribute Filtering (Firestore Queries) ---
-    // Firestore only allows one range filter per query. We'll use it on age.
-    const [minAge, maxAge] = filters.ageRange;
-    queryConstraints.push(where("age", ">=", minAge));
-    queryConstraints.push(where("age", "<=", maxAge));
-
-    if (filters.datingIntentions !== 'any') {
-      queryConstraints.push(where("datingIntentions", "==", filters.datingIntentions));
-    }
-    if (filters.ethnicity !== 'any') {
-      queryConstraints.push(where("ethnicity", "==", filters.ethnicity));
-    }
-    if (filters.religion !== 'any') {
-      queryConstraints.push(where("religion", "==", filters.religion));
-    }
-    if (filters.relationshipType !== 'any') {
-      queryConstraints.push(where("relationshipType", "==", filters.relationshipType));
+        if (filters.datingIntentions !== 'any') {
+          queryConstraints.push(where("datingIntentions", "==", filters.datingIntentions));
+        }
+        if (filters.ethnicity !== 'any') {
+          queryConstraints.push(where("ethnicity", "==", filters.ethnicity));
+        }
+        if (filters.religion !== 'any') {
+          queryConstraints.push(where("religion", "==", filters.religion));
+        }
+        if (filters.relationshipType !== 'any') {
+          queryConstraints.push(where("relationshipType", "==", filters.relationshipType));
+        }
     }
     
     // The query is built. Note that Firestore may require you to create composite indexes
@@ -587,15 +581,22 @@ export async function getUsersForSwiping(currentUserId: string, filters: UserFil
     const q = query(usersRef, ...queryConstraints, limit(100));
     
     const querySnapshot = await getDocs(q);
-    const usersFromDb = querySnapshot.docs.map(doc => doc.data() as UserProfile);
 
-    // --- In-Memory Filtering (for things Firestore can't do in one query) ---
-    // We filter by height in code because we already used our one range filter on age.
-    const [minHeight, maxHeight] = filters.heightRange;
-    const finalFilteredUsers = usersFromDb.filter(user => {
-      if (!user.heightInches) return true; // Don't filter out users who haven't set height
-      return user.heightInches >= minHeight && user.heightInches <= maxHeight;
-    });
+    // Filter out the current user and perform in-memory filtering
+    const usersFromDb = querySnapshot.docs
+      .map(doc => doc.data() as UserProfile)
+      .filter(user => user.id !== currentUserId);
+
+    let finalFilteredUsers = usersFromDb;
+
+    // In-Memory Filtering (for things Firestore can't do in one query)
+    if (filters) {
+        const [minHeight, maxHeight] = filters.heightRange;
+        finalFilteredUsers = usersFromDb.filter(user => {
+            if (!user.heightInches) return true; // Don't filter out users who haven't set height
+            return user.heightInches >= minHeight && user.heightInches <= maxHeight;
+        });
+    }
 
     // Simple shuffle for variety
     return finalFilteredUsers.sort(() => Math.random() - 0.5);
@@ -697,3 +698,6 @@ export async function checkForNewLikes(userId: string): Promise<boolean> {
   const snapshot = await getDocs(q);
   return !snapshot.empty;
 }
+
+
+    
