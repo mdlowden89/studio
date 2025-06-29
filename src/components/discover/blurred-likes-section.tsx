@@ -31,9 +31,11 @@ export function BlurredLikesSection() {
     );
   }
 
+  const cardFanMiddleIndex = (mockLikers.length - 1) / 2;
+
   return (
     <Card className="mt-12 bg-card shadow-xl">
-      <CardHeader className="text-center pb-8"> {/* Changed pb-6 to pb-8 */}
+      <CardHeader className="text-center pb-8">
         <div className="mx-auto flex h-16 w-16 items-center justify-center rounded-full bg-primary/80 mb-3 shadow-lg">
             <Eye className="h-8 w-8 text-primary-foreground" />
         </div>
@@ -43,33 +45,39 @@ export function BlurredLikesSection() {
         </CardDescription>
       </CardHeader>
       <CardContent className="text-center">
-        <div className="relative h-64 w-full max-w-xs mx-auto mb-8 flex items-center justify-center">
-          {mockLikers.map((user, index) => (
-            <Card
-              key={user.id}
-              className="absolute w-52 h-72 bg-card/80 shadow-2xl overflow-hidden border-2 border-primary/30"
-              style={{
-                transform: `rotate(${index * 5 - (mockLikers.length > 1 ? (mockLikers.length -1) * 2.5 : 0)}deg) translateX(${index * 12 - (mockLikers.length > 1 ? (mockLikers.length -1) * 6 : 0)}px) translateY(${index * -6}px)`,
-                zIndex: mockLikers.length - index,
-                filter: 'blur(5px)',
-              }}
-            >
-              <Image
-                src={user.images[0] || "https://placehold.co/300x400.png"} // Fallback image
-                alt={`Blurred profile`}
-                layout="fill"
-                objectFit="cover"
-                className="opacity-60"
-                data-ai-hint="profile portrait blurred"
-                unoptimized={user.images[0]?.startsWith('data:') || user.images[0]?.includes('placehold.co')}
-              />
-              {/* Optional: Blurred name placeholder */}
-              <div className="absolute bottom-3 left-3 right-3 p-2 bg-black/40 rounded ">
-                <div className="h-4 bg-white/30 rounded w-3/4 mb-1"></div>
-                <div className="h-3 bg-white/20 rounded w-1/2"></div>
-              </div>
-            </Card>
-          ))}
+        <div className="relative h-80 w-full max-w-sm mx-auto mb-8 flex items-center justify-center">
+          {mockLikers.map((user, index) => {
+            const rotation = (index - cardFanMiddleIndex) * 8; // Spread of 8 degrees per card
+            const translateX = (index - cardFanMiddleIndex) * 40; // Spread of 40px per card
+            const translateY = Math.abs(index - cardFanMiddleIndex) * -8; // Arc effect
+
+            return (
+              <Card
+                key={user.id}
+                className="absolute w-56 h-80 bg-card/80 shadow-2xl overflow-hidden border-2 border-primary/30"
+                style={{
+                  transform: `rotate(${rotation}deg) translateX(${translateX}px) translateY(${translateY}px)`,
+                  zIndex: mockLikers.length - index,
+                  filter: 'blur(5px)',
+                }}
+              >
+                <Image
+                  src={user.images[0] || "https://placehold.co/300x400.png"} // Fallback image
+                  alt={`Blurred profile`}
+                  layout="fill"
+                  objectFit="cover"
+                  className="opacity-60"
+                  data-ai-hint="profile portrait blurred"
+                  unoptimized={user.images[0]?.startsWith('data:') || user.images[0]?.includes('placehold.co')}
+                />
+                {/* Optional: Blurred name placeholder */}
+                <div className="absolute bottom-3 left-3 right-3 p-2 bg-black/40 rounded ">
+                  <div className="h-4 bg-white/30 rounded w-3/4 mb-1"></div>
+                  <div className="h-3 bg-white/20 rounded w-1/2"></div>
+                </div>
+              </Card>
+            );
+          })}
         </div>
 
         <Button
