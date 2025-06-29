@@ -113,8 +113,9 @@ export default function ProfilePage() {
               </CardHeader>
               <CardContent>
                 <PromptEditor 
-                  userPrompts={userProfile.prompts} 
+                  userPrompts={userProfile.prompts || []}
                   availablePrompts={AVAILABLE_PROMPTS} 
+                  userId={userProfile.id}
                 />
               </CardContent>
             </Card>
