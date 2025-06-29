@@ -9,7 +9,7 @@ interface EmotionalHotspotsUpsellProps {
 
 export function EmotionalHotspotsUpsell({ onUnlock }: EmotionalHotspotsUpsellProps) {
   return (
-    <div className="relative w-full aspect-video sm:aspect-[2/1] overflow-hidden rounded-lg bg-muted p-6 flex flex-col items-center justify-center text-center">
+    <div className="relative w-full aspect-video sm:aspect-[2/1] overflow-hidden rounded-lg bg-gradient-to-br from-primary/10 via-card to-card p-6 flex flex-col items-center justify-center text-center border border-primary/30">
         <div className="mx-auto flex h-16 w-16 items-center justify-center rounded-full bg-primary/80 mb-4 shadow-lg">
           <Signal className="h-8 w-8 text-primary-foreground" />
         </div>
