@@ -1,8 +1,7 @@
-
 "use client";
 
 import { useState, useEffect, useCallback } from "react";
-import type { UserProfile } from "@/lib/types";
+import type { UserProfile, ProfilePromptAnswer } from "@/lib/types";
 import { MatchCard } from "@/components/dashboard/match-card";
 import { Button } from "@/components/ui/button";
 import { RefreshCw, Users, Undo2, HeartHandshake as HeartHandshakeIcon, Sparkles as SparklesIcon, Loader2 } from "lucide-react";
@@ -23,6 +22,7 @@ import { fetchSparkSwipeInsights, getUsersForSwiping } from "@/app/actions";
 import type { SparkSwipeOutput, SparkSwipeInput } from "@/ai/flows/spark-swipe-flow";
 import { CrossdPlusUpsellDialog } from "@/components/pricing/crossd-plus-upsell-dialog";
 import { useAuth } from "@/hooks/use-auth";
+import { AVAILABLE_PROMPTS } from "@/lib/mock-data";
 
 const DAILY_SPARK_LIMIT = 1;
 
@@ -52,7 +52,7 @@ export function SparkSwipeSection() {
     }
     setIsLoading(true);
 
-    const currentUserPromptIds = new Set(currentUser.prompts.map(p => p.promptId));
+    const currentUserPromptIds = new Set((currentUser.prompts || []).map(p => p.promptId));
 
     if (currentUserPromptIds.size === 0) {
       setSparkUsers([]);
@@ -69,7 +69,7 @@ export function SparkSwipeSection() {
       const allUsers = await getUsersForSwiping(currentUser.id);
       
       const potentialMatches = allUsers.filter(user => {
-        return user.prompts.some(p => currentUserPromptIds.has(p.promptId));
+        return (user.prompts || []).some(p => currentUserPromptIds.has(p.promptId));
       });
 
       setSparkUsers([...potentialMatches].sort(() => 0.5 - Math.random()));
@@ -107,6 +107,17 @@ export function SparkSwipeSection() {
         setIsInsightsLoading(true);
         setInsights(null);
         try {
+          // Helper function to map prompts to include the question text
+          const mapPrompts = (prompts: ProfilePromptAnswer[] = []) => {
+            return prompts.map(p => {
+                const promptDetails = AVAILABLE_PROMPTS.find(ap => ap.id === p.promptId);
+                return {
+                    ...p,
+                    question: promptDetails?.question || 'A prompt',
+                };
+            }).filter(p => p.answer.trim() !== '');
+          };
+
           const input: SparkSwipeInput = {
             currentUserProfile: {
               id: currentUser.id,
@@ -115,7 +126,7 @@ export function SparkSwipeSection() {
               bio: currentUser.bio,
               vibeTags: currentUser.vibeTags,
               locationPatterns: currentUser.locationPatterns,
-              prompts: currentUser.prompts,
+              prompts: mapPrompts(currentUser.prompts),
             },
             candidateUserProfile: {
               id: candidateUser.id,
@@ -124,7 +135,7 @@ export function SparkSwipeSection() {
               bio: candidateUser.bio,
               vibeTags: candidateUser.vibeTags,
               locationPatterns: candidateUser.locationPatterns,
-              prompts: candidateUser.prompts,
+              prompts: mapPrompts(candidateUser.prompts),
             },
           };
           const result = await fetchSparkSwipeInsights(input);

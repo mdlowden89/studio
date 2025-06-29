@@ -1,4 +1,3 @@
-
 'use server';
 /**
  * @fileOverview AI flow to generate compatibility insights for Spark Swipe.
@@ -25,6 +24,7 @@ const UserProfileSchema = z.object({
     .array(
       z.object({
         promptId: z.string(),
+        question: z.string().describe("The question for the prompt."),
         answer: z.string(),
       })
     )
@@ -74,11 +74,25 @@ Analyze the two profiles provided below:
 - Bio: "{{currentUserProfile.bio}}"
 - Vibe Tags: {{#each currentUserProfile.vibeTags}}'{{this}}'{{#unless @last}}, {{/unless}}{{/each}}
 - Frequented Location Types: {{#each currentUserProfile.locationPatterns}}'{{this}}'{{#unless @last}}, {{/unless}}{{/each}}
+{{#if currentUserProfile.prompts}}
+- Their Answers to Profile Prompts (use these to understand their personality and humor):
+  {{#each currentUserProfile.prompts}}
+  - Q: {{this.question}}
+    A: "{{this.answer}}"
+  {{/each}}
+{{/if}}
 
 **Candidate User Profile Details:**
 - Bio: "{{candidateUserProfile.bio}}"
 - Vibe Tags: {{#each candidateUserProfile.vibeTags}}'{{this}}'{{#unless @last}}, {{/unless}}{{/each}}
 - Frequented Location Types: {{#each candidateUserProfile.locationPatterns}}'{{this}}'{{#unless @last}}, {{/unless}}{{/each}}
+{{#if candidateUserProfile.prompts}}
+- Their Answers to Profile Prompts (use these to understand their personality and humor):
+  {{#each candidateUserProfile.prompts}}
+  - Q: {{this.question}}
+    A: "{{this.answer}}"
+  {{/each}}
+{{/if}}
 
 **Your Task:**
 Generate a JSON object that adheres to the output schema. Follow these instructions precisely:
