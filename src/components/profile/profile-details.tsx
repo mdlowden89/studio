@@ -287,7 +287,8 @@ export function ProfileDetails({ user }: ProfileDetailsProps) {
 
     const profileData: Partial<UserProfile> = {
       name, email, age, bio, vibeTags, work, jobTitle, education,
-      gender, interestedIn, ethnicity, childrenStatus, familyPlans, heightInches,
+      gender, interestedIn, ethnicity, childrenStatus, familyPlans, 
+      heightInches: heightInches ?? null,
       height: selectedHeightOption ? selectedHeightOption.label : "Prefer Not to Say",
       drinking, smoking, zodiacSign, datingIntentions, religion, relationshipType,
       locationAddress, 
