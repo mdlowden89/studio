@@ -107,6 +107,7 @@ const CustomLoadingElement = () => (
 );
 
 export function ProfileDetails({ user }: ProfileDetailsProps) {
+  const router = useRouter();
   const [name, setName] = useState(user.name);
   const [email, setEmail] = useState(user.email || "");
   const [age, setAge] = useState(user.age);
@@ -147,8 +148,6 @@ export function ProfileDetails({ user }: ProfileDetailsProps) {
   const [isSuggestingTags, setIsSuggestingTags] = useState(false);
   const [isLoadingBioSuggestion, setIsLoadingBioSuggestion] = useState(false);
   
-  const router = useRouter();
-
   useEffect(() => {
     setIsMounted(true);
     setMapsApiKey(process.env.NEXT_PUBLIC_GOOGLE_MAPS_API_KEY);
@@ -282,7 +281,8 @@ export function ProfileDetails({ user }: ProfileDetailsProps) {
       setIsSaving(false);
       return;
     }
-
+    
+    const wasOnboardingIncomplete = !user.onboardingComplete;
     const selectedHeightOption = heightOptions.find(h => h.value === heightInches);
 
     const profileData: Partial<UserProfile> = {
@@ -301,10 +301,20 @@ export function ProfileDetails({ user }: ProfileDetailsProps) {
     try {
       const userDocRef = doc(db, "users", user.id);
       await updateDoc(userDocRef, profileData);
-      toast({
-        title: "Profile Updated",
-        description: "Your changes have been saved.",
-      });
+      
+      if (wasOnboardingIncomplete) {
+        toast({
+          title: "Profile Complete!",
+          description: "You're all set up. Let's find some connections! Redirecting...",
+        });
+        router.push('/dashboard');
+      } else {
+        toast({
+          title: "Profile Updated",
+          description: "Your changes have been saved.",
+        });
+      }
+
     } catch (error: any) {
       console.error("Error updating profile:", error);
       toast({
