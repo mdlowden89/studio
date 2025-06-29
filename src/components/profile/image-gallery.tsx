@@ -12,6 +12,7 @@ import { db, storage } from "@/lib/firebase";
 import { ref, uploadString, getDownloadURL, deleteObject } from "firebase/storage";
 import { doc, updateDoc } from "firebase/firestore";
 import { useRouter } from "next/navigation";
+import { useAuth } from "@/hooks/use-auth";
 
 interface ImageGalleryProps {
   initialImages: string[];
@@ -23,6 +24,7 @@ export function ImageGallery({ initialImages, userId }: ImageGalleryProps) {
   const [loadingStates, setLoadingStates] = useState<Record<number, boolean>>({});
   const { toast } = useToast();
   const router = useRouter();
+  const { userProfile } = useAuth();
 
   const handleImageUpload = async (file: File, index?: number) => {
     const isReplacing = typeof index === 'number';
@@ -226,13 +228,15 @@ export function ImageGallery({ initialImages, userId }: ImageGalleryProps) {
           </Card>
         )}
       </div>
-       <Alert variant="default" className="mt-6 border-primary/30">
-        <Info className="h-4 w-4 text-primary" />
-        <AlertTitle className="text-primary">Live Data Notice</AlertTitle>
-        <AlertDescription className="text-xs text-muted-foreground">
-          Image changes are now saved directly to Firebase Storage and your Firestore profile.
-        </AlertDescription>
-      </Alert>
+      {userProfile && userProfile.email && userProfile.email.endsWith('@example.com') && (
+        <Alert variant="default" className="mt-6 border-primary/30">
+          <Info className="h-4 w-4 text-primary" />
+          <AlertTitle className="text-primary">Live Data Notice</AlertTitle>
+          <AlertDescription className="text-xs text-muted-foreground">
+            Image changes are now saved directly to Firebase Storage and your Firestore profile.
+          </AlertDescription>
+        </Alert>
+      )}
     </div>
   );
 }
