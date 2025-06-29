@@ -32,10 +32,9 @@ const features = [
 ];
 
 const pricingTiers = [
-  { id: "weekly", name: "Weekly", price: "£6.99", popular: false, bestValue: false, stripePriceId: "price_placeholder_weekly" },
-  { id: "monthly", name: "1 Month", price: "£9.99", originalPrice: "£12.99", popular: false, bestValue: false, save: "Save £3.00", stripePriceId: "price_1RZv4hHKQz8P5Ogk1OQmW0E9" },
-  { id: "quarterly", name: "3 Months", price: "£29.99", originalPrice: "£38.97", popular: true, bestValue: false, save: "Save £8.98", stripePriceId: "price_placeholder_quarterly" },
-  { id: "annual", name: "12 Months", price: "£89.99", originalPrice: "£155.88", popular: false, bestValue: true, save: "Save £65.89", stripePriceId: "price_placeholder_annual" },
+  { id: "monthly", name: "1 Month", price: "£9.99", popular: false, bestValue: false, save: "Save £3.00", stripePriceId: process.env.NEXT_PUBLIC_STRIPE_MONTHLY_PRICE_ID || "" },
+  { id: "quarterly", name: "3 Months", price: "£29.99", originalPrice: "£38.97", popular: true, bestValue: false, save: "Save £8.98", stripePriceId: process.env.NEXT_PUBLIC_STRIPE_QUARTERLY_PRICE_ID || "" },
+  { id: "annual", name: "12 Months", price: "£89.99", originalPrice: "£155.88", popular: false, bestValue: true, save: "Save £65.89", stripePriceId: process.env.NEXT_PUBLIC_STRIPE_ANNUAL_PRICE_ID || "" },
 ];
 
 // Initialize Stripe.js outside the component
@@ -44,7 +43,7 @@ const stripePromise = loadStripe(process.env.NEXT_PUBLIC_STRIPE_PUBLISHABLE_KEY!
 export function CrossdPlusUpsellDialog({ isOpen, onOpenChange }: CrossdPlusUpsellDialogProps) {
   const { toast } = useToast();
   const router = useRouter(); // Initialize useRouter
-  const [selectedTierId, setSelectedTierId] = useState<string | null>(pricingTiers.find(t => t.popular)?.id || pricingTiers[2].id);
+  const [selectedTierId, setSelectedTierId] = useState<string | null>(pricingTiers.find(t => t.popular)?.id || pricingTiers[1].id);
   const [isLoading, setIsLoading] = useState(false);
 
   const handleSubscribe = async () => {
@@ -54,13 +53,13 @@ export function CrossdPlusUpsellDialog({ isOpen, onOpenChange }: CrossdPlusUpsel
     }
 
     const selectedTier = pricingTiers.find(t => t.id === selectedTierId);
-    if (!selectedTier || !selectedTier.stripePriceId || selectedTier.stripePriceId.includes('placeholder')) {
+    if (!selectedTier || !selectedTier.stripePriceId) {
       toast({
         title: "Configuration Error",
-        description: "Stripe Price ID is not configured for this tier. Please replace placeholders.",
+        description: "This subscription tier is not yet configured. Please ensure the corresponding Stripe Price ID is set in your .env file.",
         variant: "destructive",
       });
-      console.error("Stripe Price ID is a placeholder or missing for tier:", selectedTier?.name);
+      console.error("Stripe Price ID is missing for tier:", selectedTier?.name);
       return;
     }
 
@@ -92,7 +91,6 @@ export function CrossdPlusUpsellDialog({ isOpen, onOpenChange }: CrossdPlusUpsel
 
       // Redirect to an intermediate page that will handle the Stripe redirect
       router.push(`/payment/initiate-stripe-redirect?sessionId=${sessionData.sessionId}`);
-      // setIsLoading(false) will be handled by page navigation or if error occurs above
 
     } catch (error: any) {
       console.error("Subscription process error:", error);
@@ -103,8 +101,6 @@ export function CrossdPlusUpsellDialog({ isOpen, onOpenChange }: CrossdPlusUpsel
       });
       setIsLoading(false); // Reset loading on general error
     }
-    // Note: setIsLoading(false) might not be hit here if router.push successfully navigates away.
-    // If the push fails or if there's an error above, it should be reset.
   };
 
   return (
@@ -170,7 +166,7 @@ export function CrossdPlusUpsellDialog({ isOpen, onOpenChange }: CrossdPlusUpsel
               ))}
             </div>
             <p className="text-xs text-muted-foreground mt-3 text-center">
-              Remember to replace placeholder Stripe Price IDs in the code with your actual IDs from Stripe.
+              Make sure to set your Stripe Price IDs in the <code>.env</code> file.
             </p>
           </div>
         </div>
@@ -194,7 +190,4 @@ export function CrossdPlusUpsellDialog({ isOpen, onOpenChange }: CrossdPlusUpsel
             )}
           </Button>
         </DialogFooter>
-      </DialogContent>
-    </Dialog>
-  );
-}
+      </DialogContent
