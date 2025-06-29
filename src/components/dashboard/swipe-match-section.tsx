@@ -20,7 +20,7 @@ import {
 import ReactConfetti from 'react-confetti';
 import { CrossdPlusUpsellDialog } from "@/components/pricing/crossd-plus-upsell-dialog";
 import { useAuth } from "@/hooks/use-auth";
-import { getUsersForSwiping } from "@/app/actions";
+import { getUsersForSwiping, recordLike } from "@/app/actions";
 import { DiscoverFilters, type AppliedFilters } from "@/components/discover/discover-filters";
 
 const DAILY_LIKE_LIMIT = 8;
@@ -68,11 +68,6 @@ export function SwipeMatchSection() {
       }
     } catch (error) {
       console.error("Failed to fetch users for swiping:", error);
-      toast({
-        title: "Error fetching profiles",
-        description: "Could not load new profiles. Please try again later.",
-        variant: "destructive",
-      });
     } finally {
       setCurrentIndex(0);
       setPreviousIndex(null);
