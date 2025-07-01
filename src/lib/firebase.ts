@@ -12,6 +12,11 @@ const firebaseConfig: FirebaseOptions = {
   appId: process.env.NEXT_PUBLIC_FIREBASE_APP_ID,
 };
 
+// Add a check to ensure the API key is present
+if (!firebaseConfig.apiKey) {
+  throw new Error('NEXT_PUBLIC_FIREBASE_API_KEY is not defined. Please check your .env file and ensure it is populated with your Firebase project credentials.');
+}
+
 // Initialize Firebase
 const app = !getApps().length ? initializeApp(firebaseConfig) : getApp();
 
