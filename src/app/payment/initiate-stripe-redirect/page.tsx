@@ -19,4 +19,8 @@ function RedirectLoading() {
 
 export default function InitiateStripeRedirectPage() {
   return (
-    <Suspense fallback={<Redirect
+    <Suspense fallback={<RedirectLoading />}>
+      <InitiateStripeRedirectClient />
+    </Suspense>
+  );
+}
