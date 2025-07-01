@@ -1,3 +1,4 @@
+
 "use client";
 
 import { useState, useEffect } from "react";
@@ -13,7 +14,7 @@ import {
 } from "@/components/ui/dialog";
 import { Button } from "@/components/ui/button";
 import { ScrollArea } from "@/components/ui/scroll-area";
-import { X as XIcon, Zap, Sparkles, Star, Loader2, InfinityIcon, Eye, Rocket } from "lucide-react";
+import { X as XIcon, Zap, Sparkles, Star, Loader2, InfinityIcon, Eye, Rocket, AlertTriangle } from "lucide-react";
 import { useToast } from "@/hooks/use-toast";
 import { cn } from "@/lib/utils";
 import { CrossdLogoIcon } from "@/components/icons/crossd-logo";
@@ -162,6 +163,13 @@ export function FreeBoostUpsellDialog({ isOpen, onOpenChange }: FreeBoostUpsellD
               <span className="font-semibold">1 Free Boost on us!</span>
               <Zap className="h-5 w-5" />
             </div>
+            
+            {!STRIPE_PLATINUM_WEEKLY_BOOST_PRICE_ID && (
+                 <div className="text-center p-3 bg-muted rounded-lg text-muted-foreground text-xs flex items-center gap-2 justify-center">
+                    <AlertTriangle className="w-5 h-5 text-destructive" />
+                    <span>This offer is currently unavailable.</span>
+                </div>
+            )}
 
             <div className="py-2">
               <div className="inline-block px-3 py-1 text-xs font-medium bg-muted text-muted-foreground rounded-full mb-4">
@@ -218,7 +226,7 @@ export function FreeBoostUpsellDialog({ isOpen, onOpenChange }: FreeBoostUpsellD
             size="lg"
             className="w-full bg-primary hover:bg-primary/90 text-primary-foreground text-base sm:text-lg py-3 h-auto"
             onClick={handleSubscribe}
-            disabled={isLoading || timeLeft <= 0}
+            disabled={isLoading || timeLeft <= 0 || !STRIPE_PLATINUM_WEEKLY_BOOST_PRICE_ID}
           >
             {isLoading ? (
               <Loader2 className="mr-2 h-5 w-5 animate-spin" />

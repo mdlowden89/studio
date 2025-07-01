@@ -1,7 +1,7 @@
 
 "use client";
 
-import { useState } from "react";
+import { useState, useMemo } from "react";
 import { useRouter } from "next/navigation"; // Import useRouter
 import {
   Dialog,
@@ -14,7 +14,7 @@ import {
 } from "@/components/ui/dialog";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
-import { CheckCircle, InfinityIcon, Eye, Rocket, Zap, Star, Loader2 } from "lucide-react";
+import { CheckCircle, InfinityIcon, Eye, Rocket, Zap, Star, Loader2, AlertTriangle } from "lucide-react";
 import { useToast } from "@/hooks/use-toast";
 import { cn } from "@/lib/utils";
 import { loadStripe } from '@stripe/stripe-js';
@@ -42,9 +42,17 @@ const stripePromise = loadStripe(process.env.NEXT_PUBLIC_STRIPE_PUBLISHABLE_KEY!
 
 export function CrossdPlusUpsellDialog({ isOpen, onOpenChange }: CrossdPlusUpsellDialogProps) {
   const { toast } = useToast();
-  const router = useRouter(); // Initialize useRouter
-  const [selectedTierId, setSelectedTierId] = useState<string | null>(pricingTiers.find(t => t.popular)?.id || pricingTiers[1].id);
+  const router = useRouter();
   const [isLoading, setIsLoading] = useState(false);
+
+  const availableTiers = useMemo(() => pricingTiers.filter(t => t.stripePriceId), []);
+
+  const [selectedTierId, setSelectedTierId] = useState<string | null>(() => {
+    const popularTier = availableTiers.find(t => t.popular);
+    if (popularTier) return popularTier.id;
+    return availableTiers.length > 0 ? availableTiers[0].id : null;
+  });
+
 
   const handleSubscribe = async () => {
     if (!selectedTierId) {
@@ -52,7 +60,7 @@ export function CrossdPlusUpsellDialog({ isOpen, onOpenChange }: CrossdPlusUpsel
       return;
     }
 
-    const selectedTier = pricingTiers.find(t => t.id === selectedTierId);
+    const selectedTier = availableTiers.find(t => t.id === selectedTierId);
     if (!selectedTier || !selectedTier.stripePriceId) {
       toast({
         title: "Configuration Error",
@@ -132,39 +140,47 @@ export function CrossdPlusUpsellDialog({ isOpen, onOpenChange }: CrossdPlusUpsel
 
           <div className="pt-2">
             <h3 className="text-lg font-semibold text-foreground mb-3 text-center">Choose Your Plan:</h3>
-            <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
-              {pricingTiers.map((tier) => (
-                <button
-                  key={tier.id}
-                  onClick={() => setSelectedTierId(tier.id)}
-                  disabled={isLoading}
-                  className={cn(
-                    "p-4 border rounded-lg text-left transition-all duration-200 relative overflow-hidden",
-                    selectedTierId === tier.id ? "border-primary ring-2 ring-primary bg-primary/10 shadow-lg" : "border-border hover:border-primary/70 hover:bg-muted/50",
-                    tier.popular || tier.bestValue ? "border-primary" : "",
-                    isLoading ? "cursor-not-allowed opacity-70" : "cursor-pointer"
-                  )}
-                >
-                  {(tier.popular || tier.bestValue) && (
-                    <Badge
-                      variant={tier.popular ? "default" : "secondary"}
-                      className={cn(
-                        "absolute top-2 right-2 text-xs px-2 py-0.5",
-                        tier.popular ? "bg-primary text-primary-foreground" : "bg-yellow-500 text-black"
-                      )}
-                    >
-                      {tier.popular ? "Most Popular" : "Best Value"}
-                    </Badge>
-                  )}
-                  <h4 className="text-md font-semibold text-foreground">{tier.name}</h4>
-                  <p className="text-2xl font-bold text-primary mt-1">{tier.price}
-                    {tier.originalPrice && <span className="text-xs text-muted-foreground line-through ml-1.5"> {tier.originalPrice}</span>}
-                  </p>
-                  {tier.id !== "weekly" && <p className="text-xs text-muted-foreground mt-0.5">{tier.id === "monthly" ? "per month" : `billed ${tier.id === "quarterly" ? "every 3 months" : "annually"}`}</p>}
-                  {tier.save && <p className="text-xs text-green-500 font-medium mt-1">{tier.save}</p>}
-                </button>
-              ))}
-            </div>
+            {availableTiers.length > 0 ? (
+              <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
+                {availableTiers.map((tier) => (
+                  <button
+                    key={tier.id}
+                    onClick={() => setSelectedTierId(tier.id)}
+                    disabled={isLoading}
+                    className={cn(
+                      "p-4 border rounded-lg text-left transition-all duration-200 relative overflow-hidden",
+                      selectedTierId === tier.id ? "border-primary ring-2 ring-primary bg-primary/10 shadow-lg" : "border-border hover:border-primary/70 hover:bg-muted/50",
+                      tier.popular || tier.bestValue ? "border-primary" : "",
+                      isLoading ? "cursor-not-allowed opacity-70" : "cursor-pointer"
+                    )}
+                  >
+                    {(tier.popular || tier.bestValue) && (
+                      <Badge
+                        variant={tier.popular ? "default" : "secondary"}
+                        className={cn(
+                          "absolute top-2 right-2 text-xs px-2 py-0.5",
+                          tier.popular ? "bg-primary text-primary-foreground" : "bg-yellow-500 text-black"
+                        )}
+                      >
+                        {tier.popular ? "Most Popular" : "Best Value"}
+                      </Badge>
+                    )}
+                    <h4 className="text-md font-semibold text-foreground">{tier.name}</h4>
+                    <p className="text-2xl font-bold text-primary mt-1">{tier.price}
+                      {tier.originalPrice && <span className="text-xs text-muted-foreground line-through ml-1.5"> {tier.originalPrice}</span>}
+                    </p>
+                    {tier.id !== "weekly" && <p className="text-xs text-muted-foreground mt-0.5">{tier.id === "monthly" ? "per month" : `billed ${tier.id === "quarterly" ? "every 3 months" : "annually"}`}</p>}
+                    {tier.save && <p className="text-xs text-green-500 font-medium mt-1">{tier.save}</p>}
+                  </button>
+                ))}
+              </div>
+            ) : (
+                <div className="text-center p-4 bg-muted rounded-lg text-muted-foreground text-sm flex flex-col items-center gap-2">
+                    <AlertTriangle className="w-8 h-8 text-primary" />
+                    <p className="font-semibold">No subscription plans available</p>
+                    <p className="text-xs">Please ensure Stripe Price IDs are set in the <code>.env</code> file.</p>
+                </div>
+            )}
             <p className="text-xs text-muted-foreground mt-3 text-center">
               Make sure to set your Stripe Price IDs in the <code>.env</code> file.
             </p>
@@ -178,7 +194,7 @@ export function CrossdPlusUpsellDialog({ isOpen, onOpenChange }: CrossdPlusUpsel
           <Button
             onClick={handleSubscribe}
             className="w-full sm:w-auto bg-primary hover:bg-primary/90 text-primary-foreground"
-            disabled={!selectedTierId || isLoading}
+            disabled={!selectedTierId || isLoading || availableTiers.length === 0}
           >
             {isLoading ? (
               <>
