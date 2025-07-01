@@ -1,4 +1,3 @@
-
 "use client";
 
 import { useState, useEffect } from "react";
@@ -30,7 +29,7 @@ interface FreeBoostUpsellDialogProps {
   onOpenChange: (isOpen: boolean) => void;
 }
 
-const STRIPE_PLATINUM_WEEKLY_BOOST_PRICE_ID = "price_placeholder_platinum_weekly_boost_offer"; // REPLACE THIS WITH YOUR ACTUAL STRIPE PRICE ID
+const STRIPE_PLATINUM_WEEKLY_BOOST_PRICE_ID = process.env.NEXT_PUBLIC_STRIPE_PLATINUM_WEEKLY_BOOST_PRICE_ID || "";
 
 const formatTime = (totalSeconds: number): string => {
   if (totalSeconds < 0) return "00:00:00";
@@ -75,13 +74,13 @@ export function FreeBoostUpsellDialog({ isOpen, onOpenChange }: FreeBoostUpsellD
   }, [isOpen, isClient]);
 
   const handleSubscribe = async () => {
-    if (!STRIPE_PLATINUM_WEEKLY_BOOST_PRICE_ID || STRIPE_PLATINUM_WEEKLY_BOOST_PRICE_ID.includes("placeholder")) {
+    if (!STRIPE_PLATINUM_WEEKLY_BOOST_PRICE_ID) {
       toast({
         title: "Configuration Error",
-        description: "Stripe Price ID for the boost offer is not configured. Please replace placeholders.",
+        description: "The Stripe Price ID for the boost offer is not configured. Please add it to your .env file.",
         variant: "destructive",
       });
-      console.error("Stripe Price ID is a placeholder or missing for tier: Platinum Weekly Boost");
+      console.error("Stripe Price ID is missing for tier: Platinum Weekly Boost");
       return;
     }
 
