@@ -18,6 +18,7 @@ import { CheckCircle, InfinityIcon, Eye, Rocket, Zap, Star, Loader2, AlertTriang
 import { useToast } from "@/hooks/use-toast";
 import { cn } from "@/lib/utils";
 import { loadStripe } from '@stripe/stripe-js';
+import { useAuth } from "@/hooks/use-auth";
 
 interface CrossdPlusUpsellDialogProps {
   isOpen: boolean;
@@ -43,6 +44,7 @@ const stripePromise = loadStripe(process.env.NEXT_PUBLIC_STRIPE_PUBLISHABLE_KEY!
 export function CrossdPlusUpsellDialog({ isOpen, onOpenChange }: CrossdPlusUpsellDialogProps) {
   const { toast } = useToast();
   const router = useRouter();
+  const { user } = useAuth();
   const [isLoading, setIsLoading] = useState(false);
 
   const availableTiers = useMemo(() => pricingTiers.filter(t => t.stripePriceId), []);
@@ -55,6 +57,12 @@ export function CrossdPlusUpsellDialog({ isOpen, onOpenChange }: CrossdPlusUpsel
 
 
   const handleSubscribe = async () => {
+    if (!user) {
+      toast({ title: "Not Logged In", description: "You must be logged in to subscribe.", variant: "destructive" });
+      router.push('/login-form');
+      return;
+    }
+    
     if (!selectedTierId) {
       toast({ title: "Selection Error", description: "Please select a subscription tier.", variant: "destructive" });
       return;
@@ -79,7 +87,7 @@ export function CrossdPlusUpsellDialog({ isOpen, onOpenChange }: CrossdPlusUpsel
         headers: {
           'Content-Type': 'application/json',
         },
-        body: JSON.stringify({ priceId: selectedTier.stripePriceId }),
+        body: JSON.stringify({ priceId: selectedTier.stripePriceId, userId: user.uid }),
       });
 
       const sessionData = await response.json();

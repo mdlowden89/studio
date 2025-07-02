@@ -2,6 +2,14 @@
 import type { LucideIcon } from 'lucide-react';
 import type { FieldValue, Timestamp } from 'firebase/firestore';
 
+export interface SubscriptionInfo {
+  status: 'active' | 'canceled' | 'past_due' | 'inactive';
+  planId: string | null;
+  stripeSubscriptionId: string | null;
+  stripeCustomerId: string | null;
+  currentPeriodEnd: number | null; // as a Unix timestamp
+}
+
 export interface UserProfile {
   id: string;
   name: string;
@@ -35,6 +43,7 @@ export interface UserProfile {
   challenges?: Challenge[];
   locationServicesEnabled?: boolean;
   onboardingComplete: boolean;
+  subscription?: SubscriptionInfo;
 }
 
 export interface ProfilePrompt {

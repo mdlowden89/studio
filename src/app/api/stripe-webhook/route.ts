@@ -2,6 +2,9 @@
 import { NextResponse, type NextRequest } from 'next/server';
 import Stripe from 'stripe';
 import { Readable } from 'stream';
+import { db } from '@/lib/firebase';
+import { doc, updateDoc, collection, query, where, getDocs, limit } from 'firebase/firestore';
+import type { SubscriptionInfo } from '@/lib/types';
 
 // Initialize Stripe with the secret key
 const stripe = new Stripe(process.env.STRIPE_SECRET_KEY!, {
@@ -23,6 +26,22 @@ async function buffer(readable: Readable) {
   }
   return Buffer.concat(chunks);
 }
+
+const updateSubscriptionStatus = async (userId: string, subscription: Stripe.Subscription) => {
+    const subscriptionData: SubscriptionInfo = {
+        stripeSubscriptionId: subscription.id,
+        stripeCustomerId: subscription.customer as string,
+        planId: subscription.items.data[0].price.id,
+        status: subscription.status,
+        currentPeriodEnd: subscription.current_period_end,
+    };
+    
+    const userDocRef = doc(db, 'users', userId);
+    await updateDoc(userDocRef, {
+        subscription: subscriptionData,
+    });
+    console.log(`Updated subscription for user ${userId} to status ${subscription.status}.`);
+};
 
 export async function POST(request: NextRequest) {
   if (!request.body) {
@@ -47,59 +66,80 @@ export async function POST(request: NextRequest) {
   }
 
   // Handle the event
-  console.log(`Received Stripe event: ${event.type}`, event.data.object);
+  console.log(`Received Stripe event: ${event.type}`);
 
   switch (event.type) {
-    case 'checkout.session.completed':
+    case 'checkout.session.completed': {
       const session = event.data.object as Stripe.Checkout.Session;
-      // Fulfill the purchase...
-      // e.g., grant access to subscription, send confirmation email
-      console.log(`Checkout session completed for session ID: ${session.id}`);
-      if (session.customer && session.subscription) {
-          console.log(`Customer ID: ${session.customer}, Subscription ID: ${session.subscription}`);
-          // TODO: Save subscription details to your database, associate with your user
-          // Example: updateSubscriptionStatus(session.client_reference_id, session.subscription, 'active');
+      const userId = session.client_reference_id;
+      
+      if (!userId || !session.subscription) {
+        console.warn('Webhook Error: Missing client_reference_id or subscription ID in checkout.session.completed event.');
+        break;
+      }
+      
+      console.log(`Checkout session completed for user ID: ${userId}, subscription ID: ${session.subscription}`);
+      
+      // Retrieve the full subscription object to get all details
+      const subscription = await stripe.subscriptions.retrieve(session.subscription as string);
+      
+      await updateSubscriptionStatus(userId, subscription);
+      break;
+    }
+    
+    case 'customer.subscription.updated': {
+      const subscription = event.data.object as Stripe.Subscription;
+      const customerId = subscription.customer as string;
+
+      const usersRef = collection(db, 'users');
+      const q = query(usersRef, where('subscription.stripeCustomerId', '==', customerId), limit(1));
+      const querySnapshot = await getDocs(q);
+
+      if (!querySnapshot.empty) {
+        const userId = querySnapshot.docs[0].id;
+        await updateSubscriptionStatus(userId, subscription);
       } else {
-          console.warn('Checkout session completed but customer or subscription ID is missing.');
+        console.warn(`Webhook Error: Received subscription update for unknown customer ID: ${customerId}`);
       }
       break;
-    
-    case 'customer.subscription.created':
-      const subscriptionCreated = event.data.object as Stripe.Subscription;
-      console.log(`Subscription created: ${subscriptionCreated.id}, Customer: ${subscriptionCreated.customer}, Status: ${subscriptionCreated.status}`);
-      // TODO: Store subscription details and status.
-      break;
+    }
 
-    case 'customer.subscription.updated':
-      const subscriptionUpdated = event.data.object as Stripe.Subscription;
-      console.log(`Subscription updated: ${subscriptionUpdated.id}, Customer: ${subscriptionUpdated.customer}, Status: ${subscriptionUpdated.status}`);
-      // TODO: Handle subscription changes (e.g., plan change, status change like 'past_due').
-      // If subscriptionUpdated.status is 'active', ensure user has access.
-      // If status is 'canceled' or 'unpaid', revoke access.
-      break;
+    case 'customer.subscription.deleted': {
+      const subscription = event.data.object as Stripe.Subscription;
+      const customerId = subscription.customer as string;
 
-    case 'customer.subscription.deleted':
-      const subscriptionDeleted = event.data.object as Stripe.Subscription;
-      console.log(`Subscription deleted: ${subscriptionDeleted.id}, Customer: ${subscriptionDeleted.customer}, Status: ${subscriptionDeleted.status}`);
-      // TODO: Revoke access to premium features.
+      const usersRef = collection(db, 'users');
+      const q = query(usersRef, where('subscription.stripeCustomerId', '==', customerId), limit(1));
+      const querySnapshot = await getDocs(q);
+
+      if (!querySnapshot.empty) {
+        const userId = querySnapshot.docs[0].id;
+         const userDocRef = doc(db, 'users', userId);
+        // Set status to canceled. You might want more sophisticated logic here,
+        // e.g., setting a `subscription` field to null or a different status.
+        await updateDoc(userDocRef, {
+            'subscription.status': 'canceled',
+        });
+        console.log(`Cancelled subscription for user ${userId}.`);
+      } else {
+        console.warn(`Webhook Error: Received subscription deletion for unknown customer ID: ${customerId}`);
+      }
       break;
+    }
 
     case 'invoice.payment_succeeded':
       const invoicePaymentSucceeded = event.data.object as Stripe.Invoice;
       console.log(`Invoice payment succeeded for invoice ID: ${invoicePaymentSucceeded.id}, Subscription: ${invoicePaymentSucceeded.subscription}`);
-      // If it's for a subscription, ensure the subscription is marked as active.
-      if (invoicePaymentSucceeded.subscription) {
-        // TODO: Verify subscription status and grant access if needed.
-      }
+      // The 'customer.subscription.updated' event will handle the status change to 'active'.
+      // You can add additional logic here if needed, like sending a receipt email.
       break;
 
     case 'invoice.payment_failed':
       const invoicePaymentFailed = event.data.object as Stripe.Invoice;
       console.log(`Invoice payment failed for invoice ID: ${invoicePaymentFailed.id}, Subscription: ${invoicePaymentFailed.subscription}`);
-      // TODO: Notify the customer, potentially downgrade or suspend subscription.
+      // The 'customer.subscription.updated' event will handle the status change to 'past_due' or other statuses.
+      // You can add logic to notify the user about the payment failure.
       break;
-
-    // ... handle other event types as needed
 
     default:
       console.warn(`Unhandled event type ${event.type}`);

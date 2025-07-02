@@ -10,10 +10,14 @@ const stripe = new Stripe(process.env.STRIPE_SECRET_KEY!, {
 
 export async function POST(request: NextRequest) {
   try {
-    const { priceId } = await request.json();
+    const { priceId, userId } = await request.json();
 
     if (!priceId) {
       return NextResponse.json({ error: 'Price ID is required' }, { status: 400 });
+    }
+
+    if (!userId) {
+      return NextResponse.json({ error: 'User ID is required' }, { status: 400 });
     }
 
     const appUrl = process.env.NEXT_PUBLIC_APP_URL || 'http://localhost:9002';
@@ -30,9 +34,7 @@ export async function POST(request: NextRequest) {
       mode: 'subscription', // Or 'payment' for one-time purchases
       success_url: `${appUrl}/payment/success?session_id={CHECKOUT_SESSION_ID}`,
       cancel_url: `${appUrl}/payment/cancel`,
-      // You might want to pass customer_email or customer ID if the user is logged in
-      // customer_email: userEmail, 
-      // client_reference_id: userId, // Useful for linking session to your internal user ID
+      client_reference_id: userId, // Link session to your internal user ID
     });
 
     if (session.id) {
