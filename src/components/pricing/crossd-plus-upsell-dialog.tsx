@@ -186,12 +186,9 @@ export function CrossdPlusUpsellDialog({ isOpen, onOpenChange }: CrossdPlusUpsel
                 <div className="text-center p-4 bg-muted rounded-lg text-muted-foreground text-sm flex flex-col items-center gap-2">
                     <AlertTriangle className="w-8 h-8 text-primary" />
                     <p className="font-semibold">No subscription plans available</p>
-                    <p className="text-xs">Please ensure Stripe Price IDs are set in the <code>.env</code> file.</p>
+                    <p className="text-xs">Plans are not available at this time. Please check back later.</p>
                 </div>
             )}
-            <p className="text-xs text-muted-foreground mt-3 text-center">
-              Make sure to set your Stripe Price IDs in the <code>.env</code> file.
-            </p>
           </div>
         </div>
 
