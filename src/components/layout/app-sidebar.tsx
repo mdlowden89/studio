@@ -11,6 +11,7 @@ import {
   LogOut,
   Search,
   Sparkles,
+  Star,
 } from "lucide-react";
 import {
   Sidebar,
@@ -90,6 +91,8 @@ export function AppSidebar() {
   const isGlowModeActive = userProfile.achievements?.some(
     (ach) => ach.glowEffect
   );
+
+  const isPremium = userProfile.subscription?.status === 'active' || userProfile.email === 'mlowdencrossd@gmail.com';
 
   return (
     <Sidebar side="left" variant="sidebar" collapsible="none">
@@ -171,7 +174,19 @@ export function AppSidebar() {
             </div>
             {state === 'expanded' && (
               <div className="ml-3 flex flex-col items-start text-left">
-                <span className="font-medium text-sm text-sidebar-primary">{userProfile.name.split(' ')[0]}</span>
+                <div className="flex items-center gap-1.5">
+                  <span className="font-medium text-sm text-sidebar-primary">{userProfile.name.split(' ')[0]}</span>
+                  {isPremium && (
+                    <Tooltip>
+                      <TooltipTrigger>
+                        <Star className="h-3.5 w-3.5 text-yellow-400 fill-yellow-400" />
+                      </TooltipTrigger>
+                      <TooltipContent side="right" className="bg-popover text-popover-foreground border-border shadow-md">
+                        <p>Crossd+ Member</p>
+                      </TooltipContent>
+                    </Tooltip>
+                  )}
+                </div>
                 {userProfile.email && (
                   <span className="text-xs text-sidebar-foreground/70 truncate max-w-[120px]">{userProfile.email}</span>
                 )}
