@@ -23,7 +23,7 @@ import {
   SidebarTrigger,
   useSidebar,
 } from "@/components/ui/sidebar";
-import { Button } from "@/components/ui/button";
+import { Button, buttonVariants } from "@/components/ui/button";
 import { Separator } from "@/components/ui/separator";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { CrossdLogoIcon } from "@/components/icons/crossd-logo";
@@ -150,12 +150,13 @@ export function AppSidebar() {
       </SidebarMenu>
       <Separator className="my-2 bg-sidebar-border" />
       <SidebarFooter className="p-2 space-y-2">
-        <Link href="/profile" passHref legacyBehavior>
-          <Button 
-            variant="ghost" 
-            className="w-full justify-start p-2 h-auto items-center hover:bg-sidebar-accent hover:shadow-md hover:shadow-primary/40 transition-all duration-200"
-            as="a"
-          >
+        <Link 
+            href="/profile" 
+            className={cn(
+                buttonVariants({ variant: 'ghost' }),
+                "w-full justify-start p-2 h-auto items-center hover:bg-sidebar-accent hover:shadow-md hover:shadow-primary/40 transition-all duration-200"
+            )}
+        >
             <div className={cn(
                 "relative rounded-full", 
                 isGlowModeActive && "ring-2 ring-primary/50 p-0.5 shadow-md shadow-primary/30"
@@ -173,13 +174,15 @@ export function AppSidebar() {
               )}
             </div>
             {state === 'expanded' && (
-              <div className="ml-3 flex flex-col items-start text-left">
+              <div className="ml-3 flex flex-col items-start text-left min-w-0">
                 <div className="flex items-center gap-1.5">
-                  <span className="font-medium text-sm text-sidebar-primary">{userProfile.name.split(' ')[0]}</span>
+                  <span className="font-medium text-sm text-sidebar-primary truncate">{userProfile.name.split(' ')[0]}</span>
                   {isPremium && (
                     <Tooltip>
-                      <TooltipTrigger>
-                        <Star className="h-3.5 w-3.5 text-yellow-400 fill-yellow-400" />
+                      <TooltipTrigger asChild onClick={(e) => e.preventDefault()}>
+                        <span className="cursor-default flex items-center">
+                            <Star className="h-3.5 w-3.5 text-yellow-400 fill-yellow-400" />
+                        </span>
                       </TooltipTrigger>
                       <TooltipContent side="right" className="bg-popover text-popover-foreground border-border shadow-md">
                         <p>Crossd+ Member</p>
@@ -192,7 +195,6 @@ export function AppSidebar() {
                 )}
               </div>
             )}
-          </Button>
         </Link>
 
         {state === 'expanded' && displayedAchievements.length > 0 && (
