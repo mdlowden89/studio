@@ -123,8 +123,11 @@ export function SwipeMatchSection() {
         setShowUpsellDialog(true);
         return;
       }
-      setLikesUsedToday(prev => prev + 1);
-      setLikesAnimationTrigger(prev => prev + 1); // Trigger animation
+      
+      if (!isPremium) {
+        setLikesUsedToday(prev => prev + 1);
+        setLikesAnimationTrigger(prev => prev + 1); // Trigger animation
+      }
       
       try {
         const result = await recordLike(user.uid, actionUser.id);
@@ -141,7 +144,9 @@ export function SwipeMatchSection() {
       } catch (error) {
         console.error("Error recording like:", error);
         toast({ title: "Error", description: "Could not record your like. Please try again.", variant: "destructive" });
-        setLikesUsedToday(prev => prev - 1); // Revert optimistic update
+        if (!isPremium) {
+            setLikesUsedToday(prev => prev - 1); // Revert optimistic update
+        }
         return; // Don't advance to the next user on error
       }
 

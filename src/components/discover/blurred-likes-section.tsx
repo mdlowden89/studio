@@ -24,7 +24,7 @@ const RevealedLikesGrid = () => {
   const handleCardClick = (userName: string) => {
     toast({
       title: "Profile Viewed",
-      description: `You can find ${userName} in your swipe deck to take action.`,
+      description: `You can now find ${userName} in your swipe deck to take action.`,
     });
   };
 
