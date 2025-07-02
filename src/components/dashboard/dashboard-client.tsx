@@ -19,7 +19,7 @@ import { FreeBoostUpsellDialog } from "@/components/pricing/free-boost-upsell-di
 import { useSearchParams, useRouter } from "next/navigation";
 import { useToast } from "@/hooks/use-toast";
 import { EmotionalHotspotsUpsell } from "@/components/dashboard/emotional-hotspots-upsell";
-import { fetchMomentsForUser, fetchUserChatCount } from "@/app/actions";
+import { fetchMomentsForUser, fetchUserChatCount, activateGlowMode } from "@/app/actions";
 import { Skeleton } from "@/components/ui/skeleton";
 
 interface DashboardClientProps {
@@ -69,6 +69,7 @@ export function DashboardClient({ currentUser }: DashboardClientProps) {
 
   const [isLoadingMoments, setIsLoadingMoments] = useState(true);
   const [isLoadingChats, setIsLoadingChats] = useState(true);
+  const [isGlowActivating, setIsGlowActivating] = useState(false);
 
   const searchParams = useSearchParams();
   const router = useRouter();
@@ -203,6 +204,31 @@ export function DashboardClient({ currentUser }: DashboardClientProps) {
     );
   }, [currentUser.challenges]);
   
+  const handleActivateGlow = async () => {
+    if (!currentUser) return;
+    setIsGlowActivating(true);
+    const result = await activateGlowMode(currentUser.id);
+    if (result.success) {
+      toast({
+        title: "Glow Mode Activated! ✨",
+        description: "Your profile will stand out for the next 24 hours.",
+      });
+      // The profile will re-render due to the useAuth hook's listener.
+    } else {
+      toast({
+        title: "Activation Failed",
+        description: result.error || "Could not activate Glow Mode.",
+        variant: "destructive",
+      });
+    }
+    setIsGlowActivating(false);
+  };
+  
+  const isGlowModeActive = useMemo(() => {
+    if (!currentUser.glowEffect?.expiresAt) return false;
+    return currentUser.glowEffect.active && new Date(currentUser.glowEffect.expiresAt) > new Date();
+  }, [currentUser.glowEffect]);
+
   const boosters = [
     {
       icon: Zap,
@@ -446,45 +472,47 @@ export function DashboardClient({ currentUser }: DashboardClientProps) {
           </CardContent>
         </Card>
 
-        {!isPremium && (
-          <Card className="mb-8 bg-card shadow-xl">
-            <CardHeader>
-              <div className="flex items-center gap-3">
-                <Signal className="w-7 h-7 text-primary" />
-                <div>
-                  <CardTitle className="text-xl font-semibold">Emotional Hotspots</CardTitle>
-                  <CardDescription className="text-muted-foreground">
-                    A premium Crossd+ feature to know where sparks are born.
-                  </CardDescription>
-                </div>
-              </div>
-            </CardHeader>
-            <CardContent>
-              <EmotionalHotspotsUpsell onUnlock={() => setShowUpsellDialog(true)} />
-            </CardContent>
-          </Card>
-        )}
+        <div className="grid grid-cols-1 lg:grid-cols-2 gap-8 mb-8">
+            {!isPremium && (
+                <Card className="bg-card shadow-xl">
+                    <CardHeader>
+                    <div className="flex items-center gap-3">
+                        <Signal className="w-7 h-7 text-primary" />
+                        <div>
+                        <CardTitle className="text-xl font-semibold">Emotional Hotspots</CardTitle>
+                        <CardDescription className="text-muted-foreground">
+                            A premium Crossd+ feature to know where sparks are born.
+                        </CardDescription>
+                        </div>
+                    </div>
+                    </CardHeader>
+                    <CardContent>
+                    <EmotionalHotspotsUpsell onUnlock={() => setShowUpsellDialog(true)} />
+                    </CardContent>
+                </Card>
+            )}
 
-        <Card className="mb-8 bg-gradient-to-br from-primary/10 via-card to-card shadow-xl border-primary/30">
-          <CardHeader className="text-center">
-             <div className="mx-auto flex h-16 w-16 items-center justify-center rounded-full bg-primary/80 mb-3 shadow-lg animate-pulse">
-                <Star className="h-8 w-8 text-primary-foreground" />
-              </div>
-            <CardTitle className="text-2xl font-bold text-primary">Unlock Crossd+</CardTitle>
-            <CardDescription className="text-muted-foreground max-w-md mx-auto">
-              Supercharge your experience with unlimited likes, see who likes you, and more exclusive perks!
-            </CardDescription>
-          </CardHeader>
-          <CardFooter className="flex justify-center p-6">
-            <Button 
-              onClick={() => setShowUpsellDialog(true)} 
-              size="lg" 
-              className="bg-gradient-to-r from-primary via-pink-500 to-orange-400 hover:from-primary/90 hover:via-pink-500/90 hover:to-orange-400/90 text-primary-foreground shadow-lg transform hover:scale-105 transition-transform"
-            >
-              <Sparkles className="mr-2 h-5 w-5" /> Explore Premium Features
-            </Button>
-          </CardFooter>
-        </Card>
+            <Card className="bg-gradient-to-br from-primary/10 via-card to-card shadow-xl border-primary/30 lg:col-span-2">
+                <CardHeader className="text-center">
+                    <div className="mx-auto flex h-16 w-16 items-center justify-center rounded-full bg-primary/80 mb-3 shadow-lg animate-pulse">
+                        <Star className="h-8 w-8 text-primary-foreground" />
+                    </div>
+                    <CardTitle className="text-2xl font-bold text-primary">Unlock Crossd+</CardTitle>
+                    <CardDescription className="text-muted-foreground max-w-md mx-auto">
+                    Supercharge your experience with unlimited likes, see who likes you, and more exclusive perks!
+                    </CardDescription>
+                </CardHeader>
+                <CardFooter className="flex justify-center p-6">
+                    <Button 
+                    onClick={() => setShowUpsellDialog(true)} 
+                    size="lg" 
+                    className="bg-gradient-to-r from-primary via-pink-500 to-orange-400 hover:from-primary/90 hover:via-pink-500/90 hover:to-orange-400/90 text-primary-foreground shadow-lg transform hover:scale-105 transition-transform"
+                    >
+                    <Sparkles className="mr-2 h-5 w-5" /> Explore Premium Features
+                    </Button>
+                </CardFooter>
+            </Card>
+        </div>
 
 
         <Card className="mb-8 bg-card shadow-xl">
@@ -503,6 +531,9 @@ export function DashboardClient({ currentUser }: DashboardClientProps) {
             <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
               {boosters.slice(0, 4).map((booster) => {
                 const BoosterIcon = booster.icon;
+                const isGlowBooster = booster.title === "Glow Mode Boost";
+                const isDisabled = isGlowBooster && (isGlowModeActive || isGlowActivating);
+
                 return (
                   <Card key={booster.title} className="bg-muted/30 flex flex-col">
                     <CardHeader>
@@ -517,8 +548,22 @@ export function DashboardClient({ currentUser }: DashboardClientProps) {
                     </CardContent>
                     <CardFooter className="flex items-center justify-between pt-4">
                       <p className="text-lg font-bold text-primary">{booster.price}</p>
-                      <Button variant="outline" size="sm" onClick={() => toast({ title: "Coming Soon!", description: `${booster.title} checkout is not yet implemented.` })}>
-                        Purchase
+                      <Button
+                        variant="outline"
+                        size="sm"
+                        onClick={
+                          isGlowBooster
+                            ? handleActivateGlow
+                            : () => toast({ title: "Coming Soon!", description: `${booster.title} checkout is not yet implemented.` })
+                        }
+                        disabled={isDisabled}
+                      >
+                        {isGlowBooster && isGlowActivating ? (
+                          <Loader2 className="mr-2 h-4 w-4 animate-spin" />
+                        ) : null}
+                        {isGlowBooster
+                          ? isGlowActivating ? "Activating..." : isGlowModeActive ? "Active" : "Purchase"
+                          : "Purchase"}
                       </Button>
                     </CardFooter>
                   </Card>

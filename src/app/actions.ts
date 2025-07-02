@@ -7,7 +7,8 @@ import { getPlacePhoto, GetPlacePhotoInput, GetPlacePhotoOutput } from "@/ai/flo
 import { getSparkSwipeInsights, SparkSwipeInput, SparkSwipeOutput } from "@/ai/flows/spark-swipe-flow";
 import { db } from "@/lib/firebase";
 import { doc, getDoc, updateDoc, collection, addDoc, serverTimestamp, query, where, limit, getDocs, orderBy, Timestamp, getCountFromServer, writeBatch, Query, collectionGroup, startAfter, QueryConstraint } from "firebase/firestore";
-import type { UserProfile, Achievement, Challenge, Moment, MomentLog, Chat, Notification, ChatMessage } from "@/lib/types";
+import type { UserProfile, Achievement, Challenge, Moment, MomentLog, Chat, Notification, ChatMessage, SubscriptionInfo } from "@/lib/types";
+import { addHours } from "date-fns";
 
 // This type should align with the filter component's state
 export interface UserFilters {
@@ -699,5 +700,23 @@ export async function checkForNewLikes(userId: string): Promise<boolean> {
   return !snapshot.empty;
 }
 
+export async function activateGlowMode(userId: string): Promise<{ success: boolean; error?: string }> {
+  try {
+    const userDocRef = doc(db, 'users', userId);
+    const expiresAt = addHours(new Date(), 24).toISOString();
 
+    await updateDoc(userDocRef, {
+      glowEffect: {
+        active: true,
+        expiresAt: expiresAt,
+      },
+    });
+
+    console.log(`Glow Mode activated for user ${userId}, expires at ${expiresAt}`);
+    return { success: true };
+  } catch (error: any) {
+    console.error("Error activating Glow Mode:", error);
+    return { success: false, error: error.message || "Failed to activate Glow Mode." };
+  }
+}
     

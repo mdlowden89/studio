@@ -88,9 +88,13 @@ export function AppSidebar() {
     : [];
   const displayedAchievements = sortedAchievements.slice(0, 3);
 
-  const isGlowModeActive = userProfile.achievements?.some(
+  const hasGlowAchievement = userProfile.achievements?.some(
     (ach) => ach.glowEffect
   );
+  
+  const isGlowBoostActive = userProfile.glowEffect?.active && userProfile.glowEffect.expiresAt && new Date(userProfile.glowEffect.expiresAt) > new Date();
+  
+  const isGlowModeActive = hasGlowAchievement || isGlowBoostActive;
 
   const isPremium = userProfile.subscription?.status === 'active' || userProfile.email === 'mlowdencrossd@gmail.com';
 
@@ -159,7 +163,7 @@ export function AppSidebar() {
         >
             <div className={cn(
                 "relative rounded-full", 
-                isGlowModeActive && "ring-2 ring-primary/50 p-0.5 shadow-md shadow-primary/30"
+                isGlowModeActive && "ring-2 ring-primary/70 p-0.5 shadow-lg shadow-primary/50 animate-pulse"
             )}>
               <Avatar className="h-10 w-10 shrink-0">
                 <AvatarImage 
@@ -179,7 +183,7 @@ export function AppSidebar() {
                   <span className="font-medium text-sm text-sidebar-primary truncate">{userProfile.name.split(' ')[0]}</span>
                   {isPremium && (
                     <Tooltip>
-                      <TooltipTrigger asChild onClick={(e) => e.preventDefault()}>
+                      <TooltipTrigger asChild>
                         <span className="cursor-default flex items-center">
                             <Star className="h-3.5 w-3.5 text-yellow-400 fill-yellow-400" />
                         </span>

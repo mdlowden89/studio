@@ -44,6 +44,10 @@ export interface UserProfile {
   locationServicesEnabled?: boolean;
   onboardingComplete: boolean;
   subscription?: SubscriptionInfo;
+  glowEffect?: {
+    active: boolean;
+    expiresAt: string; // ISO string
+  };
 }
 
 export interface ProfilePrompt {
