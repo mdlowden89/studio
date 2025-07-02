@@ -1,4 +1,3 @@
-
 "use client";
 
 import { useState, useEffect, useMemo, useCallback } from "react";
@@ -460,79 +459,6 @@ export function DashboardClient({ currentUser }: DashboardClientProps) {
           </CardContent>
         </Card>
 
-        <Card className="mb-8 bg-card shadow-xl">
-          <CardHeader>
-             <div className="flex items-center gap-3">
-                <Activity className="w-7 h-7 text-primary" />
-                <div>
-                    <CardTitle className="text-xl font-semibold">Your Weekly Recap</CardTitle>
-                    <CardDescription className="text-muted-foreground">
-                    Highlights from your activity this past week on Crossd.
-                    </CardDescription>
-                </div>
-            </div>
-          </CardHeader>
-          <CardContent className="space-y-6">
-            {isLoadingMoments ? (
-              <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 mb-6">
-                <Skeleton className="h-24 w-full" />
-                <Skeleton className="h-24 w-full" />
-              </div>
-            ) : momentsThisWeek.length > 0 ? (
-              <>
-                <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 mb-6">
-                  <div className="bg-muted/50 p-4 rounded-lg shadow-md flex items-center gap-3">
-                    <Map className="w-8 h-8 text-primary/80" />
-                    <div>
-                      <p className="text-2xl font-bold text-foreground">{distinctPlacesVisitedCount}</p>
-                      <p className="text-sm text-muted-foreground">Distinct Places Visited</p>
-                    </div>
-                  </div>
-                  <div className="bg-muted/50 p-4 rounded-lg shadow-md flex items-center gap-3">
-                    <CalendarDays className="w-8 h-8 text-primary/80" />
-                    <div>
-                      <p className="text-2xl font-bold text-foreground">{mostActiveDay}</p>
-                      <p className="text-sm text-muted-foreground">Your Busiest Day</p>
-                    </div>
-                  </div>
-                </div>
-
-                <div>
-                  <h4 className="text-lg font-semibold mb-3 text-foreground">Places You've Been This Week:</h4>
-                  <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
-                    {momentsThisWeek.map(moment => {
-                      const matchedUser = moment.potentialMatchId ? MOCK_USERS.find(u => u.id === moment.potentialMatchId) : null;
-                      const datePart = format(new Date(moment.loggedAt as string), "EEE, MMM d");
-                      const timePart = clientFormattedTimes[moment.id] ? `at ${clientFormattedTimes[moment.id]}` : "";
-                      return (
-                        <div key={moment.id} className="bg-muted/30 p-4 rounded-lg shadow hover:shadow-primary/20 transition-shadow">
-                          <div className="flex items-center gap-2 mb-1.5">
-                            <MapPin className="w-5 h-5 text-primary" />
-                            <h5 className="font-semibold text-foreground truncate">{moment.placeName}</h5>
-                          </div>
-                          <p className="text-xs text-muted-foreground mb-2">{datePart} {timePart}</p>
-                          {matchedUser ? (
-                            <div className="flex items-center gap-2 text-xs text-green-400 bg-green-500/10 p-2 rounded-md">
-                              <Users2 className="w-4 h-4" />
-                              <span>Crossed paths with {matchedUser.name.split(' ')[0]}!</span>
-                            </div>
-                          ) : (
-                             <p className="text-xs text-muted-foreground italic">You visited this place.</p>
-                          )}
-                        </div>
-                      );
-                    })}
-                  </div>
-                </div>
-              </>
-            ) : (
-              <p className="text-muted-foreground text-center py-6">
-                Not enough activity this week for a recap. Log some moments!
-              </p>
-            )}
-          </CardContent>
-        </Card>
-
         <Card className="mb-8 bg-gradient-to-br from-primary/10 via-card to-card shadow-xl border-primary/30">
           <CardHeader className="text-center">
             <div className="mx-auto flex h-16 w-16 items-center justify-center rounded-full bg-primary/80 mb-3 shadow-lg animate-pulse">
@@ -547,7 +473,7 @@ export function DashboardClient({ currentUser }: DashboardClientProps) {
             <Button 
               onClick={() => setShowUpsellDialog(true)} 
               size="lg" 
-              className="bg-primary hover:bg-primary/90 text-primary-foreground shadow-md hover:shadow-primary/50 transition-all duration-300 transform hover:scale-105"
+              className="bg-gradient-to-r from-primary via-pink-500 to-orange-400 hover:from-primary/90 hover:via-pink-500/90 hover:to-orange-400/90 text-primary-foreground shadow-lg transform hover:scale-105 transition-transform"
             >
               <Sparkles className="mr-2 h-5 w-5" /> Explore Premium Features
             </Button>

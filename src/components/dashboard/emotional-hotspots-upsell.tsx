@@ -20,7 +20,7 @@ export function EmotionalHotspotsUpsell({ onUnlock }: EmotionalHotspotsUpsellPro
         <Button 
           onClick={onUnlock} 
           size="lg"
-          className="bg-primary hover:bg-primary/90 text-primary-foreground shadow-md hover:shadow-primary/50 transition-all duration-300 transform hover:scale-105"
+          className="bg-gradient-to-r from-primary via-pink-500 to-orange-400 hover:from-primary/90 hover:via-pink-500/90 hover:to-orange-400/90 text-primary-foreground shadow-lg transform hover:scale-105 transition-transform"
         >
           <Sparkles className="mr-2 h-5 w-5" /> Unlock with Crossd+
         </Button>
