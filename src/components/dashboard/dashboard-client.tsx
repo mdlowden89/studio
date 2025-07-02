@@ -443,45 +443,43 @@ export function DashboardClient({ currentUser }: DashboardClientProps) {
           </CardContent>
         </Card>
 
-        <div className="grid grid-cols-1 md:grid-cols-2 gap-8 mb-8">
-            <Card className="bg-card shadow-xl flex flex-col">
-              <CardHeader>
-                 <div className="flex items-center gap-3">
-                    <Signal className="w-7 h-7 text-primary" />
-                    <div>
-                        <CardTitle className="text-xl font-semibold">Emotional Hotspots</CardTitle>
-                        <CardDescription className="text-muted-foreground">
-                          A premium Crossd+ feature to know where sparks are born.
-                        </CardDescription>
-                    </div>
-                </div>
-              </CardHeader>
-              <CardContent className="flex-grow flex">
-                <EmotionalHotspotsUpsell onUnlock={() => setShowUpsellDialog(true)} />
-              </CardContent>
-            </Card>
-
-            <Card className="bg-gradient-to-br from-primary/10 via-card to-card shadow-xl border-primary/30 flex flex-col">
-              <CardHeader className="text-center flex-grow flex flex-col justify-center">
-                <div className="mx-auto flex h-16 w-16 items-center justify-center rounded-full bg-primary/80 mb-3 shadow-lg animate-pulse">
-                  <Star className="h-8 w-8 text-primary-foreground" />
-                </div>
-                <CardTitle className="text-2xl font-bold text-primary">Unlock Crossd+</CardTitle>
-                <CardDescription className="text-muted-foreground max-w-md mx-auto">
-                  Supercharge your experience with unlimited likes, see who likes you, and more exclusive perks!
+        <Card className="mb-8 bg-card shadow-xl">
+          <CardHeader>
+            <div className="flex items-center gap-3">
+              <Signal className="w-7 h-7 text-primary" />
+              <div>
+                <CardTitle className="text-xl font-semibold">Emotional Hotspots</CardTitle>
+                <CardDescription className="text-muted-foreground">
+                  A premium Crossd+ feature to know where sparks are born.
                 </CardDescription>
-              </CardHeader>
-              <CardFooter className="flex justify-center p-6">
-                <Button 
-                  onClick={() => setShowUpsellDialog(true)} 
-                  size="lg" 
-                  className="bg-gradient-to-r from-primary via-pink-500 to-orange-400 hover:from-primary/90 hover:via-pink-500/90 hover:to-orange-400/90 text-primary-foreground shadow-lg transform hover:scale-105 transition-transform"
-                >
-                  <Sparkles className="mr-2 h-5 w-5" /> Explore Premium Features
-                </Button>
-              </CardFooter>
-            </Card>
-        </div>
+              </div>
+            </div>
+          </CardHeader>
+          <CardContent>
+            <EmotionalHotspotsUpsell onUnlock={() => setShowUpsellDialog(true)} />
+          </CardContent>
+        </Card>
+
+        <Card className="mb-8 bg-gradient-to-br from-primary/10 via-card to-card shadow-xl border-primary/30">
+          <CardHeader className="text-center">
+             <div className="mx-auto flex h-16 w-16 items-center justify-center rounded-full bg-primary/80 mb-3 shadow-lg animate-pulse">
+                <Star className="h-8 w-8 text-primary-foreground" />
+              </div>
+            <CardTitle className="text-2xl font-bold text-primary">Unlock Crossd+</CardTitle>
+            <CardDescription className="text-muted-foreground max-w-md mx-auto">
+              Supercharge your experience with unlimited likes, see who likes you, and more exclusive perks!
+            </CardDescription>
+          </CardHeader>
+          <CardFooter className="flex justify-center p-6">
+            <Button 
+              onClick={() => setShowUpsellDialog(true)} 
+              size="lg" 
+              className="bg-gradient-to-r from-primary via-pink-500 to-orange-400 hover:from-primary/90 hover:via-pink-500/90 hover:to-orange-400/90 text-primary-foreground shadow-lg transform hover:scale-105 transition-transform"
+            >
+              <Sparkles className="mr-2 h-5 w-5" /> Explore Premium Features
+            </Button>
+          </CardFooter>
+        </Card>
 
 
         <Card className="mb-8 bg-card shadow-xl">
