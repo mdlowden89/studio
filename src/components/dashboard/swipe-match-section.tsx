@@ -35,7 +35,7 @@ const defaultFilters: AppliedFilters = {
 };
 
 export function SwipeMatchSection() {
-  const { user } = useAuth();
+  const { user, userProfile } = useAuth();
   const [users, setUsers] = useState<UserProfile[]>([]);
   const [isLoading, setIsLoading] = useState(true);
   const [currentIndex, setCurrentIndex] = useState(0);
@@ -50,6 +50,8 @@ export function SwipeMatchSection() {
   const [likesAnimationTrigger, setLikesAnimationTrigger] = useState(0);
   
   const [filters, setFilters] = useState<AppliedFilters>(defaultFilters);
+
+  const isPremium = userProfile?.subscription?.status === 'active' || userProfile?.email === 'mlowdencrossd@gmail.com';
 
   const loadUsers = useCallback(async () => {
     if (!user) {
@@ -117,7 +119,7 @@ export function SwipeMatchSection() {
     if (!actionUser || !user) return;
 
     if (action === "like") {
-      if (likesUsedToday >= DAILY_LIKE_LIMIT) {
+      if (likesUsedToday >= DAILY_LIKE_LIMIT && !isPremium) {
         setShowUpsellDialog(true);
         return;
       }
@@ -133,7 +135,7 @@ export function SwipeMatchSection() {
         } else {
           toast({
             title: "Liked!",
-            description: `Let's see if ${actionUser.name} likes you back! (${DAILY_LIKE_LIMIT - (likesUsedToday + 1)} likes remaining today)`,
+            description: `Let's see if ${actionUser.name} likes you back! ${!isPremium ? `(${DAILY_LIKE_LIMIT - (likesUsedToday + 1)} likes remaining today)` : ''}`,
           });
         }
       } catch (error) {
@@ -224,15 +226,17 @@ export function SwipeMatchSection() {
         </Button>
         <DiscoverFilters onApplyFilters={handleApplyFilters} onResetFilters={handleResetFilters} initialFilters={filters} />
       </div>
-      <p className="text-sm text-muted-foreground">
-        Likes remaining today:{" "}
-        <span
-          key={likesAnimationTrigger}
-          className="font-semibold text-foreground animate-flash-attention"
-        >
-          {Math.max(0, DAILY_LIKE_LIMIT - likesUsedToday)}
-        </span>
-      </p>
+      {!isPremium && (
+        <p className="text-sm text-muted-foreground">
+          Likes remaining today:{" "}
+          <span
+            key={likesAnimationTrigger}
+            className="font-semibold text-foreground animate-flash-attention"
+          >
+            {Math.max(0, DAILY_LIKE_LIMIT - likesUsedToday)}
+          </span>
+        </p>
+      )}
 
       <AlertDialog open={showMatchAnimation} onOpenChange={setShowMatchAnimation}>
         <AlertDialogContent className="bg-card text-card-foreground border-primary shadow-lg rounded-xl">

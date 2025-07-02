@@ -19,8 +19,8 @@ import { useAuth } from "@/hooks/use-auth";
 
 interface MatchCardProps {
   user: UserProfile | CrossedPathUser;
-  onLike: (userId: string) => void;
-  onPass: (userId: string) => void;
+  onLike?: (userId: string) => void;
+  onPass?: (userId: string) => void;
   showCrossedPathInfo?: boolean;
   sparkInsights?: SparkSwipeOutput | null;
   isInsightsLoading?: boolean;
@@ -176,19 +176,21 @@ export function MatchCard({ user, onLike, onPass, showCrossedPathInfo = false, s
                 </>
             )}
         </CardContent>
-         <CardFooter className="flex justify-around p-4 border-t border-border">
-          <Button variant="outline" size="lg" className="rounded-full p-4 border-destructive text-destructive hover:bg-destructive/10" onClick={() => onPass(user.id)} aria-label="Pass">
-            <X className="h-7 w-7" />
-          </Button>
-          <DialogTrigger asChild>
-            <Button variant="outline" size="icon" className="rounded-full p-2 border-primary text-primary hover:bg-primary/10" aria-label="More Info">
-                <Info className="h-5 w-5" />
+         {onLike && onPass && (
+          <CardFooter className="flex justify-around p-4 border-t border-border">
+            <Button variant="outline" size="lg" className="rounded-full p-4 border-destructive text-destructive hover:bg-destructive/10" onClick={() => onPass(user.id)} aria-label="Pass">
+              <X className="h-7 w-7" />
             </Button>
-          </DialogTrigger>
-          <Button variant="outline" size="lg" className="rounded-full p-4 border-green-500 text-green-500 hover:bg-green-500/10" onClick={() => onLike(user.id)} aria-label="Like">
-            <Heart className="h-7 w-7" />
-          </Button>
-        </CardFooter>
+            <DialogTrigger asChild>
+              <Button variant="outline" size="icon" className="rounded-full p-2 border-primary text-primary hover:bg-primary/10" aria-label="More Info">
+                  <Info className="h-5 w-5" />
+              </Button>
+            </DialogTrigger>
+            <Button variant="outline" size="lg" className="rounded-full p-4 border-green-500 text-green-500 hover:bg-green-500/10" onClick={() => onLike(user.id)} aria-label="Like">
+              <Heart className="h-7 w-7" />
+            </Button>
+          </CardFooter>
+        )}
       </Card>
 
       <DialogContent className="sm:max-w-2xl bg-card text-card-foreground p-0">

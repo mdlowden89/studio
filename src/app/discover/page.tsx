@@ -18,16 +18,16 @@ import { checkForNewLikes } from "@/app/actions";
 export default function DiscoverPage() {
   const [showNewLikeUpsell, setShowNewLikeUpsell] = useState(false);
   const [showPremiumUpsell, setShowPremiumUpsell] = useState(false);
-  const { user } = useAuth();
+  const { user, userProfile } = useAuth();
+
+  const isPremium = userProfile?.subscription?.status === 'active' || userProfile?.email === 'mlowdencrossd@gmail.com';
 
   useEffect(() => {
-    // Don't show the popup if the user is not logged in.
-    if (!user) {
+    // Don't show the popup if the user is not logged in or is premium.
+    if (!user || isPremium) {
       return;
     }
     
-    // In a real app, you might also check premium status here and not show this.
-
     const checkAndShowPopup = async () => {
       // Check session storage to prevent showing the popup on every page navigation within a session.
       const hasSeenPopup = sessionStorage.getItem('hasSeenNewLikePopup');
@@ -53,7 +53,7 @@ export default function DiscoverPage() {
     
     checkAndShowPopup();
 
-  }, [user]);
+  }, [user, isPremium]);
 
 
   const handleUpgradeFromNewLikeDialog = () => {
@@ -105,7 +105,7 @@ export default function DiscoverPage() {
 
         <Separator className="my-12 bg-border/50" />
 
-        <BlurredLikesSection />
+        <BlurredLikesSection isPremium={isPremium} />
 
       </div>
 

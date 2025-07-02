@@ -6,16 +6,40 @@ import { Card, CardContent, CardHeader, CardTitle, CardDescription } from "@/com
 import { Button } from "@/components/ui/button";
 import { Eye, Sparkles } from "lucide-react";
 import { MOCK_USERS, MOCK_USER_ID } from "@/lib/mock-data";
-import Link from "next/link";
 import { CrossdPlusUpsellDialog } from "@/components/pricing/crossd-plus-upsell-dialog";
 import { useState } from "react";
+import { MatchCard } from "@/components/dashboard/match-card";
+import { useToast } from "@/hooks/use-toast";
 
-// Select a few users who "liked" the current user (mock)
-const mockLikers = MOCK_USERS.filter(u => u.id !== MOCK_USER_ID && u.id !== 'user-123') // Ensure current dev user is not in likers
-                           .slice(0, 3);
-                           // Make sure we have at least 3 different users for the stack
+const mockLikers = MOCK_USERS.filter(u => u.id !== MOCK_USER_ID && u.id !== 'user-123')
+                           .slice(0, 8);
 
-export function BlurredLikesSection() {
+interface BlurredLikesSectionProps {
+  isPremium: boolean;
+}
+
+const RevealedLikesGrid = () => {
+  const { toast } = useToast();
+
+  const handleCardClick = (userName: string) => {
+    toast({
+      title: "Profile Viewed",
+      description: `You can find ${userName} in your swipe deck to take action.`,
+    });
+  };
+
+  return (
+    <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
+      {mockLikers.map(user => (
+        <div key={user.id} onClick={() => handleCardClick(user.name)}>
+          <MatchCard user={user} />
+        </div>
+      ))}
+    </div>
+  );
+};
+
+export function BlurredLikesSection({ isPremium }: BlurredLikesSectionProps) {
   const [showUpsellDialog, setShowUpsellDialog] = useState(false);
 
   if (mockLikers.length === 0) {
@@ -33,6 +57,26 @@ export function BlurredLikesSection() {
 
   const cardFanMiddleIndex = (mockLikers.length - 1) / 2;
 
+  if (isPremium) {
+    return (
+      <Card className="mt-12 bg-card shadow-xl">
+        <CardHeader className="text-center pb-8">
+          <div className="mx-auto flex h-16 w-16 items-center justify-center rounded-full bg-primary/80 mb-3 shadow-lg">
+            <Eye className="h-8 w-8 text-primary-foreground" />
+          </div>
+          <CardTitle className="text-2xl font-bold text-primary">Who Likes You</CardTitle>
+          <CardDescription className="text-muted-foreground max-w-md mx-auto">
+            Here are the people who have already liked you. Click a card to view their profile.
+          </CardDescription>
+        </CardHeader>
+        <CardContent>
+          <RevealedLikesGrid />
+        </CardContent>
+      </Card>
+    );
+  }
+
+
   return (
     <Card className="mt-12 bg-card shadow-xl">
       <CardHeader className="text-center pb-8">
@@ -46,7 +90,7 @@ export function BlurredLikesSection() {
       </CardHeader>
       <CardContent className="text-center">
         <div className="relative h-80 w-full max-w-sm mx-auto mb-8 flex items-center justify-center">
-          {mockLikers.map((user, index) => {
+          {mockLikers.slice(0, 3).map((user, index) => {
             const rotation = (index - cardFanMiddleIndex) * 8; // Spread of 8 degrees per card
             const translateX = (index - cardFanMiddleIndex) * 40; // Spread of 40px per card
             const translateY = Math.abs(index - cardFanMiddleIndex) * -8; // Arc effect
@@ -70,7 +114,6 @@ export function BlurredLikesSection() {
                   data-ai-hint="profile portrait blurred"
                   unoptimized={user.images[0]?.startsWith('data:') || user.images[0]?.includes('placehold.co')}
                 />
-                {/* Optional: Blurred name placeholder */}
                 <div className="absolute bottom-3 left-3 right-3 p-2 bg-black/40 rounded ">
                   <div className="h-4 bg-white/30 rounded w-3/4 mb-1"></div>
                   <div className="h-3 bg-white/20 rounded w-1/2"></div>
