@@ -247,7 +247,7 @@ export function MomentsMap({ moments, hotspots }: MomentsMapProps) {
               )}
 
               <p className="text-xs text-muted-foreground">
-                {format(new Date(selectedMoment.timestamp), "MMM d, yyyy, p")}
+                {format(new Date(selectedMoment.loggedAt as string), "MMM d, yyyy, p")}
               </p>
               {fetchedAttributionHtml && (
                 <div className="text-[10px] text-muted-foreground/70 leading-tight" dangerouslySetInnerHTML={{ __html: fetchedAttributionHtml }} />

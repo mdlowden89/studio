@@ -74,6 +74,8 @@ export function DashboardClient({ currentUser }: DashboardClientProps) {
   const router = useRouter();
   const { toast } = useToast();
 
+  const isPremium = currentUser.subscription?.status === 'active' || currentUser.email === 'mlowdencrossd@gmail.com';
+
   const momentsLoggedCount = useMemo(() => userMoments.length, [userMoments]);
   const pendingMomentsCount = useMemo(() => userMoments.filter(m => m.status === 'pending').length, [userMoments]);
 
@@ -374,14 +376,15 @@ export function DashboardClient({ currentUser }: DashboardClientProps) {
               <div>
                 <CardTitle className="text-xl font-semibold">Moments Trail</CardTitle>
                 <CardDescription className="text-muted-foreground">
-                  A map of places you've visited in the last 7 days, with a toggle for list or image view.
+                  A map of places you've visited in the last 7 days.
+                  {isPremium && " Premium users see Emotional Hotspots."}
                 </CardDescription>
               </div>
             </div>
           </CardHeader>
           <CardContent>
             <div className="aspect-[2/1] w-full bg-muted rounded-lg overflow-hidden mb-4 shadow-inner">
-              <MomentsMap moments={momentsThisWeek.filter(m => m.coordinates)} hotspots={MOCK_HOTSPOTS} />
+              <MomentsMap moments={momentsThisWeek.filter(m => m.coordinates)} hotspots={isPremium ? MOCK_HOTSPOTS : undefined} />
             </div>
             {isLoadingMoments ? (
               <MomentsLoadingSkeleton />
@@ -443,22 +446,24 @@ export function DashboardClient({ currentUser }: DashboardClientProps) {
           </CardContent>
         </Card>
 
-        <Card className="mb-8 bg-card shadow-xl">
-          <CardHeader>
-            <div className="flex items-center gap-3">
-              <Signal className="w-7 h-7 text-primary" />
-              <div>
-                <CardTitle className="text-xl font-semibold">Emotional Hotspots</CardTitle>
-                <CardDescription className="text-muted-foreground">
-                  A premium Crossd+ feature to know where sparks are born.
-                </CardDescription>
+        {!isPremium && (
+          <Card className="mb-8 bg-card shadow-xl">
+            <CardHeader>
+              <div className="flex items-center gap-3">
+                <Signal className="w-7 h-7 text-primary" />
+                <div>
+                  <CardTitle className="text-xl font-semibold">Emotional Hotspots</CardTitle>
+                  <CardDescription className="text-muted-foreground">
+                    A premium Crossd+ feature to know where sparks are born.
+                  </CardDescription>
+                </div>
               </div>
-            </div>
-          </CardHeader>
-          <CardContent>
-            <EmotionalHotspotsUpsell onUnlock={() => setShowUpsellDialog(true)} />
-          </CardContent>
-        </Card>
+            </CardHeader>
+            <CardContent>
+              <EmotionalHotspotsUpsell onUnlock={() => setShowUpsellDialog(true)} />
+            </CardContent>
+          </Card>
+        )}
 
         <Card className="mb-8 bg-gradient-to-br from-primary/10 via-card to-card shadow-xl border-primary/30">
           <CardHeader className="text-center">

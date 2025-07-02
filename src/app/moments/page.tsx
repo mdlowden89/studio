@@ -1,3 +1,4 @@
+
 "use client";
 
 import { useState, useEffect } from "react";
@@ -66,6 +67,8 @@ export default function MomentsPage() {
 
   const momentsWithCoords = moments.filter(m => m.coordinates);
 
+  const isPremium = userProfile?.subscription?.status === 'active' || userProfile?.email === 'mlowdencrossd@gmail.com';
+
   const renderContent = () => {
     if (isLoading || isAuthLoading) {
       return <MomentsLoadingSkeleton />;
@@ -87,7 +90,7 @@ export default function MomentsPage() {
     return (
       <div className="space-y-6">
         <div className="aspect-[2/1] w-full bg-muted rounded-lg overflow-hidden shadow-inner">
-          <MomentsMap moments={momentsWithCoords} hotspots={MOCK_HOTSPOTS} />
+          <MomentsMap moments={momentsWithCoords} hotspots={isPremium ? MOCK_HOTSPOTS : undefined} />
         </div>
         <Separator />
         <div>
