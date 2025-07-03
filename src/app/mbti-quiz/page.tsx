@@ -41,11 +41,10 @@ export default function MbtiQuizPage() {
 
       setAnswers(savedAnswers);
 
-      if (savedAnswersCount === totalQuestions) {
-        // If quiz is complete but result wasn't saved, calculate and show it
-        calculateResult(savedAnswers);
-      } else {
+      if (savedAnswersCount > 0 && savedAnswersCount < totalQuestions) {
         setCurrentQuestionIndex(savedAnswersCount);
+      } else if (savedAnswersCount === totalQuestions) {
+        calculateResult(savedAnswers);
       }
     }
   }, [userProfile]);
