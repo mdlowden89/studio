@@ -1,3 +1,4 @@
+
 export interface MbtiQuestion {
   axis: 'E/I' | 'S/N' | 'T/F' | 'J/P';
   question: string;
@@ -67,4 +68,165 @@ export const mbtiTypeDescriptions: Record<string, { title: string, emoji: string
     'ISFP': { title: 'The Adventurer / Composer', emoji: '🎨' },
     'ESTP': { title: 'The Dynamo / Entrepreneur', emoji: '⚡️' },
     'ESFP': { title: 'The Performer / Entertainer', emoji: '🎭' },
+};
+
+export interface MbtiTypeDetails {
+  title: string;
+  category: string;
+  categoryEmoji: string;
+  keyTraits: string[];
+  strengths: string[];
+  weaknesses: string[];
+  idealRoles: string[];
+}
+
+export const mbtiTypeDetails: Record<string, MbtiTypeDetails> = {
+  // Analysts (NT)
+  'INTJ': {
+    title: 'The Mastermind / Architect',
+    category: 'Analysts',
+    categoryEmoji: '🔥',
+    keyTraits: ['Strategic', 'independent', 'visionary'],
+    strengths: ['Long-term planning', 'self-motivated', 'logical problem solving'],
+    weaknesses: ['Can be dismissive of emotions', 'perfectionistic', 'aloof'],
+    idealRoles: ['Architect', 'scientist', 'entrepreneur', 'strategist'],
+  },
+  'INTP': {
+    title: 'The Thinker / Logician',
+    category: 'Analysts',
+    categoryEmoji: '🔥',
+    keyTraits: ['Analytical', 'curious', 'abstract thinker'],
+    strengths: ['Idea generation', 'innovation', 'objectivity'],
+    weaknesses: ['Poor with follow-through', 'can be socially distant'],
+    idealRoles: ['Researcher', 'developer', 'philosopher', 'systems analyst'],
+  },
+  'ENTJ': {
+    title: 'The Commander / Executive',
+    category: 'Analysts',
+    categoryEmoji: '🔥',
+    keyTraits: ['Bold', 'decisive', 'efficient leader'],
+    strengths: ['Leadership', 'strategy', 'drive for achievement'],
+    weaknesses: ['May steamroll others', 'impatient', 'can neglect emotional nuance'],
+    idealRoles: ['CEO', 'executive', 'project leader', 'military officer'],
+  },
+  'ENTP': {
+    title: 'The Debater / Visionary',
+    category: 'Analysts',
+    categoryEmoji: '🔥',
+    keyTraits: ['Energetic', 'witty', 'idea-driven'],
+    strengths: ['Debate', 'improvisation', 'spotting opportunities'],
+    weaknesses: ['Easily bored', 'argumentative', 'distractible'],
+    idealRoles: ['Entrepreneur', 'marketer', 'inventor', 'media personality'],
+  },
+  // Diplomats (NF)
+  'INFJ': {
+    title: 'The Advocate / Counselor',
+    category: 'Diplomats',
+    categoryEmoji: '🌱',
+    keyTraits: ['Quietly visionary', 'idealistic', 'emotionally intelligent'],
+    strengths: ['Deep insight', 'loyalty', 'purposeful planning'],
+    weaknesses: ['Overthinker', 'burnout-prone', 'can be too idealistic'],
+    idealRoles: ['Therapist', 'writer', 'coach', 'spiritual leader'],
+  },
+  'INFP': {
+    title: 'The Mediator / Idealist',
+    category: 'Diplomats',
+    categoryEmoji: '🌱',
+    keyTraits: ['Gentle', 'introspective', 'values-driven'],
+    strengths: ['Creativity', 'authenticity', 'empathy'],
+    weaknesses: ['Conflict avoidant', 'disorganized', 'sensitive'],
+    idealRoles: ['Poet', 'counselor', 'storyteller', 'humanitarian'],
+  },
+  'ENFJ': {
+    title: 'The Protagonist / Teacher',
+    category: 'Diplomats',
+    categoryEmoji: '🌱',
+    keyTraits: ['Charismatic', 'supportive', 'organized'],
+    strengths: ['Motivation', 'leadership', 'emotional attunement'],
+    weaknesses: ['May neglect self-needs', 'overly idealistic'],
+    idealRoles: ['Teacher', 'public speaker', 'mentor', 'campaigner'],
+  },
+  'ENFP': {
+    title: 'The Campaigner / Inspirer',
+    category: 'Diplomats',
+    categoryEmoji: '🌱',
+    keyTraits: ['Enthusiastic', 'creative', 'people-centered'],
+    strengths: ['Energy', 'spontaneity', 'emotional insight'],
+    weaknesses: ['Scattered', 'overcommitted', 'easily distracted'],
+    idealRoles: ['Actor', 'coach', 'creative director', 'startup founder'],
+  },
+  // Sentinels (SJ)
+  'ISTJ': {
+    title: 'The Inspector / Logistician',
+    category: 'Sentinels',
+    categoryEmoji: '🛠️',
+    keyTraits: ['Responsible', 'loyal', 'detail-focused'],
+    strengths: ['Consistency', 'duty', 'factual memory'],
+    weaknesses: ['Rigid', 'uncomfortable with change'],
+    idealRoles: ['Accountant', 'analyst', 'military officer', 'engineer'],
+  },
+  'ISFJ': {
+    title: 'The Defender / Nurturer',
+    category: 'Sentinels',
+    categoryEmoji: '🛠️',
+    keyTraits: ['Kind', 'service-oriented', 'dependable'],
+    strengths: ['Supportive', 'patient', 'practical'],
+    weaknesses: ['Avoids conflict', 'underestimates self'],
+    idealRoles: ['Nurse', 'caregiver', 'librarian', 'administrator'],
+  },
+  'ESTJ': {
+    title: 'The Supervisor / Executive',
+    category: 'Sentinels',
+    categoryEmoji: '🛠️',
+    keyTraits: ['Organized', 'commanding', 'straightforward'],
+    strengths: ['Leadership', 'process optimization', 'consistency'],
+    weaknesses: ['Inflexible', 'harsh under stress'],
+    idealRoles: ['Manager', 'judge', 'logistics lead', 'operations head'],
+  },
+  'ESFJ': {
+    title: 'The Consul / Provider',
+    category: 'Sentinels',
+    categoryEmoji: '🛠️',
+    keyTraits: ['Warm', 'social', 'attentive to others’ needs'],
+    strengths: ['Harmony', 'community building', 'reliability'],
+    weaknesses: ['Approval-seeking', 'may avoid confrontation'],
+    idealRoles: ['HR', 'host', 'teacher', 'customer support lead'],
+  },
+  // Explorers (SP)
+  'ISTP': {
+    title: 'The Virtuoso / Craftsman',
+    category: 'Explorers',
+    categoryEmoji: '🌊',
+    keyTraits: ['Independent', 'resourceful', 'hands-on'],
+    strengths: ['Technical skill', 'calm in crisis', 'logical problem solving'],
+    weaknesses: ['Private', 'unpredictable', 'emotionally detached'],
+    idealRoles: ['Engineer', 'mechanic', 'survivalist', 'stunt coordinator'],
+  },
+  'ISFP': {
+    title: 'The Adventurer / Composer',
+    category: 'Explorers',
+    categoryEmoji: '🌊',
+    keyTraits: ['Artistic', 'free-spirited', 'sensitive'],
+    strengths: ['Creativity', 'gentle authenticity', 'aesthetic appreciation'],
+    weaknesses: ['Easily hurt', 'dislikes structure', 'avoids confrontation'],
+    idealRoles: ['Designer', 'artist', 'musician', 'animal caretaker'],
+  },
+  'ESTP': {
+    title: 'The Dynamo / Entrepreneur',
+    category: 'Explorers',
+    categoryEmoji: '🌊',
+    keyTraits: ['Bold', 'energetic', 'action-first'],
+    strengths: ['Adaptability', 'persuasion', 'crisis decision-making'],
+    weaknesses: ['Impulsive', 'risk-prone', 'can be tactless'],
+    idealRoles: ['Salesperson', 'negotiator', 'EMT', 'sports coach'],
+  },
+  'ESFP': {
+    title: 'The Performer / Entertainer',
+    category: 'Explorers',
+    categoryEmoji: '🌊',
+    keyTraits: ['Fun-loving', 'spontaneous', 'charming'],
+    strengths: ['Social magnetism', 'present-moment focus', 'practical help'],
+    weaknesses: ['Dislike of routine', 'may ignore deeper issues'],
+    idealRoles: ['Actor', 'event planner', 'performer', 'hospitality expert'],
+  },
 };

@@ -7,25 +7,33 @@ import { AppLayout } from '@/components/layout/app-layout';
 import { Card, CardContent, CardHeader, CardTitle, CardDescription, CardFooter } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Progress } from '@/components/ui/progress';
-import { mbtiQuizQuestions, mbtiTypeDescriptions } from '@/lib/mbti-quiz-data';
+import { mbtiQuizQuestions, mbtiTypeDescriptions, mbtiTypeDetails } from '@/lib/mbti-quiz-data';
 import { useAuth } from '@/hooks/use-auth';
 import { updateUserMbtiType } from '@/app/actions';
 import { useToast } from '@/hooks/use-toast';
-import { Loader2, BrainCircuit, Save, Send, ArrowLeft, RotateCw } from 'lucide-react';
+import { Loader2, BrainCircuit, Save, Send, ArrowLeft, RotateCw, Sparkles, Star } from 'lucide-react';
 import Link from 'next/link';
+import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogDescription } from '@/components/ui/dialog';
+import { ScrollArea } from '@/components/ui/scroll-area';
+import { Badge } from '@/components/ui/badge';
+import { CrossdPlusUpsellDialog } from '@/components/pricing/crossd-plus-upsell-dialog';
 
 export default function MbtiQuizPage() {
   const [currentQuestionIndex, setCurrentQuestionIndex] = useState(0);
   const [answers, setAnswers] = useState<Record<number, string>>({});
   const [result, setResult] = useState<string | null>(null);
   const [isSaving, setIsSaving] = useState(false);
+  const [showDetailsDialog, setShowDetailsDialog] = useState(false);
+  const [showUpsellDialog, setShowUpsellDialog] = useState(false);
 
-  const { user, isLoading: isAuthLoading } = useAuth();
+  const { user, userProfile, isLoading: isAuthLoading } = useAuth();
   const router = useRouter();
   const { toast } = useToast();
 
   const totalQuestions = mbtiQuizQuestions.length;
   const progress = (currentQuestionIndex / totalQuestions) * 100;
+
+  const isPremium = userProfile?.subscription?.status === 'active' || userProfile?.email === 'mlowdencrossd@gmail.com';
 
   const handleAnswerSelect = (answerValue: string) => {
     const newAnswers = { ...answers, [currentQuestionIndex]: answerValue };
@@ -87,6 +95,16 @@ export default function MbtiQuizPage() {
     setResult(null);
   }
 
+  const handleResultClick = () => {
+    if (isPremium) {
+      setShowDetailsDialog(true);
+    } else {
+      setShowUpsellDialog(true);
+    }
+  };
+
+  const currentResultDetails = result ? mbtiTypeDetails[result] : null;
+
   if (isAuthLoading) {
     return (
       <AppLayout>
@@ -114,7 +132,7 @@ export default function MbtiQuizPage() {
                   {result ? "Your Personality Result" : "Discover Your Type"}
                 </CardTitle>
                 <CardDescription className="text-muted-foreground">
-                  {result ? "Here's what we found. Save it to your profile!" : "Answer these questions to find your MBTI personality type."}
+                  {result ? "Here's what we found. Click your result for an in-depth analysis." : "Answer these questions to find your MBTI personality type."}
                 </CardDescription>
               </div>
             </div>
@@ -122,11 +140,23 @@ export default function MbtiQuizPage() {
           
           {result ? (
             <>
-              <CardContent className="text-center py-10">
-                 <p className="text-6xl font-bold text-primary">{mbtiTypeDescriptions[result].emoji}</p>
-                 <h2 className="text-5xl font-bold text-foreground mt-2">{result}</h2>
-                 <p className="text-xl text-muted-foreground mt-1">{mbtiTypeDescriptions[result].title}</p>
-                 <p className="text-sm text-foreground/80 mt-4 max-w-md mx-auto">
+              <CardContent className="py-10">
+                <button 
+                  onClick={handleResultClick}
+                  className="w-full text-center p-6 rounded-lg bg-muted/30 hover:bg-muted/60 transition-colors cursor-pointer disabled:cursor-default"
+                  disabled={!currentResultDetails}
+                  aria-label={`View details for ${result}`}
+                >
+                  <p className="text-6xl font-bold text-primary">{mbtiTypeDescriptions[result].emoji}</p>
+                  <h2 className="text-5xl font-bold text-foreground mt-2">{result}</h2>
+                  <p className="text-xl text-muted-foreground mt-1">{mbtiTypeDescriptions[result].title}</p>
+                  <div className="mt-4 inline-flex items-center text-sm text-primary">
+                     <Sparkles className="w-4 h-4 mr-2" />
+                     Click for In-Depth Analysis
+                     {!isPremium && <Star className="w-4 h-4 ml-2 text-yellow-400 fill-yellow-500" />}
+                  </div>
+                </button>
+                 <p className="text-xs text-center text-muted-foreground mt-4 max-w-md mx-auto">
                     This personality type will now be visible on your profile and help us find you more compatible matches.
                  </p>
               </CardContent>
@@ -186,6 +216,54 @@ export default function MbtiQuizPage() {
 
         </Card>
       </div>
+      
+      {currentResultDetails && (
+        <Dialog open={showDetailsDialog} onOpenChange={setShowDetailsDialog}>
+            <DialogContent className="sm:max-w-xl bg-card">
+              <DialogHeader className="text-center">
+                 <DialogTitle className="text-3xl font-bold text-primary flex items-center justify-center gap-3">
+                    <span className="text-4xl">{mbtiTypeDescriptions[result!].emoji}</span>
+                    <span>{result} - {currentResultDetails.title}</span>
+                 </DialogTitle>
+                 <DialogDescription className="text-md text-muted-foreground">{currentResultDetails.categoryEmoji} {currentResultDetails.category}</DialogDescription>
+              </DialogHeader>
+              <ScrollArea className="max-h-[60vh] pr-4">
+                <div className="p-4 space-y-4">
+                    <div>
+                        <h4 className="font-semibold text-lg text-foreground mb-2">Key Traits</h4>
+                        <div className="flex flex-wrap gap-2">
+                            {currentResultDetails.keyTraits.map(trait => <Badge key={trait} variant="secondary">{trait}</Badge>)}
+                        </div>
+                    </div>
+                     <div>
+                        <h4 className="font-semibold text-lg text-foreground mb-2">Strengths</h4>
+                        <div className="flex flex-wrap gap-2">
+                            {currentResultDetails.strengths.map(strength => <Badge key={strength} variant="secondary" className="bg-green-500/10 text-green-400 border-green-500/20">{strength}</Badge>)}
+                        </div>
+                    </div>
+                     <div>
+                        <h4 className="font-semibold text-lg text-foreground mb-2">Weaknesses</h4>
+                        <div className="flex flex-wrap gap-2">
+                            {currentResultDetails.weaknesses.map(weakness => <Badge key={weakness} variant="secondary" className="bg-red-500/10 text-red-400 border-red-500/20">{weakness}</Badge>)}
+                        </div>
+                    </div>
+                     <div>
+                        <h4 className="font-semibold text-lg text-foreground mb-2">Ideal Roles</h4>
+                        <div className="flex flex-wrap gap-2">
+                            {currentResultDetails.idealRoles.map(role => <Badge key={role} variant="secondary">{role}</Badge>)}
+                        </div>
+                    </div>
+                </div>
+              </ScrollArea>
+            </DialogContent>
+        </Dialog>
+      )}
+
+      <CrossdPlusUpsellDialog
+        isOpen={showUpsellDialog}
+        onOpenChange={setShowUpsellDialog}
+      />
+
     </AppLayout>
   );
 }
