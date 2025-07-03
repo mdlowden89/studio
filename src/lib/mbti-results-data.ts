@@ -6,7 +6,7 @@ export interface MbtiTypeDetails {
   population: string;
   coreCharacteristics: { trait: string; description: string }[];
   cognitiveStack: { functionName: string; description: string }[];
-  strengths: { strength: string; example: string }[];
+  strengths: { strength: string; description: string }[];
   weaknesses: { weakness: string; description: string }[];
   idealCareers: { field: string; why: string }[];
   famousExamples: string[];
@@ -34,9 +34,9 @@ export const mbtiTypeDetails: Record<string, any> = {
       { functionName: 'Inferior – Extraverted Sensing (Se)', description: 'Often disconnected from the present moment; may overlook physical details or indulge impulsively under stress.' },
     ],
     strengths: [
-      { strength: 'Long-Term Visionaries', example: 'Create scalable, efficient systems and solutions far ahead of their time.' },
-      { strength: 'Strategic Thinkers', example: 'Break complex problems down and solve them with precision.' },
-      { strength: 'Self-Motivated', example: 'Work independently with laser-like focus.' },
+      { strength: 'Long-Term Visionaries', description: 'Create scalable, efficient systems and solutions far ahead of their time.' },
+      { strength: 'Strategic Thinkers', description: 'Break complex problems down and solve them with precision.' },
+      { strength: 'Self-Motivated', description: 'Work independently with laser-like focus.' },
     ],
     weaknesses: [
       { weakness: 'Emotionally Aloof', description: 'May seem cold, dismissive, or uninterested in emotional nuance.' },
@@ -74,9 +74,9 @@ export const mbtiTypeDetails: Record<string, any> = {
       { functionName: 'Inferior – Extraverted Feeling (Fe)', description: 'Struggles with emotional expression. Can come off as detached, despite caring deeply. May “overcorrect” by people-pleasing when insecure.' },
     ],
     strengths: [
-      { strength: 'Innovative & Original', example: 'Natural inventors who thrive in new, undefined territory.' },
-      { strength: 'Objective & Rational', example: 'Unbiased and logical — driven by truth, not emotion.' },
-      { strength: 'Independent Thinkers', example: 'Prefer to solve problems their own way; self-motivated learners.' },
+      { strength: 'Innovative & Original', description: 'Natural inventors who thrive in new, undefined territory.' },
+      { strength: 'Objective & Rational', description: 'Unbiased and logical — driven by truth, not emotion.' },
+      { strength: 'Independent Thinkers', description: 'Prefer to solve problems their own way; self-motivated learners.' },
     ],
     weaknesses: [
       { weakness: 'Poor with Execution', description: 'May get stuck in analysis or abandon projects when the excitement fades.' },
@@ -142,11 +142,11 @@ export const mbtiTypeDetails: Record<string, any> = {
         { functionName: 'Inferior – Introverted Feeling (Fi)', description: 'Struggles with emotional depth and vulnerability. May suppress or misunderstand their own values and feelings. Growth area: connecting emotionally with others and self.' },
     ],
     strengths: [
-      { strength: 'Natural Leaders', example: 'Commanding, confident, and decisive in group settings. People often follow their lead instinctively.' },
-      { strength: 'Vision + Execution', example: 'Combines big-picture thinking (Ni) with rapid action (Te).' },
-      { strength: 'Resilient and Driven', example: 'Failure is a lesson, not a wall. ENTJs push through setbacks like tanks.' },
-      { strength: 'Clear Communicators', example: 'Straightforward, persuasive, and structured in expression.' },
-      { strength: 'Highly Strategic', example: 'Systems, power structures, and hierarchies make sense to them intuitively. They know how to move up and optimize.' },
+      { strength: 'Natural Leaders', description: 'Commanding, confident, and decisive in group settings. People often follow their lead instinctively.' },
+      { strength: 'Vision + Execution', description: 'Combines big-picture thinking (Ni) with rapid action (Te).' },
+      { strength: 'Resilient and Driven', description: 'Failure is a lesson, not a wall. ENTJs push through setbacks like tanks.' },
+      { strength: 'Clear Communicators', description: 'Straightforward, persuasive, and structured in expression.' },
+      { strength: 'Highly Strategic', description: 'Systems, power structures, and hierarchies make sense to them intuitively. They know how to move up and optimize.' },
     ],
     weaknesses: [
       { weakness: 'Overbearing or Controlling', description: 'Can bulldoze over others’ opinions or feelings.' },
@@ -190,10 +190,10 @@ export const mbtiTypeDetails: Record<string, any> = {
           { type: "INTP – The Thinker", reason: "Intellectual equals who challenge each other and enjoy deep debate." }
         ]
       },
-      summary: {
-        title: "ENTJ in Crossd Compatibility Storytelling",
-        text: "Meet the Commander ⚡ — bold, brilliant, and driven by purpose. They don’t just swipe — they strategize. If you’re ready to match ambition with fire, they’re your perfect counterpart."
-      }
+       summary: {
+          title: "ENTJ in Crossd Compatibility Storytelling",
+          text: "Archetype: The Mastermind Leader — commanding presence, unstoppable vision.\n\nDating Bio Prompt: “Ambitious AF. Don’t confuse confidence with arrogance — I just know what I want. Let’s build an empire, or at least crush trivia night.”\n\nIn-App Persona Card: “Meet the Commander ⚡ — bold, brilliant, and driven by purpose. They don’t just swipe — they strategize. If you’re ready to match ambition with fire, they’re your perfect counterpart.”"
+       }
     },
     relationships: [], // Fallback
     growthPath: ['Practice active listening and value others\' input.', 'Develop emotional awareness and empathy.', 'Prioritize work-life balance and relationships.', 'Cultivate patience and mentor others.'],
@@ -216,11 +216,11 @@ export const mbtiTypeDetails: Record<string, any> = {
         { functionName: 'Inferior – Introverted Sensing (Si)', description: 'Weakness in routine, repetition, or memory for details. May resist tradition, schedules, or anything that feels “trapped”. Under stress, can become fixated on past failures or become chaotic.' },
     ],
     strengths: [
-        { strength: 'Inventive', example: 'Thrive in unstructured environments where new ideas are welcome.' },
-        { strength: 'Dynamic Communicators', example: 'Can adapt on the fly, improvise, persuade, and entertain with ease.' },
-        { strength: 'Fearless Explorers', example: 'Not afraid to challenge the status quo or take intellectual risks.' },
-        { strength: 'Fast Learners', example: 'Pick up new skills quickly, especially when excited or challenged.' },
-        { strength: 'Flexible Thinkers', example: 'Can see multiple sides of any issue, often playing devil’s advocate to reveal truth.' },
+        { strength: 'Inventive', description: 'Thrive in unstructured environments where new ideas are welcome.' },
+        { strength: 'Dynamic Communicators', description: 'Can adapt on the fly, improvise, persuade, and entertain with ease.' },
+        { strength: 'Fearless Explorers', description: 'Not afraid to challenge the status quo or take intellectual risks.' },
+        { strength: 'Fast Learners', description: 'Pick up new skills quickly, especially when excited or challenged.' },
+        { strength: 'Flexible Thinkers', description: 'Can see multiple sides of any issue, often playing devil’s advocate to reveal truth.' },
     ],
     weaknesses: [
         { weakness: 'Easily Bored', description: 'Hate repetition and routine. May abandon projects once the excitement fades.' },
@@ -264,7 +264,7 @@ export const mbtiTypeDetails: Record<string, any> = {
       },
       summary: {
         title: "ENTP in Crossd Compatibility Storytelling",
-        text: "Meet the Visionary ⚡ — unpredictable, captivating, and endlessly curious. They’ll challenge your ideas, charm your friends, and vanish into a startup pitch... but if they stay, you’ve sparked something rare."
+        text: "Archetype: The Wild Spark with a Million Ideas\n\nDating Bio Prompt: “Part-time troublemaker, full-time brainstorm addict. Swipe if you like curiosity, chaos, and deep convos that turn into 3am adventures.”\n\nIn-App Persona Card: “Meet the Visionary ⚡ — unpredictable, captivating, and endlessly curious. They’ll challenge your ideas, charm your friends, and vanish into a startup pitch... but if they stay, you’ve sparked something rare.”"
       }
     },
     relationships: [],
@@ -288,11 +288,11 @@ export const mbtiTypeDetails: Record<string, any> = {
       { functionName: 'Inferior – Extraverted Sensing (Se)', description: 'Struggles with being grounded in the present moment. May miss physical cues or become overwhelmed by too much sensory input. Under stress, may obsess over details or seek physical overindulgence.' },
     ],
     strengths: [
-      { strength: 'Profound Emotional Insight', example: 'INFJs understand people deeply — beyond surface behaviors.' },
-      { strength: 'Loyal & Purpose-Driven', example: 'They’re committed to values, causes, and people who align with their vision.' },
-      { strength: 'Strategic Visionaries', example: 'Quiet but powerful planners. Think long-term, guided by their internal compass.' },
-      { strength: 'Empathetic Healers', example: 'Often act as emotional anchors in relationships and groups.' },
-      { strength: 'Deep Thinkers', example: 'Philosophical, symbolic, spiritual — always asking “Why does this matter?”' },
+      { strength: 'Profound Emotional Insight', description: 'INFJs understand people deeply — beyond surface behaviors.' },
+      { strength: 'Loyal & Purpose-Driven', description: 'They’re committed to values, causes, and people who align with their vision.' },
+      { strength: 'Strategic Visionaries', description: 'Quiet but powerful planners. Think long-term, guided by their internal compass.' },
+      { strength: 'Empathetic Healers', description: 'Often act as emotional anchors in relationships and groups.' },
+      { strength: 'Deep Thinkers', description: 'Philosophical, symbolic, spiritual — always asking “Why does this matter?”' },
     ],
     weaknesses: [
       { weakness: 'Overthinkers', description: 'Can spiral into rumination or self-doubt when things aren’t aligned.' },
@@ -308,7 +308,7 @@ export const mbtiTypeDetails: Record<string, any> = {
       { field: 'NGO / Activist / Advocate', why: 'They fight for causes they believe in with fierce quiet conviction.' },
       { field: 'Creative Director / Brand Strategist', why: 'Vision + values = potent creative force in leadership roles.' },
     ],
-    famousExamples: ['Carl Jung (founder of analytical psychology)', 'Mahatma Gandhi (values + peace + strategy)', 'Audrey Hepburn (poise + empathy + activism)', 'Taylor Swift (lyrical introspection + strong moral boundaries)', 'Jon Snow (Game of Thrones – brooding but purpose-driven)'],
+    famousExamples: ['Carl Jung', 'Mahatma Gandhi', 'Audrey Hepburn', 'Taylor Swift', 'Jon Snow (Game of Thrones)'],
     relationshipDeepDive: {
       friendship: {
         title: "Friendship",
@@ -338,7 +338,7 @@ export const mbtiTypeDetails: Record<string, any> = {
       },
       summary: {
         title: "INFJ in Crossd Compatibility Storytelling",
-        text: "Meet the Counselor 🌙 — mysterious, emotionally rich, and visionary to the core. If you’re craving connection that goes deeper than surface sparks, they’ll light your inner fire."
+        text: "Archetype: The Soul Whisperer — deeply private, quietly powerful, drawn to meaning over noise.\n\nDating Bio Prompt: “Not here for the small talk — looking for someone to read between the lines, build something sacred, and maybe talk about the stars at 2am.”\n\nIn-App Persona Card: “Meet the Counselor 🌙 — mysterious, emotionally rich, and visionary to the core. If you’re craving connection that goes deeper than surface sparks, they’ll light your inner fire.”"
       }
     },
     relationships: [],
@@ -362,11 +362,11 @@ export const mbtiTypeDetails: Record<string, any> = {
       { functionName: 'Inferior – Extraverted Thinking (Te)', description: 'Struggles with structure, time management, or decision-making under pressure. May resist hard logic or “shoulds” imposed by others. Growth area: setting external boundaries to protect internal peace.' },
     ],
     strengths: [
-      { strength: 'Creativity & Imagination', example: 'Natural storytellers, artists, and creators of emotionally powerful work.' },
-      { strength: 'Deep Empathy', example: 'Feel others\' pain and joy as if it were their own. Often drawn to healing professions.' },
-      { strength: 'Authenticity', example: 'Driven to be true to themselves, no matter what others think.' },
-      { strength: 'Moral Integrity', example: 'Will quietly defy the system if it violates their values.' },
-      { strength: 'Quiet Loyalty', example: 'Fiercely devoted once trust is formed — loves with intensity and subtlety.' },
+      { strength: 'Creativity & Imagination', description: 'Natural storytellers, artists, and creators of emotionally powerful work.' },
+      { strength: 'Deep Empathy', description: 'Feel others\' pain and joy as if it were their own. Often drawn to healing professions.' },
+      { strength: 'Authenticity', description: 'Driven to be true to themselves, no matter what others think.' },
+      { strength: 'Moral Integrity', description: 'Will quietly defy the system if it violates their values.' },
+      { strength: 'Quiet Loyalty', description: 'Fiercely devoted once trust is formed — loves with intensity and subtlety.' },
     ],
     weaknesses: [
       { weakness: 'Conflict Avoidant', description: 'Hates confrontation, may suppress needs to avoid hurting others.' },
@@ -412,7 +412,7 @@ export const mbtiTypeDetails: Record<string, any> = {
         },
         summary: {
             title: 'INFP in Crossd Compatibility Storytelling',
-            text: 'Meet the Idealist 🌸 — soft-spoken, soul-deep, and guided by an inner fire. If you’re ready to be seen, not just swiped on, they’re your quiet spark.'
+            text: 'Archetype: The Dreamer With a Fire Inside — gentle, poetic, and deeply authentic.\n\nDating Bio Prompt: “Lover of stories, late-night talks, and everything that makes life feel like a movie. Here to find magic, not just a match.”\n\nIn-App Persona Card: “Meet the Idealist 🌸 — soft-spoken, soul-deep, and guided by an inner fire. If you’re ready to be seen, not just swiped on, they’re your quiet spark.”'
         }
     },
     relationships: [
@@ -440,11 +440,11 @@ export const mbtiTypeDetails: Record<string, any> = {
         { functionName: 'Inferior – Introverted Thinking (Ti)', description: 'May struggle with objective logic or emotionally detached analysis. Under stress, can become over-analytical or overcritical of themselves. Growth path involves balancing heart with clear mental frameworks.' },
     ],
     strengths: [
-        { strength: 'Emotionally Attuned Leaders', example: 'Lead with heart, not ego. They know how to inspire and unify people.' },
-        { strength: 'Motivators', example: 'See the best in others and know how to help them step into their potential.' },
-        { strength: 'Great Communicators', example: 'Warm, expressive, and articulate — they connect with people across any divide.' },
-        { strength: 'Organized & Visionary', example: 'Passionate, structured, and capable of making big dreams actionable.' },
-        { strength: 'Loyal & Committed', example: 'They don’t take relationships lightly — if they love you, they’ll show up every time.' },
+        { strength: 'Emotionally Attuned Leaders', description: 'Lead with heart, not ego. They know how to inspire and unify people.' },
+        { strength: 'Motivators', description: 'See the best in others and know how to help them step into their potential.' },
+        { strength: 'Great Communicators', description: 'Warm, expressive, and articulate — they connect with people across any divide.' },
+        { strength: 'Organized & Visionary', description: 'Passionate, structured, and capable of making big dreams actionable.' },
+        { strength: 'Loyal & Committed', description: 'They don’t take relationships lightly — if they love you, they’ll show up every time.' },
     ],
     weaknesses: [
         { weakness: 'Self-Neglect', description: 'May sacrifice their own needs while taking care of everyone else.' },
@@ -490,7 +490,7 @@ export const mbtiTypeDetails: Record<string, any> = {
       },
       summary: {
         title: "ENFJ in Crossd Compatibility Storytelling",
-        text: "Meet the Teacher 🌟 — magnetic, nurturing, and full of purpose. They don’t play games — they build soul connections. If you’re looking for love that lifts you higher, this one’s your spark."
+        text: "Archetype: The Heart-Led Leader — emotionally intelligent, visionary, and overflowing with warmth.\n\nDating Bio Prompt: “Here to connect for real — not just match. If you’re emotionally fluent, dream big, and care deeply… we’ll get along just fine.”\n\nIn-App Persona Card: “Meet the Teacher 🌟 — magnetic, nurturing, and full of purpose. They don’t play games — they build soul connections. If you’re looking for love that lifts you higher, this one’s your spark.”"
       }
     },
     growthPath: ['Prioritize self-care and set boundaries', 'Develop comfort with conflict and saying "no"', 'Ground idealism in reality', 'Recognize and manage energy levels'],
@@ -514,9 +514,9 @@ export const mbtiTypeDetails: Record<string, any> = {
       { functionName: 'Inferior – Introverted Sensing (Si)', description: 'Weak spot for routine and consistency; may struggle with follow-through or become scattered under stress.' },
     ],
     strengths: [
-      { strength: 'Magnetic Energy', example: 'Infectiously positive, charismatic, and full of momentum.' },
-      { strength: 'Emotional Insight', example: 'Reads emotional undercurrents with ease.' },
-      { strength: 'Creativity & Innovation', example: 'Constantly generating new ideas and reimagining how things could be better.' },
+      { strength: 'Magnetic Energy', description: 'Infectiously positive, charismatic, and full of momentum.' },
+      { strength: 'Emotional Insight', description: 'Reads emotional undercurrents with ease.' },
+      { strength: 'Creativity & Innovation', description: 'Constantly generating new ideas and reimagining how things could be better.' },
     ],
     weaknesses: [
       { weakness: 'Easily Distracted', description: 'Excited by new things, may abandon old ones without closure.' },
@@ -558,7 +558,7 @@ export const mbtiTypeDetails: Record<string, any> = {
       },
       summary: {
         title: "ENFP in Crossd Compatibility Storytelling",
-        text: "Meet the Inspirer 🔥 — radiant, emotionally intelligent, and always halfway into a dream. They’re looking for someone who can handle the chaos, keep up with the passion, and dive into meaning at full speed."
+        text: "Archetype: The Wild Heart With Fire Eyes — imaginative, expressive, and unforgettable.\n\nDating Bio Prompt: “Here for someone who gets excited by weird questions, intense eye contact, and running through the city at night with no plan.”\n\nIn-App Persona Card: “Meet the Inspirer 🔥 — radiant, emotionally intelligent, and always halfway into a dream. They’re looking for someone who can handle the chaos, keep up with the passion, and dive into meaning at full speed.”"
       }
     },
     growthPath: ['Develop focus and follow-through', 'Learn to value consistency', 'Find peace in solitude'],
@@ -582,11 +582,11 @@ export const mbtiTypeDetails: Record<string, any> = {
         { functionName: 'Inferior – Extraverted Intuition (Ne)', description: 'May struggle with ambiguity, spontaneity, or open-ended exploration. Can feel overwhelmed by “what if” thinking or fast-paced ideation. Under stress, may catastrophize or resist innovation.' },
     ],
     strengths: [
-        { strength: 'Consistency & Reliability', example: 'The most dependable personality type — they show up every time.' },
-        { strength: 'Strong Memory & Attention to Detail', example: 'Notice what others miss. Great at systems, logistics, and recall.' },
-        { strength: 'Loyal to Core Values', example: 'Though reserved, they stick to their internal code.' },
-        { strength: 'Practical Problem-Solving', example: 'Not flashy — just solid, functional, and results-driven.' },
-        { strength: 'Resilient & Duty-Oriented', example: 'Thrive in roles that demand structure, tradition, and honor.' },
+        { strength: 'Consistency & Reliability', description: 'The most dependable personality type — they show up every time.' },
+        { strength: 'Strong Memory & Attention to Detail', description: 'Notice what others miss. Great at systems, logistics, and recall.' },
+        { strength: 'Loyal to Core Values', description: 'Though reserved, they stick to their internal code.' },
+        { strength: 'Practical Problem-Solving', description: 'Not flashy — just solid, functional, and results-driven.' },
+        { strength: 'Resilient & Duty-Oriented', description: 'Thrive in roles that demand structure, tradition, and honor.' },
     ],
     weaknesses: [
         { weakness: 'Resistant to Change', description: 'Prefer stability and can resist new ideas or “unconventional” people.' },
@@ -632,7 +632,7 @@ export const mbtiTypeDetails: Record<string, any> = {
         },
         summary: {
             title: 'ISTJ in Crossd Compatibility Storytelling',
-            text: 'Meet the Inspector 🧱 — grounded, consistent, and fiercely loyal. They may not say much, but they’ll do more than most. A rock-solid presence in a world full of noise.'
+            text: 'Archetype: The Silent Guardian — steady, loyal, and quietly principled.\n\nDating Bio Prompt: “I’m not flashy, I’m consistent. Loyalty over games. If you’re into stability, real connection, and shared goals — let’s talk.”\n\nIn-App Persona Card: “Meet the Inspector 🧱 — grounded, consistent, and fiercely loyal. They may not say much, but they’ll do more than most. A rock-solid presence in a world full of noise.”'
         }
     },
     relationships: [], // Fallback
@@ -660,11 +660,11 @@ export const mbtiTypeDetails: Record<string, any> = {
         { functionName: 'Inferior – Extraverted Intuition (Ne)', description: 'Hesitant with change, ambiguity, or abstract possibilities. Under stress, may catastrophize or feel overwhelmed by uncertainty. Growth area: leaning into new ideas without needing guaranteed outcomes.' },
     ],
     strengths: [
-        { strength: 'Supportive to the Core', example: 'Show love through loyalty, thoughtful gestures, and acts of care.' },
-        { strength: 'Patient & Present', example: 'Emotionally steady, not reactive or chaotic.' },
-        { strength: 'Practical Empathy', example: 'Not just comforting — they do something about it.' },
-        { strength: 'Incredible Memory for Details', example: 'Remember your birthday, your stress habits, your favorite snack — and use that info to support you.' },
-        { strength: 'Quiet Resilience', example: 'Appear gentle, but will fiercely protect what (and who) they love.' },
+        { strength: 'Supportive to the Core', description: 'Show love through loyalty, thoughtful gestures, and acts of care.' },
+        { strength: 'Patient & Present', description: 'Emotionally steady, not reactive or chaotic.' },
+        { strength: 'Practical Empathy', description: 'Not just comforting — they do something about it.' },
+        { strength: 'Incredible Memory for Details', description: 'Remember your birthday, your stress habits, your favorite snack — and use that info to support you.' },
+        { strength: 'Quiet Resilience', description: 'Appear gentle, but will fiercely protect what (and who) they love.' },
     ],
     weaknesses: [
         { weakness: 'Avoids Conflict', description: 'May suppress needs or feelings to keep the peace.' },
@@ -710,7 +710,7 @@ export const mbtiTypeDetails: Record<string, any> = {
         },
         summary: {
             title: "ISFJ in Crossd Compatibility Storytelling",
-            text: "Meet the Nurturer 🕊️ — gentle, grounded, and full of heart. They don’t fall fast, but they fall deep. If you want a partner who truly sees you — and stands beside you — they might be your soft landing."
+            text: "Archetype: The Quiet Guardian — dependable, nurturing, and fiercely devoted.\n\nDating Bio Prompt: “Not into games. I’ll show you I care by remembering the little things — not shouting the big ones. Loyalty means everything.”\n\nIn-App Persona Card: “Meet the Nurturer 🕊️ — gentle, grounded, and full of heart. They don’t fall fast, but they fall deep. If you want a partner who truly sees you — and stands beside you — they might be your soft landing.”"
         }
     },
     relationships: [],
@@ -719,43 +719,81 @@ export const mbtiTypeDetails: Record<string, any> = {
   },
   'ESTJ': {
     title: 'The Supervisor / Executive',
-    nicknames: ['The Administrator', 'The Enforcer', 'The Manager'],
+    nicknames: ['The Commander', 'The Enforcer', 'The Organizer'],
     typeCode: 'Extraverted (E) – Sensing (S) – Thinking (T) – Judging (J)',
-    population: '~9% of population',
+    population: '~8–10% (more common among men)',
     coreCharacteristics: [
-        { trait: 'Organized', description: 'Excels at creating order, structure, and clear processes.' },
-        { trait: 'Direct & Outspoken', description: 'States their opinions and expectations clearly and honestly.' },
-        { trait: 'Duty-Bound', description: 'Believes in upholding traditions and ensuring everyone does their part.' },
+        { trait: 'Organized', description: 'Loves structure, systems, and predictable processes — thrives with order.' },
+        { trait: 'Commanding', description: 'Takes charge without hesitation. Often seen as the leader in any group.' },
+        { trait: 'Straightforward', description: 'Honest, blunt, and action-focused — no sugarcoating, just results.' }
     ],
     cognitiveStack: [
-        { functionName: 'Dominant – Extraverted Thinking (Te)', description: 'Organizes the external world with logic, schedules, and clear, measurable goals.' },
-        { functionName: 'Auxiliary – Introverted Sensing (Si)', description: 'Relies on a detailed memory of past experiences and proven methods to make decisions.' },
-        { functionName: 'Tertiary – Extraverted Intuition (Ne)', description: 'Can brainstorm practical solutions and enjoys engaging in social, energetic activities.' },
-        { functionName: 'Inferior – Introverted Feeling (Fi)', description: 'Is often uncomfortable with their own and others\' emotions, preferring to focus on tasks.' },
+        { functionName: 'Dominant – Extraverted Thinking (Te)', description: 'Values efficiency, organization, and measurable outcomes. Prefers action over theory — wants to see things DONE. Leads others by building order and enforcing standards.' },
+        { functionName: 'Auxiliary – Introverted Sensing (Si)', description: 'Relies on proven systems and past experience. Trusts tradition and routines that have worked before. Values familiarity, loyalty, and discipline.' },
+        { functionName: 'Tertiary – Extraverted Intuition (Ne)', description: 'Can brainstorm new possibilities — but prefers tested ideas. May enjoy conceptual play when relaxed, but defaults to logic. Helps them adapt, but usually only once they’ve hit a wall.' },
+        { functionName: 'Inferior – Introverted Feeling (Fi)', description: 'Feels emotions deeply but keeps them hidden. May not fully understand or express their own emotional values. Under stress, can become cold or reactive due to unprocessed emotion.' }
     ],
     strengths: [
-        { strength: 'Superb Project Management', example: 'Can take a chaotic project and whip it into shape with a clear plan and roles.' },
-        { strength: 'Honest & Direct Feedback', example: 'You always know where you stand with them.' },
-        { strength: 'Community Leadership', example: 'Often found organizing local events, clubs, or civic groups.' },
+        { strength: 'Born Leaders', description: 'Comfortable taking charge and making the tough calls.' },
+        { strength: 'Reliable & Committed', description: 'Will do what they say — no excuses, no ambiguity.' },
+        { strength: 'Highly Structured Thinkers', description: 'Bring order to messy systems and people.' },
+        { strength: 'Hardworking & Driven', description: 'Will push through obstacles to hit goals.' },
+        { strength: 'Loyal to Family, Team, and Tradition', description: 'Honor, duty, and integrity are cornerstones.' }
     ],
     weaknesses: [
-        { weakness: 'Inflexible & Stubborn', description: 'Can be resistant to new ideas that challenge established "by-the-book" methods.' },
-        { weakness: 'Can Seem Insensitive', description: 'May prioritize getting the job done over considering people\'s feelings.' },
-        { weakness: 'Judgmental of Difference', description: 'May struggle to understand or value lifestyles that differ from their own.' },
+        { weakness: 'Inflexible', description: 'Can be rigid, dismissive of new or creative approaches.' },
+        { weakness: 'Blunt or Harsh', description: 'May hurt feelings unintentionally due to lack of tact.' },
+        { weakness: 'Control-Oriented', description: 'Need to be “in charge” can alienate more relaxed types.' },
+        { weakness: 'Emotionally Repressed', description: 'May not recognize their own deeper emotional needs until under stress.' },
+        { weakness: 'Over-Focused on Productivity', description: 'Can devalue rest, fun, or emotional connection in favor of results.' }
     ],
     idealCareers: [
-        { field: 'Management / Administration', why: 'Perfectly suited for organizing people and processes.' },
-        { field: 'Law Enforcement / Judge', why: 'Upholds rules, order, and traditions within a clear system.' },
-        { field: 'Financial Planning', why: 'Applies proven, logical methods to create secure outcomes.' },
+        { field: 'Manager / Operations Lead', why: 'Enjoys optimizing systems and getting things done.' },
+        { field: 'Judge / Government Leader', why: 'Authority, justice, tradition — ideal combo.' },
+        { field: 'Military Officer / Law Enforcement', why: 'High structure, clear hierarchy, action-driven.' },
+        { field: 'Project Manager / Consultant', why: 'Can lead large teams to accomplish ambitious goals.' },
+        { field: 'School Principal / Athletic Coach', why: 'Values discipline, team cohesion, and long-term results.' }
     ],
-    famousExamples: ['Judge Judy', 'John D. Rockefeller', 'Lyndon B. Johnson', 'Dwight Schrute (The Office)'],
+    famousExamples: ['Judge Judy', 'Michelle Obama', 'Dr. Phil', 'Dwight Schrute (The Office)', 'Captain Holt (Brooklyn 99)'],
+    relationshipDeepDive: {
+        friendship: {
+            title: "Friendship",
+            coreNeeds: "Reliability, directness, and purposeful action.",
+            howTheyShowUp: "ESTJs value reliable, direct, and purposeful friendships. They prefer people who show up, follow through, and don’t play games. They like doing things together: fixing, building, planning, achieving. They often act as protectors, mentors, or team leads in their social circle. Red flags for them include flakiness, emotional manipulation, or a lack of direction."
+        },
+        romance: {
+            title: "Romance",
+            coreNeeds: "Loyalty, structure, and commitment.",
+            howTheyLove: "ESTJs aren’t traditionally romantic, but show love through acts of service, structure, and fierce loyalty. They’re the type to plan your future, take care of logistics, and hold your life together. They are attracted to partners who are loyal, grounded, and emotionally balanced. They can take charge of relationship decisions but their challenge is learning that emotional needs are not inefficient or a distraction.",
+            idealPartner: "Someone who is loyal, grounded, and emotionally balanced."
+        },
+        communication: {
+            title: "Communication",
+            primaryTraits: "Blunt, efficient, and opinionated.",
+            howToCommunicate: "They say what they mean and struggle to soften feedback. They expect transparency and directness from others and dislike drama. Under stress, they can become curt, controlling, and unyielding."
+        },
+        compatibility: {
+            title: "Compatibility & Ideal Matches",
+            summary: "ESTJs do well with partners who respect structure and responsibility, have emotional intelligence to balance their bluntness, and can keep up intellectually and practically.",
+            commonMatches: [
+                { type: 'ISFJ – The Nurturer', reason: 'Steady, emotionally aware, and loyal — brings balance to ESTJ’s fire.' },
+                { type: 'ISTJ – The Inspector', reason: 'Shared values, duty, and traditional strength — a true power duo.' },
+                { type: 'ENFP – The Campaigner', reason: 'Brings spontaneity and emotional insight — softens and challenges ESTJ.' },
+                { type: 'ESFJ – The Provider', reason: 'Harmonious blend — both love responsibility, loyalty, and care for others.' }
+            ]
+        },
+        summary: {
+            title: "ESTJ in Crossd Compatibility Storytelling",
+            text: "Archetype: The Commander With a Plan — structured, reliable, and fiercely loyal.\n\nDating Bio Prompt: “If you like consistency, honesty, and a bit of tough love — I’m your person. Not here for games. I build. I lead. I commit.”\n\nIn-App Persona Card: “Meet the Executive 🧭 — sharp, loyal, and structured to the core. They’ll show up, step up, and build something real. If you’re ready for a relationship with backbone, they’re already 10 steps ahead.”"
+        }
+    },
     relationships: [
-        { area: 'Friendship', behavior: 'Organizes group activities and values friends who are reliable and straightforward.' },
-        { area: 'Romance', behavior: 'A stable, traditional partner who provides security and expects clear commitments.' },
-        { area: 'Communication', behavior: 'Direct, clear, and action-oriented. Gets straight to the point.' },
+        { area: 'Friendship', behavior: 'Values reliable, direct, and purposeful friendships, often acting as a mentor or leader.' },
+        { area: 'Romance', behavior: 'Shows love through acts of service, structure, and fierce loyalty. Attracted to grounded and balanced partners.' },
+        { area: 'Communication', behavior: 'Blunt, efficient, and opinionated. Expects transparency and directness.' },
     ],
-    growthPath: ['Practice considering the emotional side of decisions', 'Be open to unconventional ideas', 'Learn to relax and go with the flow'],
-    archetypes: ['The tough but fair boss', 'The respected community leader', 'The upholder of rules'],
+    growthPath: ['Learn to value rest and emotional connection', 'Practice tact and considering feelings', 'Be open to new and creative approaches'],
+    archetypes: ['The Commander With a Plan', 'The reliable team lead', 'The fiercely loyal protector'],
   },
   'ESFJ': {
     title: 'The Consul / Provider',
@@ -774,9 +812,9 @@ export const mbtiTypeDetails: Record<string, any> = {
         { functionName: 'Inferior – Introverted Thinking (Ti)', description: 'Dislikes impersonal criticism and can struggle with detached, logical analysis.' },
     ],
     strengths: [
-        { strength: 'Community Building', example: 'Effortlessly organizes parties, events, and groups that make everyone feel welcome.' },
-        { strength: 'Practical Caregiving', example: 'Shows love through actions: remembering birthdays, cooking meals, offering help.' },
-        { strength: 'Social Graces', example: 'Navigates social situations with ease, smoothing over conflict and fostering connection.' },
+        { strength: 'Community Building', description: 'Effortlessly organizes parties, events, and groups that make everyone feel welcome.' },
+        { strength: 'Practical Caregiving', description: 'Shows love through actions: remembering birthdays, cooking meals, offering help.' },
+        { strength: 'Social Graces', description: 'Navigates social situations with ease, smoothing over conflict and fostering connection.' },
     ],
     weaknesses: [
         { weakness: 'Sensitive to Criticism', description: 'Can be deeply hurt by disapproval or conflict within their social circle.' },
@@ -814,9 +852,9 @@ export const mbtiTypeDetails: Record<string, any> = {
         { functionName: 'Inferior – Extraverted Feeling (Fe)', description: 'Often unaware of and uncomfortable with social expectations and emotional expression.' },
     ],
     strengths: [
-        { strength: 'Calm in a Crisis', example: 'Stays level-headed and acts decisively in high-stakes, emergency situations.' },
-        { strength: 'Mastery of Tools', example: 'Can take apart, understand, and reassemble almost any mechanical object.' },
-        { strength: 'Efficient Problem-Solving', example: 'Finds the most direct, practical solution without unnecessary steps.' },
+        { strength: 'Calm in a Crisis', description: 'Stays level-headed and acts decisively in high-stakes, emergency situations.' },
+        { strength: 'Mastery of Tools', description: 'Can take apart, understand, and reassemble almost any mechanical object.' },
+        { strength: 'Efficient Problem-Solving', description: 'Finds the most direct, practical solution without unnecessary steps.' },
     ],
     weaknesses: [
         { weakness: 'Emotionally Reserved', description: 'Can seem detached or unfeeling, struggling to express their inner state.' },
@@ -854,9 +892,9 @@ export const mbtiTypeDetails: Record<string, any> = {
         { functionName: 'Inferior – Extraverted Thinking (Te)', description: 'Dislikes and struggles with long-term planning, impersonal logic, and rigid structures.' },
     ],
     strengths: [
-        { strength: 'Aesthetic Sensibility', example: 'Has a natural eye for color, texture, and composition, creating beautiful things.' },
-        { strength: 'Live-in-the-Moment Charm', example: 'Finds joy in simple sensory pleasures and helps others do the same.' },
-        { strength: 'Loyal and Supportive', example: 'A deeply caring friend and partner who values authentic connection.' },
+        { strength: 'Aesthetic Sensibility', description: 'Has a natural eye for color, texture, and composition, creating beautiful things.' },
+        { strength: 'Live-in-the-Moment Charm', description: 'Finds joy in simple sensory pleasures and helps others do the same.' },
+        { strength: 'Loyal and Supportive', description: 'A deeply caring friend and partner who values authentic connection.' },
     ],
     weaknesses: [
         { weakness: 'Fiercely Independent', description: 'Can be hard to get to know and may shut down when feeling controlled.' },
@@ -894,9 +932,9 @@ export const mbtiTypeDetails: Record<string, any> = {
         { functionName: 'Inferior – Introverted Intuition (Ni)', description: 'Dislikes long-term planning and abstract theory, can miss the bigger picture.' },
     ],
     strengths: [
-        { strength: 'Adaptability', example: 'Can change tactics instantly to respond to a new challenge or opportunity.' },
-        { strength: 'Master Negotiator', example: 'Reads the room and uses logic and charm to get the best deal.' },
-        { strength: 'Inspiring Action', example: 'Their energy and confidence motivate others to get things done.' },
+        { strength: 'Adaptability', description: 'Can change tactics instantly to respond to a new challenge or opportunity.' },
+        { strength: 'Master Negotiator', description: 'Reads the room and uses logic and charm to get the best deal.' },
+        { strength: 'Inspiring Action', description: 'Their energy and confidence motivate others to get things done.' },
     ],
     weaknesses: [
         { weakness: 'Impulsive', description: 'May leap before they look, ignoring long-term consequences.' },
@@ -934,9 +972,9 @@ export const mbtiTypeDetails: Record<string, any> = {
         { functionName: 'Inferior – Introverted Intuition (Ni)', description: 'Avoids thinking about long-term consequences and can be stressed by abstract, negative possibilities.' },
     ],
     strengths: [
-        { strength: 'Social Magnetism', example: 'The natural center of attention, making everyone feel included and energized.' },
-        { strength: 'Generosity', example: 'Loves showering friends and loved ones with gifts, compliments, and fun experiences.' },
-        { strength: 'Practical Optimism', example: 'Finds joy in the here and now and encourages others to do the same.' },
+        { strength: 'Social Magnetism', description: 'The natural center of attention, making everyone feel included and energized.' },
+        { strength: 'Generosity', description: 'Loves showering friends and loved ones with gifts, compliments, and fun experiences.' },
+        { strength: 'Practical Optimism', description: 'Finds joy in the here and now and encourages others to do the same.' },
     ],
     weaknesses: [
         { weakness: 'Conflict Avoidant', description: 'Dislikes negativity and may ignore problems in the hope they go away.' },
