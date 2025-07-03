@@ -499,43 +499,67 @@ export const mbtiTypeDetails: Record<string, any> = {
   },
   'ENFP': {
     title: 'The Campaigner / Inspirer',
-    nicknames: ['The Champion', 'The Spark', 'The Enthusiast'],
+    nicknames: ['The Free Spirit', 'The Spark', 'The Explorer of Hearts'],
     typeCode: 'Extraverted (E) – Intuitive (N) – Feeling (F) – Perceiving (P)',
-    population: '~8% of population',
+    population: '~7–8% (more common among women)',
     coreCharacteristics: [
-        { trait: 'Enthusiastic', description: 'Radiates positive energy and excitement about new people, ideas, and possibilities.' },
-        { trait: 'People-Centered', description: 'Genuinely loves connecting with others and understanding what makes them tick.' },
-        { trait: 'Imaginative', description: 'Sees life as a grand adventure full of opportunities for growth and expression.' },
+      { trait: 'Enthusiastic', description: 'ENFPs bring boundless energy, passion, and curiosity to every room they enter.' },
+      { trait: 'Creative', description: 'They don’t just think outside the box — they live outside of it.' },
+      { trait: 'People-Centered', description: 'Deeply empathetic, ENFPs are energized by authentic human connection and shared experiences.' },
     ],
     cognitiveStack: [
-        { functionName: 'Dominant – Extraverted Intuition (Ne)', description: 'Sees endless possibilities and connections in the world, jumping from idea to idea.' },
-        { functionName: 'Auxiliary – Introverted Feeling (Fi)', description: 'Checks in with a deep, personal set of values to ensure their actions are authentic.' },
-        { functionName: 'Tertiary – Extraverted Thinking (Te)', description: 'Can be surprisingly organized and efficient when a project they care about requires it.' },
-        { functionName: 'Inferior – Introverted Sensing (Si)', description: 'Struggles with routine, details, and remembering past specifics, often losing track of things.' },
+      { functionName: 'Dominant – Extraverted Intuition (Ne)', description: 'Constantly explores ideas, connections, and possibilities, loving spontaneity and novelty.' },
+      { functionName: 'Auxiliary – Introverted Feeling (Fi)', description: 'Holds strong internal values and identity, craving authentic, value-aligned relationships.' },
+      { functionName: 'Tertiary – Extraverted Thinking (Te)', description: 'When mature, helps them organize action toward goals and can make them charmingly persuasive.' },
+      { functionName: 'Inferior – Introverted Sensing (Si)', description: 'Weak spot for routine and consistency; may struggle with follow-through or become scattered under stress.' },
     ],
     strengths: [
-        { strength: 'Infectious Charisma', example: 'Can light up a room and make anyone feel like the most interesting person there.' },
-        { strength: 'Creative Problem-Solving', example: 'Connects unconventional ideas to find innovative, human-centric solutions.' },
-        { strength: 'Emotional Intelligence', example: 'Quickly understands others\' motivations and emotional states.' },
+      { strength: 'Magnetic Energy', example: 'Infectiously positive, charismatic, and full of momentum.' },
+      { strength: 'Emotional Insight', example: 'Reads emotional undercurrents with ease.' },
+      { strength: 'Creativity & Innovation', example: 'Constantly generating new ideas and reimagining how things could be better.' },
     ],
     weaknesses: [
-        { weakness: 'Easily Distracted', description: 'The allure of a new idea can cause them to abandon current commitments.' },
-        { weakness: 'Overthinks & Seeks Approval', description: 'Can get caught in a loop of worrying about what others think.' },
-        { weakness: 'Dislikes Practical Details', description: 'May ignore mundane but necessary tasks, leading to disorganization.' },
+      { weakness: 'Easily Distracted', description: 'Excited by new things, may abandon old ones without closure.' },
+      { weakness: 'Overcommitted', description: 'Says “yes” to everything — and then burns out.' },
+      { weakness: 'Conflict Avoidant', description: 'May suppress issues to keep the vibe light, until pressure builds.' },
     ],
     idealCareers: [
-        { field: 'Creative Director / Advertising', why: 'Thrives on brainstorming big, bold, and emotionally resonant ideas.' },
-        { field: 'Life Coach / Counselor', why: 'Uses their empathy and energy to inspire and guide clients.' },
-        { field: 'Journalism / Acting', why: 'Allows them to explore different human stories and express themselves creatively.' },
+      { field: 'Actor / Performer', why: 'Expressive, emotive, and engaging — thrives when allowed to shine.' },
+      { field: 'Coach / Therapist', why: 'Uplift others through empathy, enthusiasm, and transformation.' },
+      { field: 'Creative Director / Designer', why: 'Passion for aesthetics, vision, and originality.' },
     ],
-    famousExamples: ['Robin Williams', 'Will Smith', 'Sandra Bullock', 'Michael Scott (The Office)'],
-    relationships: [
-        { area: 'Friendship', behavior: 'The social butterfly with a wide circle, but values deep, authentic talks.' },
-        { area: 'Romance', behavior: 'Seeks a passionate, adventurous partnership full of growth and mutual exploration.' },
-        { area: 'Communication', behavior: 'Warm, expressive, and full of ideas. Jumps between topics with infectious energy.' },
-    ],
-    growthPath: ['Develop focus and follow-through', 'Learn to value consistency and routine', 'Find peace in solitude'],
-    archetypes: ['The free spirit', 'The passionate champion', 'The creative catalyst'],
+    famousExamples: ['Robin Williams', 'Bob Ross', 'Ellen DeGeneres', 'Willy Wonka (fictional)', 'Anne Shirley (Anne of Green Gables)'],
+    relationshipDeepDive: {
+      friendship: {
+        title: "Friendship",
+        howTheyShowUp: "ENFPs love people deeply — friends are chosen family. Their friendships are built on emotional honesty, shared dreams, and spontaneous adventure. They’re fiercely loyal and always up for new ideas. Red Flags: Emotional coldness, rigid attitudes, and disrespect for their independence."
+      },
+      romance: {
+        title: "Romance",
+        howTheyLove: "Romantic idealists who fall in love with your soul. They seek deep emotional chemistry, mental stimulation, and fun. They love adventures in vulnerability. Their Challenge: Staying grounded when the honeymoon fades; they may chase a feeling rather than build a stable connection."
+      },
+      communication: {
+        title: "Communication Style",
+        howToCommunicate: "Energetic, animated, and emotionally charged. They use storytelling, metaphor, and powerful language. They know how to affirm and inspire but can become scattered if not centered."
+      },
+      compatibility: {
+        title: "Compatibility & Ideal Matches",
+        summary: "ENFPs match well with partners who offer depth, grounding, and room to breathe.",
+        commonMatches: [
+          { type: 'INFJ – The Counselor', reason: 'Quiet strength meets wild flame. A magical, values-driven pairing.' },
+          { type: 'INTJ – The Mastermind', reason: 'Grounding structure with long-term vision. Opposites attract with depth.' },
+          { type: 'INFP – The Idealist', reason: 'Shared values and emotion. A soulful, artistic connection.' },
+          { type: 'ENFJ – The Teacher', reason: 'Emotionally mature, inspiring, and values-driven — a deeply aligned duo.' }
+        ]
+      },
+      summary: {
+        title: "ENFP in Crossd Compatibility Storytelling",
+        text: "“Here for someone who gets excited by weird questions, intense eye contact, and running through the city at night with no plan.”"
+      }
+    },
+    growthPath: ['Develop focus and follow-through', 'Learn to value consistency', 'Find peace in solitude'],
+    archetypes: ['The Wild Heart With Fire Eyes', 'The imaginative explorer', 'The unforgettable spark'],
+    relationships: [],
   },
   'ISTJ': {
     title: 'The Inspector / Logistician',
@@ -858,3 +882,5 @@ export const mbtiTypeDetails: Record<string, any> = {
     archetypes: ['The charismatic entertainer', 'The life of the party', 'The generous friend'],
   },
 };
+
+    
