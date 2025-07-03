@@ -1,7 +1,7 @@
 
 'use client';
 
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { useRouter } from 'next/navigation';
 import { AppLayout } from '@/components/layout/app-layout';
 import { Card, CardContent, CardHeader, CardTitle, CardDescription, CardFooter } from '@/components/ui/card';
@@ -9,7 +9,7 @@ import { Button } from '@/components/ui/button';
 import { Progress } from '@/components/ui/progress';
 import { mbtiQuizQuestions, mbtiTypeDescriptions, mbtiTypeDetails } from '@/lib/mbti-quiz-data';
 import { useAuth } from '@/hooks/use-auth';
-import { updateUserMbtiType } from '@/app/actions';
+import { updateUserMbtiType, saveMbtiQuizProgress } from '@/app/actions';
 import { useToast } from '@/hooks/use-toast';
 import { Loader2, BrainCircuit, Save, Send, ArrowLeft, RotateCw, Sparkles, Star } from 'lucide-react';
 import Link from 'next/link';
@@ -19,27 +19,50 @@ import { Badge } from '@/components/ui/badge';
 import { CrossdPlusUpsellDialog } from '@/components/pricing/crossd-plus-upsell-dialog';
 
 export default function MbtiQuizPage() {
-  const [currentQuestionIndex, setCurrentQuestionIndex] = useState(0);
+  const { user, userProfile, isLoading: isAuthLoading } = useAuth();
+  const router = useRouter();
+  const { toast } = useToast();
+
   const [answers, setAnswers] = useState<Record<number, string>>({});
+  const [currentQuestionIndex, setCurrentQuestionIndex] = useState(0);
   const [result, setResult] = useState<string | null>(null);
   const [isSaving, setIsSaving] = useState(false);
   const [showDetailsDialog, setShowDetailsDialog] = useState(false);
   const [showUpsellDialog, setShowUpsellDialog] = useState(false);
 
-  const { user, userProfile, isLoading: isAuthLoading } = useAuth();
-  const router = useRouter();
-  const { toast } = useToast();
-
   const totalQuestions = mbtiQuizQuestions.length;
-  const progress = (currentQuestionIndex / totalQuestions) * 100;
-
   const isPremium = userProfile?.subscription?.status === 'active' || userProfile?.email === 'mlowdencrossd@gmail.com';
 
-  const handleAnswerSelect = (answerValue: string) => {
+  // Load progress when the component mounts or userProfile changes
+  useEffect(() => {
+    if (userProfile) {
+      const savedAnswers = userProfile.mbtiQuizProgress?.answers || {};
+      const savedAnswersCount = Object.keys(savedAnswers).length;
+
+      setAnswers(savedAnswers);
+
+      if (savedAnswersCount === totalQuestions) {
+        // If quiz is complete but result wasn't saved, calculate and show it
+        calculateResult(savedAnswers);
+      } else {
+        setCurrentQuestionIndex(savedAnswersCount);
+      }
+    }
+  }, [userProfile]);
+
+
+  const handleAnswerSelect = async (answerValue: string) => {
     const newAnswers = { ...answers, [currentQuestionIndex]: answerValue };
     setAnswers(newAnswers);
 
-    // Automatically move to the next question
+    if (user) {
+      // Fire-and-forget save to backend
+      saveMbtiQuizProgress(user.uid, newAnswers).catch(err => {
+        console.warn("Failed to save quiz progress:", err);
+        // Optionally show a subtle warning to the user
+      });
+    }
+
     if (currentQuestionIndex < totalQuestions - 1) {
       setCurrentQuestionIndex(currentQuestionIndex + 1);
     } else {
@@ -48,6 +71,8 @@ export default function MbtiQuizPage() {
   };
 
   const calculateResult = (finalAnswers: Record<number, string>) => {
+    if (Object.keys(finalAnswers).length < totalQuestions) return;
+
     const counts = { E: 0, I: 0, S: 0, N: 0, T: 0, F: 0, J: 0, P: 0 };
     Object.values(finalAnswers).forEach(answer => {
       counts[answer as keyof typeof counts]++;
@@ -65,13 +90,14 @@ export default function MbtiQuizPage() {
   
   const handlePreviousQuestion = () => {
     if (currentQuestionIndex > 0) {
-        setCurrentQuestionIndex(currentQuestionIndex - 1);
+      setCurrentQuestionIndex(currentQuestionIndex - 1);
     }
-  }
+  };
 
   const handleSaveResult = async () => {
     if (!result || !user) return;
     setIsSaving(true);
+    // updateUserMbtiType now also clears the quiz progress from the DB
     const response = await updateUserMbtiType(user.uid, result);
     if (response.success) {
       toast({
@@ -89,11 +115,15 @@ export default function MbtiQuizPage() {
     setIsSaving(false);
   };
   
-  const handleRestartQuiz = () => {
+  const handleRestartQuiz = async () => {
+    if (user) {
+      // Clear progress in the database
+      await saveMbtiQuizProgress(user.uid, {});
+    }
     setCurrentQuestionIndex(0);
     setAnswers({});
     setResult(null);
-  }
+  };
 
   const handleResultClick = () => {
     if (isPremium) {
@@ -102,8 +132,6 @@ export default function MbtiQuizPage() {
       setShowUpsellDialog(true);
     }
   };
-
-  const currentResultDetails = result ? mbtiTypeDetails[result] : null;
 
   if (isAuthLoading) {
     return (
@@ -119,6 +147,9 @@ export default function MbtiQuizPage() {
     router.push('/login-form');
     return null;
   }
+  
+  const progress = (currentQuestionIndex / totalQuestions) * 100;
+  const currentResultDetails = result ? mbtiTypeDetails[result] : null;
 
   return (
     <AppLayout>

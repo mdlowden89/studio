@@ -6,7 +6,7 @@ import { suggestBioForUser, SuggestBioInput } from "@/ai/flows/suggest-bio-flow"
 import { getPlacePhoto, GetPlacePhotoInput, GetPlacePhotoOutput } from "@/ai/flows/get-place-photo-flow";
 import { getSparkSwipeInsights, SparkSwipeInput, SparkSwipeOutput } from "@/ai/flows/spark-swipe-flow";
 import { db } from "@/lib/firebase";
-import { doc, getDoc, updateDoc, collection, addDoc, serverTimestamp, query, where, limit, getDocs, orderBy, Timestamp, getCountFromServer, writeBatch, Query, collectionGroup, startAfter, QueryConstraint } from "firebase/firestore";
+import { doc, getDoc, updateDoc, collection, addDoc, serverTimestamp, query, where, limit, getDocs, orderBy, Timestamp, getCountFromServer, writeBatch, Query, collectionGroup, startAfter, QueryConstraint, deleteField } from "firebase/firestore";
 import type { UserProfile, Achievement, Challenge, Moment, MomentLog, Chat, Notification, ChatMessage, SubscriptionInfo } from "@/lib/types";
 import { addHours } from "date-fns";
 
@@ -726,10 +726,36 @@ export async function updateUserMbtiType(userId: string, mbtiType: string): Prom
   }
   try {
     const userDocRef = doc(db, "users", userId);
-    await updateDoc(userDocRef, { mbtiType });
+    await updateDoc(userDocRef, { 
+      mbtiType,
+      mbtiQuizProgress: deleteField() 
+    });
     return { success: true };
   } catch (error: any) {
     console.error("Error updating MBTI type:", error);
     return { success: false, error: "Failed to save your personality type." };
+  }
+}
+
+export async function saveMbtiQuizProgress(userId: string, answers: Record<number, string>): Promise<{ success: boolean; error?: string }> {
+  if (!userId) {
+    return { success: false, error: "Invalid user ID provided." };
+  }
+  try {
+    const userDocRef = doc(db, "users", userId);
+    if (Object.keys(answers).length === 0) {
+      // If answers are empty, we remove the progress field
+      await updateDoc(userDocRef, { 
+        mbtiQuizProgress: deleteField()
+      });
+    } else {
+      await updateDoc(userDocRef, { 
+        mbtiQuizProgress: { answers }
+      });
+    }
+    return { success: true };
+  } catch (error: any) {
+    console.error("Error saving MBTI quiz progress:", error);
+    return { success: false, error: "Failed to save your quiz progress." };
   }
 }

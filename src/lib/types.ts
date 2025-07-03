@@ -50,6 +50,9 @@ export interface UserProfile {
     active: boolean;
     expiresAt: string; // ISO string
   };
+  mbtiQuizProgress?: {
+    answers: Record<number, string>;
+  };
 }
 
 export interface ProfilePrompt {
