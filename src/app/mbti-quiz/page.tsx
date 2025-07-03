@@ -1,7 +1,7 @@
 
 'use client';
 
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useRef } from 'react';
 import { useRouter } from 'next/navigation';
 import { AppLayout } from '@/components/layout/app-layout';
 import { Card, CardContent, CardHeader, CardTitle, CardDescription, CardFooter } from '@/components/ui/card';
@@ -22,55 +22,52 @@ export default function MbtiQuizPage() {
   const { user, userProfile, isLoading: isAuthLoading } = useAuth();
   const router = useRouter();
   const { toast } = useToast();
-
+  
   const [answers, setAnswers] = useState<Record<number, string>>({});
   const [currentQuestionIndex, setCurrentQuestionIndex] = useState(0);
   const [result, setResult] = useState<string | null>(null);
   const [isSaving, setIsSaving] = useState(false);
   const [showDetailsDialog, setShowDetailsDialog] = useState(false);
   const [showUpsellDialog, setShowUpsellDialog] = useState(false);
-  const [isProgressLoaded, setIsProgressLoaded] = useState(false);
+  const [isLoadingQuiz, setIsLoadingQuiz] = useState(true);
+
+  // Use a ref to ensure initial progress load only happens once.
+  const isInitialLoadDone = useRef(false);
 
   const totalQuestions = mbtiQuizQuestions.length;
   const isPremium = userProfile?.subscription?.status === 'active' || userProfile?.email === 'mlowdencrossd@gmail.com';
 
-  // Load progress once when userProfile is available.
   useEffect(() => {
-    if (userProfile && !isProgressLoaded) {
-      const savedAnswers = userProfile.mbtiQuizProgress?.answers || {};
-      const savedAnswersCount = Object.keys(savedAnswers).length;
-      
-      if (savedAnswersCount > 0) {
-        setAnswers(savedAnswers);
-        if (savedAnswersCount < totalQuestions) {
-          setCurrentQuestionIndex(savedAnswersCount);
-        } else {
-          calculateResult(savedAnswers);
+    // This effect loads saved progress from the user's profile ONCE.
+    if (isAuthLoading || !userProfile || isInitialLoadDone.current) {
+        // If auth is still loading, or we have no profile, or we've already loaded, do nothing.
+        if (!isAuthLoading && !isInitialLoadDone.current) {
+          // If auth is done but there's no profile, we can stop loading.
+          setIsLoadingQuiz(false);
         }
-      }
-      setIsProgressLoaded(true);
+        return;
     }
-  }, [userProfile, isProgressLoaded, totalQuestions]);
 
+    const savedAnswers = userProfile.mbtiQuizProgress?.answers || {};
+    const savedAnswersCount = Object.keys(savedAnswers).length;
 
-  const handleAnswerSelect = (answerValue: string) => {
-    const newAnswers = { ...answers, [currentQuestionIndex]: answerValue };
-    setAnswers(newAnswers);
-
-    if (user) {
-      // Fire-and-forget save to backend
-      saveMbtiQuizProgress(user.uid, newAnswers).catch(err => {
-        console.warn("Failed to save quiz progress:", err);
-        // Optionally show a subtle warning to the user
+    if (savedAnswersCount > 0) {
+      setAnswers(savedAnswers);
+      if (savedAnswersCount >= totalQuestions) {
+        calculateResult(savedAnswers);
+      } else {
+        setCurrentQuestionIndex(savedAnswersCount);
+      }
+      toast({
+        title: "Welcome Back!",
+        description: `We've loaded your progress. You're on question ${savedAnswersCount + 1}.`,
       });
     }
 
-    if (currentQuestionIndex < totalQuestions - 1) {
-      setCurrentQuestionIndex(currentQuestionIndex + 1);
-    } else {
-      calculateResult(newAnswers);
-    }
-  };
+    isInitialLoadDone.current = true; // Mark as loaded
+    setIsLoadingQuiz(false); // Done loading, ready to show quiz
+  }, [userProfile, isAuthLoading, totalQuestions]);
+
 
   const calculateResult = (finalAnswers: Record<number, string>) => {
     if (Object.keys(finalAnswers).length < totalQuestions) return;
@@ -89,6 +86,24 @@ export default function MbtiQuizPage() {
 
     setResult(mbtiType);
   };
+
+  const handleAnswerSelect = (answerValue: string) => {
+    const newAnswers = { ...answers, [currentQuestionIndex]: answerValue };
+    setAnswers(newAnswers);
+
+    if (user) {
+      // Fire-and-forget save to backend. No need to await.
+      saveMbtiQuizProgress(user.uid, newAnswers).catch(err => {
+        console.warn("Failed to save quiz progress in background:", err);
+      });
+    }
+
+    if (currentQuestionIndex < totalQuestions - 1) {
+      setCurrentQuestionIndex(currentQuestionIndex + 1);
+    } else {
+      calculateResult(newAnswers);
+    }
+  };
   
   const handlePreviousQuestion = () => {
     if (currentQuestionIndex > 0) {
@@ -103,7 +118,7 @@ export default function MbtiQuizPage() {
     if (response.success) {
       toast({
         title: "Personality Type Saved!",
-        description: `Your MBTI type has been set to ${result}.`,
+        description: `Your MBTI type has been set to ${result} on your profile.`,
       });
       router.push('/profile');
     } else {
@@ -133,11 +148,12 @@ export default function MbtiQuizPage() {
     }
   };
 
-  if (isAuthLoading || !isProgressLoaded) {
+  if (isAuthLoading || isLoadingQuiz) {
     return (
       <AppLayout>
         <div className="flex h-full items-center justify-center">
           <Loader2 className="h-8 w-8 animate-spin text-primary" />
+           <p className="ml-3 text-muted-foreground">Loading Quiz...</p>
         </div>
       </AppLayout>
     );
