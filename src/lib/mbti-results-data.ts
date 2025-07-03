@@ -532,7 +532,7 @@ export const mbtiTypeDetails: Record<string, any> = {
     relationshipDeepDive: {
       friendship: {
         title: "Friendship",
-        howTheyShowUp: "ENFPs love people deeply — friends are chosen family. Their friendships are built on emotional honesty, shared dreams, and spontaneous adventure. They’re fiercely loyal and always up for new ideas. Red Flags: Emotional coldness, rigid attitudes, and disrespect for their independence."
+        howTheyShowUp: "ENFPs love people deeply — friends are chosen family. Their friendships are built on emotional honesty, shared dreams, and spontaneous adventure. They’re fiercely loyal and always up for new ideas or weird convos. Red Flags: Emotional coldness, rigid attitudes, and disrespect for their independence."
       },
       romance: {
         title: "Romance",
@@ -563,43 +563,91 @@ export const mbtiTypeDetails: Record<string, any> = {
   },
   'ISTJ': {
     title: 'The Inspector / Logistician',
-    nicknames: ['The Rock', 'The Traditionalist', 'The Duty-Fulfiller'],
+    nicknames: ['The Duty-Doer', 'The Quiet Guardian', 'The System Keeper'],
     typeCode: 'Introverted (I) – Sensing (S) – Thinking (T) – Judging (J)',
-    population: '~12% of population',
+    population: '~11–13% (more common among men)',
     coreCharacteristics: [
-        { trait: 'Responsible', description: 'Takes their duties seriously and can be counted on to see things through.' },
-        { trait: 'Detail-Oriented', description: 'Notices and remembers specifics that others overlook, ensuring accuracy.' },
-        { trait: 'Loyal', description: 'Steadfastly devoted to their family, organizations, and traditions.' },
+        { trait: 'Responsible', description: 'ISTJs take commitments seriously. If they say they’ll do it, consider it done — on time and by the book.' },
+        { trait: 'Loyal', description: 'Relationships are sacred to them. Once they trust you, they’re in for the long haul.' },
+        { trait: 'Detail-Focused', description: 'Notice the fine print, remember facts, and value precision in work and life.' },
     ],
     cognitiveStack: [
-        { functionName: 'Dominant – Introverted Sensing (Si)', description: 'Compares present reality to a vast, detailed internal library of past experiences and facts.' },
-        { functionName: 'Auxiliary – Extraverted Thinking (Te)', description: 'Organizes the external world logically and efficiently to meet goals.' },
-        { functionName: 'Tertiary – Introverted Feeling (Fi)', description: 'Possesses a quiet, deeply-held set of personal values that guide their sense of duty.' },
-        { functionName: 'Inferior – Extraverted Intuition (Ne)', description: 'Dislikes and distrusts abstract possibilities, preferring the tried-and-true. Can catastrophize under stress.' },
+        { functionName: 'Dominant – Introverted Sensing (Si)', description: 'Focuses on tradition, memory, and routine. Stores and compares past experiences for reliability and structure. Prefers tried-and-true over untested theory.' },
+        { functionName: 'Auxiliary – Extraverted Thinking (Te)', description: 'Seeks logic, efficiency, and measurable outcomes. Organizes the external world with clear systems and plans. Values order and discipline.' },
+        { functionName: 'Tertiary – Introverted Feeling (Fi)', description: 'Quiet internal values and ethics — may not express, but deeply held. Can surprise others with strong personal morals once triggered.' },
+        { functionName: 'Inferior – Extraverted Intuition (Ne)', description: 'May struggle with ambiguity, spontaneity, or open-ended exploration. Can feel overwhelmed by “what if” thinking or fast-paced ideation. Under stress, may catastrophize or resist innovation.' },
     ],
     strengths: [
-        { strength: 'Unmatched Reliability', example: 'If they say they will do something, it gets done, correctly and on time.' },
-        { strength: 'Practical Knowledge', example: 'A walking encyclopedia of facts and "how-to" information based on experience.' },
-        { strength: 'Calm and Steady', example: 'Provides a stable, dependable presence in chaotic situations.' },
+        { strength: 'Consistency & Reliability', example: 'The most dependable personality type — they show up every time.' },
+        { strength: 'Strong Memory & Attention to Detail', example: 'Notice what others miss. Great at systems, logistics, and recall.' },
+        { strength: 'Loyal to Core Values', example: 'Though reserved, they stick to their internal code.' },
+        { strength: 'Practical Problem-Solving', example: 'Not flashy — just solid, functional, and results-driven.' },
+        { strength: 'Resilient & Duty-Oriented', example: 'Thrive in roles that demand structure, tradition, and honor.' },
     ],
     weaknesses: [
-        { weakness: 'Resistant to Change', description: 'Prefers established procedures and can be stubborn about adopting new methods.' },
-        { weakness: 'Can Seem Insensitive', description: 'May prioritize logic and facts over emotional considerations in decisions.' },
-        { weakness: 'Judgmental', description: 'Can be critical of those who don\'t follow the rules or meet their standards.' },
+        { weakness: 'Resistant to Change', description: 'Prefer stability and can resist new ideas or “unconventional” people.' },
+        { weakness: 'Overly Critical or Strict', description: 'Can be judgmental of those who don’t meet their standards.' },
+        { weakness: 'Struggles With Emotion', description: 'May seem emotionally distant or uninterested in feelings.' },
+        { weakness: 'Perfectionistic', description: 'Can focus so much on “doing it right” that they struggle with flexibility.' },
+        { weakness: 'Work > Play', description: 'May view fun as unproductive or frivolous — needs encouragement to relax.' },
     ],
     idealCareers: [
-        { field: 'Accounting / Finance', why: 'Requires precision, attention to detail, and adherence to rules.' },
-        { field: 'Military / Law Enforcement', why: 'Values structure, duty, and clear chains of command.' },
-        { field: 'Data Analysis / Engineering', why: 'Focuses on facts, accuracy, and proven systems.' },
+        { field: 'Accountant / Auditor / Analyst', why: 'Precision, data, repeatable systems — ISTJ heaven.' },
+        { field: 'Military Officer / Police / Security', why: 'Structure, duty, and chain of command align with their natural rhythm.' },
+        { field: 'Engineer / Technician', why: 'Requires focus, detail, and predictable problem-solving.' },
+        { field: 'Operations Manager / Project Coordinator', why: 'Handles timelines, systems, and logistics with skill.' },
+        { field: 'Judge / Government Role', why: 'Values law, fairness, structure, and responsibility.' },
     ],
-    famousExamples: ['George Washington', 'Angela Merkel', 'Jeff Bezos', 'Hermione Granger (as a youth)'],
-    relationships: [
-        { area: 'Friendship', behavior: 'A loyal, dependable friend who shows they care through actions rather than words.' },
-        { area: 'Romance', behavior: 'A traditional and committed partner who values stability, security, and shared routines.' },
-        { area: 'Communication', behavior: 'Clear, direct, and fact-based. Not one for speculation or abstract debate.' },
+    famousExamples: ['George Washington', 'Angela Merkel', 'Natalie Portman', 'Eddard Stark (Game of Thrones)', 'Hermione Granger'],
+    relationships: [], // Fallback
+    growthPath: [
+        'Learn to be open to new possibilities', 
+        'Practice expressing appreciation and positive feelings', 
+        'Trust that not all change is bad'
     ],
-    growthPath: ['Learn to be open to new possibilities', 'Practice expressing appreciation and positive feelings', 'Trust that not all change is bad'],
-    archetypes: ['The reliable pillar of the community', 'The by-the-book investigator', 'The keeper of traditions'],
+    archetypes: ['The Silent Guardian', 'The steady, loyal, and quietly principled'],
+    relationshipDeepDive: {
+        friendship: {
+            title: 'Friendship',
+            coreNeeds: 'Loyalty, consistency, shared routines.',
+            howTheyShowUp: 'ISTJs may seem emotionally distant at first, but once they consider you a friend, they’ll show up consistently, help when it counts, and protect you quietly. They prefer structured friendships — regular meetups, shared routines, loyalty over novelty. They dislike drama, unpredictability, or people who say things they don’t mean. Red flags include flaky behavior, oversharing early on, and people who ignore responsibility.'
+        },
+        romance: {
+            title: 'Romance',
+            coreNeeds: 'Commitment, responsibility, shared values.',
+            howTheyLove: 'ISTJs are reserved but deeply loyal — they may not sweep you off your feet, but they’ll build a foundation you can stand on. They value commitment, responsibility, and shared values, often showing love through practical help (like fixing your sink) and providing stability. Their challenge is opening up emotionally and expressing feelings through words, not just actions.',
+            idealPartner: 'Someone who values stability and consistency.'
+        },
+        communication: {
+            title: 'Communication',
+            primaryTraits: 'Straightforward, factual, and often brief.',
+            howToCommunicate: 'They dislike emotional guesswork or vague statements. They may unintentionally come off as cold or blunt and express love more through actions than flowery words. Say what you mean.'
+        },
+        compatibility: {
+            title: 'Compatibility & Ideal Matches',
+            summary: 'ISTJs pair best with partners who respect structure and consistency, are emotionally grounded, and help soften their rigidity without overwhelming them.',
+            commonMatches: [
+                { type: 'ESFJ – The Provider', reason: 'Loyal, warm, and organized — creates a harmonious, supportive pairing.' },
+                { type: 'ISFJ – The Defender', reason: 'Shares values and responsibility — mutual care and quiet love.' },
+                { type: 'ESTP – The Dynamo', reason: 'Adds fun and spontaneity while grounding the ISTJ with respect.' },
+                { type: 'INFP – The Idealist', reason: 'Unconventional but inspiring match — helps the ISTJ open emotionally (requires maturity).' }
+            ]
+        },
+        loveLanguage: {
+            title: 'ISTJ Love Language & Dating Style',
+            languages: [
+                { type: 'Acts of Service', expression: 'Fixing your car, taking care of your errands, showing love through utility.' },
+                { type: 'Quality Time', expression: 'Prefers consistent, low-key time together (e.g. cooking, working side-by-side).' },
+                { type: 'Words of Affirmation', expression: 'Rare and understated — more likely to say “I’m proud of you” than “I love you” every day.' },
+                { type: 'Physical Touch', expression: 'Reserved at first, but can be deeply affectionate once trust is formed.' },
+                { type: 'Gifts', expression: 'Practical and thoughtful — nothing flashy, just what you need (and didn’t ask for).' }
+            ]
+        },
+        summary: {
+            title: 'ISTJ in Crossd Compatibility Storytelling',
+            text: '“I’m not flashy, I’m consistent. Loyalty over games. If you’re into stability, real connection, and shared goals — let’s talk.”'
+        }
+    }
   },
   'ISFJ': {
     title: 'The Defender / Nurturer',
