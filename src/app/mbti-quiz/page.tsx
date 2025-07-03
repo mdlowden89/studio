@@ -29,28 +29,31 @@ export default function MbtiQuizPage() {
   const [isSaving, setIsSaving] = useState(false);
   const [showDetailsDialog, setShowDetailsDialog] = useState(false);
   const [showUpsellDialog, setShowUpsellDialog] = useState(false);
+  const [isProgressLoaded, setIsProgressLoaded] = useState(false);
 
   const totalQuestions = mbtiQuizQuestions.length;
   const isPremium = userProfile?.subscription?.status === 'active' || userProfile?.email === 'mlowdencrossd@gmail.com';
 
-  // Load progress when the component mounts or userProfile changes
+  // Load progress once when userProfile is available.
   useEffect(() => {
-    if (userProfile) {
+    if (userProfile && !isProgressLoaded) {
       const savedAnswers = userProfile.mbtiQuizProgress?.answers || {};
       const savedAnswersCount = Object.keys(savedAnswers).length;
-
-      setAnswers(savedAnswers);
-
-      if (savedAnswersCount > 0 && savedAnswersCount < totalQuestions) {
-        setCurrentQuestionIndex(savedAnswersCount);
-      } else if (savedAnswersCount === totalQuestions) {
-        calculateResult(savedAnswers);
+      
+      if (savedAnswersCount > 0) {
+        setAnswers(savedAnswers);
+        if (savedAnswersCount < totalQuestions) {
+          setCurrentQuestionIndex(savedAnswersCount);
+        } else {
+          calculateResult(savedAnswers);
+        }
       }
+      setIsProgressLoaded(true);
     }
-  }, [userProfile]);
+  }, [userProfile, isProgressLoaded, totalQuestions]);
 
 
-  const handleAnswerSelect = async (answerValue: string) => {
+  const handleAnswerSelect = (answerValue: string) => {
     const newAnswers = { ...answers, [currentQuestionIndex]: answerValue };
     setAnswers(newAnswers);
 
@@ -96,7 +99,6 @@ export default function MbtiQuizPage() {
   const handleSaveResult = async () => {
     if (!result || !user) return;
     setIsSaving(true);
-    // updateUserMbtiType now also clears the quiz progress from the DB
     const response = await updateUserMbtiType(user.uid, result);
     if (response.success) {
       toast({
@@ -116,7 +118,6 @@ export default function MbtiQuizPage() {
   
   const handleRestartQuiz = async () => {
     if (user) {
-      // Clear progress in the database
       await saveMbtiQuizProgress(user.uid, {});
     }
     setCurrentQuestionIndex(0);
@@ -132,7 +133,7 @@ export default function MbtiQuizPage() {
     }
   };
 
-  if (isAuthLoading) {
+  if (isAuthLoading || !isProgressLoaded) {
     return (
       <AppLayout>
         <div className="flex h-full items-center justify-center">
