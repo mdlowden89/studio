@@ -186,7 +186,7 @@ export const mbtiTypeDetails: Record<string, any> = {
       },
       summary: {
         title: "ENTJ in Crossd Compatibility Storytelling",
-        text: "Archetype: The Mastermind Leader — commanding presence, unstoppable vision.\nDating Bio Prompt: “Ambitious AF. Don’t confuse confidence with arrogance — I just know what I want. Let’s build an empire, or at least crush trivia night.”\nIn-App Persona Card: “Meet the Commander ⚡ — bold, brilliant, and driven by purpose. They don’t just swipe — they strategize. If you’re ready to match ambition with fire, they’re your perfect counterpart.”"
+        text: "“Ambitious AF. Don’t confuse confidence with arrogance — I just know what I want. Let’s build an empire, or at least crush trivia night.”"
       }
     },
     relationships: [], // Fallback
@@ -258,7 +258,7 @@ export const mbtiTypeDetails: Record<string, any> = {
       },
       summary: {
         title: "ENTP in Crossd Compatibility Storytelling",
-        text: "Archetype: The Wild Spark with a Million Ideas\nDating Bio Prompt: “Part-time troublemaker, full-time brainstorm addict. Swipe if you like curiosity, chaos, and deep convos that turn into 3am adventures.”\nIn-App Persona Card: “Meet the Visionary ⚡ — unpredictable, captivating, and endlessly curious. They’ll challenge your ideas, charm your friends, and vanish into a startup pitch... but if they stay, you’ve sparked something rare.”"
+        text: "“Part-time troublemaker, full-time brainstorm addict. Swipe if you like curiosity, chaos, and deep convos that turn into 3am adventures.”"
       }
     },
     relationships: [],
@@ -332,7 +332,7 @@ export const mbtiTypeDetails: Record<string, any> = {
       },
       summary: {
         title: "INFJ in Crossd Compatibility Storytelling",
-        text: "Archetype: The Soul Whisperer — deeply private, quietly powerful, drawn to meaning over noise. Dating Bio Prompt: “Not here for the small talk — looking for someone to read between the lines, build something sacred, and maybe talk about the stars at 2am.” In-App Persona Card: “Meet the Counselor 🌙 — mysterious, emotionally rich, and visionary to the core. If you’re craving connection that goes deeper than surface sparks, they’ll light your inner fire.”"
+        text: "“Not here for the small talk — looking for someone to read between the lines, build something sacred, and maybe talk about the stars at 2am.”"
       }
     },
     relationships: [],
@@ -341,43 +341,81 @@ export const mbtiTypeDetails: Record<string, any> = {
   },
   'INFP': {
     title: 'The Mediator / Idealist',
-    nicknames: ['The Dreamer', 'The Healer', 'The Romantic'],
+    nicknames: ['The Dreamer', 'The Inner Flame', 'The Gentle Rebel'],
     typeCode: 'Introverted (I) – Intuitive (N) – Feeling (F) – Perceiving (P)',
-    population: '~4% of population',
+    population: '~4% overall',
     coreCharacteristics: [
-        { trait: 'Values-Driven', description: 'Lives by a strict internal moral code and seeks harmony and authenticity.' },
-        { trait: 'Imaginative', description: 'Possesses a rich inner world filled with fantasy, creativity, and wonder.' },
-        { trait: 'Empathetic', description: 'Deeply attuned to the emotions of others and driven to help those in need.' },
+      { trait: 'Gentle', description: 'INFPs have a naturally soft, calming presence — but don’t mistake it for weakness.' },
+      { trait: 'Introspective', description: 'Live in a rich internal world of thought, feeling, memory, and meaning.' },
+      { trait: 'Values-Driven', description: 'Every action and decision is guided by a personal code of ethics, not external rules.' },
     ],
     cognitiveStack: [
-        { functionName: 'Dominant – Introverted Feeling (Fi)', description: 'Filters all experiences through a deeply personal and complex set of values and emotions.' },
-        { functionName: 'Auxiliary – Extraverted Intuition (Ne)', description: 'Explores possibilities and what could be, seeing potential in people and ideas.' },
-        { functionName: 'Tertiary – Introverted Sensing (Si)', description: 'Holds onto cherished memories and details that resonate with their values.' },
-        { functionName: 'Inferior – Extraverted Thinking (Te)', description: 'Struggles with objective logic, efficiency, and organizing the external world, especially under stress.' },
+      { functionName: 'Dominant – Introverted Feeling (Fi)', description: 'Strong internal value system. Deep emotional experiences, though often private. Integrity and authenticity are non-negotiable.' },
+      { functionName: 'Auxiliary – Extraverted Intuition (Ne)', description: 'Constantly scans for possibilities, connections, and “what could be”. Fuels their creativity and imagination. Drawn to patterns in life, art, people, and meaning.' },
+      { functionName: 'Tertiary – Introverted Sensing (Si)', description: 'Reflects on past experiences, draws meaning from memory. Can create strong nostalgia or sentimentality. Helps balance their idealism with learned lessons.' },
+      { functionName: 'Inferior – Extraverted Thinking (Te)', description: 'Struggles with structure, time management, or decision-making under pressure. May resist hard logic or “shoulds” imposed by others. Growth area: setting external boundaries to protect internal peace.' },
     ],
     strengths: [
-        { strength: 'Creative Expression', example: 'Excel in writing, art, and music as a way to explore their inner world.' },
-        { strength: 'Unwavering Idealism', example: 'Champions causes and people they believe in with fierce loyalty.' },
-        { strength: 'Authentic Empathy', example: 'Makes others feel truly seen and understood without judgment.' },
+      { strength: 'Creativity & Imagination', example: 'Natural storytellers, artists, and creators of emotionally powerful work.' },
+      { strength: 'Deep Empathy', example: 'Feel others\' pain and joy as if it were their own. Often drawn to healing professions.' },
+      { strength: 'Authenticity', example: 'Driven to be true to themselves, no matter what others think.' },
+      { strength: 'Moral Integrity', example: 'Will quietly defy the system if it violates their values.' },
+      { strength: 'Quiet Loyalty', example: 'Fiercely devoted once trust is formed — loves with intensity and subtlety.' },
     ],
     weaknesses: [
-        { weakness: 'Overly Sensitive', description: 'Can be easily hurt by criticism or conflict, taking things very personally.' },
-        { weakness: 'Impractical', description: 'May get lost in their dreams and neglect day-to-day practicalities.' },
-        { weakness: 'Conflict Avoidant', description: 'Dislikes confrontation and may struggle to assert their own needs.' },
+      { weakness: 'Conflict Avoidant', description: 'Hates confrontation, may suppress needs to avoid hurting others.' },
+      { weakness: 'Overly Idealistic', description: 'May hold unrealistic expectations of love, people, or self.' },
+      { weakness: 'Disorganized or Unfocused', description: 'Struggles with schedules, deadlines, and routine.' },
+      { weakness: 'Emotionally Overwhelmed', description: 'Feels things intensely and may retreat into isolation when overstimulated.' },
+      { weakness: 'Takes Things Personally', description: 'May internalize criticism or social friction deeply, even if unintended.' },
     ],
     idealCareers: [
-        { field: 'Writer / Author', why: 'Allows for deep creative expression and exploration of values.' },
-        { field: 'Counselor / Social Worker', why: 'Utilizes their profound empathy to help others.' },
-        { field: 'Graphic Design / Fine Arts', why: 'Provides a medium to bring their rich imagination to life.' },
+      { field: 'Poet / Novelist / Artist', why: 'Expression of emotion and inner truth through symbolic forms.' },
+      { field: 'Counselor / Therapist', why: 'Deep empathy and emotional resonance with others’ struggles.' },
+      { field: 'Storyteller / Filmmaker', why: 'Driven by the desire to inspire and share meaning through narratives.' },
+      { field: 'Humanitarian / NGO Worker', why: 'Wants to heal the world, not dominate it.' },
+      { field: 'Librarian / Archivist / Curator', why: 'Quiet, meaningful work rooted in knowledge and memory.' },
     ],
-    famousExamples: ['William Shakespeare', 'J.R.R. Tolkien', 'Audrey Hepburn', 'Luna Lovegood (Harry Potter)'],
+    famousExamples: ['J.R.R. Tolkien', 'Princess Diana', 'Audrey Tautou (Amélie)', 'William Shakespeare', 'Frodo Baggins'],
+    relationshipDeepDive: {
+        friendship: {
+            title: 'Friendship',
+            coreNeeds: 'Soul-bond friendships, emotional safety, and shared meaning.',
+            howTheyShowUp: 'INFPs are selective but devoted friends who crave deep, authentic connections. They are great listeners but may need help articulating their own needs. They can become withdrawn if emotionally hurt and dislike shallow behavior or disrespect for boundaries.'
+        },
+        romance: {
+            title: 'Romance',
+            coreNeeds: 'Soulmate connection, emotional validation, and shared dreams.',
+            howTheyLove: 'INFPs are true romantics who often idealize partners. They express love through symbolic gestures, heartfelt messages, and holding emotional space. Their biggest challenge is speaking up when unhappy, often suffering in silence.',
+            idealPartner: 'Someone who respects their values, appreciates their rich inner world, and encourages their growth without judgment.'
+        },
+        communication: {
+            title: 'Communication Style',
+            primaryTraits: 'Symbolic, metaphorical, and gentle, but forceful when values are crossed.',
+            howToCommunicate: 'INFPs often prefer writing to speaking as it allows for deeper processing. They thrive on emotional depth and require a feeling of safety before they open up completely. Avoid shallow conversation.'
+        },
+        compatibility: {
+            title: 'Compatibility & Ideal Matches',
+            summary: 'INFPs are best matched with partners who respect their values and appreciate their inner world. Both ENFJ and INFJ offer deep emotional connections, ENFP brings creative energy, and INTJ provides grounding structure.',
+            commonMatches: [
+                { type: 'ENFJ – The Teacher', reason: 'Guides the INFP into confidence while sharing deep emotional language.' },
+                { type: 'INFJ – The Counselor', reason: 'Shared emotional depth and inner purpose. A rare, sacred connection.' },
+                { type: 'ENFP – The Campaigner', reason: 'Playful and free-spirited with emotional resonance. Sparks creativity.' },
+                { type: 'INTJ – The Mastermind', reason: 'Offers structure and vision. INFP softens INTJ; INTJ grounds INFP.' }
+            ]
+        },
+        summary: {
+            title: 'INFP in Crossd Compatibility Storytelling',
+            text: '“Lover of stories, late-night talks, and everything that makes life feel like a movie. Here to find magic, not just a match.”'
+        }
+    },
     relationships: [
-        { area: 'Friendship', behavior: 'Looks for deep, soul-to-soul connections and values authenticity above all.' },
-        { area: 'Romance', behavior: 'A hopeless romantic who dreams of an ideal, harmonious partnership based on shared values.' },
-        { area: 'Communication', behavior: 'Gentle and supportive, but can be hard to know as they protect their inner world fiercely.' },
+        { area: "Friendship", behavior: "Selectively devoted, craving soul-bond friendships that are emotionally rich and meaningful." },
+        { area: "Romance", behavior: "A true romantic who idealizes partners and needs to feel emotionally seen and respected above all." },
+        { area: "Communication", behavior: "Prefers writing to speaking, uses symbolism and metaphors, and requires emotional safety to open up." }
     ],
-    growthPath: ['Develop practical life skills', 'Learn to assert boundaries and handle conflict', 'Find outlets for creative expression'],
-    archetypes: ['The dreamer', 'The quiet idealist', 'The gentle healer'],
+    growthPath: ['Practice setting boundaries', 'Develop practical organization skills', 'Learn to voice needs directly'],
+    archetypes: ['The dreamer with a fire inside', 'The gentle rebel', 'The quiet idealist'],
   },
   'ENFJ': {
     title: 'The Protagonist / Teacher',
@@ -782,3 +820,4 @@ export const mbtiTypeDetails: Record<string, any> = {
 };
 
     
+
