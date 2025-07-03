@@ -157,7 +157,7 @@ export default function MbtiQuizPage() {
                 <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                   <Button
                     variant="outline"
-                    className="h-auto py-4 text-base text-left flex items-start gap-3 whitespace-normal justify-start hover:bg-primary/10 hover:border-primary"
+                    className="h-auto py-4 text-base text-left flex items-start gap-3 whitespace-normal justify-start hover:border-primary"
                     onClick={() => handleAnswerSelect(mbtiQuizQuestions[currentQuestionIndex].answers[0].value)}
                   >
                     <span className="font-bold text-primary">A.</span>
@@ -165,7 +165,7 @@ export default function MbtiQuizPage() {
                   </Button>
                   <Button
                     variant="outline"
-                    className="h-auto py-4 text-base text-left flex items-start gap-3 whitespace-normal justify-start hover:bg-primary/10 hover:border-primary"
+                    className="h-auto py-4 text-base text-left flex items-start gap-3 whitespace-normal justify-start hover:border-primary"
                     onClick={() => handleAnswerSelect(mbtiQuizQuestions[currentQuestionIndex].answers[1].value)}
                   >
                      <span className="font-bold text-primary">B.</span>
