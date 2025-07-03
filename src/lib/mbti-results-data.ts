@@ -142,26 +142,32 @@ export const mbtiTypeDetails: Record<string, any> = {
         { functionName: 'Inferior – Introverted Feeling (Fi)', description: 'Struggles with emotional depth and vulnerability. May suppress or misunderstand their own values and feelings. Growth area: connecting emotionally with others and self.' },
     ],
     strengths: [
-        { strength: 'Natural Leaders', example: 'Commanding, confident, and decisive in group settings. People often follow their lead instinctively.' },
-        { strength: 'Vision + Execution', example: 'Combines big-picture thinking (Ni) with rapid action (Te).' },
-        { strength: 'Resilient and Driven', example: 'Failure is a lesson, not a wall. ENTJs push through setbacks like tanks.' },
+      { strength: 'Natural Leaders', example: 'Commanding, confident, and decisive in group settings. People often follow their lead instinctively.' },
+      { strength: 'Vision + Execution', example: 'Combines big-picture thinking (Ni) with rapid action (Te).' },
+      { strength: 'Resilient and Driven', example: 'Failure is a lesson, not a wall. ENTJs push through setbacks like tanks.' },
+      { strength: 'Clear Communicators', example: 'Straightforward, persuasive, and structured in expression.' },
+      { strength: 'Highly Strategic', example: 'Systems, power structures, and hierarchies make sense to them intuitively. They know how to move up and optimize.' },
     ],
     weaknesses: [
-        { weakness: 'Overbearing or Controlling', description: 'Can bulldoze over others’ opinions or feelings.' },
-        { weakness: 'Emotionally Blunt', description: 'May dismiss emotional nuance as illogical or inefficient.' },
-        { weakness: 'Workaholic Tendencies', description: 'Obsession with achievement can sacrifice relationships or health.' },
+      { weakness: 'Overbearing or Controlling', description: 'Can bulldoze over others’ opinions or feelings.' },
+      { weakness: 'Emotionally Blunt', description: 'May dismiss emotional nuance as illogical or inefficient.' },
+      { weakness: 'Workaholic Tendencies', description: 'Obsession with achievement can sacrifice relationships or health.' },
+      { weakness: 'Intolerant of Incompetence', description: 'Has little patience for inefficiency or those who can’t keep up.' },
+      { weakness: 'Neglecting Inner Values', description: 'Their weaker Fi may lead to poor emotional boundaries or ignoring personal meaning in pursuit of success.' },
     ],
     idealCareers: [
-        { field: 'CEO / Executive', why: 'High-level control, strategy, impact, and results.' },
-        { field: 'Entrepreneur / Founder', why: 'Loves building scalable systems and commanding growth.' },
-        { field: 'Military / Law Enforcement Leader', why: 'Structure, discipline, and high-stakes leadership.' },
+      { field: 'CEO / Executive', why: 'High-level control, strategy, impact, and results.' },
+      { field: 'Entrepreneur / Founder', why: 'Loves building scalable systems and commanding growth.' },
+      { field: 'Military / Law Enforcement Leader', why: 'Structure, discipline, and high-stakes leadership.' },
+      { field: 'Corporate Strategist / Consultant', why: 'Solves complex business challenges with clarity.' },
+      { field: 'Politics / Leadership Roles', why: 'Strong debater, persuasive speaker, values-driven when mature.' },
     ],
     famousExamples: ['Steve Jobs', 'Gordon Ramsay', 'Margaret Thatcher', 'Jay-Z', 'Miranda Priestly (The Devil Wears Prada)'],
     relationshipDeepDive: {
       friendship: {
         title: "Friendship",
         coreNeeds: "Ambition, competence, loyalty.",
-        howTheyShowUp: "Selective but loyal once respect is earned. Prefers ambitious, competent friends. Dislikes passive-aggressiveness, laziness, or indecision. Often 'mentors' friends, helping them reach their potential."
+        howTheyShowUp: "Selective but loyal once respect is earned. Prefers ambitious, competent friends. Dislikes passive-aggressiveness, laziness, or indecision. Often “mentors” friends, helping them reach their potential."
       },
       romance: {
         title: "Romance",
@@ -186,7 +192,7 @@ export const mbtiTypeDetails: Record<string, any> = {
       },
       summary: {
         title: "ENTJ in Crossd Compatibility Storytelling",
-        text: "“Ambitious AF. Don’t confuse confidence with arrogance — I just know what I want. Let’s build an empire, or at least crush trivia night.”"
+        text: "Meet the Commander ⚡ — bold, brilliant, and driven by purpose. They don’t just swipe — they strategize. If you’re ready to match ambition with fire, they’re your perfect counterpart."
       }
     },
     relationships: [], // Fallback
@@ -258,7 +264,7 @@ export const mbtiTypeDetails: Record<string, any> = {
       },
       summary: {
         title: "ENTP in Crossd Compatibility Storytelling",
-        text: "“Part-time troublemaker, full-time brainstorm addict. Swipe if you like curiosity, chaos, and deep convos that turn into 3am adventures.”"
+        text: "Meet the Visionary ⚡ — unpredictable, captivating, and endlessly curious. They’ll challenge your ideas, charm your friends, and vanish into a startup pitch... but if they stay, you’ve sparked something rare."
       }
     },
     relationships: [],
@@ -307,7 +313,7 @@ export const mbtiTypeDetails: Record<string, any> = {
       friendship: {
         title: "Friendship",
         coreNeeds: "Deep, authentic connections, shared values, emotional safety.",
-        howTheyShowUp: "INFJs prefer a small, close circle over large groups. Friendships are emotionally deep, often spiritual in feel. They listen deeply, support fiercely, and remember the little things. They often act as “the counselor” to others, but need someone to do the same for them. Red flags for them include surface-level talk without emotional honesty, people who disregard values or emotional boundaries, and excessive chaos or people who “talk over” intuition.",
+        howTheyShowUp: "INFJs prefer a small, close circle over large groups. Friendships are emotionally deep, often spiritual in feel. They listen deeply, support fiercely, and remember the little things. They often act as “the counselor” to others, but need someone to do the same for them. They dislike surface-level talk without emotional honesty, people who disregard values or emotional boundaries, and excessive chaos or people who “talk over” intuition.",
       },
       romance: {
         title: "Romance",
@@ -332,7 +338,7 @@ export const mbtiTypeDetails: Record<string, any> = {
       },
       summary: {
         title: "INFJ in Crossd Compatibility Storytelling",
-        text: "“Not here for the small talk — looking for someone to read between the lines, build something sacred, and maybe talk about the stars at 2am.”"
+        text: "Meet the Counselor 🌙 — mysterious, emotionally rich, and visionary to the core. If you’re craving connection that goes deeper than surface sparks, they’ll light your inner fire."
       }
     },
     relationships: [],
@@ -406,7 +412,7 @@ export const mbtiTypeDetails: Record<string, any> = {
         },
         summary: {
             title: 'INFP in Crossd Compatibility Storytelling',
-            text: '“Lover of stories, late-night talks, and everything that makes life feel like a movie. Here to find magic, not just a match.”'
+            text: 'Meet the Idealist 🌸 — soft-spoken, soul-deep, and guided by an inner fire. If you’re ready to be seen, not just swiped on, they’re your quiet spark.'
         }
     },
     relationships: [
@@ -458,15 +464,19 @@ export const mbtiTypeDetails: Record<string, any> = {
     relationshipDeepDive: {
       friendship: {
         title: "Friendship",
-        howTheyShowUp: "ENFJs are the emotional glue in most of their friendships. They show up with energy, loyalty, and genuine interest. Their friendships are often built around shared growth and emotional resonance. They often act as 'the therapist' in the group — they listen deeply, remember your dreams, and cheer you on. Red Flags for Them: Coldness, indifference, or emotional distance, friends who take but don’t give back, or feeling unappreciated."
+        coreNeeds: "Shared growth, emotional resonance, loyalty.",
+        howTheyShowUp: "ENFJs are the emotional glue in most of their friendships. They show up with energy, loyalty, and genuine interest. They often act as 'the therapist' in the group — they listen deeply, remember your dreams, and cheer you on. They dislike emotional coldness, friends who take but don’t give back, or feeling unappreciated."
       },
       romance: {
         title: "Romance",
-        howTheyLove: "ENFJs love with intensity and devotion — often seeking “the one” rather than flings. They fall in love with character, potential, and shared mission. In relationships, they’re thoughtful planners, extremely affectionate, and proactive about your needs — sometimes more than their own. Their Challenge: Making space for their own emotions and boundaries without guilt."
+        coreNeeds: "Shared mission, deep connection, appreciation.",
+        howTheyLove: "ENFJs love with intensity and devotion — often seeking “the one” rather than flings. They fall in love with character and potential. In relationships, they’re thoughtful planners, extremely affectionate, and proactive about your needs — sometimes more than their own. Their challenge is making space for their own emotions and boundaries without guilt.",
+        idealPartner: "Someone who can match their emotional presence, respect their vision, and help them slow down and turn inward when needed."
       },
       communication: {
         title: "Communication Style",
-        primaryTraits: "Emotionally fluent, warm, and articulate. They read between the lines and speak from the heart, often acting as mediators or motivators. They need reassurance when they’ve “given too much” or fear being a burden."
+        primaryTraits: "Emotionally fluent, warm, and articulate.",
+        howToCommunicate: "They read between the lines and speak from the heart, often acting as mediators or motivators. They need reassurance when they’ve “given too much” or fear being a burden."
       },
       compatibility: {
         title: "Compatibility & Ideal Matches",
@@ -478,19 +488,9 @@ export const mbtiTypeDetails: Record<string, any> = {
           { type: 'INTP – The Thinker', reason: 'Stimulates ENFJ intellectually while offering emotional balance (once trust is built).' }
         ]
       },
-      loveLanguage: {
-        title: "ENFJ Love Language & Dating Style",
-        languages: [
-            { type: "Words of Affirmation", expression: "Constantly encouraging and affirming — “You’re amazing, and I believe in you.”" },
-            { type: "Acts of Service", expression: "Will plan your day, solve your stress, and make life easier with love." },
-            { type: "Quality Time", expression: "Deep, undistracted time spent emotionally connecting." },
-            { type: "Physical Touch", expression: "Hug-forward, affectionate, expressive. Often very warm physically." },
-            { type: "Gifts", expression: "Symbolic, meaningful, and often tied to your personal story or growth." }
-        ]
-      },
       summary: {
         title: "ENFJ in Crossd Compatibility Storytelling",
-        text: "“Here to connect for real — not just match. If you’re emotionally fluent, dream big, and care deeply… we’ll get along just fine.”"
+        text: "Meet the Teacher 🌟 — magnetic, nurturing, and full of purpose. They don’t play games — they build soul connections. If you’re looking for love that lifts you higher, this one’s your spark."
       }
     },
     growthPath: ['Prioritize self-care and set boundaries', 'Develop comfort with conflict and saying "no"', 'Ground idealism in reality', 'Recognize and manage energy levels'],
@@ -532,15 +532,19 @@ export const mbtiTypeDetails: Record<string, any> = {
     relationshipDeepDive: {
       friendship: {
         title: "Friendship",
-        howTheyShowUp: "ENFPs love people deeply — friends are chosen family. Their friendships are built on emotional honesty, shared dreams, and spontaneous adventure. They’re fiercely loyal and always up for new ideas or weird convos. Red Flags: Emotional coldness, rigid attitudes, and disrespect for their independence."
+        coreNeeds: "Emotional honesty, shared dreams, spontaneous adventure.",
+        howTheyShowUp: "ENFPs love people deeply — friends are chosen family. Their friendships are built on emotional honesty, shared dreams, and spontaneous adventure. They’re fiercely loyal and always up for new ideas or weird convos. They dislike emotional coldness, rigid attitudes, and disrespect for their independence."
       },
       romance: {
         title: "Romance",
-        howTheyLove: "Romantic idealists who fall in love with your soul. They seek deep emotional chemistry, mental stimulation, and fun. They love adventures in vulnerability. Their Challenge: Staying grounded when the honeymoon fades; they may chase a feeling rather than build a stable connection."
+        coreNeeds: "Deep emotional chemistry, mental stimulation, fun.",
+        howTheyLove: "Romantic idealists who fall in love with your soul. They seek deep emotional chemistry, mental stimulation, and fun. They love adventures in vulnerability. Their Challenge: Staying grounded when the honeymoon fades; they may chase a feeling rather than build a stable connection.",
+        idealPartner: "Someone who offers depth, grounding, and room to breathe — they want someone who’s both a safe haven and an adventure partner."
       },
       communication: {
         title: "Communication Style",
-        howToCommunicate: "Energetic, animated, and emotionally charged. They use storytelling, metaphor, and powerful language. They know how to affirm and inspire but can become scattered if not centered."
+        primaryTraits: "Energetic, animated, and emotionally charged.",
+        howToCommunicate: "Use storytelling, metaphor, jokes, and powerful language. They know how to affirm and inspire but can become scattered if not centered. They hate being misunderstood, but also struggle to explain themselves fully under pressure."
       },
       compatibility: {
         title: "Compatibility & Ideal Matches",
@@ -554,7 +558,7 @@ export const mbtiTypeDetails: Record<string, any> = {
       },
       summary: {
         title: "ENFP in Crossd Compatibility Storytelling",
-        text: "“Here for someone who gets excited by weird questions, intense eye contact, and running through the city at night with no plan.”"
+        text: "Meet the Inspirer 🔥 — radiant, emotionally intelligent, and always halfway into a dream. They’re looking for someone who can handle the chaos, keep up with the passion, and dive into meaning at full speed."
       }
     },
     growthPath: ['Develop focus and follow-through', 'Learn to value consistency', 'Find peace in solitude'],
@@ -599,18 +603,11 @@ export const mbtiTypeDetails: Record<string, any> = {
         { field: 'Judge / Government Role', why: 'Values law, fairness, structure, and responsibility.' },
     ],
     famousExamples: ['George Washington', 'Angela Merkel', 'Natalie Portman', 'Eddard Stark (Game of Thrones)', 'Hermione Granger'],
-    relationships: [], // Fallback
-    growthPath: [
-        'Learn to be open to new possibilities', 
-        'Practice expressing appreciation and positive feelings', 
-        'Trust that not all change is bad'
-    ],
-    archetypes: ['The Silent Guardian', 'The steady, loyal, and quietly principled'],
     relationshipDeepDive: {
         friendship: {
             title: 'Friendship',
             coreNeeds: 'Loyalty, consistency, shared routines.',
-            howTheyShowUp: 'ISTJs may seem emotionally distant at first, but once they consider you a friend, they’ll show up consistently, help when it counts, and protect you quietly. They prefer structured friendships — regular meetups, shared routines, loyalty over novelty. They dislike drama, unpredictability, or people who say things they don’t mean. Red flags include flaky behavior, oversharing early on, and people who ignore responsibility.'
+            howTheyShowUp: 'ISTJs may seem emotionally distant at first, but once they consider you a friend, they’ll show up consistently, help when it counts, and protect you quietly. They prefer structured friendships — regular meetups, shared routines, loyalty over novelty. They dislike drama, unpredictability, or people who say things they don’t mean.'
         },
         romance: {
             title: 'Romance',
@@ -633,61 +630,92 @@ export const mbtiTypeDetails: Record<string, any> = {
                 { type: 'INFP – The Idealist', reason: 'Unconventional but inspiring match — helps the ISTJ open emotionally (requires maturity).' }
             ]
         },
-        loveLanguage: {
-            title: 'ISTJ Love Language & Dating Style',
-            languages: [
-                { type: 'Acts of Service', expression: 'Fixing your car, taking care of your errands, showing love through utility.' },
-                { type: 'Quality Time', expression: 'Prefers consistent, low-key time together (e.g. cooking, working side-by-side).' },
-                { type: 'Words of Affirmation', expression: 'Rare and understated — more likely to say “I’m proud of you” than “I love you” every day.' },
-                { type: 'Physical Touch', expression: 'Reserved at first, but can be deeply affectionate once trust is formed.' },
-                { type: 'Gifts', expression: 'Practical and thoughtful — nothing flashy, just what you need (and didn’t ask for).' }
-            ]
-        },
         summary: {
             title: 'ISTJ in Crossd Compatibility Storytelling',
-            text: '“I’m not flashy, I’m consistent. Loyalty over games. If you’re into stability, real connection, and shared goals — let’s talk.”'
+            text: 'Meet the Inspector 🧱 — grounded, consistent, and fiercely loyal. They may not say much, but they’ll do more than most. A rock-solid presence in a world full of noise.'
         }
-    }
+    },
+    relationships: [], // Fallback
+    growthPath: [
+        'Learn to be open to new possibilities', 
+        'Practice expressing appreciation and positive feelings', 
+        'Trust that not all change is bad'
+    ],
+    archetypes: ['The Silent Guardian', 'The steady, loyal, and quietly principled'],
   },
   'ISFJ': {
     title: 'The Defender / Nurturer',
-    nicknames: ['The Guardian', 'The Protector', 'The Helper'],
+    nicknames: ['The Gentle Protector', 'The Quiet Supporter', 'The Steady Heart'],
     typeCode: 'Introverted (I) – Sensing (S) – Feeling (F) – Judging (J)',
-    population: '~13% of population (most common type)',
+    population: '~9–14% (more common among women)',
     coreCharacteristics: [
-        { trait: 'Supportive', description: 'Finds great satisfaction in caring for others and ensuring their well-being.' },
-        { trait: 'Dependable', description: 'Works tirelessly behind the scenes to maintain harmony and order.' },
-        { trait: 'Detail-Oriented', description: 'Remembers important personal details about others (birthdays, preferences).' },
+        { trait: 'Kind', description: 'Naturally caring, empathetic, and warm — often the first to notice when someone’s struggling.' },
+        { trait: 'Service-Oriented', description: 'Drawn to helping roles and acts of care — not for attention, but out of purpose.' },
+        { trait: 'Dependable', description: 'Show up with consistency, attention to detail, and a love for tradition or routine.' },
     ],
     cognitiveStack: [
-        { functionName: 'Dominant – Introverted Sensing (Si)', description: 'Holds a rich internal database of past experiences and details related to loved ones.' },
-        { functionName: 'Auxiliary – Extraverted Feeling (Fe)', description: 'Uses their knowledge to anticipate others\' needs and maintain social harmony.' },
-        { functionName: 'Tertiary – Introverted Thinking (Ti)', description: 'Develops a practical, logical understanding of things that matter to them.' },
-        { functionName: 'Inferior – Extraverted Intuition (Ne)', description: 'Worries about negative possibilities and is often stressed by uncertainty.' },
+        { functionName: 'Dominant – Introverted Sensing (Si)', description: 'Recalls and relies on past experience, routine, and memory. Values familiarity, consistency, and tradition. Notices fine details others overlook.' },
+        { functionName: 'Auxiliary – Extraverted Feeling (Fe)', description: 'Prioritizes harmony and emotional well-being in the group. Reads people well and wants to meet their emotional needs. Often puts others before themselves.' },
+        { functionName: 'Tertiary – Introverted Thinking (Ti)', description: 'Develops quiet internal logic. Helps with organization and systems behind-the-scenes. Not always vocal about it, but can be analytically sharp.' },
+        { functionName: 'Inferior – Extraverted Intuition (Ne)', description: 'Hesitant with change, ambiguity, or abstract possibilities. Under stress, may catastrophize or feel overwhelmed by uncertainty. Growth area: leaning into new ideas without needing guaranteed outcomes.' },
     ],
     strengths: [
-        { strength: 'Incredible Memory for Detail', example: 'Remembers your favorite meal and how you take your coffee after meeting once.' },
-        { strength: 'Practical Service', example: 'Shows love by doing things for people, like cooking a meal or fixing a problem.' },
-        { strength: 'Unwavering Loyalty', example: 'A fierce defender of their friends, family, and community.' },
+        { strength: 'Supportive to the Core', example: 'Show love through loyalty, thoughtful gestures, and acts of care.' },
+        { strength: 'Patient & Present', example: 'Emotionally steady, not reactive or chaotic.' },
+        { strength: 'Practical Empathy', example: 'Not just comforting — they do something about it.' },
+        { strength: 'Incredible Memory for Details', example: 'Remember your birthday, your stress habits, your favorite snack — and use that info to support you.' },
+        { strength: 'Quiet Resilience', example: 'Appear gentle, but will fiercely protect what (and who) they love.' },
     ],
     weaknesses: [
-        { weakness: 'Neglects Own Needs', description: 'Can be so focused on others that they forget to take care of themselves.' },
-        { weakness: 'Avoids Conflict', description: 'Dislikes confrontation and may repress their feelings to keep the peace.' },
-        { weakness: 'Resists Change', description: 'Finds comfort in tradition and can be wary of new, untested ideas.' },
+        { weakness: 'Avoids Conflict', description: 'May suppress needs or feelings to keep the peace.' },
+        { weakness: 'Self-Critical', description: 'Underestimates their own worth, over-focuses on helping others.' },
+        { weakness: 'Resistant to Change', description: 'Prefer comfort zones and can feel unsafe with ambiguity or upheaval.' },
+        { weakness: 'Emotionally Bottled', description: 'May not voice their own frustrations until they silently burn out.' },
+        { weakness: 'May Feel Invisible', description: 'Give so much to others that they often go unnoticed themselves.' },
     ],
     idealCareers: [
-        { field: 'Healthcare (Nursing, etc.)', why: 'Directly involves caring for the physical and emotional needs of others.' },
-        { field: 'Teaching (especially early ed)', why: 'Allows them to nurture and guide others in a structured way.' },
-        { field: 'Administration / Office Mgmt', why: 'Creates an orderly and supportive environment for others to succeed.' },
+        { field: 'Nurse / Caregiver', why: 'Empathy, dependability, and emotional strength.' },
+        { field: 'Librarian / Archivist', why: 'Love of order, calm, and serving others quietly.' },
+        { field: 'Social Worker / Therapist', why: 'Gentle resilience with emotional intelligence.' },
+        { field: 'Administrator / Organizer', why: 'Excellent at behind-the-scenes support and logistics.' },
+        { field: 'Human Resources / Customer Care', why: 'Blend of emotional understanding and practical help.' },
     ],
-    famousExamples: ['Beyoncé', 'Queen Elizabeth II', 'Dr. Watson (Sherlock Holmes)', 'Samwise Gamgee (Lord of the Rings)'],
-    relationships: [
-        { area: 'Friendship', behavior: 'The reliable "rock" of the friend group, always ready with a helping hand.' },
-        { area: 'Romance', behavior: 'A nurturing and traditional partner who values security and a harmonious home life.' },
-        { area: 'Communication', behavior: 'Warm and considerate, but may not directly state their own needs or grievances.' },
-    ],
-    growthPath: ['Learn to say "no" and set boundaries', 'Practice asserting personal needs', 'Embrace small, positive changes'],
-    archetypes: ['The loyal guardian', 'The quiet caregiver', 'The pillar of the community'],
+    famousExamples: ['Mother Teresa', 'Rosa Parks', 'Beyoncé', 'Samwise Gamgee (The Lord of the Rings)', 'Steve Rogers / Captain America'],
+    relationshipDeepDive: {
+        friendship: {
+            title: "Friendship",
+            coreNeeds: "Loyalty, appreciation, emotional safety.",
+            howTheyShowUp: "ISFJs are the friends who remember the little things and show up even when you didn’t ask. Often the emotional anchor of the group — nurturing, stabilizing, and consistent. They thrive in 1-on-1 friendships, especially with people who value kindness and loyalty. They are not attention-seeking; they prefer to be there, not be seen."
+        },
+        romance: {
+            title: "Romance",
+            coreNeeds: "Emotional security, consistency, appreciation.",
+            howTheyLove: "ISFJs are quietly romantic and often give more than they receive. They show affection through thoughtful gestures, steady emotional support, and creating a safe, peaceful space. They're looking for emotional security, not chaos or superficial thrills. They can be extremely sensual and affectionate—but only once trust is earned. Their challenge is speaking up when they feel unappreciated or overburdened.",
+            idealPartner: "A partner who is emotionally respectful and present, loyal, consistent, and protective, and who can draw out their inner world without overwhelming it."
+        },
+        communication: {
+            title: "Communication Style",
+            primaryTraits: "Gentle, emotionally considerate, and often understated.",
+            howToCommunicate: "Excellent listeners, especially in emotional or personal conversations. They may struggle to express their own needs directly and prefer harmony over confrontation—but have a strong backbone when pushed too far. They often express themselves better through actions than through confrontation."
+        },
+        compatibility: {
+            title: "Compatibility & Ideal Matches",
+            summary: "ISFJs pair best with partners who are emotionally respectful and present, loyal, consistent, and protective, and able to draw out their inner world without overwhelming it.",
+            commonMatches: [
+                { type: 'ESFP – The Entertainer', reason: 'Brings joy and spontaneity, while respecting ISFJ’s grounding warmth.' },
+                { type: 'ESTP – The Dynamo', reason: 'Adds fun and boldness while honoring tradition. Opposites that complement.' },
+                { type: 'ENFJ – The Teacher', reason: 'Emotionally fluent, encouraging, and value-aligned. Helps ISFJ grow.' },
+                { type: 'ISTJ – The Inspector', reason: 'Steady, principled, and practical — mutual love through service and routine.' }
+            ]
+        },
+        summary: {
+            title: "ISFJ in Crossd Compatibility Storytelling",
+            text: "Meet the Nurturer 🕊️ — gentle, grounded, and full of heart. They don’t fall fast, but they fall deep. If you want a partner who truly sees you — and stands beside you — they might be your soft landing."
+        }
+    },
+    relationships: [],
+    growthPath: ['Learn to say "no" and set boundaries', 'Practice asserting personal needs', 'Embrace small, positive changes', 'Trust that you are valued for who you are, not just what you do'],
+    archetypes: ['The Quiet Guardian', 'The dependable, nurturing, and fiercely devoted'],
   },
   'ESTJ': {
     title: 'The Supervisor / Executive',
