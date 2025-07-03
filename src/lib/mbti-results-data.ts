@@ -419,43 +419,83 @@ export const mbtiTypeDetails: Record<string, any> = {
   },
   'ENFJ': {
     title: 'The Protagonist / Teacher',
-    nicknames: ['The Mentor', 'The Giver', 'The Inspirer'],
+    nicknames: ['The Guide', 'The Uplifter', 'The Social Mentor'],
     typeCode: 'Extraverted (E) – Intuitive (N) – Feeling (F) – Judging (J)',
-    population: '~2.5% of population',
+    population: '~2–3% (more common among women)',
     coreCharacteristics: [
-        { trait: 'Charismatic', description: 'Naturally draws people in with their warmth, passion, and eloquence.' },
-        { trait: 'Empathetic Leader', description: 'Focuses on inspiring growth and bringing out the best in others.' },
-        { trait: 'Organized', description: 'Structures their environment and plans to help the group achieve its goals.' },
+        { trait: 'Charismatic', description: 'ENFJs naturally attract people with warmth, confidence, and sincerity. They’re usually the heart of any group.' },
+        { trait: 'Supportive', description: 'They live to help others grow — emotionally, spiritually, or professionally.' },
+        { trait: 'Organized', description: 'Big vision, real plans. ENFJs dream big but follow through with structure and passion.' },
     ],
     cognitiveStack: [
-        { functionName: 'Dominant – Extraverted Feeling (Fe)', description: 'Highly attuned to the emotional atmosphere and social norms, striving for group harmony.' },
-        { functionName: 'Auxiliary – Introverted Intuition (Ni)', description: 'Forms insights about people and the future, creating a vision for how to help them grow.' },
-        { functionName: 'Tertiary – Extraverted Sensing (Se)', description: 'Enjoys engaging with the physical world and creating positive sensory experiences for others.' },
-        { functionName: 'Inferior – Introverted Thinking (Ti)', description: 'Can struggle with impersonal logic and may make decisions based on emotion over fact.' },
+        { functionName: 'Dominant – Extraverted Feeling (Fe)', description: 'Tunes deeply into others’ emotions and needs. Wants everyone to feel included, supported, and inspired. Motivated by harmony, growth, and relational alignment.' },
+        { functionName: 'Auxiliary – Introverted Intuition (Ni)', description: 'Sees deeper meaning and potential in people and situations. Plans with purpose and forethought — they don’t just feel, they see a bigger path. Guides their “teacher” energy — always looking toward transformation.' },
+        { functionName: 'Tertiary – Extraverted Sensing (Se)', description: 'Can be highly present and engaging in the moment. Loves experiences, aesthetics, and dynamic interaction. Helps them connect socially with flair and energy.' },
+        { functionName: 'Inferior – Introverted Thinking (Ti)', description: 'May struggle with objective logic or emotionally detached analysis. Under stress, can become over-analytical or overcritical of themselves. Growth path involves balancing heart with clear mental frameworks.' },
     ],
     strengths: [
-        { strength: 'Motivational', example: 'Inspires and mobilizes people toward a common goal or a better future.' },
-        { strength: 'Natural Counselor', example: 'Intuitively understands others\' needs and provides warm, insightful guidance.' },
-        { strength: 'Reliable & Organized', example: 'Follows through on commitments and creates clear paths for others to succeed.' },
+        { strength: 'Emotionally Attuned Leaders', example: 'Lead with heart, not ego. They know how to inspire and unify people.' },
+        { strength: 'Motivators', example: 'See the best in others and know how to help them step into their potential.' },
+        { strength: 'Great Communicators', example: 'Warm, expressive, and articulate — they connect with people across any divide.' },
+        { strength: 'Organized & Visionary', example: 'Passionate, structured, and capable of making big dreams actionable.' },
+        { strength: 'Loyal & Committed', example: 'They don’t take relationships lightly — if they love you, they’ll show up every time.' },
     ],
     weaknesses: [
-        { weakness: 'Overly Idealistic', description: 'Can be crushed when reality doesn\'t meet their optimistic expectations.' },
-        { weakness: 'Too Self-Sacrificing', description: 'May neglect their own needs in their relentless drive to help others.' },
-        { weakness: 'Sensitive to Criticism', description: 'Their self-worth is often tied to the approval and harmony of the group.' },
+        { weakness: 'Self-Neglect', description: 'May sacrifice their own needs while taking care of everyone else.' },
+        { weakness: 'Overidealistic', description: 'Can expect too much from people and become disappointed when reality hits.' },
+        { weakness: 'Conflict Avoidant', description: 'Might suppress their own opinions to keep peace or avoid hurting others.' },
+        { weakness: 'People-Pleasing Tendencies', description: 'Overcommitted, emotionally exhausted from being “everything to everyone.”' },
+        { weakness: 'Burnout-Prone', description: 'Their boundless giving can drain them quickly without boundaries.' },
     ],
     idealCareers: [
-        { field: 'Teaching / Coaching', why: 'Directly involves mentoring and fostering growth in others.' },
-        { field: 'Public Relations / Politics', why: 'Utilizes their charisma to inspire people and manage public perception.' },
-        { field: 'Human Resources', why: 'Focuses on improving employee well-being and organizational harmony.' },
+        { field: 'Teacher / Educator', why: 'Love helping others learn and grow in meaningful ways.' },
+        { field: 'Public Speaker / Activist', why: 'Charismatic, values-driven, and emotionally persuasive.' },
+        { field: 'Life Coach / Mentor / Therapist', why: 'Thrive in 1-on-1 or group guidance roles.' },
+        { field: 'Campaign Manager / Diplomat', why: 'Great at organizing teams, balancing emotions, and pushing for meaningful causes.' },
+        { field: 'Creative Director / Team Lead', why: 'Combines vision, leadership, and emotional cohesion.' },
     ],
-    famousExamples: ['Barack Obama', 'Oprah Winfrey', 'Martin Luther King Jr.', 'Morpheus (The Matrix)'],
-    relationships: [
-        { area: 'Friendship', behavior: 'Acts as the supportive "mom friend," organizing events and checking in on everyone.' },
-        { area: 'Romance', behavior: 'A deeply committed and nurturing partner who focuses on mutual growth and emotional support.' },
-        { area: 'Communication', behavior: 'Warm, encouraging, and diplomatic, always aiming for a positive outcome.' },
-    ],
-    growthPath: ['Prioritize self-care', 'Accept that not everyone can be helped', 'Develop comfort with objective, impersonal feedback'],
-    archetypes: ['The inspiring mentor', 'The charismatic leader', 'The tireless advocate'],
+    famousExamples: ['Oprah Winfrey', 'Barack Obama', 'Maya Angelou', 'Morpheus (The Matrix)', 'Leslie Knope (Parks & Rec)'],
+    relationshipDeepDive: {
+      friendship: {
+        title: "Friendship",
+        howTheyShowUp: "ENFJs are the emotional glue in most of their friendships. They show up with energy, loyalty, and genuine interest. Their friendships are often built around shared growth and emotional resonance. They often act as 'the therapist' in the group — they listen deeply, remember your dreams, and cheer you on. Red Flags for Them: Coldness, indifference, or emotional distance, friends who take but don’t give back, or feeling unappreciated."
+      },
+      romance: {
+        title: "Romance",
+        howTheyLove: "ENFJs love with intensity and devotion — often seeking “the one” rather than flings. They fall in love with character, potential, and shared mission. In relationships, they’re thoughtful planners, extremely affectionate, and proactive about your needs — sometimes more than their own. Their Challenge: Making space for their own emotions and boundaries without guilt."
+      },
+      communication: {
+        title: "Communication Style",
+        primaryTraits: "Emotionally fluent, warm, and articulate. They read between the lines and speak from the heart, often acting as mediators or motivators. They need reassurance when they’ve “given too much” or fear being a burden."
+      },
+      compatibility: {
+        title: "Compatibility & Ideal Matches",
+        summary: "ENFJs thrive with partners who can match their emotional presence, respect their vision, and help them slow down and turn inward when needed.",
+        commonMatches: [
+          { type: 'INFP – The Idealist', reason: 'Emotional depth + dreamy vision — ENFJ guides while INFP inspires.' },
+          { type: 'INFJ – The Counselor', reason: 'Shared values and deep connection — both committed and growth-oriented.' },
+          { type: 'ISFP – The Gentle Soul', reason: 'Brings quiet presence and authenticity, grounding the ENFJ.' },
+          { type: 'INTP – The Thinker', reason: 'Stimulates ENFJ intellectually while offering emotional balance (once trust is built).' }
+        ]
+      },
+      loveLanguage: {
+        title: "ENFJ Love Language & Dating Style",
+        languages: [
+            { type: "Words of Affirmation", expression: "Constantly encouraging and affirming — “You’re amazing, and I believe in you.”" },
+            { type: "Acts of Service", expression: "Will plan your day, solve your stress, and make life easier with love." },
+            { type: "Quality Time", expression: "Deep, undistracted time spent emotionally connecting." },
+            { type: "Physical Touch", expression: "Hug-forward, affectionate, expressive. Often very warm physically." },
+            { type: "Gifts", expression: "Symbolic, meaningful, and often tied to your personal story or growth." }
+        ]
+      },
+      summary: {
+        title: "ENFJ in Crossd Compatibility Storytelling",
+        text: "“Here to connect for real — not just match. If you’re emotionally fluent, dream big, and care deeply… we’ll get along just fine.”"
+      }
+    },
+    growthPath: ['Prioritize self-care and set boundaries', 'Develop comfort with conflict and saying "no"', 'Ground idealism in reality', 'Recognize and manage energy levels'],
+    archetypes: ['The Heart-Led Leader', 'The Social Mentor', 'The Uplifter'],
+    relationships: [], // Fallback
   },
   'ENFP': {
     title: 'The Campaigner / Inspirer',
@@ -818,6 +858,3 @@ export const mbtiTypeDetails: Record<string, any> = {
     archetypes: ['The charismatic entertainer', 'The life of the party', 'The generous friend'],
   },
 };
-
-    
-
