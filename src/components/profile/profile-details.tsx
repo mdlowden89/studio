@@ -646,8 +646,8 @@ export function ProfileDetails({ user }: ProfileDetailsProps) {
             </SelectTrigger>
             <SelectContent className="bg-popover">
               {mbtiOptions.map((option) => (
-                <SelectItem key={option} value={option}>
-                  {option}
+                <SelectItem key={option.value} value={option.value}>
+                  {option.label}
                 </SelectItem>
               ))}
             </SelectContent>
@@ -661,8 +661,8 @@ export function ProfileDetails({ user }: ProfileDetailsProps) {
             </SelectTrigger>
             <SelectContent className="bg-popover">
               {mbtiOptions.map((option) => (
-                <SelectItem key={option} value={option}>
-                  {option}
+                <SelectItem key={option.value} value={option.value}>
+                  {option.label}
                 </SelectItem>
               ))}
             </SelectContent>

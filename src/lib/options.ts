@@ -60,11 +60,23 @@ export const zodiacSignOptions = [
 ];
 
 export const mbtiOptions = [
-  "INTJ", "INTP", "ENTJ", "ENTP",
-  "INFJ", "INFP", "ENFJ", "ENFP",
-  "ISTJ", "ISFJ", "ESTJ", "ESFJ",
-  "ISTP", "ISFP", "ESTP", "ESFP",
-  "Prefer Not to Say"
+  { value: "Prefer Not to Say", label: "Prefer Not to Say" },
+  { value: 'INTJ', label: '🧠 INTJ – The Mastermind / Architect' },
+  { value: 'INTP', label: '🧠 INTP – The Thinker / Logician' },
+  { value: 'ENTJ', label: '⚡️ ENTJ – The Commander / Executive' },
+  { value: 'ENTP', label: '⚡️ ENTP – The Debater / Visionary' },
+  { value: 'INFJ', label: '🌙 INFJ – The Advocate / Counsellor' },
+  { value: 'INFP', label: '🌸 INFP – The Mediator / Idealist' },
+  { value: 'ENFJ', label: '🌟 ENFJ – The Protagonist / Teacher' },
+  { value: 'ENFP', label: '🔥 ENFP – The Campaigner / Inspirer' },
+  { value: 'ISTJ', label: '🧱 ISTJ – The Inspector / Logistician' },
+  { value: 'ISFJ', label: '🕊️ ISFJ – The Defender / Nurturer' },
+  { value: 'ESTJ', label: '🧭 ESTJ – The Supervisor / Executive' },
+  { value: 'ESFJ', label: '💐 ESFJ – The Consul / Provider' },
+  { value: 'ISTP', label: '🛠️ ISTP – The Virtuoso / Craftsman' },
+  { value: 'ISFP', label: '🎨 ISFP – The Adventurer / Composer' },
+  { value: 'ESTP', label: '⚡️ ESTP – The Dynamo / Entrepreneur' },
+  { value: 'ESFP', label: '🎭 ESFP – The Performer / Entertainer' },
 ];
 
 
