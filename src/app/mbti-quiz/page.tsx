@@ -17,6 +17,7 @@ import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogDescription } f
 import { ScrollArea } from '@/components/ui/scroll-area';
 import { Badge } from '@/components/ui/badge';
 import { CrossdPlusUpsellDialog } from '@/components/pricing/crossd-plus-upsell-dialog';
+import { Separator } from '@/components/ui/separator';
 
 export default function MbtiQuizPage() {
   const { user, userProfile, isLoading: isAuthLoading } = useAuth();
@@ -31,18 +32,14 @@ export default function MbtiQuizPage() {
   const [showUpsellDialog, setShowUpsellDialog] = useState(false);
   const [isLoadingQuiz, setIsLoadingQuiz] = useState(true);
 
-  // Use a ref to ensure initial progress load only happens once.
   const isInitialLoadDone = useRef(false);
 
   const totalQuestions = mbtiQuizQuestions.length;
   const isPremium = userProfile?.subscription?.status === 'active' || userProfile?.email === 'mlowdencrossd@gmail.com';
 
   useEffect(() => {
-    // This effect loads saved progress from the user's profile ONCE.
     if (isAuthLoading || !userProfile || isInitialLoadDone.current) {
-        // If auth is still loading, or we have no profile, or we've already loaded, do nothing.
         if (!isAuthLoading && !isInitialLoadDone.current) {
-          // If auth is done but there's no profile, we can stop loading.
           setIsLoadingQuiz(false);
         }
         return;
@@ -64,8 +61,8 @@ export default function MbtiQuizPage() {
       });
     }
 
-    isInitialLoadDone.current = true; // Mark as loaded
-    setIsLoadingQuiz(false); // Done loading, ready to show quiz
+    isInitialLoadDone.current = true;
+    setIsLoadingQuiz(false);
   }, [userProfile, isAuthLoading, totalQuestions]);
 
 
@@ -92,7 +89,6 @@ export default function MbtiQuizPage() {
     setAnswers(newAnswers);
 
     if (user) {
-      // Fire-and-forget save to backend. No need to await.
       saveMbtiQuizProgress(user.uid, newAnswers).catch(err => {
         console.warn("Failed to save quiz progress in background:", err);
       });
@@ -266,42 +262,82 @@ export default function MbtiQuizPage() {
       
       {currentResultDetails && (
         <Dialog open={showDetailsDialog} onOpenChange={setShowDetailsDialog}>
-            <DialogContent className="sm:max-w-xl bg-card">
-              <DialogHeader className="text-center">
-                 <DialogTitle className="text-3xl font-bold text-primary flex items-center justify-center gap-3">
-                    <span className="text-4xl">{mbtiTypeDescriptions[result!].emoji}</span>
-                    <span>{result} - {currentResultDetails.title}</span>
-                 </DialogTitle>
-                 <DialogDescription className="text-md text-muted-foreground">{currentResultDetails.categoryEmoji} {currentResultDetails.category}</DialogDescription>
-              </DialogHeader>
-              <ScrollArea className="max-h-[60vh] pr-4">
-                <div className="p-4 space-y-4">
-                    <div>
-                        <h4 className="font-semibold text-lg text-foreground mb-2">Key Traits</h4>
-                        <div className="flex flex-wrap gap-2">
-                            {currentResultDetails.keyTraits.map(trait => <Badge key={trait} variant="secondary">{trait}</Badge>)}
+            <DialogContent className="sm:max-w-2xl bg-card p-0">
+                <DialogHeader className="p-6 pb-4">
+                    <DialogTitle className="text-3xl font-bold text-primary flex items-center gap-3">
+                        <span className="text-4xl">{mbtiTypeDescriptions[result!].emoji}</span>
+                        <span>{result} - {currentResultDetails.title}</span>
+                    </DialogTitle>
+                    <DialogDescription className="text-md text-muted-foreground pt-1">
+                        {currentResultDetails.nicknames.join(' • ')}
+                    </DialogDescription>
+                </DialogHeader>
+                <ScrollArea className="max-h-[70vh] pr-2">
+                    <div className="px-6 pb-6 space-y-6">
+                        <Separator />
+                        <div className="space-y-1">
+                            <h4 className="font-semibold text-lg text-foreground">Core Characteristics</h4>
+                            <div className="space-y-2">
+                                {currentResultDetails.coreCharacteristics.map(char => (
+                                    <div key={char.trait} className="text-sm">
+                                        <span className="font-semibold text-foreground/90">{char.trait}: </span>
+                                        <span className="text-muted-foreground">{char.description}</span>
+                                    </div>
+                                ))}
+                            </div>
+                        </div>
+
+                        <Separator />
+                        <div className="space-y-1">
+                            <h4 className="font-semibold text-lg text-foreground">Cognitive Function Stack</h4>
+                             <div className="space-y-2">
+                                {currentResultDetails.cognitiveStack.map(stack => (
+                                    <div key={stack.functionName} className="text-sm">
+                                        <span className="font-semibold text-foreground/90">{stack.functionName}: </span>
+                                        <span className="text-muted-foreground">{stack.description}</span>
+                                    </div>
+                                ))}
+                            </div>
+                        </div>
+
+                         <Separator />
+                        <div className="grid grid-cols-1 md:grid-cols-2 gap-x-6 gap-y-4">
+                            <div className="space-y-1">
+                                <h4 className="font-semibold text-lg text-green-400">Strengths</h4>
+                                <ul className="list-disc list-inside space-y-1 text-sm text-muted-foreground">
+                                    {currentResultDetails.strengths.map(s => <li key={s.strength}><span className="font-semibold text-foreground/90">{s.strength}:</span> {s.example}</li>)}
+                                </ul>
+                            </div>
+                            <div className="space-y-1">
+                                <h4 className="font-semibold text-lg text-red-400">Weaknesses</h4>
+                                <ul className="list-disc list-inside space-y-1 text-sm text-muted-foreground">
+                                    {currentResultDetails.weaknesses.map(w => <li key={w.weakness}><span className="font-semibold text-foreground/90">{w.weakness}:</span> {w.description}</li>)}
+                                </ul>
+                            </div>
+                        </div>
+
+                         <Separator />
+                         <div className="space-y-1">
+                            <h4 className="font-semibold text-lg text-foreground">Ideal Careers & Roles</h4>
+                             <div className="flex flex-wrap gap-2 mt-2">
+                                {currentResultDetails.idealCareers.map(career => <Badge key={career.field} variant="secondary">{career.field}</Badge>)}
+                            </div>
+                        </div>
+
+                        <Separator />
+                         <div className="space-y-1">
+                            <h4 className="font-semibold text-lg text-foreground">Relationships & Communication</h4>
+                            <div className="space-y-2">
+                                {currentResultDetails.relationships.map(rel => (
+                                     <div key={rel.area} className="text-sm">
+                                        <span className="font-semibold text-foreground/90">{rel.area}: </span>
+                                        <span className="text-muted-foreground">{rel.behavior}</span>
+                                    </div>
+                                ))}
+                            </div>
                         </div>
                     </div>
-                     <div>
-                        <h4 className="font-semibold text-lg text-foreground mb-2">Strengths</h4>
-                        <div className="flex flex-wrap gap-2">
-                            {currentResultDetails.strengths.map(strength => <Badge key={strength} variant="secondary" className="bg-green-500/10 text-green-400 border-green-500/20">{strength}</Badge>)}
-                        </div>
-                    </div>
-                     <div>
-                        <h4 className="font-semibold text-lg text-foreground mb-2">Weaknesses</h4>
-                        <div className="flex flex-wrap gap-2">
-                            {currentResultDetails.weaknesses.map(weakness => <Badge key={weakness} variant="secondary" className="bg-red-500/10 text-red-400 border-red-500/20">{weakness}</Badge>)}
-                        </div>
-                    </div>
-                     <div>
-                        <h4 className="font-semibold text-lg text-foreground mb-2">Ideal Roles</h4>
-                        <div className="flex flex-wrap gap-2">
-                            {currentResultDetails.idealRoles.map(role => <Badge key={role} variant="secondary">{role}</Badge>)}
-                        </div>
-                    </div>
-                </div>
-              </ScrollArea>
+                </ScrollArea>
             </DialogContent>
         </Dialog>
       )}
