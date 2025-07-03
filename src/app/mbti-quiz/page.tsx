@@ -11,7 +11,7 @@ import { mbtiQuizQuestions, mbtiTypeDescriptions, mbtiTypeDetails } from '@/lib/
 import { useAuth } from '@/hooks/use-auth';
 import { updateUserMbtiType, saveMbtiQuizProgress } from '@/app/actions';
 import { useToast } from '@/hooks/use-toast';
-import { Loader2, BrainCircuit, Save, Send, ArrowLeft, RotateCw, Sparkles, Star } from 'lucide-react';
+import { Loader2, BrainCircuit, Save, Send, ArrowLeft, RotateCw, Sparkles, Star, Heart, MessageSquare } from 'lucide-react';
 import Link from 'next/link';
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogDescription } from '@/components/ui/dialog';
 import { ScrollArea } from '@/components/ui/scroll-area';
@@ -325,17 +325,66 @@ export default function MbtiQuizPage() {
                         </div>
 
                         <Separator />
-                         <div className="space-y-1">
-                            <h4 className="font-semibold text-lg text-foreground">Relationships & Communication</h4>
-                            <div className="space-y-2">
-                                {currentResultDetails.relationships.map(rel => (
-                                     <div key={rel.area} className="text-sm">
-                                        <span className="font-semibold text-foreground/90">{rel.area}: </span>
-                                        <span className="text-muted-foreground">{rel.behavior}</span>
-                                    </div>
-                                ))}
-                            </div>
-                        </div>
+                        
+                        {/* NEW: Conditional Rendering for Relationship Deep Dive */}
+                        {currentResultDetails.relationshipDeepDive ? (
+                          <div className="space-y-4">
+                              <h4 className="font-semibold text-lg text-foreground flex items-center gap-2"><Heart className="w-5 h-5 text-primary"/>Relationships & Communication</h4>
+                              
+                              {/* Friendship */}
+                              <div className="p-3 bg-muted/30 rounded-md">
+                                <h5 className="font-semibold text-foreground/90 mb-1">{currentResultDetails.relationshipDeepDive.friendship.title}</h5>
+                                <p className="text-xs text-muted-foreground"><span className="font-medium text-foreground/80">Core Needs:</span> {currentResultDetails.relationshipDeepDive.friendship.coreNeeds}</p>
+                                <p className="text-xs text-muted-foreground mt-1"><span className="font-medium text-foreground/80">How They Show Up:</span> {currentResultDetails.relationshipDeepDive.friendship.howTheyShowUp}</p>
+                              </div>
+
+                              {/* Romance */}
+                              <div className="p-3 bg-muted/30 rounded-md">
+                                <h5 className="font-semibold text-foreground/90 mb-1">{currentResultDetails.relationshipDeepDive.romance.title}</h5>
+                                <p className="text-xs text-muted-foreground"><span className="font-medium text-foreground/80">Core Needs:</span> {currentResultDetails.relationshipDeepDive.romance.coreNeeds}</p>
+                                <p className="text-xs text-muted-foreground mt-1"><span className="font-medium text-foreground/80">How They Love:</span> {currentResultDetails.relationshipDeepDive.romance.howTheyLove}</p>
+                                <p className="text-xs text-muted-foreground mt-1"><span className="font-medium text-foreground/80">Ideal Partner:</span> {currentResultDetails.relationshipDeepDive.romance.idealPartner}</p>
+                              </div>
+
+                              {/* Communication */}
+                              <div className="p-3 bg-muted/30 rounded-md">
+                                <h5 className="font-semibold text-foreground/90 mb-1">{currentResultDetails.relationshipDeepDive.communication.title}</h5>
+                                <p className="text-xs text-muted-foreground"><span className="font-medium text-foreground/80">Primary Traits:</span> {currentResultDetails.relationshipDeepDive.communication.primaryTraits}</p>
+                                <p className="text-xs text-muted-foreground mt-1"><span className="font-medium text-foreground/80">How to Communicate With Them:</span> {currentResultDetails.relationshipDeepDive.communication.howToCommunicate}</p>
+                              </div>
+
+                              {/* Compatibility */}
+                              <div className="p-3 bg-muted/30 rounded-md">
+                                  <h5 className="font-semibold text-foreground/90 mb-1">{currentResultDetails.relationshipDeepDive.compatibility.title}</h5>
+                                  <p className="text-xs text-muted-foreground italic mb-2">{currentResultDetails.relationshipDeepDive.compatibility.summary}</p>
+                                  <div className="space-y-1">
+                                    {currentResultDetails.relationshipDeepDive.compatibility.commonMatches.map(match => (
+                                      <p key={match.type} className="text-xs text-muted-foreground"><span className="font-medium text-green-400/80">{match.type}:</span> {match.reason}</p>
+                                    ))}
+                                  </div>
+                              </div>
+
+                               {/* Summary */}
+                               <div className="p-3 bg-primary/10 rounded-md border border-primary/20">
+                                <h5 className="font-semibold text-primary/90 mb-1 flex items-center gap-1.5"><MessageSquare className="w-4 h-4"/>{currentResultDetails.relationshipDeepDive.summary.title}</h5>
+                                <p className="text-sm text-foreground/90 italic">&quot;{currentResultDetails.relationshipDeepDive.summary.text}&quot;</p>
+                              </div>
+
+                          </div>
+                        ) : (
+                          // Fallback for types without deep dive data
+                          <div className="space-y-1">
+                              <h4 className="font-semibold text-lg text-foreground">Relationships & Communication</h4>
+                              <div className="space-y-2">
+                                  {currentResultDetails.relationships.map(rel => (
+                                      <div key={rel.area} className="text-sm">
+                                          <span className="font-semibold text-foreground/90">{rel.area}: </span>
+                                          <span className="text-muted-foreground">{rel.behavior}</span>
+                                      </div>
+                                  ))}
+                              </div>
+                          </div>
+                        )}
                     </div>
                 </ScrollArea>
             </DialogContent>

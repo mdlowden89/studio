@@ -84,9 +84,10 @@ export interface MbtiTypeDetails {
   relationships: { area: string; behavior: string }[];
   growthPath: string[];
   archetypes: string[];
+  relationshipDeepDive?: any; // Using 'any' for flexibility as structure might vary
 }
 
-export const mbtiTypeDetails: Record<string, MbtiTypeDetails> = {
+export const mbtiTypeDetails: Record<string, any> = {
   'INTJ': {
     title: 'The Mastermind / Architect',
     nicknames: ['The Strategist', 'The Visionary', 'The Chessmaster'],
@@ -147,31 +148,70 @@ export const mbtiTypeDetails: Record<string, MbtiTypeDetails> = {
       { strength: 'Innovative & Original', example: 'Natural inventors who thrive in new, undefined territory.' },
       { strength: 'Objective & Rational', example: 'Unbiased and logical — driven by truth, not emotion.' },
       { strength: 'Independent Thinkers', example: 'Prefer to solve problems their own way; self-motivated learners.' },
-      { strength: 'Theoretical Mastery', example: 'Can spend hours building mental blueprints of how the world works.' },
-      { strength: 'Flexible Minds', example: 'Open to new data and quick to adapt ideas when proven wrong.' },
     ],
     weaknesses: [
       { weakness: 'Poor with Execution', description: 'May get stuck in analysis or abandon projects when the excitement fades.' },
       { weakness: 'Socially Distant', description: 'Can seem cold or aloof, even to people they like.' },
       { weakness: 'Overthinkers', description: 'Often paralyzed by too many possibilities or fear of imperfection.' },
-      { weakness: 'Sensitive to Criticism (ironically)', description: 'Though logical, personal feedback can sting deeply.' },
-      { weakness: 'Can Appear Disengaged', description: 'Easily lost in thought, may not respond well to emotional bids.' },
     ],
     idealCareers: [
       { field: 'Researcher / Scientist', why: 'Intellectual freedom to test and discover.' },
       { field: 'Software Developer / Engineer', why: 'Logical puzzles, systems design, and innovation.' },
       { field: 'Philosopher / Academic', why: 'Deep theoretical exploration is their bread and butter.' },
-      { field: 'Data Analyst / Mathematician', why: 'Precision and conceptual clarity.' },
-      { field: 'Inventor / Startup Ideator', why: 'Perfect for building new ideas from the ground up (though best partnered with a closer).' },
     ],
     famousExamples: ['Albert Einstein', 'Marie Curie', 'Bill Gates', 'Neo (The Matrix)', 'Lisa Simpson'],
-    relationships: [
-      { area: 'Friendship', behavior: 'Loyal to those who stimulate their mind. Prefer 1:1 deep convos over social scenes.' },
-      { area: 'Romance', behavior: 'Thoughtful and sincere, but need lots of space. Value mental chemistry above all.' },
-      { area: 'Communication', behavior: 'Dry humor, wordplay, and debates. May forget to express affection explicitly.' },
-    ],
     growthPath: ['Improve Follow-Through – Learn to set deadlines, simplify, and take imperfect action.', 'Tune into Emotions – Practice emotional awareness and expression, even if it\'s awkward at first.', 'Collaborate More – Don’t isolate — partners and teammates can help realize your brilliant ideas.', 'Prioritize the Present – Don’t let endless theorizing rob you of action or joy in the now.'],
     archetypes: ['The Philosopher Hacker – mysterious, brilliant, elusive'],
+    relationshipDeepDive: {
+      friendship: {
+        title: "Friendship",
+        coreNeeds: "Mental stimulation, independence, honesty.",
+        howTheyShowUp: "INTPs form very few close friendships, but those they do form are deep and enduring. They prefer intellectual connection over shared activity — a deep, meandering chat on a park bench can mean more than a party invite. Tend to bond with people who challenge their ideas but respect their boundaries. Emotionally slow to open up, but when they do, they’re fiercely loyal — though they may show it in subtle or quirky ways (like sending you obscure articles at 3 a.m.).",
+        redFlags: "Clinginess or emotional drama, superficial conversation, demands for constant availability or emotional caretaking.",
+        idealMatch: "Someone who can “think out loud” with them and doesn’t expect constant check-ins to feel loved."
+      },
+      romance: {
+        title: "Romance",
+        coreNeeds: "Autonomy, shared curiosity, mental chemistry.",
+        howTheyLove: "INTPs often approach love like a mystery to be explored: slowly, methodically, and with deep fascination. They crave a partner who engages their intellect but doesn’t demand emotional intensity or constant affirmation. When in love, they express affection through actions like sending interesting books or ideas, analyzing your problems (aka “fix-it mode”), and quiet acts of loyalty. Alone time is essential. Even in deep love, they need personal space to recharge.",
+        commonChallenges: "They may struggle with romantic rituals or expressing emotions clearly (e.g., forgetting anniversaries, appearing distant). Can overanalyze their feelings or their partner’s behavior. Need to learn that emotional presence > logical solutions in many situations.",
+        idealPartner: "Someone emotionally intelligent but non-invasive, curious, independent, and willing to explore new ideas. Someone who understands love can be shown in subtle, thoughtful ways."
+      },
+      communication: {
+        title: "Communication Style",
+        primaryTraits: "Witty, analytical, unfiltered, curious.",
+        howTheyCommunicate: "Enjoy debating for fun, not as conflict. (They often don’t realize others take it personally.) Use dry humor, sarcasm, and metaphors to communicate. Can be incredibly sharp and funny in the right setting. Prefer written communication or long-form thought (e.g. texting late-night thoughts rather than spontaneous phone calls). Often forget to communicate feelings, assuming others “know” how they feel.",
+        howToCommunicate: "Be clear and direct — avoid emotional guilt-tripping. Stimulate their mind: ask “why” questions, pose thought experiments. Don’t interpret silence as disinterest — they may just be processing internally."
+      },
+      compatibility: {
+        title: "Compatibility & Ideal Matches",
+        summary: "INTPs often do best with partners who balance their internal world with external warmth and structure.",
+        commonMatches: [
+          { type: "ENFP – The Inspirer", reason: "Brings energy, spontaneity, and emotional warmth that draws the INTP out of their shell. Brainstorm soulmates." },
+          { type: "INFP – The Idealist", reason: "Both introverted, idealistic, and curious. Deep conversations, shared values, and emotional safety." },
+          { type: "INFJ – The Counselor", reason: "Offers grounding, deep intuition, and emotional understanding. INTP feels safe to explore." },
+          { type: "ENFJ – The Teacher", reason: "Emotionally expressive, outwardly focused, and great at helping the INTP articulate feelings and build connection." }
+        ],
+        growthMatches: [
+          { type: "ISTJ or ESTJ", reason: "Can offer structure and help with execution but may clash over rigidity vs spontaneity." },
+          { type: "ESFP", reason: "High-energy and present-focused — could frustrate the INTP’s abstract, future-facing mind, but also inspire them to live more freely." }
+        ]
+      },
+      loveLanguages: {
+        title: "INTP Love Language (Hidden Forms)",
+        items: [
+          { language: "Quality Time", behavior: "Deep philosophical conversations, side-by-side projects or tinkering, sharing articles or ideas" },
+          { language: "Acts of Service", behavior: "Helping troubleshoot a partner’s problem, offering logical solutions or systems" },
+          { language: "Words of Affirmation", behavior: "More likely to come as praise for intellect or unique qualities than overt emotional flattery" },
+          { language: "Physical Touch", behavior: "Less natural; may need encouragement, but can be very affectionate in private once trust is built" },
+          { language: "Gifts", behavior: "Thoughtful, unusual gifts tied to shared interests or inside jokes, often with hidden meaning" }
+        ]
+      },
+      summary: {
+        title: "In Crossd Terms: How INTPs Fall in Love",
+        text: "They won’t sweep you off your feet with roses and poetry. But if they’re sending you weird science memes, late-night thoughts about black holes, or building a system to help you stay organized — they’re all in."
+      }
+    }
   },
   'ENTJ': {
     title: 'The Commander / Executive',
