@@ -145,43 +145,83 @@ export const mbtiTypeDetails: Record<string, any> = {
   },
   'ENTJ': {
     title: 'The Commander / Executive',
-    nicknames: ['The Chief', 'The Field Marshal', 'The Trailblazer'],
+    nicknames: ['The Strategist', 'The CEO', 'The General'],
     typeCode: 'Extraverted (E) – Intuitive (N) – Thinking (T) – Judging (J)',
-    population: '~2% of population',
+    population: '~2% overall (more common among men)',
     coreCharacteristics: [
-        { trait: 'Decisive Leader', description: 'Naturally takes charge, makes tough calls, and directs others toward a goal.' },
-        { trait: 'Efficient', description: 'Obsessed with finding the best, fastest way to achieve results.' },
-        { trait: 'Bold & Confident', description: 'Projects an aura of authority and is not afraid to challenge the status quo.' },
+        { trait: 'Bold', description: 'ENTJs aren’t afraid to make decisions, take charge, or push boundaries. They naturally lead — whether invited or not.' },
+        { trait: 'Decisive', description: 'Known for making fast, clear decisions based on logic and efficiency, not emotional hesitation.' },
+        { trait: 'Efficient Leader', description: 'They thrive on improving systems, leading teams, and pushing people (and themselves) to reach the top.' },
     ],
     cognitiveStack: [
-        { functionName: 'Dominant – Extraverted Thinking (Te)', description: 'Imposes logic, structure, and efficiency on the external world to achieve goals.' },
-        { functionName: 'Auxiliary – Introverted Intuition (Ni)', description: 'Forms a long-term vision and strategy that guides their actions.' },
-        { functionName: 'Tertiary – Extraverted Sensing (Se)', description: 'Connects with the present moment to gather data and enjoy rewarding experiences.' },
-        { functionName: 'Inferior – Introverted Feeling (Fi)', description: 'Has a hidden, sensitive core of personal values that they struggle to express or prioritize.' },
+        { functionName: 'Dominant – Extraverted Thinking (Te)', description: 'Seeks efficiency, logic, and results in the external world. Commands attention through clarity, organization, and drive. Natural leader in both crisis and structure.' },
+        { functionName: 'Auxiliary – Introverted Intuition (Ni)', description: 'Supports long-term vision, patterns, and future outcomes. Allows ENTJs to see where things are heading and plan accordingly. Big-picture thinkers with 5-year plans.' },
+        { functionName: 'Tertiary – Extraverted Sensing (Se)', description: 'Engages with the external world in a tangible, present-focused way. Confident with sensory data, performance, presence. Can indulge in luxury or competition under stress.' },
+        { functionName: 'Inferior – Introverted Feeling (Fi)', description: 'Struggles with emotional depth and vulnerability. May suppress or misunderstand their own values and feelings. Growth area: connecting emotionally with others and self.' },
     ],
     strengths: [
-        { strength: 'Strategic Leadership', example: 'Can mobilize a team to execute a complex, long-term plan.' },
-        { strength: 'Unwavering Confidence', example: 'Inspires others with their conviction and clear sense of direction.' },
-        { strength: 'Problem-Solving Prowess', example: 'Quickly identifies inefficiencies and implements logical solutions.' },
+        { strength: 'Natural Leaders', example: 'Commanding, confident, and decisive in group settings. People often follow their lead instinctively.' },
+        { strength: 'Vision + Execution', example: 'Combines big-picture thinking (Ni) with rapid action (Te).' },
+        { strength: 'Resilient and Driven', example: 'Failure is a lesson, not a wall. ENTJs push through setbacks like tanks.' },
+        { strength: 'Clear Communicators', example: 'Straightforward, persuasive, and structured in expression.' },
+        { strength: 'Highly Strategic', example: 'Systems, power structures, and hierarchies make sense to them intuitively. They know how to move up and optimize.' },
     ],
     weaknesses: [
-        { weakness: 'Impatient', description: 'Can be harsh or dismissive with those they see as slow or incompetent.' },
-        { weakness: 'Can Seem Arrogant', description: 'Their confidence may be perceived as a belief that they are always right.' },
-        { weakness: 'Neglects Emotions', description: 'Often prioritizes logic over the feelings of themselves or others.' },
+        { weakness: 'Overbearing or Controlling', description: 'Can bulldoze over others’ opinions or feelings.' },
+        { weakness: 'Emotionally Blunt', description: 'May dismiss emotional nuance as illogical or inefficient.' },
+        { weakness: 'Workaholic Tendencies', description: 'Obsession with achievement can sacrifice relationships or health.' },
+        { weakness: 'Intolerant of Incompetence', description: 'Has little patience for inefficiency or those who can’t keep up.' },
+        { weakness: 'Neglecting Inner Values', description: 'Their weaker Fi may lead to poor emotional boundaries or ignoring personal meaning in pursuit of success.' },
     ],
     idealCareers: [
-        { field: 'CEO / Executive', why: 'Natural fit for high-stakes leadership and strategic planning.' },
-        { field: 'Management Consulting', why: 'Analyzing and optimizing systems for efficiency.' },
-        { field: 'Law / Politics', why: 'Building arguments, leading campaigns, and implementing policy.' },
+        { field: 'CEO / Executive', why: 'High-level control, strategy, impact, and results.' },
+        { field: 'Entrepreneur / Founder', why: 'Loves building scalable systems and commanding growth.' },
+        { field: 'Military / Law Enforcement Leader', why: 'Structure, discipline, and high-stakes leadership.' },
+        { field: 'Corporate Strategist / Consultant', why: 'Solves complex business challenges with clarity.' },
+        { field: 'Politics / Leadership Roles', why: 'Strong debater, persuasive speaker, values-driven when mature.' },
     ],
-    famousExamples: ['Steve Jobs', 'Margaret Thatcher', 'Julius Caesar', 'Miranda Priestly (The Devil Wears Prada)'],
-    relationships: [
-        { area: 'Friendship', behavior: 'Gravitates toward ambitious, competent people who challenge them.' },
-        { area: 'Romance', behavior: 'Seeks a "power couple" dynamic with a partner who shares their drive and vision.' },
-        { area: 'Communication', behavior: 'Direct, assertive, and focused on outcomes. Can be blunt.' },
-    ],
-    growthPath: ['Practice patience', 'Learn to actively listen to different perspectives', 'Make time for emotional reflection'],
-    archetypes: ['The driven CEO', 'The ambitious general', 'The empire-builder'],
+    famousExamples: ['Steve Jobs', 'Gordon Ramsay', 'Margaret Thatcher', 'Jay-Z', 'Miranda Priestly (The Devil Wears Prada)'],
+    growthPath: ['Practice active listening and value others\' input.', 'Develop emotional awareness and empathy.', 'Prioritize work-life balance and relationships.', 'Cultivate patience and mentor others.'],
+    archetypes: ['The Mastermind Leader', 'The Commanding CEO', 'The Unstoppable Visionary'],
+    relationshipDeepDive: {
+      friendship: {
+        title: "Friendship",
+        behavior: "Selective but loyal once respect is earned. Prefers ambitious, competent friends. Dislikes passive-aggressiveness, laziness, or indecision. Often “mentors” friends, helping them reach their potential."
+      },
+      romance: {
+        title: "Romance",
+        behavior: "ENTJs approach relationships like they do business: strategically and with long-term goals. Deeply loyal once committed — but don’t expect flowery romance. Attracted to strength, intelligence, and independence. Need a partner who challenges them, not just compliments them. Struggles when emotions interrupt logic — may retreat or double down on “fixing the problem” rather than listening."
+      },
+      communication: {
+        title: "Communication",
+        behavior: "Clear, concise, and assertive. Says what they mean and means what they say. Hates emotional manipulation or “guessing games.” Needs to learn: vulnerability ≠ weakness."
+      },
+      compatibility: {
+        title: "Compatibility & Ideal Matches",
+        summary: "ENTJs pair best with types who can balance their intensity with emotional intelligence, creativity, or flexibility — without being fragile.",
+        commonMatches: [
+          { type: "INFP – The Idealist", reason: "Brings depth, values, and emotional nuance ENTJs often lack. The quiet strength behind the power." },
+          { type: "ENFP – The Campaigner", reason: "Energizes the ENTJ, keeps things light and fun while sharing big visions." },
+          { type: "INFJ – The Counselor", reason: "Visionary and principled — adds emotional grounding to ENTJ’s strategic force." },
+          { type: "INTP – The Thinker", reason: "Intellectual equals who challenge each other and enjoy deep debate." }
+        ]
+      },
+      loveLanguages: {
+        title: "ENTJ Love Language & Dating Vibe",
+        items: [
+          { language: "Acts of Service", behavior: "“Let me take care of it.” ENTJs love solving things for their partner." },
+          { language: "Quality Time", behavior: "Productive bonding — learning, planning, or building something together." },
+          { language: "Words of Affirmation", behavior: "Prefer praise for competency or growth: “I admire your drive” > “You’re cute.”" },
+          { language: "Physical Touch", behavior: "Can be affectionate, but usually more passionate than tender." },
+          { language: "Gifts", behavior: "Symbolic and impressive. They want their gift to make an impact." }
+        ]
+      },
+      summary: {
+        title: "ENTJ in Crossd Compatibility Storytelling",
+        text: "Archetype: The Mastermind Leader — commanding presence, unstoppable vision. Dating Bio Prompt: “Ambitious AF. Don’t confuse confidence with arrogance — I just know what I want. Let’s build an empire, or at least crush trivia night.” In-App Persona Card: “Meet the Commander ⚡ — bold, brilliant, and driven by purpose. They don’t just swipe — they strategize. If you’re ready to match ambition with fire, they’re your perfect counterpart.”"
+      }
+    },
+    relationships: [], // Fallback
   },
   'ENTP': {
     title: 'The Debater / Visionary',
