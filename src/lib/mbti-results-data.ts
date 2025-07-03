@@ -21,7 +21,7 @@ export const mbtiTypeDetails: Record<string, any> = {
     title: 'The Mastermind / Architect',
     nicknames: ['The Strategist', 'The Visionary', 'The Chessmaster'],
     typeCode: 'Introverted (I) – Intuitive (N) – Thinking (T) – Judging (J)',
-    population: '~2% of population',
+    population: '~2% overall (0.8% women, 3.3% men)',
     coreCharacteristics: [
       { trait: 'Strategic', description: 'Thinks in systems and architects step-by-step plans to realize long-term goals.' },
       { trait: 'Independent', description: 'Craves autonomy and forges their own path based on logic, not trends.' },
@@ -95,22 +95,18 @@ export const mbtiTypeDetails: Record<string, any> = {
       friendship: {
         title: "Friendship",
         coreNeeds: "Mental stimulation, independence, honesty.",
-        howTheyShowUp: "INTPs form very few close friendships, but those they do form are deep and enduring. They prefer intellectual connection over shared activity — a deep, meandering chat on a park bench can mean more than a party invite. Tend to bond with people who challenge their ideas but respect their boundaries. Emotionally slow to open up, but when they do, they’re fiercely loyal — though they may show it in subtle or quirky ways (like sending you obscure articles at 3 a.m.).",
-        redFlags: "Clinginess or emotional drama, superficial conversation, demands for constant availability or emotional caretaking.",
-        idealMatch: "Someone who can “think out loud” with them and doesn’t expect constant check-ins to feel loved."
+        howTheyShowUp: "INTPs form very few close friendships, but those they do form are deep and enduring. They prefer intellectual connection over shared activity — a deep, meandering chat on a park bench can mean more than a party invite. They tend to bond with people who challenge their ideas but respect their boundaries. They are emotionally slow to open up, but when they do, they’re fiercely loyal, showing it in subtle ways (like sending you obscure articles at 3 a.m.). They dislike clinginess, emotional drama, or demands for constant availability.",
       },
       romance: {
         title: "Romance",
         coreNeeds: "Autonomy, shared curiosity, mental chemistry.",
-        howTheyLove: "INTPs often approach love like a mystery to be explored: slowly, methodically, and with deep fascination. They crave a partner who engages their intellect but doesn’t demand emotional intensity or constant affirmation. When in love, they express affection through actions like sending interesting books or ideas, analyzing your problems (aka “fix-it mode”), and quiet acts of loyalty. Alone time is essential. Even in deep love, they need personal space to recharge.",
-        commonChallenges: "They may struggle with romantic rituals or expressing emotions clearly (e.g., forgetting anniversaries, appearing distant). Can overanalyze their feelings or their partner’s behavior. Need to learn that emotional presence > logical solutions in many situations.",
-        idealPartner: "Someone emotionally intelligent but non-invasive, curious, independent, and willing to explore new ideas. Someone who understands love can be shown in subtle, thoughtful ways."
+        howTheyLove: "INTPs approach love like a mystery to be explored: slowly, methodically, and with deep fascination. They crave a partner who engages their intellect but doesn’t demand emotional intensity. They express affection through actions like sending interesting books, analyzing your problems, and quiet acts of loyalty. They may struggle with romantic rituals or expressing emotions clearly and can overanalyze feelings.",
+        idealPartner: "Someone emotionally intelligent but non-invasive, curious, independent, and who understands that love can be shown in subtle, thoughtful ways."
       },
       communication: {
         title: "Communication Style",
         primaryTraits: "Witty, analytical, unfiltered, curious.",
-        howTheyCommunicate: "Enjoy debating for fun, not as conflict. (They often don’t realize others take it personally.) Use dry humor, sarcasm, and metaphors to communicate. Can be incredibly sharp and funny in the right setting. Prefer written communication or long-form thought (e.g. texting late-night thoughts rather than spontaneous phone calls). Often forget to communicate feelings, assuming others “know” how they feel.",
-        howToCommunicate: "Be clear and direct — avoid emotional guilt-tripping. Stimulate their mind: ask “why” questions, pose thought experiments. Don’t interpret silence as disinterest — they may just be processing internally."
+        howToCommunicate: "Be clear and direct. Stimulate their mind with 'why' questions and thought experiments. Don’t interpret their silence as disinterest — they are likely processing internally. They prefer written communication or long-form thought and enjoy debating for fun, not as conflict."
       },
       compatibility: {
         title: "Compatibility & Ideal Matches",
@@ -120,20 +116,6 @@ export const mbtiTypeDetails: Record<string, any> = {
           { type: "INFP – The Idealist", reason: "Both introverted, idealistic, and curious. Deep conversations, shared values, and emotional safety." },
           { type: "INFJ – The Counselor", reason: "Offers grounding, deep intuition, and emotional understanding. INTP feels safe to explore." },
           { type: "ENFJ – The Teacher", reason: "Emotionally expressive, outwardly focused, and great at helping the INTP articulate feelings and build connection." }
-        ],
-        growthMatches: [
-          { type: "ISTJ or ESTJ", reason: "Can offer structure and help with execution but may clash over rigidity vs spontaneity." },
-          { type: "ESFP", reason: "High-energy and present-focused — could frustrate the INTP’s abstract, future-facing mind, but also inspire them to live more freely." }
-        ]
-      },
-      loveLanguages: {
-        title: "INTP Love Language (Hidden Forms)",
-        items: [
-          { language: "Quality Time", behavior: "Deep philosophical conversations, side-by-side projects or tinkering, sharing articles or ideas" },
-          { language: "Acts of Service", behavior: "Helping troubleshoot a partner’s problem, offering logical solutions or systems" },
-          { language: "Words of Affirmation", behavior: "More likely to come as praise for intellect or unique qualities than overt emotional flattery" },
-          { language: "Physical Touch", behavior: "Less natural; may need encouragement, but can be very affectionate in private once trust is built" },
-          { language: "Gifts", behavior: "Thoughtful, unusual gifts tied to shared interests or inside jokes, often with hidden meaning" }
         ]
       },
       summary: {
@@ -163,38 +145,34 @@ export const mbtiTypeDetails: Record<string, any> = {
         { strength: 'Natural Leaders', example: 'Commanding, confident, and decisive in group settings. People often follow their lead instinctively.' },
         { strength: 'Vision + Execution', example: 'Combines big-picture thinking (Ni) with rapid action (Te).' },
         { strength: 'Resilient and Driven', example: 'Failure is a lesson, not a wall. ENTJs push through setbacks like tanks.' },
-        { strength: 'Clear Communicators', example: 'Straightforward, persuasive, and structured in expression.' },
-        { strength: 'Highly Strategic', example: 'Systems, power structures, and hierarchies make sense to them intuitively. They know how to move up and optimize.' },
     ],
     weaknesses: [
         { weakness: 'Overbearing or Controlling', description: 'Can bulldoze over others’ opinions or feelings.' },
         { weakness: 'Emotionally Blunt', description: 'May dismiss emotional nuance as illogical or inefficient.' },
         { weakness: 'Workaholic Tendencies', description: 'Obsession with achievement can sacrifice relationships or health.' },
-        { weakness: 'Intolerant of Incompetence', description: 'Has little patience for inefficiency or those who can’t keep up.' },
-        { weakness: 'Neglecting Inner Values', description: 'Their weaker Fi may lead to poor emotional boundaries or ignoring personal meaning in pursuit of success.' },
     ],
     idealCareers: [
         { field: 'CEO / Executive', why: 'High-level control, strategy, impact, and results.' },
         { field: 'Entrepreneur / Founder', why: 'Loves building scalable systems and commanding growth.' },
         { field: 'Military / Law Enforcement Leader', why: 'Structure, discipline, and high-stakes leadership.' },
-        { field: 'Corporate Strategist / Consultant', why: 'Solves complex business challenges with clarity.' },
-        { field: 'Politics / Leadership Roles', why: 'Strong debater, persuasive speaker, values-driven when mature.' },
     ],
     famousExamples: ['Steve Jobs', 'Gordon Ramsay', 'Margaret Thatcher', 'Jay-Z', 'Miranda Priestly (The Devil Wears Prada)'],
-    growthPath: ['Practice active listening and value others\' input.', 'Develop emotional awareness and empathy.', 'Prioritize work-life balance and relationships.', 'Cultivate patience and mentor others.'],
-    archetypes: ['The Mastermind Leader', 'The Commanding CEO', 'The Unstoppable Visionary'],
     relationshipDeepDive: {
       friendship: {
         title: "Friendship",
-        behavior: "Selective but loyal once respect is earned. Prefers ambitious, competent friends. Dislikes passive-aggressiveness, laziness, or indecision. Often “mentors” friends, helping them reach their potential."
+        coreNeeds: "Ambition, competence, loyalty.",
+        howTheyShowUp: "Selective but loyal once respect is earned. Prefers ambitious, competent friends. Dislikes passive-aggressiveness, laziness, or indecision. Often 'mentors' friends, helping them reach their potential."
       },
       romance: {
         title: "Romance",
-        behavior: "ENTJs approach relationships like they do business: strategically and with long-term goals. Deeply loyal once committed — but don’t expect flowery romance. Attracted to strength, intelligence, and independence. Need a partner who challenges them, not just compliments them. Struggles when emotions interrupt logic — may retreat or double down on “fixing the problem” rather than listening."
+        coreNeeds: "Strength, intelligence, independence.",
+        howTheyLove: "ENTJs approach relationships strategically, with long-term goals. Deeply loyal once committed, but don’t expect flowery romance. They struggle when emotions interrupt logic and may try to 'fix' problems rather than listen.",
+        idealPartner: "Someone who challenges them, not just compliments them."
       },
       communication: {
-        title: "Communication",
-        behavior: "Clear, concise, and assertive. Says what they mean and means what they say. Hates emotional manipulation or “guessing games.” Needs to learn: vulnerability ≠ weakness."
+        title: "Communication Style",
+        primaryTraits: "Clear, concise, assertive.",
+        howToCommunicate: "Be direct and logical. They say what they mean and mean what they say. Hates emotional manipulation or 'guessing games'. For them, vulnerability is not weakness, but it is difficult."
       },
       compatibility: {
         title: "Compatibility & Ideal Matches",
@@ -206,60 +184,84 @@ export const mbtiTypeDetails: Record<string, any> = {
           { type: "INTP – The Thinker", reason: "Intellectual equals who challenge each other and enjoy deep debate." }
         ]
       },
-      loveLanguages: {
-        title: "ENTJ Love Language & Dating Vibe",
-        items: [
-          { language: "Acts of Service", behavior: "“Let me take care of it.” ENTJs love solving things for their partner." },
-          { language: "Quality Time", behavior: "Productive bonding — learning, planning, or building something together." },
-          { language: "Words of Affirmation", behavior: "Prefer praise for competency or growth: “I admire your drive” > “You’re cute.”" },
-          { language: "Physical Touch", behavior: "Can be affectionate, but usually more passionate than tender." },
-          { language: "Gifts", behavior: "Symbolic and impressive. They want their gift to make an impact." }
-        ]
-      },
       summary: {
         title: "ENTJ in Crossd Compatibility Storytelling",
-        text: "Archetype: The Mastermind Leader — commanding presence, unstoppable vision. Dating Bio Prompt: “Ambitious AF. Don’t confuse confidence with arrogance — I just know what I want. Let’s build an empire, or at least crush trivia night.” In-App Persona Card: “Meet the Commander ⚡ — bold, brilliant, and driven by purpose. They don’t just swipe — they strategize. If you’re ready to match ambition with fire, they’re your perfect counterpart.”"
+        text: "Archetype: The Mastermind Leader — commanding presence, unstoppable vision.\nDating Bio Prompt: “Ambitious AF. Don’t confuse confidence with arrogance — I just know what I want. Let’s build an empire, or at least crush trivia night.”\nIn-App Persona Card: “Meet the Commander ⚡ — bold, brilliant, and driven by purpose. They don’t just swipe — they strategize. If you’re ready to match ambition with fire, they’re your perfect counterpart.”"
       }
     },
     relationships: [], // Fallback
+    growthPath: ['Practice active listening and value others\' input.', 'Develop emotional awareness and empathy.', 'Prioritize work-life balance and relationships.', 'Cultivate patience and mentor others.'],
+    archetypes: ['The Mastermind Leader', 'The Commanding CEO', 'The Unstoppable Visionary'],
   },
   'ENTP': {
     title: 'The Debater / Visionary',
-    nicknames: ['The Innovator', 'The Originator', 'The Devil\'s Advocate'],
+    nicknames: ['The Spark', 'The Inventor', 'The Maverick'],
     typeCode: 'Extraverted (E) – Intuitive (N) – Thinking (T) – Perceiving (P)',
-    population: '~3% of population',
+    population: '~3–5% (more common among men)',
     coreCharacteristics: [
-        { trait: 'Quick-Witted', description: 'Sees possibilities and connections instantly, often with a humorous or clever twist.' },
-        { trait: 'Idea-Driven', description: 'Loves exploring new concepts, brainstorming, and debating ideas for sport.' },
-        { trait: 'Energetic', description: 'Thrives on mental sparring and novel experiences, often juggling multiple projects.' },
+        { trait: 'Energetic', description: 'ENTPs are buzzing with mental and physical energy. They’re wired to move, talk, and ideate.' },
+        { trait: 'Witty', description: 'They use humor like a scalpel — quick, sharp, and captivating.' },
+        { trait: 'Idea-Driven', description: 'Constantly innovating, reframing, and asking “What if?” or “Why not?” They thrive on novelty and disruption.' },
     ],
     cognitiveStack: [
-        { functionName: 'Dominant – Extraverted Intuition (Ne)', description: 'Constantly scans the external world for new patterns, ideas, and possibilities.' },
-        { functionName: 'Auxiliary – Introverted Thinking (Ti)', description: 'Analyzes ideas with an internal logical framework to ensure they are consistent and sound.' },
-        { functionName: 'Tertiary – Extraverted Feeling (Fe)', description: 'Enjoys charming others and can be surprisingly attuned to social dynamics.' },
-        { functionName: 'Inferior – Introverted Sensing (Si)', description: 'Struggles with details, routine, and recalling specific facts, which can lead to disorganization.' },
+        { functionName: 'Dominant – Extraverted Intuition (Ne)', description: 'Scans the environment for possibilities, patterns, and connections. Constantly brainstorming and ideating. Drives their love of chaos, novelty, and reframing assumptions.' },
+        { functionName: 'Auxiliary – Introverted Thinking (Ti)', description: 'Dissects logic internally for accuracy and elegance. Fuels their love of debate and analysis. Less about external structure, more about “Is this idea clean and sound?”' },
+        { functionName: 'Tertiary – Extraverted Feeling (Fe)', description: 'Aware of group dynamics and social harmony. Can be charming and persuasive, even manipulative when immature. In growth, this helps them lead with emotional intelligence.' },
+        { functionName: 'Inferior – Introverted Sensing (Si)', description: 'Weakness in routine, repetition, or memory for details. May resist tradition, schedules, or anything that feels “trapped”. Under stress, can become fixated on past failures or become chaotic.' },
     ],
     strengths: [
-        { strength: 'Innovative Brainstorming', example: 'Can generate a dozen viable solutions to a problem in minutes.' },
-        { strength: 'Charismatic Debater', example: 'Can argue any side of an issue to test its validity and persuade others.' },
-        { strength: 'Adaptable & Resourceful', example: 'Thrives in chaotic environments and can pivot strategies on the fly.' },
+        { strength: 'Inventive', example: 'Thrive in unstructured environments where new ideas are welcome.' },
+        { strength: 'Dynamic Communicators', example: 'Can adapt on the fly, improvise, persuade, and entertain with ease.' },
+        { strength: 'Fearless Explorers', example: 'Not afraid to challenge the status quo or take intellectual risks.' },
+        { strength: 'Fast Learners', example: 'Pick up new skills quickly, especially when excited or challenged.' },
+        { strength: 'Flexible Thinkers', example: 'Can see multiple sides of any issue, often playing devil’s advocate to reveal truth.' },
     ],
     weaknesses: [
-        { weakness: 'Argumentative', description: 'May debate points to death, even when it harms relationships.' },
-        { weakness: 'Poor Follow-Through', description: 'Gets bored once an idea is proven and may abandon projects before completion.' },
-        { weakness: 'Insensitive', description: 'Can overlook the emotional impact of their words in their quest for intellectual truth.' },
+        { weakness: 'Easily Bored', description: 'Hate repetition and routine. May abandon projects once the excitement fades.' },
+        { weakness: 'Overly Argumentative', description: 'May debate just to provoke or test logic — even if it hurts someone.' },
+        { weakness: 'Disorganized or Scatterbrained', description: 'Great at starting things, but struggle to follow through.' },
+        { weakness: 'Can Struggle With Focus', description: 'Jump from idea to idea without finishing or refining.' },
+        { weakness: 'May Prioritize Intellect Over Emotion', description: 'Risk overlooking how their words impact others emotionally.' },
     ],
     idealCareers: [
-        { field: 'Entrepreneur', why: 'Perfect for the high-energy, idea-driven startup world.' },
-        { field: 'Marketing / Advertising', why: 'Thrives on coming up with clever campaigns and new angles.' },
-        { field: 'Lawyer (especially trial)', why: 'Requires sharp debate skills and thinking on your feet.' },
+        { field: 'Entrepreneur / Startup Founder', why: 'ENTPs are natural risk-takers and visionaries who thrive on building something new.' },
+        { field: 'Marketer / Brand Strategist', why: 'Their creativity, people-sense, and verbal charm are a killer combo.' },
+        { field: 'Inventor / Creative Technologist', why: 'Love solving problems in unconventional ways.' },
     ],
-    famousExamples: ['Socrates', 'Leonardo da Vinci', 'Robert Downey Jr.', 'Tyrion Lannister (Game of Thrones)'],
-    relationships: [
-        { area: 'Friendship', behavior: 'Seeks friends who are playmates for intellectual sparring and adventure.' },
-        { area: 'Romance', behavior: 'Wants a partner who is intellectually stimulating, independent, and open to endless possibilities.' },
-        { area: 'Communication', behavior: 'Fast-paced, witty, and loves to challenge ideas. Can switch topics rapidly.' },
-    ],
+    famousExamples: ['Mark Twain', 'Robert Downey Jr.', 'Thomas Edison', 'Robin Williams', 'The Joker (fictional)'],
+    relationshipDeepDive: {
+      friendship: {
+        title: "Friendship",
+        coreNeeds: "Mental stimulation, spontaneity, freedom.",
+        howTheyShowUp: "ENTPs are social catalysts who bring energy to every circle. They are loyal to those who challenge their mind and let them be spontaneous. They hate being boxed in or judged. They dislike emotional heaviness, rigid schedules, or people who 'just don’t get jokes'."
+      },
+      romance: {
+        title: "Romance",
+        coreNeeds: "Intellectual chemistry, fun, freedom.",
+        howTheyLove: "They fall fast and hard when intrigued. Their version of flirting is often mock-debating, asking deep or oddball questions, and making you laugh. They show love by sharing new ideas and turning everything into an adventure, but struggle with monotony and emotional consistency.",
+        idealPartner: "Someone who can ground their ideas, respect their freedom, and stimulate their minds."
+      },
+      communication: {
+        title: "Communication Style",
+        primaryTraits: "Lightning-fast, witty, sarcastic, persuasive.",
+        howToCommunicate: "They play devil’s advocate to explore ideas, not to hurt. They communicate through a mix of sarcasm, curiosity, and storytelling. Great at starting a fire, but not always great at maintaining it."
+      },
+      compatibility: {
+        title: "Compatibility & Ideal Matches",
+        summary: "ENTPs match well with types that can ground their ideas, respect their freedom, and stimulate their minds.",
+        commonMatches: [
+          { type: "INFJ – The Counselor", reason: "Grounded, emotionally intelligent, and deeply focused — provides stability to ENTP’s whirlwind." },
+          { type: "INFP – The Idealist", reason: "Dreamy, curious, and emotionally rich — they connect over depth and possibilities." },
+          { type: "ISFJ – The Protector", reason: "Provides structure and emotional consistency. Can be a surprising match when both grow." },
+          { type: "ENTP – Another Visionary", reason: "A wild, chaotic love full of ideas, late nights, and competition. (But needs maturity to avoid implosion.)" }
+        ]
+      },
+      summary: {
+        title: "ENTP in Crossd Compatibility Storytelling",
+        text: "Archetype: The Wild Spark with a Million Ideas\nDating Bio Prompt: “Part-time troublemaker, full-time brainstorm addict. Swipe if you like curiosity, chaos, and deep convos that turn into 3am adventures.”\nIn-App Persona Card: “Meet the Visionary ⚡ — unpredictable, captivating, and endlessly curious. They’ll challenge your ideas, charm your friends, and vanish into a startup pitch... but if they stay, you’ve sparked something rare.”"
+      }
+    },
+    relationships: [],
     growthPath: ['Learn to commit and see projects through', 'Consider the emotional impact of words', 'Value stability and routine'],
     archetypes: ['The clever inventor', 'The charismatic trickster', 'The startup visionary'],
   },
@@ -715,7 +717,7 @@ export const mbtiTypeDetails: Record<string, any> = {
     ],
     cognitiveStack: [
         { functionName: 'Dominant – Extraverted Sensing (Se)', description: 'Fully engaged with the sights, sounds, and sensations of the present moment.' },
-        { functionName: 'Auxiliary – Introverted Feeling (Fi)', description: 'Guided by a deep, personal sense of values and what feels right to them.' },
+        { functionName: 'Auxiliary – Introverted Feeling (Fi)', description: 'Guided by a deep, personal set of values and what feels right to them.' },
         { functionName: 'Tertiary – Extraverted Thinking (Te)', description: 'Can be surprisingly practical and organized when it comes to planning fun events.' },
         { functionName: 'Inferior – Introverted Intuition (Ni)', description: 'Avoids thinking about long-term consequences and can be stressed by abstract, negative possibilities.' },
     ],
@@ -744,3 +746,5 @@ export const mbtiTypeDetails: Record<string, any> = {
     archetypes: ['The charismatic entertainer', 'The life of the party', 'The generous friend'],
   },
 };
+
+    
