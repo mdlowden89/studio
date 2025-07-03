@@ -357,9 +357,9 @@ export function DashboardClient({ currentUser }: DashboardClientProps) {
                     </p>
                 </CardContent>
                 <CardFooter>
-                    <Link href="/profile" passHref className="w-full">
+                    <Link href="/mbti-quiz" passHref className="w-full">
                         <Button size="sm" className="w-full bg-primary/90 hover:bg-primary text-primary-foreground text-xs">
-                            <Edit3 className="mr-1.5 h-3.5 w-3.5" /> Set Your Type
+                            <BrainCircuit className="mr-1.5 h-3.5 w-3.5" /> Take the Quiz
                         </Button>
                     </Link>
                 </CardFooter>

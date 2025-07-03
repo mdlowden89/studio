@@ -720,3 +720,16 @@ export async function activateGlowMode(userId: string): Promise<{ success: boole
   }
 }
     
+export async function updateUserMbtiType(userId: string, mbtiType: string): Promise<{ success: boolean; error?: string }> {
+  if (!userId || !mbtiType || mbtiType.length !== 4) {
+    return { success: false, error: "Invalid user ID or MBTI type provided." };
+  }
+  try {
+    const userDocRef = doc(db, "users", userId);
+    await updateDoc(userDocRef, { mbtiType });
+    return { success: true };
+  } catch (error: any) {
+    console.error("Error updating MBTI type:", error);
+    return { success: false, error: "Failed to save your personality type." };
+  }
+}
