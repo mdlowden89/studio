@@ -35,6 +35,8 @@ export interface UserProfile {
   drinking?: string;
   smoking?: string;
   zodiacSign?: string;
+  mbtiType?: string;
+  idealMbtiType?: string;
   datingIntentions?: 'Life Partner' | 'Long-term relationship' | 'Short-term relationship' | 'Figuring it out' | 'Prefer Not to Say';
   religion?: 'Agnostic' | 'Atheist' | 'Buddhist' | 'Catholic' | 'Christian' | 'Hindu' | 'Jain' | 'Jewish' | 'Mormon' | 'Muslim' | 'Sikh' | 'Spiritual' | 'Zoroastrian' | 'Other' | 'Prefer Not to Say';
   relationshipType?: 'Monogamy' | 'Polyamory' | 'Open to exploring' | 'Prefer Not to Say';

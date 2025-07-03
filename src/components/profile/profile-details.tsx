@@ -9,7 +9,7 @@ import { Button } from "@/components/ui/button";
 import { Label } from "@/components/ui/label";
 import { Badge } from "@/components/ui/badge";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
-import { X as XIcon, MapPin, Lightbulb, Loader2, Sparkles } from "lucide-react";
+import { X as XIcon, MapPin, Lightbulb, Loader2, Sparkles, BrainCircuit } from "lucide-react";
 import { useToast } from "@/hooks/use-toast";
 import { GoogleMap, LoadScriptNext, StandaloneSearchBox, MarkerF } from '@react-google-maps/api';
 import { getAiSuggestedVibeTags, getAiSuggestedBio } from "@/app/actions";
@@ -29,6 +29,7 @@ import {
   drinkingOptions,
   smokingOptions,
   zodiacSignOptions,
+  mbtiOptions,
   generateHeightOptions,
   datingIntentionsOptions,
   religionOptions,
@@ -125,6 +126,8 @@ export function ProfileDetails({ user }: ProfileDetailsProps) {
   const [drinking, setDrinking] = useState(user.drinking || "Prefer Not to Say");
   const [smoking, setSmoking] = useState(user.smoking || "Prefer Not to Say");
   const [zodiacSign, setZodiacSign] = useState(user.zodiacSign || "Prefer Not to Say");
+  const [mbtiType, setMbtiType] = useState(user.mbtiType || "Prefer Not to Say");
+  const [idealMbtiType, setIdealMbtiType] = useState(user.idealMbtiType || "Prefer Not to Say");
   const [datingIntentions, setDatingIntentions] = useState(user.datingIntentions || "Prefer Not to Say");
   const [religion, setReligion] = useState(user.religion || "Prefer Not to Say");
   const [relationshipType, setRelationshipType] = useState(user.relationshipType || "Prefer Not to Say");
@@ -291,6 +294,7 @@ export function ProfileDetails({ user }: ProfileDetailsProps) {
       heightInches: heightInches ?? null,
       height: selectedHeightOption ? selectedHeightOption.label : "Prefer Not to Say",
       drinking, smoking, zodiacSign, datingIntentions, religion, relationshipType,
+      mbtiType, idealMbtiType,
       locationAddress, 
       locationName: currentLocationName || (locationAddress ? locationAddress.split(',')[0] : user.locationName),
       locationCoordinates: currentCoordinates || user.locationCoordinates,
@@ -626,6 +630,46 @@ export function ProfileDetails({ user }: ProfileDetailsProps) {
         </div>
       </div>
 
+      <Separator />
+
+      {/* Personality */}
+      <h3 className="text-lg font-medium text-foreground -mb-4 flex items-center gap-2">
+        <BrainCircuit className="w-5 h-5" />
+        Personality & Compatibility
+      </h3>
+      <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+        <div>
+          <Label htmlFor="mbtiType">My Personality Type (MBTI)</Label>
+          <Select value={mbtiType} onValueChange={setMbtiType}>
+            <SelectTrigger className="mt-1 bg-input">
+              <SelectValue placeholder="Select your type" />
+            </SelectTrigger>
+            <SelectContent className="bg-popover">
+              {mbtiOptions.map((option) => (
+                <SelectItem key={option} value={option}>
+                  {option}
+                </SelectItem>
+              ))}
+            </SelectContent>
+          </Select>
+        </div>
+        <div>
+          <Label htmlFor="idealMbtiType">My Ideal Match's Type</Label>
+          <Select value={idealMbtiType} onValueChange={setIdealMbtiType}>
+            <SelectTrigger className="mt-1 bg-input">
+              <SelectValue placeholder="Select a type" />
+            </SelectTrigger>
+            <SelectContent className="bg-popover">
+              {mbtiOptions.map((option) => (
+                <SelectItem key={option} value={option}>
+                  {option}
+                </SelectItem>
+              ))}
+            </SelectContent>
+          </Select>
+        </div>
+      </div>
+      
       <Separator />
       
       <div>

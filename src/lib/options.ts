@@ -59,6 +59,15 @@ export const zodiacSignOptions = [
   "Prefer Not to Say"
 ];
 
+export const mbtiOptions = [
+  "INTJ", "INTP", "ENTJ", "ENTP",
+  "INFJ", "INFP", "ENFJ", "ENFP",
+  "ISTJ", "ISFJ", "ESTJ", "ESFJ",
+  "ISTP", "ISFP", "ESTP", "ESFP",
+  "Prefer Not to Say"
+];
+
+
 export const datingIntentionsOptions = [
     'Life Partner', 
     'Long-term relationship', 

@@ -341,6 +341,30 @@ export function DashboardClient({ currentUser }: DashboardClientProps) {
           </div>
 
           <div className="lg:col-span-1 space-y-8">
+             <Card className="bg-card shadow-xl">
+                <CardHeader>
+                    <div className="flex items-center gap-2">
+                        <BrainCircuit className="w-6 h-6 text-primary" />
+                        <CardTitle className="text-lg font-semibold">Know Your Type?</CardTitle>
+                    </div>
+                    <CardDescription className="text-xs text-muted-foreground mt-1">
+                        Adding your personality type can lead to better matches.
+                    </CardDescription>
+                </CardHeader>
+                <CardContent>
+                    <p className="text-sm text-foreground mb-3">
+                        If you don't know your MBTI type, take our quick quiz to find out!
+                    </p>
+                </CardContent>
+                <CardFooter>
+                    <Link href="/profile" passHref className="w-full">
+                        <Button size="sm" className="w-full bg-primary/90 hover:bg-primary text-primary-foreground text-xs">
+                            <Edit3 className="mr-1.5 h-3.5 w-3.5" /> Set Your Type
+                        </Button>
+                    </Link>
+                </CardFooter>
+             </Card>
+
              {promptOfTheDay && (
               <Card className="bg-card shadow-xl">
                 <CardHeader>
@@ -474,44 +498,29 @@ export function DashboardClient({ currentUser }: DashboardClientProps) {
 
         <div className="grid grid-cols-1 lg:grid-cols-2 gap-8 mb-8">
             {!isPremium && (
-                <Card className="bg-card shadow-xl">
-                    <CardHeader>
-                    <div className="flex items-center gap-3">
-                        <Signal className="w-7 h-7 text-primary" />
-                        <div>
-                        <CardTitle className="text-xl font-semibold">Emotional Hotspots</CardTitle>
-                        <CardDescription className="text-muted-foreground">
-                            A premium Crossd+ feature to know where sparks are born.
-                        </CardDescription>
-                        </div>
-                    </div>
-                    </CardHeader>
-                    <CardContent>
-                    <EmotionalHotspotsUpsell onUnlock={() => setShowUpsellDialog(true)} />
-                    </CardContent>
-                </Card>
+                <div className="lg:col-span-2">
+                    <Card className="bg-gradient-to-br from-primary/10 via-card to-card shadow-xl border-primary/30">
+                        <CardHeader className="text-center">
+                            <div className="mx-auto flex h-16 w-16 items-center justify-center rounded-full bg-primary/80 mb-3 shadow-lg animate-pulse">
+                                <Star className="h-8 w-8 text-primary-foreground" />
+                            </div>
+                            <CardTitle className="text-2xl font-bold text-primary">Unlock Crossd+</CardTitle>
+                            <CardDescription className="text-muted-foreground max-w-md mx-auto">
+                            Supercharge your experience with unlimited likes, see who likes you, and more exclusive perks!
+                            </CardDescription>
+                        </CardHeader>
+                        <CardFooter className="flex justify-center p-6">
+                            <Button 
+                            onClick={() => setShowUpsellDialog(true)} 
+                            size="lg" 
+                            className="bg-gradient-to-r from-primary via-pink-500 to-orange-400 hover:from-primary/90 hover:via-pink-500/90 hover:to-orange-400/90 text-primary-foreground shadow-lg transform hover:scale-105 transition-transform"
+                            >
+                            <Sparkles className="mr-2 h-5 w-5" /> Explore Premium Features
+                            </Button>
+                        </CardFooter>
+                    </Card>
+                </div>
             )}
-
-            <Card className="bg-gradient-to-br from-primary/10 via-card to-card shadow-xl border-primary/30 lg:col-span-2">
-                <CardHeader className="text-center">
-                    <div className="mx-auto flex h-16 w-16 items-center justify-center rounded-full bg-primary/80 mb-3 shadow-lg animate-pulse">
-                        <Star className="h-8 w-8 text-primary-foreground" />
-                    </div>
-                    <CardTitle className="text-2xl font-bold text-primary">Unlock Crossd+</CardTitle>
-                    <CardDescription className="text-muted-foreground max-w-md mx-auto">
-                    Supercharge your experience with unlimited likes, see who likes you, and more exclusive perks!
-                    </CardDescription>
-                </CardHeader>
-                <CardFooter className="flex justify-center p-6">
-                    <Button 
-                    onClick={() => setShowUpsellDialog(true)} 
-                    size="lg" 
-                    className="bg-gradient-to-r from-primary via-pink-500 to-orange-400 hover:from-primary/90 hover:via-pink-500/90 hover:to-orange-400/90 text-primary-foreground shadow-lg transform hover:scale-105 transition-transform"
-                    >
-                    <Sparkles className="mr-2 h-5 w-5" /> Explore Premium Features
-                    </Button>
-                </CardFooter>
-            </Card>
         </div>
 
 
