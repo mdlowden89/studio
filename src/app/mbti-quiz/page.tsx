@@ -38,7 +38,7 @@ export default function MbtiQuizPage() {
   const totalQuestions = mbtiQuizQuestions.length;
   const isPremium = userProfile?.subscription?.status === 'active' || userProfile?.email === 'mlowdencrossd@gmail.com';
 
-  const calculateResult = useCallback(async (finalAnswers: Record<number, string>) => {
+  const calculateResult = useCallback((finalAnswers: Record<number, string>) => {
     if (Object.keys(finalAnswers).length < totalQuestions) return;
 
     const counts = { E: 0, I: 0, S: 0, N: 0, T: 0, F: 0, J: 0, P: 0 };
@@ -55,22 +55,11 @@ export default function MbtiQuizPage() {
 
     setResult(mbtiType);
 
-    if (user) {
-      const response = await updateUserMbtiType(user.uid, mbtiType);
-      if (response.success) {
-        toast({
-          title: "Quiz Complete!",
-          description: `Your personality type is ${mbtiType}. We've automatically saved it to your profile.`,
-        });
-      } else {
-        toast({
-          title: "Auto-save failed",
-          description: "Could not automatically save your result. Please use the 'Save to Profile' button.",
-          variant: "destructive",
-        });
-      }
-    }
-  }, [totalQuestions, user, toast]);
+    toast({
+        title: "Quiz Complete!",
+        description: `Your personality type is ${mbtiType}. Save it to your profile to improve your matches!`,
+    });
+  }, [totalQuestions, toast]);
 
   useEffect(() => {
     if (isAuthLoading || !userProfile || isInitialLoadDone.current) {
@@ -114,7 +103,7 @@ export default function MbtiQuizPage() {
     if (currentQuestionIndex < totalQuestions - 1) {
       setCurrentQuestionIndex(currentQuestionIndex + 1);
     } else {
-      await calculateResult(newAnswers);
+      calculateResult(newAnswers);
     }
   };
   
@@ -217,7 +206,7 @@ export default function MbtiQuizPage() {
                   </div>
                 </button>
                  <p className="text-xs text-center text-muted-foreground mt-4 max-w-md mx-auto">
-                    This personality type will now be visible on your profile and help us find you more compatible matches.
+                    Save your personality type to your profile to make it visible to others and help us find you more compatible matches.
                  </p>
               </CardContent>
               <CardFooter className="flex-col sm:flex-row justify-center gap-3 border-t pt-6">
