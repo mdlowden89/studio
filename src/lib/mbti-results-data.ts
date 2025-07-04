@@ -973,8 +973,8 @@ export const mbtiTypeDetails: Record<string, any> = {
         ]
       },
       summary: {
-        title: "ISTP in Crossd Compatibility Storytelling",
-        text: "Archetype: The Silent Fixer — mysterious, capable, low-key romantic through action\n\nDating Bio Prompt: “Not big on talking feelings — but I’ll change your tire, build your bookshelf, and be calm when the power goes out. If you get that, we’ll get along.”\n\nIn-App Persona Card: “Meet the Craftsman 🛠️ — independent, adaptable, and always thinking a few moves ahead. Not flashy, but fiercely capable. If you’re looking for low-drama, high-loyalty, and deep calm — they’re your type.”"
+        title: 'ISTP in Crossd Compatibility Storytelling',
+        text: 'Archetype: The Silent Fixer — mysterious, capable, low-key romantic through action\n\nDating Bio Prompt: “Not big on talking feelings — but I’ll change your tire, build your bookshelf, and be calm when the power goes out. If you get that, we’ll get along.”\n\nIn-App Persona Card: “Meet the Craftsman 🛠️ — independent, adaptable, and always thinking a few moves ahead. Not flashy, but fiercely capable. If you’re looking for low-drama, high-loyalty, and deep calm — they’re your type.”'
       }
     },
     relationships: [
@@ -1065,43 +1065,81 @@ export const mbtiTypeDetails: Record<string, any> = {
   },
   'ESTP': {
     title: 'The Dynamo / Entrepreneur',
-    nicknames: ['The Persuader', 'The Promoter', 'The Daredevil'],
+    nicknames: ['The Instigator', 'The Smooth Operator', 'The Crisis Commander'],
     typeCode: 'Extraverted (E) – Sensing (S) – Thinking (T) – Perceiving (P)',
-    population: '~4% of population',
+    population: '~4–6% (more common among men)',
     coreCharacteristics: [
-        { trait: 'Action-Oriented', description: 'Jumps into the middle of the action, learning and adapting on the fly.' },
-        { trait: 'Bold & Energetic', description: 'Loves taking risks and thrives in high-energy, competitive environments.' },
-        { trait: 'Perceptive', description: 'Quickly reads people and situations, spotting opportunities others miss.' },
+        { trait: 'Bold & Energetic', description: 'Thrive on fast-paced environments, risk, and social stimulation' },
+        { trait: 'Action-Oriented', description: 'Make decisions quickly and act on impulse — learning by doing' },
+        { trait: 'Persuasive & Charming', description: 'Often have magnetic charisma and a knack for negotiation' },
     ],
     cognitiveStack: [
-        { functionName: 'Dominant – Extraverted Sensing (Se)', description: 'Constantly scans the immediate environment for opportunities to act and engage.' },
-        { functionName: 'Auxiliary – Introverted Thinking (Ti)', description: 'Uses a pragmatic, internal logic to solve problems in the most efficient way.' },
-        { functionName: 'Tertiary – Extraverted Feeling (Fe)', description: 'Can be surprisingly charming and persuasive, using social skills to achieve goals.' },
-        { functionName: 'Inferior – Introverted Intuition (Ni)', description: 'Dislikes long-term planning and abstract theory, can miss the bigger picture.' },
+        { functionName: 'Dominant – Extraverted Sensing (Se)', description: 'Fully immersed in the moment — sharp, alert, and reactive. High physical awareness and love for tactile experience. Thrives on real-time challenges and stimulation.' },
+        { functionName: 'Auxiliary – Introverted Thinking (Ti)', description: 'Internally analyzes data and optimizes systems. Can be surprisingly precise behind the spontaneity. Likes clean logic, even if they don’t always explain it.' },
+        { functionName: 'Tertiary – Extraverted Feeling (Fe)', description: 'Can tune into group moods and charm socially. Will use humor or confidence to maintain harmony or win attention. May be emotionally savvy but not always personally vulnerable.' },
+        { functionName: 'Inferior – Introverted Intuition (Ni)', description: 'Struggles with long-term planning or delayed gratification. Can feel lost when forced to reflect too deeply or consider abstract consequences.' },
     ],
     strengths: [
-        { strength: 'Adaptability', description: 'Can change tactics instantly to respond to a new challenge or opportunity.' },
-        { strength: 'Master Negotiator', description: 'Reads the room and uses logic and charm to get the best deal.' },
-        { strength: 'Inspiring Action', description: 'Their energy and confidence motivate others to get things done.' },
+        { strength: 'Adaptable in Crisis', description: 'Act quickly under pressure — make fast, confident decisions' },
+        { strength: 'Socially Magnetic', description: 'Great with persuasion, improvisation, and public confidence' },
+        { strength: 'Quick Learners (Hands-On)', description: 'Excel at learning by doing, especially in physical environments' },
+        { strength: 'Risk-Tolerant', description: 'Thrive where others freeze — love challenges, dares, and uncertainty' },
+        { strength: 'Entertainers by Nature', description: 'Often the life of the party — witty, exciting, unforgettable' },
     ],
     weaknesses: [
-        { weakness: 'Impulsive', description: 'May leap before they look, ignoring long-term consequences.' },
-        { weakness: 'Can Be Insensitive', description: 'May see people as tools to achieve a goal, overlooking their feelings.' },
-        { weakness: 'Gets Bored Easily', description: 'Loses interest once a challenge is conquered and struggles with maintenance.' },
+        { weakness: 'Impulsive & Easily Bored', description: 'Need constant stimulation — can struggle with routine or stillness' },
+        { weakness: 'Tactless or Blunt', description: 'May speak too directly or insensitively in emotional situations' },
+        { weakness: 'Struggles with Delayed Consequences', description: 'May overlook the long-term fallout of short-term choices' },
+        { weakness: 'Emotionally Guarded', description: 'Can read the room but avoid talking about their own feelings' },
+        { weakness: 'Commitment-Phobic Under Pressure', description: 'May run if they feel emotionally cornered or tied down too soon' },
     ],
     idealCareers: [
-        { field: 'Sales / Business Development', why: 'High-energy, goal-oriented, and requires strong persuasive skills.' },
-        { field: 'Entrepreneurship', why: 'Perfect for the risk-taking, fast-paced world of startups.' },
-        { field: 'Emergency Services / Military', why: 'Thrives on action, risk, and thinking on their feet.' },
+        { field: 'Sales / Negotiation / PR', why: 'Love to persuade, connect, and close deals' },
+        { field: 'EMT / First Responder', why: 'Calm in chaos, instinct-driven, fast-moving' },
+        { field: 'Athlete / Coach / Trainer', why: 'Physical energy, team spirit, competitive drive' },
+        { field: 'Stock Trader / Entrepreneur', why: 'Risk-tolerant and fast-thinking in dynamic environments' },
+        { field: 'Event Host / Showrunner', why: 'Center of attention with logistical flair' },
     ],
-    famousExamples: ['Donald Trump', 'Madonna', 'Jack Nicholson', 'Han Solo (Star Wars)'],
+    famousExamples: ['Tony Stark / Iron Man', 'James Kirk (Star Trek)', 'Madonna', 'Ernest Hemingway'],
+    relationshipDeepDive: {
+        friendship: {
+            title: "Friendship",
+            coreNeeds: "Spontaneity, loyalty in action, shared excitement.",
+            howTheyShowUp: "ESTPs are fun-loving, spontaneous friends who bring energy and excitement to their groups. They prefer shared physical experiences over deep conversations and show loyalty by being present when it matters. They dislike clinginess, overplanning, and emotional intensity.",
+        },
+        romance: {
+            title: "Romance",
+            coreNeeds: "Adventure, passion, mutual energy.",
+            howTheyLove: "As natural flirts, ESTPs are bold and spontaneous in dating. They show love through grand gestures and physical affection. They are attracted to partners who can match their energy but may shy away from deep emotional conversations or long-term commitment if they feel pressured.",
+            idealPartner: "Someone who is confident, independent, and can balance their high energy with emotional depth without being controlling.",
+        },
+        communication: {
+            title: "Communication Style",
+            primaryTraits: "Witty, fast-paced, direct, and often humorous.",
+            howToCommunicate: "ESTPs prefer action over words. Their communication is straightforward and they can be blunt. They may deflect or use humor when conversations become too emotionally vulnerable. Engage them with banter and directness.",
+        },
+        compatibility: {
+            title: "Compatibility & Ideal Matches",
+            summary: "ESTPs pair well with partners who keep things fresh and flexible, are emotionally aware without being overbearing, and can balance fun with meaningful depth.",
+            commonMatches: [
+                { type: 'ISFJ – The Nurturer', reason: 'Provides emotional grounding and structure — softens ESTP’s edges' },
+                { type: 'ESFJ – The Provider', reason: 'Socially attuned and responsible — shares energy and keeps things on track' },
+                { type: 'INFP – The Idealist', reason: 'Quiet idealism draws ESTP in and balances their impulsive energy' },
+                { type: 'ENTP – The Visionary', reason: 'A fun-loving mental match — bold, talkative, spontaneous, and wild' },
+            ],
+        },
+        summary: {
+            title: 'ESTP in Crossd Compatibility Storytelling',
+            text: "Archetype: The Risk-Taker with a Spark — charming, thrill-seeking, and confident in chaos\n\nDating Bio Prompt: “I won’t write you poems, but I’ll pull you onto the dance floor, book a last-minute getaway, and show up when things get real. Let’s live a little.”\n\nIn-App Persona Card: “Meet the Dynamo ⚡ — fearless, magnetic, and full of energy. Their love language is action, not promises. If you’re looking for sparks that light up the room — this is the one.”"
+        },
+    },
     relationships: [
-        { area: 'Friendship', behavior: 'The fun, adventurous friend who is always up for a good time.' },
-        { area: 'Romance', behavior: 'Seeks a fun-loving "partner in crime" who enjoys spontaneity and excitement.' },
-        { area: 'Communication', behavior: 'Direct, witty, and action-oriented. Prefers to do things rather than talk about them.' },
+        { area: 'Friendship', behavior: 'A fun-loving, spontaneous friend who brings energy and excitement to their groups.' },
+        { area: 'Romance', behavior: 'A bold and flirty partner who loves adventures and grand gestures but can be commitment-shy.' },
+        { area: 'Communication', behavior: 'Witty, fast-paced, and direct, preferring action over deep emotional conversations.' },
     ],
-    growthPath: ['Think about the long-term impact of actions', 'Develop empathy and consider others\' feelings', 'Practice patience and commitment'],
-    archetypes: ['The charismatic daredevil', 'The street-smart entrepreneur', 'The smooth-talking negotiator'],
+    growthPath: ['Practice considering long-term consequences', 'Develop empathy by listening to others\' feelings', 'Find value in commitment and seeing things through'],
+    archetypes: ['The Risk-Taker with a Spark', 'The charming thrill-seeker', 'The confident problem-solver'],
   },
   'ESFP': {
     title: 'The Performer / Entertainer',
