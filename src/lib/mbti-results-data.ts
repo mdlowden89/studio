@@ -344,7 +344,7 @@ export const mbtiTypeDetails: Record<string, any> = {
       },
       summary: {
         title: "INFJ in Crossd Compatibility Storytelling",
-        text: "Archetype: The Soul Whisperer — deeply private, quietly powerful, drawn to meaning over noise.\n\nDating Bio Prompt: “Not here for the small talk — looking for someone to read between the lines, build something sacred, and maybe talk about the stars at 2am.”\n\nIn-App Persona Card: “Meet the Counselor 🌙 — mysterious, emotionally rich, and visionary to the core. If you’re craving connection that goes deeper than surface sparks, they’ll light your inner fire.”"
+        text: "Archetype: The Soul Whisperer — deeply private, quietly powerful, drawn to meaning over noise\n\nDating Bio Prompt: “Not here for the small talk — looking for someone to read between the lines, build something sacred, and maybe talk about the stars at 2am.”\n\nIn-App Persona Card: “Meet the Counselor 🌙 — mysterious, emotionally rich, and visionary to the core. If you’re craving connection that goes deeper than surface sparks, they’ll light your inner fire.”"
       }
     },
     relationships: [],
@@ -873,41 +873,75 @@ export const mbtiTypeDetails: Record<string, any> = {
   },
   'ISTP': {
     title: 'The Virtuoso / Craftsman',
-    nicknames: ['The Mechanic', 'The Problem-Solver', 'The Operator'],
+    nicknames: ['The Lone Problem-Solver', 'The Quiet Rebel', 'The Tactician'],
     typeCode: 'Introverted (I) – Sensing (S) – Thinking (T) – Perceiving (P)',
-    population: '~5% of population',
+    population: '~5–7% (more common among men)',
     coreCharacteristics: [
-        { trait: 'Hands-On', description: 'Learns by doing and excels at mastering physical tools and systems.' },
-        { trait: 'Resourceful', description: 'A natural troubleshooter who can solve complex practical problems with ease.' },
-        { trait: 'Independent', description: 'Values freedom and autonomy, preferring to work alone and on their own terms.' },
+      { trait: 'Independent', description: 'Self-sufficient and unbothered by solitude or rules' },
+      { trait: 'Resourceful', description: 'Thrive in environments where they can use their hands, tools, or logic' },
+      { trait: 'Calm Under Pressure', description: 'Rarely overwhelmed by stress — they become more focused as stakes rise' }
     ],
     cognitiveStack: [
-        { functionName: 'Dominant – Introverted Thinking (Ti)', description: 'Analyzes how things work, creating a deep, internal understanding of logical systems.' },
-        { functionName: 'Auxiliary – Extraverted Sensing (Se)', description: 'Engages with the physical world in the present moment, gathering data through action.' },
-        { functionName: 'Tertiary – Introverted Intuition (Ni)', description: 'Can have sudden flashes of insight about how a system will play out in the future.' },
-        { functionName: 'Inferior – Extraverted Feeling (Fe)', description: 'Often unaware of and uncomfortable with social expectations and emotional expression.' },
+      { functionName: 'Dominant – Introverted Thinking (Ti)', description: 'Internal logic system that analyzes everything privately. Seeks truth through mechanics, logic, and pattern recognition. Values precision, clarity, and personal understanding.' },
+      { functionName: 'Auxiliary – Extraverted Sensing (Se)', description: 'Lives in the moment and processes information through the five senses. Hyper-aware of surroundings, movement, and immediate needs. Excellent in crisis, high-adrenaline, or high-focus environments.' },
+      { functionName: 'Tertiary – Introverted Intuition (Ni)', description: 'Occasionally connects patterns and forms sudden insights. Tends to trust gut instincts about systems or people. Less verbal about long-term strategy but sees patterns quickly.' },
+      { functionName: 'Inferior – Extraverted Feeling (Fe)', description: 'Emotionally private, unsure how to express feelings. May struggle with social niceties or group harmony. Under stress, may lash out or retreat emotionally.' }
     ],
     strengths: [
-        { strength: 'Calm in a Crisis', description: 'Stays level-headed and acts decisively in high-stakes, emergency situations.' },
-        { strength: 'Mastery of Tools', description: 'Can take apart, understand, and reassemble almost any mechanical object.' },
-        { strength: 'Efficient Problem-Solving', description: 'Finds the most direct, practical solution without unnecessary steps.' },
+      { strength: 'Technical Mastery', description: 'Excel at understanding how things work — from engines to systems to data flows' },
+      { strength: 'Crisis Calm', description: 'Unshakable in emergencies — think clearly while others freeze' },
+      { strength: 'Adaptable & Action-Oriented', description: 'Don’t overthink — observe, react, fix' },
+      { strength: 'Emotionally Independent', description: 'No drama, no codependency, no neediness' },
+      { strength: 'Private Yet Protective', description: 'Fiercely loyal once bonded — especially when others are in danger' }
     ],
     weaknesses: [
-        { weakness: 'Emotionally Reserved', description: 'Can seem detached or unfeeling, struggling to express their inner state.' },
-        { weakness: 'Easily Bored by Routine', description: 'Dislikes long-term commitments and rigid structures.' },
-        { weakness: 'Risk-Prone', description: 'May engage in thrill-seeking behaviors without fully considering long-term consequences.' },
+      { weakness: 'Emotionally Distant', description: 'Struggle to express or even recognize emotions — theirs or others’' },
+      { weakness: 'Unpredictable Behavior', description: 'May suddenly disappear or change course with no warning' },
+      { weakness: 'Impatient with Structure', description: 'Rules, routines, and micromanagement stifle them' },
+      { weakness: 'Detached or Stoic', description: 'Can seem cold or uninterested, even if they care deeply underneath' },
+      { weakness: 'Resistant to Long-Term Planning', description: 'Prefer to live in the now — commitment or future-talk may feel constraining' }
     ],
     idealCareers: [
-        { field: 'Mechanical Engineering', why: 'Combines logical analysis with hands-on building and problem-solving.' },
-        { field: 'Emergency Services (Fire, EMT)', why: 'Thrives in high-action environments that require calm, decisive action.' },
-        { field: 'Pilot / Professional Driver', why: 'Involves mastery of a complex physical system in a dynamic environment.' },
+      { field: 'Engineer / Mechanic', why: 'Love to take things apart, fix, and optimize hands-on systems' },
+      { field: 'Survivalist / Outdoors Expert', why: 'Thrive in high-stakes environments and self-reliance' },
+      { field: 'Athlete / Stunt Coordinator', why: 'Physical mastery, body-mind connection, and real-time responsiveness' },
+      { field: 'Pilot / Firefighter / Paramedic', why: 'High-focus, high-speed, high-logic pressure zones' },
+      { field: 'Technical Analyst / Systems Architect', why: 'Quiet, behind-the-scenes brilliance with tools and logic' }
     ],
-    famousExamples: ['Clint Eastwood', 'Tom Cruise', 'Michael Jordan', 'James Bond'],
-    relationships: [
-        { area: 'Friendship', behavior: 'Prefers friends who share an activity or hobby, connecting through doing rather than talking.' },
-        { area: 'Romance', behavior: 'An independent partner who needs freedom and shows love through practical acts of service.' },
-        { area: 'Communication', behavior: 'Direct and concise, focused on the "what" and "how," not the "why" or "how it feels."' },
-    ],
+    famousExamples: ['Bruce Lee', 'Arya Stark (Game of Thrones)', 'James Bond (Daniel Craig era)', 'Bear Grylls', 'Lisbeth Salander (The Girl with the Dragon Tattoo)'],
+    relationshipDeepDive: {
+      friendship: {
+        title: "Friendship",
+        coreNeeds: "Mutual respect, space, and no drama.",
+        howTheyShowUp: "ISTPs are low-maintenance friends — no small talk required. They bond through shared experiences, not emotional oversharing. They thrive in friendships with mutual respect, space, and no drama. They will fix your computer, build your furniture, or protect you in a fight — but might not say 'I love you' out loud. Red Flags for Them: Emotional manipulation, over-planning, clinginess, or people who need constant verbal reassurance."
+      },
+      romance: {
+        title: "Romance",
+        coreNeeds: "Autonomy, action, and loyalty.",
+        howTheyLove: "ISTPs don’t rush — but when they choose you, it’s intentional. They show care through actions (fixing, protecting, helping) and dislike 'heavy' emotional convos — but will act with loyalty. They need alone time and autonomy and prefer partners who are grounded, low-drama, and emotionally self-sufficient. Affection may be physical or protective, but not always verbal. Their Challenge: Learning to let someone in emotionally without feeling vulnerable or 'trapped'.",
+        idealPartner: "Someone who is independent, respects their need for space, and appreciates non-verbal affection."
+      },
+      communication: {
+        title: "Communication Style",
+        primaryTraits: "Concise, direct, and fact-driven.",
+        howToCommunicate: "They are not fans of small talk or long emotional discussions. They prefer to show rather than tell — 'I fixed your tire' means 'I care about you'. May become quiet or ghostlike under stress or emotional confusion. Respond well to calm, logical conversations — emotionally heated ones may push them away."
+      },
+      compatibility: {
+        title: "Compatibility & Ideal Matches",
+        summary: "ISTPs pair best with those who respect their independence, can emotionally self-regulate, and bring emotional fluency without pressure.",
+        commonMatches: [
+          { type: 'ESFJ – The Provider', reason: 'Grounds ISTP in warmth, routine, and emotional expression' },
+          { type: 'ISFP – The Artist', reason: 'Emotionally sensitive but gentle — doesn’t overwhelm ISTP' },
+          { type: 'ESTP – The Dynamo', reason: 'Similar energy: action-oriented, physical, reactive' },
+          { type: 'INFJ – The Counselor', reason: 'Brings depth and emotional intelligence — challenges them inwardly, but gently' }
+        ]
+      },
+      summary: {
+        title: "ISTP in Crossd Compatibility Storytelling",
+        text: "Archetype: The Silent Fixer — mysterious, capable, low-key romantic through action\n\nDating Bio Prompt: “Not big on talking feelings — but I’ll change your tire, build your bookshelf, and be calm when the power goes out. If you get that, we’ll get along.”\n\nIn-App Persona Card: “Meet the Craftsman 🛠️ — independent, adaptable, and always thinking a few moves ahead. Not flashy, but fiercely capable. If you’re looking for low-drama, high-loyalty, and deep calm — they’re your type.”"
+      }
+    },
+    relationships: [],
     growthPath: ['Learn to consider long-term consequences', 'Practice recognizing and articulating feelings', 'Commit to at least one long-term project'],
     archetypes: ['The lone wolf mechanic', 'The cool-headed action hero', 'The technical expert'],
   },
