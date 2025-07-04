@@ -1143,47 +1143,81 @@ export const mbtiTypeDetails: Record<string, any> = {
   },
   'ESFP': {
     title: 'The Performer / Entertainer',
-    nicknames: ['The Life of the Party', 'The Showman', 'The Mover'],
+    nicknames: ['The Showstopper', 'The Flirt', 'The Heart-on-Sleeve Spark'],
     typeCode: 'Extraverted (E) – Sensing (S) – Feeling (F) – Perceiving (P)',
-    population: '~9% of population',
+    population: '~7–10%',
     coreCharacteristics: [
-        { trait: 'Fun-Loving', description: 'Sees life as a party and wants everyone to have a good time.' },
-        { trait: 'Spontaneous', description: 'Lives in the moment and loves turning the everyday into an adventure.' },
-        { trait: 'Charming', description: 'Effortlessly draws people in with their warmth, energy, and generosity.' },
+      { trait: 'Outgoing & Emotionally Expressive', description: 'Love to connect, laugh, and uplift others' },
+      { trait: 'Spontaneous & Curious', description: 'Seek new experiences, aesthetics, people, and sensations' },
+      { trait: 'Tuned In to Atmosphere', description: 'Intuitively sense group energy and adjust to keep it lively or warm' },
     ],
     cognitiveStack: [
-        { functionName: 'Dominant – Extraverted Sensing (Se)', description: 'Fully engaged with the sights, sounds, and sensations of the present moment.' },
-        { functionName: 'Auxiliary – Introverted Feeling (Fi)', description: 'Guided by a deep, personal set of values and what feels right to them.' },
-        { functionName: 'Tertiary – Extraverted Thinking (Te)', description: 'Can be surprisingly practical and organized when it comes to planning fun events.' },
-        { functionName: 'Inferior – Introverted Intuition (Ni)', description: 'Avoids thinking about long-term consequences and can be stressed by abstract, negative possibilities.' },
+      { functionName: 'Dominant – Extraverted Sensing (Se)', description: 'Fully present and sensory-driven. Drawn to colors, sounds, physical touch, and lively environments. Live for now, and want others to join them in the moment.' },
+      { functionName: 'Auxiliary – Introverted Feeling (Fi)', description: 'Deep personal values — though not always verbalized. Make choices based on authenticity and how things feel. May surprise others with emotional depth behind the flash.' },
+      { functionName: 'Tertiary – Extraverted Thinking (Te)', description: 'Can be surprisingly pragmatic when needed. Use logic to execute fun plans or solve practical issues. Often run events, social plans, or personal goals with unexpected structure.' },
+      { functionName: 'Inferior – Introverted Intuition (Ni)', description: 'Struggles with long-term implications or introspective future planning. May ignore warning signs if they threaten immediate joy or harmony.' },
     ],
     strengths: [
-        { strength: 'Social Magnetism', description: 'The natural center of attention, making everyone feel included and energized.' },
-        { strength: 'Generosity', description: 'Loves showering friends and loved ones with gifts, compliments, and fun experiences.' },
-        { strength: 'Practical Optimism', description: 'Finds joy in the here and now and encourages others to do the same.' },
+      { strength: 'Emotional Warmth & Social Magic', description: 'Instantly likable — they light up rooms and hearts alike.' },
+      { strength: 'Adaptable & Go-With-the-Flow', description: 'Can shift plans, moods, or approaches effortlessly.' },
+      { strength: 'Present-Minded', description: 'Finds joy in the everyday, from music to laughter to beauty.' },
+      { strength: 'Great in a Crisis (Short-Term)', description: 'Can handle chaos calmly and lift morale — though long-term strategy may falter.' },
+      { strength: 'Supportive Friends', description: 'Will cheer you on, listen with empathy, and celebrate your wins like their own.' },
     ],
     weaknesses: [
-        { weakness: 'Conflict Avoidant', description: 'Dislikes negativity and may ignore problems in the hope they go away.' },
-        { weakness: 'Easily Bored', description: 'Struggles with routine and long-term planning, always seeking the next thrill.' },
-        { weakness: 'Sensitive to Criticism', description: 'Their desire to be liked makes them vulnerable to disapproval.' },
+      { weakness: 'Avoids Heavy or Negative Vibes', description: 'May dodge deep issues or serious conversations too long.' },
+      { weakness: 'Dislike of Routine or Structure', description: 'Feel stifled by schedules, repetition, or long-term commitments without excitement.' },
+      { weakness: 'May Struggle with Long-Term Planning', description: 'Live for the now — the future feels distant and blurry.' },
+      { weakness: 'Validation-Seeking in Imbalanced States', description: 'Can become overly image- or approval-focused if emotionally unsure.' },
+      { weakness: 'Emotional Reactivity Under Stress', description: 'May flare up, lash out, or retreat when overwhelmed.' },
     ],
     idealCareers: [
-        { field: 'Performing Arts / Acting', why: 'A natural stage for their energy, charm, and emotional expression.' },
-        { field: 'Event Planning / Tourism', why: 'Focuses on creating fun, memorable experiences for others.' },
-        { field: 'Primary Education / Childcare', why: 'Their playful energy makes them excellent with children.' },
+      { field: 'Performer / Actor / Musician', why: 'Love to entertain, express, and emotionally connect with audiences.' },
+      { field: 'Event Planner / Host / Emcee', why: 'Thrive on social logistics, vibe-setting, and high-touch energy.' },
+      { field: 'Hospitality / Travel / Tourism', why: 'Hands-on, human-centered, and experience-focused work fits perfectly.' },
+      { field: 'Stylist / Brand Ambassador / Content Creator', why: 'Naturally aesthetic, social, and expressive.' },
+      { field: 'First Responder / Medical Assistant', why: 'Can act fast, connect emotionally, and stay composed in chaos.' },
     ],
-    famousExamples: ['Marilyn Monroe', 'Adele', 'Jamie Oliver', 'Peter Pan'],
+    famousExamples: ['Robin Williams (emotional range + comic genius)', 'Miley Cyrus (bold, expressive, controversial and heartfelt)', 'Captain Jack Sparrow (chaotic, charming, pleasure-seeking)', 'Elvis Presley (flair, fame, and emotional sensitivity)', 'Elle Woods (Legally Blonde — underestimated, warm, and underestimatedly smart)'],
+    relationshipDeepDive: {
+      friendship: {
+        title: 'Friendship',
+        coreNeeds: 'Reciprocity, fun, and emotional honesty.',
+        howTheyShowUp: 'ESFPs are loyal, ride-or-die friends who’ll hype you up, support you, and keep you smiling. They often become the emotional glue of their social circle. They love shared fun: music, dancing, night drives, travel, laughter. They want reciprocity — they give love generously, but want it back too. They dislike overly rigid, emotionally flat, or negative people, disrespect toward their values or appearance, and people who don’t feel like they’re fully there in the moment.',
+      },
+      romance: {
+        title: 'Romance',
+        coreNeeds: 'Emotional presence, appreciation, and adventure.',
+        howTheyLove: 'ESFPs are flirtatious, romantic, and extremely giving partners. Their love is felt — physically, emotionally, vibrantly. They crave partners who show emotional presence and appreciation, can match their energy without trying to control them, and are genuine — they can sniff out fakes fast. They fall in love quickly if the vibe is right, express love through gifts, time, touch, and playfulness, and need both attention and autonomy. Their challenge is staying grounded in relationships that require long-term emotional work or navigating boredom.',
+        idealPartner: 'Someone who can match their energy without trying to control them and who is genuine.',
+      },
+      communication: {
+        title: 'Communication Style',
+        primaryTraits: 'Expressive, warm, and emotionally direct.',
+        howToCommunicate: 'They’ll touch your arm, laugh with their eyes, and say what they mean (most of the time). They love shared stories, humor, and emotional storytelling. They may avoid deep conflict — but can react strongly if pushed too far. Need safe space to be vulnerable — behind the fun, there\'s usually depth.',
+      },
+      compatibility: {
+        title: 'Compatibility & Ideal Matches',
+        summary: 'ESFPs do best with partners who bring emotional warmth but can provide calm and grounded support, aren’t afraid of fun, spontaneity, or bold affection, and respect their independence but offer emotional depth.',
+        commonMatches: [
+          { type: 'ISFJ – The Defender', reason: 'Gentle, dependable, nurturing — brings security and softness' },
+          { type: 'INFJ – The Counselor', reason: 'Offers emotional intelligence and calm that balances the ESFP’s fire' },
+          { type: 'ESFJ – The Provider', reason: 'Match their warmth and social energy — shared values, shared sparkle' },
+          { type: 'ISTP – The Virtuoso', reason: 'Brings calm, mystery, and grounded independence to their vibrant energy' },
+        ],
+      },
+      summary: {
+        title: 'ESFP in Crossd Compatibility Storytelling',
+        text: 'Archetype: The Human Sparkler — bold, loving, unforgettable\n\nDating Bio Prompt: “I’ll make you laugh, kiss you in the rain, and turn an ordinary Tuesday into a music video. If you’ve got heart and rhythm — let’s go.”\n\nIn-App Persona Card: “Meet the Entertainer 🎭 — vibrant, emotional, and full of presence. They’re the heart of the party, but they’re looking for something real behind the glitter. If you’re emotionally available and bold enough to keep up — swipe right.”',
+      },
+    },
     relationships: [
         { area: 'Friendship', behavior: 'The friend who gets the party started and makes sure everyone is having fun.' },
         { area: 'Romance', behavior: 'A spontaneous and affectionate partner who loves grand gestures and shared adventures.' },
         { area: 'Communication', behavior: 'Warm, enthusiastic, and focused on shared experiences and having a good time.' },
     ],
     growthPath: ['Develop a long-term financial plan', 'Learn to face and resolve conflict directly', 'Find value in quiet, reflective time'],
-    archetypes: ['The charismatic entertainer', 'The life of the party', 'The generous friend'],
+    archetypes: ['The Human Sparkler', 'The bold, loving, unforgettable'],
   },
 };
-
-    
-
-    
 
