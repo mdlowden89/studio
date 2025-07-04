@@ -3,7 +3,7 @@ import { getAuth } from 'firebase/auth';
 import { getFirestore } from 'firebase/firestore';
 import { getStorage } from 'firebase/storage';
 
-const firebaseConfig: FirebaseOptions = {
+let firebaseConfig: FirebaseOptions = {
   apiKey: process.env.NEXT_PUBLIC_FIREBASE_API_KEY,
   authDomain: process.env.NEXT_PUBLIC_FIREBASE_AUTH_DOMAIN,
   projectId: process.env.NEXT_PUBLIC_FIREBASE_PROJECT_ID,
@@ -12,10 +12,31 @@ const firebaseConfig: FirebaseOptions = {
   appId: process.env.NEXT_PUBLIC_FIREBASE_APP_ID,
 };
 
-// Add a check to ensure the API key is present
+// Check for missing API key and use placeholder values if needed
 if (!firebaseConfig.apiKey) {
-  throw new Error('NEXT_PUBLIC_FIREBASE_API_KEY is not defined. Please check your .env file and ensure it is populated with your Firebase project credentials.');
+  console.warn(
+    `
+    ****************************************************************************************
+    *                                                                                      *
+    *    WARNING: Firebase API key is missing. The app will use placeholder credentials.   *
+    *    Firebase features like login, database, and storage will not work correctly.      *
+    *                                                                                      *
+    *    Please add your Firebase project credentials to the .env file to enable them.     *
+    *                                                                                      *
+    ****************************************************************************************
+    `
+  );
+  // Use placeholder values to prevent the app from crashing on initialization
+  firebaseConfig = {
+    apiKey: "placeholder-api-key",
+    authDomain: "placeholder.firebaseapp.com",
+    projectId: "placeholder-project-id",
+    storageBucket: "placeholder.appspot.com",
+    messagingSenderId: "placeholder-sender-id",
+    appId: "placeholder-app-id",
+  };
 }
+
 
 // Initialize Firebase
 const app = !getApps().length ? initializeApp(firebaseConfig) : getApp();
