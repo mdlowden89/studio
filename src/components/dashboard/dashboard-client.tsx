@@ -247,8 +247,8 @@ export function DashboardClient({ currentUser }: DashboardClientProps) {
     {
       icon: Route,
       title: "Moments Trail Pro",
-      price: "£2.99",
-      description: "Full map + timeline of all your logged moments and overlaps.",
+      price: "£7.99",
+      description: "Unlock your full moments map & timeline, plus reveal all Emotional Hotspots for one week.",
       tagline: "See the full story of your journey.",
     },
     {
