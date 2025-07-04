@@ -201,7 +201,11 @@ export const mbtiTypeDetails: Record<string, any> = {
           text: "Archetype: The Mastermind Leader — commanding presence, unstoppable vision\n\nDating Bio Prompt: “Ambitious AF. Don’t confuse confidence with arrogance — I just know what I want. Let’s build an empire, or at least crush trivia night.”\n\nIn-App Persona Card: “Meet the Commander ⚡ — bold, brilliant, and driven by purpose. They don’t just swipe — they strategize. If you’re ready to match ambition with fire, they’re your perfect counterpart.”"
        }
     },
-    relationships: [], // Fallback
+    relationships: [
+      { area: 'Friendship', behavior: 'Prefers ambitious, competent friends and often acts as a mentor.' },
+      { area: 'Romance', behavior: 'Approaches relationships strategically with long-term goals, valuing strength and intelligence.' },
+      { area: 'Communication', behavior: 'Clear, concise, and assertive, disliking emotional manipulation.' },
+    ],
     growthPath: ['Practice active listening and value others\' input.', 'Develop emotional awareness and empathy.', 'Prioritize work-life balance and relationships.', 'Cultivate patience and mentor others.'],
     archetypes: ['The Mastermind Leader', 'The Commanding CEO', 'The Unstoppable Visionary'],
   },
@@ -273,7 +277,11 @@ export const mbtiTypeDetails: Record<string, any> = {
         text: "Archetype: The Wild Spark with a Million Ideas\n\nDating Bio Prompt: “Part-time troublemaker, full-time brainstorm addict. Swipe if you like curiosity, chaos, and deep convos that turn into 3am adventures.”\n\nIn-App Persona Card: “Meet the Visionary ⚡ — unpredictable, captivating, and endlessly curious. They’ll challenge your ideas, charm your friends, and vanish into a startup pitch... but if they stay, you’ve sparked something rare.”"
       }
     },
-    relationships: [],
+    relationships: [
+      { area: 'Friendship', behavior: 'Social catalysts who bring energy and are loyal to those who challenge them intellectually.' },
+      { area: 'Romance', behavior: 'Falls fast when intrigued, flirts through debate, and loves adventure but struggles with monotony.' },
+      { area: 'Communication', behavior: 'Lightning-fast, witty, and persuasive, often playing devil\'s advocate to explore ideas.' },
+    ],
     growthPath: ['Learn to commit and see projects through', 'Consider the emotional impact of words', 'Value stability and routine'],
     archetypes: ['The clever inventor', 'The charismatic trickster', 'The startup visionary'],
   },
@@ -347,7 +355,11 @@ export const mbtiTypeDetails: Record<string, any> = {
         text: "Archetype: The Soul Whisperer — deeply private, quietly powerful, drawn to meaning over noise\n\nDating Bio Prompt: “Not here for the small talk — looking for someone to read between the lines, build something sacred, and maybe talk about the stars at 2am.”\n\nIn-App Persona Card: “Meet the Counselor 🌙 — mysterious, emotionally rich, and visionary to the core. If you’re craving connection that goes deeper than surface sparks, they’ll light your inner fire.”"
       }
     },
-    relationships: [],
+    relationships: [
+        { area: 'Friendship', behavior: 'Prefers a small circle of deep, authentic connections and often acts as "the counselor."' },
+        { area: 'Romance', behavior: 'A cautious but deeply loyal idealist seeking a soulful, spiritual, and authentic bond.' },
+        { area: 'Communication', behavior: 'Purposeful and graceful, often using metaphors and preferring written expression for complex emotions.' },
+    ],
     growthPath: ['Set boundaries to avoid burnout', 'Learn to express needs directly', 'Embrace practicality and "good enough"', 'Find healthy outlets for stress and communicate needs'],
     archetypes: ['The Soul Whisperer', 'The quiet visionary', 'The compassionate guide'],
   },
@@ -501,7 +513,11 @@ export const mbtiTypeDetails: Record<string, any> = {
     },
     growthPath: ['Prioritize self-care and set boundaries', 'Develop comfort with conflict and saying "no"', 'Ground idealism in reality', 'Recognize and manage energy levels'],
     archetypes: ['The Heart-Led Leader', 'The Social Mentor', 'The Uplifter'],
-    relationships: [], // Fallback
+    relationships: [
+        { area: 'Friendship', behavior: 'The emotional glue of their friend group, they act as cheerleaders and listeners.' },
+        { area: 'Romance', behavior: 'An intense and devoted partner who loves planning and showing affection, but can be self-neglecting.' },
+        { area: 'Communication', behavior: 'Warm, articulate, and emotionally fluent, skilled at mediating and motivating.' },
+    ],
   },
   'ENFP': {
     title: 'The Campaigner / Inspirer',
@@ -569,7 +585,11 @@ export const mbtiTypeDetails: Record<string, any> = {
     },
     growthPath: ['Develop focus and follow-through', 'Learn to value consistency', 'Find peace in solitude'],
     archetypes: ['The Wild Heart With Fire Eyes', 'The imaginative explorer', 'The unforgettable spark'],
-    relationships: [],
+    relationships: [
+        { area: 'Friendship', behavior: 'Their friendships are built on emotional honesty, shared dreams, and spontaneous adventure.' },
+        { area: 'Romance', behavior: 'Romantic idealists who seek deep emotional chemistry and fun, but may struggle with consistency.' },
+        { area: 'Communication', behavior: 'Energetic and animated, using storytelling and powerful language to connect.' },
+    ],
   },
   'ISTJ': {
     title: 'The Inspector / Logistician',
@@ -641,7 +661,11 @@ export const mbtiTypeDetails: Record<string, any> = {
             text: 'Archetype: The Silent Guardian — steady, loyal, and quietly principled\n\nDating Bio Prompt: “I’m not flashy, I’m consistent. Loyalty over games. If you’re into stability, real connection, and shared goals — let’s talk.”\n\nIn-App Persona Card: “Meet the Inspector 🧱 — grounded, consistent, and fiercely loyal. They may not say much, but they’ll do more than most. A rock-solid presence in a world full of noise.”'
         }
     },
-    relationships: [], // Fallback
+    relationships: [
+      { area: 'Friendship', behavior: 'Prefers structured friendships based on loyalty and dislikes drama or unpredictability.' },
+      { area: 'Romance', behavior: 'A reserved but deeply loyal partner who shows love through practical help and providing stability.' },
+      { area: 'Communication', behavior: 'Straightforward and factual, expressing love more through actions than words.' },
+    ],
     growthPath: [
         'Learn to be open to new possibilities', 
         'Practice expressing appreciation and positive feelings', 
@@ -719,7 +743,11 @@ export const mbtiTypeDetails: Record<string, any> = {
             text: "Archetype: The Quiet Guardian — dependable, nurturing, and fiercely devoted.\n\nDating Bio Prompt: “Not into games. I’ll show you I care by remembering the little things — not shouting the big ones. Loyalty means everything.”\n\nIn-App Persona Card: “Meet the Nurturer 🕊️ — gentle, grounded, and full of heart. They don’t fall fast, but they fall deep. If you want a partner who truly sees you — and stands beside you — they might be your soft landing.”"
         }
     },
-    relationships: [],
+    relationships: [
+        { area: 'Friendship', behavior: 'A nurturing, stabilizing friend who remembers the little things and values loyalty.' },
+        { area: 'Romance', behavior: 'A quietly romantic partner who shows love through thoughtful gestures and creating a safe space.' },
+        { area: 'Communication', behavior: 'A gentle and considerate communicator who listens well but may struggle to express their own needs.' },
+    ],
     growthPath: ['Learn to say "no" and set boundaries', 'Practice asserting personal needs', 'Embrace small, positive changes', 'Trust that you are valued for who you are, not just what you do'],
     archetypes: ['The Quiet Guardian', 'The dependable, nurturing, and fiercely devoted'],
   },
@@ -793,7 +821,11 @@ export const mbtiTypeDetails: Record<string, any> = {
             text: "Archetype: The Commander With a Plan — structured, reliable, and fiercely loyal.\n\nDating Bio Prompt: “If you like consistency, honesty, and a bit of tough love — I’m your person. Not here for games. I build. I lead. I commit.”\n\nIn-App Persona Card: “Meet the Executive 🧭 — sharp, loyal, and structured to the core. They’ll show up, step up, and build something real. If you’re ready for a relationship with backbone, they’re already 10 steps ahead.”"
         }
     },
-    relationships: [],
+    relationships: [
+        { area: 'Friendship', behavior: 'A reliable and direct friend who prefers purposeful action and acts as a protector.' },
+        { area: 'Romance', behavior: 'Shows love through acts of service and loyalty, attracted to grounded partners.' },
+        { area: 'Communication', behavior: 'Blunt, efficient, and opinionated, expecting directness from others.' },
+    ],
     growthPath: ['Learn to value rest and emotional connection', 'Practice tact and considering feelings', 'Be open to new and creative approaches'],
     archetypes: ['The Commander With a Plan', 'The reliable team lead', 'The fiercely loyal protector'],
   },
@@ -867,7 +899,11 @@ export const mbtiTypeDetails: Record<string, any> = {
             text: "Archetype: The Heart-First Host — warm, structured, and emotionally intuitive.\n\nDating Bio Prompt: “I’ll plan the date, remember your favorite drink, and check in when you’ve had a long day. If you’re looking for something real — and mutual — I’m here for it.”\n\nIn-App Persona Card: “Meet the Consul 💐 — nurturing, community-minded, and full of heart. They’re not here for the games — just real connection, mutual care, and a little old-school romance.”"
         }
     },
-    relationships: [],
+    relationships: [
+        { area: 'Friendship', behavior: 'A highly dependable friend who thrives in structured social rituals and remembers all the details.' },
+        { area: 'Romance', behavior: 'A deeply caring partner who shows love through acts of service and seeks emotional security.' },
+        { area: 'Communication', behavior: 'Kind, expressive, and highly sensitive to tone, prioritizing harmony and validation.' },
+    ],
     growthPath: ["Develop a strong sense of self independent of others' approval", "Learn to say 'no' and set boundaries", "Practice handling constructive conflict directly"],
     archetypes: ['The Heart-First Host', 'The Community Caretaker', 'The Reliable Host'],
   },
@@ -941,49 +977,91 @@ export const mbtiTypeDetails: Record<string, any> = {
         text: "Archetype: The Silent Fixer — mysterious, capable, low-key romantic through action\n\nDating Bio Prompt: “Not big on talking feelings — but I’ll change your tire, build your bookshelf, and be calm when the power goes out. If you get that, we’ll get along.”\n\nIn-App Persona Card: “Meet the Craftsman 🛠️ — independent, adaptable, and always thinking a few moves ahead. Not flashy, but fiercely capable. If you’re looking for low-drama, high-loyalty, and deep calm — they’re your type.”"
       }
     },
-    relationships: [],
+    relationships: [
+        { area: 'Friendship', behavior: 'A low-maintenance friend who bonds through shared experiences and dislikes drama.' },
+        { area: 'Romance', behavior: 'Shows love through action and loyalty, needing an independent and low-drama partner.' },
+        { area: 'Communication', behavior: 'Concise and direct, preferring to show care rather than talk about it.' },
+    ],
     growthPath: ['Learn to consider long-term consequences', 'Practice recognizing and articulating feelings', 'Commit to at least one long-term project'],
     archetypes: ['The lone wolf mechanic', 'The cool-headed action hero', 'The technical expert'],
   },
   'ISFP': {
     title: 'The Adventurer / Composer',
-    nicknames: ['The Artist', 'The Free Spirit', 'The Aesthete'],
+    nicknames: ['The Gentle Creative', 'The Quiet Romantic', 'The Free-Spirited Artist'],
     typeCode: 'Introverted (I) – Sensing (S) – Feeling (F) – Perceiving (P)',
-    population: '~9% of population',
+    population: '~4–9%',
     coreCharacteristics: [
-        { trait: 'Artistic', description: 'Expresses themselves through aesthetics, whether in art, fashion, or their environment.' },
-        { trait: 'Gentle & Kind', description: 'A warm, sensitive soul who dislikes conflict and values harmony.' },
-        { trait: 'Spontaneous', description: 'Lives in the present moment and embraces new experiences as they come.' },
+      { trait: 'Aesthetic & Sensitive', description: 'Drawn to beauty, nature, animals, music, and quiet human moments' },
+      { trait: 'Introverted Yet Expressive', description: 'Often shy at first, but full of passion and depth beneath the surface' },
+      { trait: 'Live-in-the-Moment Explorers', description: 'Spontaneous and experience-driven — love little adventures and sensory pleasures' },
     ],
     cognitiveStack: [
-        { functionName: 'Dominant – Introverted Feeling (Fi)', description: 'Guided by a deep, personal set of values and a quest for inner harmony and authenticity.' },
-        { functionName: 'Auxiliary – Extraverted Sensing (Se)', description: 'Engages with the beauty and sensations of the immediate physical world.' },
-        { functionName: 'Tertiary – Introverted Intuition (Ni)', description: 'Can have moments of abstract insight or symbolism that fuel their creativity.' },
-        { functionName: 'Inferior – Extraverted Thinking (Te)', description: 'Dislikes and struggles with long-term planning, impersonal logic, and rigid structures.' },
+      { functionName: 'Dominant – Introverted Feeling (Fi)', description: 'Strong inner value system — they feel deeply but keep it private. Makes decisions based on authenticity, personal ethics, and emotional resonance.' },
+      { functionName: 'Auxiliary – Extraverted Sensing (Se)', description: 'Highly aware of surroundings, textures, visuals, and atmosphere. Responds to beauty and novelty — aesthetic environments fuel them. Can be adventurous, even thrill-seeking, when in the mood.' },
+      { functionName: 'Tertiary – Introverted Intuition (Ni)', description: 'Quietly reflective — can have sudden insights and emotional revelations. Not outwardly strategic but often feel “guided” by inner instincts.' },
+      { functionName: 'Inferior – Extraverted Thinking (Te)', description: 'Struggles with external structure, deadlines, and impersonal logic. May shut down when forced into rigid systems or corporate-style environments.' },
     ],
     strengths: [
-        { strength: 'Aesthetic Sensibility', description: 'Has a natural eye for color, texture, and composition, creating beautiful things.' },
-        { strength: 'Live-in-the-Moment Charm', description: 'Finds joy in simple sensory pleasures and helps others do the same.' },
-        { strength: 'Loyal and Supportive', description: 'A deeply caring friend and partner who values authentic connection.' },
+      { strength: 'Artistic Sensibility', description: 'Masters of mood, color, music, and subtle emotional storytelling' },
+      { strength: 'Gentle Authenticity', description: 'Loyal and kind without pretending or posturing' },
+      { strength: 'Live in the Present', description: 'Engaged with the moment, deeply appreciative of simple pleasures' },
+      { strength: 'Compassionate & Tolerant', description: 'Rarely judgmental, open-minded, and emotionally intuitive' },
+      { strength: 'Emotionally Resilient (Internally)', description: 'Quietly strong — they may bend, but they rarely break' },
     ],
     weaknesses: [
-        { weakness: 'Fiercely Independent', description: 'Can be hard to get to know and may shut down when feeling controlled.' },
-        { weakness: 'Unpredictable', description: 'Their go-with-the-flow nature can make them seem unreliable or non-committal.' },
-        { weakness: 'Dislikes Criticism', description: 'Takes feedback very personally and may withdraw from perceived negativity.' },
+      { weakness: 'Avoidant of Conflict', description: 'Will often disappear rather than confront issues head-on' },
+      { weakness: 'Dislike Rigid Schedules', description: 'Prefer flowing, spontaneous days over structure and routine' },
+      { weakness: 'Easily Hurt by Criticism', description: 'Feedback can feel like personal rejection unless delivered with care' },
+      { weakness: 'Struggle with External Logic Systems', description: 'Data, metrics, and bureaucracy may frustrate them' },
+      { weakness: 'May Withhold Feelings', description: 'Can internalize emotions too long — leading to burnout or withdrawal' },
     ],
     idealCareers: [
-        { field: 'Graphic / Fashion Design', why: 'Directly applies their strong aesthetic sense and creativity.' },
-        { field: 'Musician / Fine Artist', why: 'Allows for personal expression and a focus on sensory craft.' },
-        { field: 'Veterinarian / Animal Care', why: 'Connects with their gentle, nurturing side in a hands-on way.' },
+      { field: 'Artist / Designer / Illustrator', why: 'Visual, sensory, and expression-driven work suits them perfectly' },
+      { field: 'Musician / Dancer / Performer', why: 'Enjoy emotionally expressive yet introverted forms of creation' },
+      { field: 'Animal Caretaker / Vet Tech / Forest Ranger', why: 'Nature, solitude, and compassion align with their values' },
+      { field: 'Photographer / Cinematographer', why: 'Frame the world through feeling and vision' },
+      { field: 'Therapist (Creative or Holistic)', why: 'Gentle listeners who guide without overpowering' },
     ],
-    famousExamples: ['Michael Jackson', 'Britney Spears', 'Frida Kahlo', 'Harry Potter'],
+    famousExamples: ['Lana Del Rey', 'Bob Ross', 'Aurora', 'Frodo Baggins', 'Amélie Poulain'],
+    relationshipDeepDive: {
+        friendship: {
+            title: 'Friendship',
+            coreNeeds: "Emotional presence, shared experiences, loyalty.",
+            howTheyShowUp: "ISFPs make loyal, emotionally present friends who prefer 1-on-1 connection or very small groups. They bond deeply over shared experiences, art, nature, or music and show up quietly, consistently, and with subtle care — not loud declarations. They dislike loud, domineering personalities, people who rush emotional intimacy, or insincerity.",
+        },
+        romance: {
+            title: 'Romance',
+            coreNeeds: "Emotional safety, authenticity, shared experiences.",
+            howTheyLove: "ISFPs are gentle romantics who value emotional safety above all. They may seem shy but are very affectionate once trust is built, often showing love through spontaneous gifts or shared sunsets. Their challenge is learning to voice their needs instead of silently withdrawing.",
+            idealPartner: "Someone who understands their inner depth, respects their quietude, and offers steady emotional safety.",
+        },
+        communication: {
+            title: "Communication Style",
+            primaryTraits: "Soft-spoken, sensitive, poetic.",
+            howToCommunicate: "Words often come from the heart. They dislike confrontation or harsh logic and may need time to articulate feelings, but their expressions are sincere. They prefer kind, grounded, emotionally intelligent communication.",
+        },
+        compatibility: {
+            title: "Compatibility & Ideal Matches",
+            summary: "ISFPs do well with partners who respect their emotional sensitivity, can provide structure without control, and add adventure and warmth to their quiet soul.",
+            commonMatches: [
+                { type: 'ESFJ – The Provider', reason: 'Emotionally supportive and structured — gives ISFP a safe space to thrive' },
+                { type: 'ISFJ – The Nurturer', reason: 'Shares values of compassion, warmth, and loyalty' },
+                { type: 'ENFP – The Campaigner', reason: 'Brings creative energy and fun while respecting emotional depth' },
+                { type: 'ISTP – The Virtuoso', reason: 'Quietly protective and practical — adds grounding without emotional overload' },
+            ],
+        },
+        summary: {
+            title: 'ISFP in Crossd Compatibility Storytelling',
+            text: 'Archetype: The Soft-Spoken Soul — romantic, artistic, and deeply sincere\n\nDating Bio Prompt: “Introvert with a poet’s heart. I’ll make you a playlist instead of a speech, and probably love you through a thousand tiny moments you don’t even notice.”\n\nIn-App Persona Card: “Meet the Composer 🎨 — quiet, aesthetic, and full of feeling. They may not shout their love from the rooftops, but they’ll write it into every day. If you listen closely, their silence sings.”'
+        }
+    },
     relationships: [
-        { area: 'Friendship', behavior: 'Prefers a small group of close, trusted friends to share experiences with.' },
-        { area: 'Romance', behavior: 'A caring and attentive partner who needs freedom and values sensory and emotional connection.' },
-        { area: 'Communication', behavior: 'Gentle and supportive, but often expresses themselves better through actions than words.' },
+        { area: 'Friendship', behavior: 'Prefers 1-on-1 connection and bonds deeply over shared experiences like art or nature.' },
+        { area: 'Romance', behavior: 'A gentle and romantic partner who values emotional safety and expresses love through quiet, thoughtful gestures.' },
+        { area: 'Communication', behavior: 'Soft-spoken and sensitive, disliking confrontation and preferring to communicate from the heart.' },
     ],
-    growthPath: ['Develop long-term planning skills', 'Learn to accept and process constructive criticism', 'Practice asserting their own needs'],
-    archetypes: ['The quiet artist', 'The gentle free spirit', 'The compassionate wanderer'],
+    growthPath: ['Learn to face and resolve conflict directly', 'Develop comfort with schedules and structure', 'Practice accepting constructive criticism'],
+    archetypes: ['The Soft-Spoken Soul', 'The romantic, artistic, and deeply sincere'],
   },
   'ESTP': {
     title: 'The Dynamo / Entrepreneur',
@@ -1070,3 +1148,4 @@ export const mbtiTypeDetails: Record<string, any> = {
     
 
     
+
