@@ -4,7 +4,7 @@
 import { useState, useEffect, useMemo, useCallback } from "react";
 import { AppLayout } from "@/components/layout/app-layout";
 import { Card, CardContent, CardHeader, CardTitle, CardDescription, CardFooter } from "@/components/ui/card";
-import { Sparkles, PlusCircle, ClipboardList, Users, MessageSquare, Route, MapPin, CalendarDays, Users2, TrendingUp, Activity, Map, LayoutGrid, List as ListIcon, Lightbulb, Edit3, Repeat, Star, ShoppingBag, Zap, Undo2, Eye, BrainCircuit, Signal, ArrowRight, Loader2 } from "lucide-react";
+import { Sparkles, PlusCircle, ClipboardList, Users, MessageSquare, Route, MapPin, CalendarDays, Users2, TrendingUp, Activity, Map, LayoutGrid, List as ListIcon, Lightbulb, Edit3, Repeat, Star, ShoppingBag, Zap, Eye, BrainCircuit, Signal, ArrowRight, Loader2 } from "lucide-react";
 import { MOCK_USERS, AVAILABLE_PROMPTS, MOCK_HOTSPOTS } from "@/lib/mock-data";
 import { Button } from "@/components/ui/button";
 import { Separator } from "@/components/ui/separator";
@@ -245,11 +245,11 @@ export function DashboardClient({ currentUser }: DashboardClientProps) {
       tagline: "Time passed. But your moment didn’t have to.",
     },
     {
-      icon: Undo2,
-      title: "Undo Pass (Backtrack)",
-      price: "£1.99",
-      description: "Instantly rewind your last accidental swipe/pass to get a second chance.",
-      tagline: "One swipe shouldn’t seal your fate.",
+      icon: Route,
+      title: "Moments Trail Pro",
+      price: "£2.99",
+      description: "Full map + timeline of all your logged moments and overlaps.",
+      tagline: "See the full story of your journey.",
     },
     {
       icon: Eye,
