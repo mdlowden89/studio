@@ -279,8 +279,8 @@ export default function MbtiQuizPage() {
                         <div className="space-y-1">
                             <h4 className="font-semibold text-lg text-foreground">Core Characteristics</h4>
                             <div className="space-y-2">
-                                {currentResultDetails.coreCharacteristics.map(char => (
-                                    <div key={char.trait} className="text-sm">
+                                {currentResultDetails.coreCharacteristics.map((char, index) => (
+                                    <div key={`char-${index}`} className="text-sm">
                                         <span className="font-semibold text-foreground/90">{char.trait}: </span>
                                         <span className="text-muted-foreground">{char.description}</span>
                                     </div>
@@ -292,8 +292,8 @@ export default function MbtiQuizPage() {
                         <div className="space-y-1">
                             <h4 className="font-semibold text-lg text-foreground">Cognitive Function Stack</h4>
                              <div className="space-y-2">
-                                {currentResultDetails.cognitiveStack.map(stack => (
-                                    <div key={stack.functionName} className="text-sm">
+                                {currentResultDetails.cognitiveStack.map((stack, index) => (
+                                    <div key={`stack-${index}`} className="text-sm">
                                         <span className="font-semibold text-foreground/90">{stack.functionName}: </span>
                                         <span className="text-muted-foreground">{stack.description}</span>
                                     </div>
@@ -306,13 +306,13 @@ export default function MbtiQuizPage() {
                             <div className="space-y-1">
                                 <h4 className="font-semibold text-lg text-green-400">Strengths</h4>
                                 <ul className="list-disc list-inside space-y-1 text-sm text-muted-foreground">
-                                    {currentResultDetails.strengths.map(s => <li key={s.strength}><span className="font-semibold text-foreground/90">{s.strength}:</span> {s.example}</li>)}
+                                    {currentResultDetails.strengths.map((s, index) => <li key={`strength-${index}`}><span className="font-semibold text-foreground/90">{s.strength}:</span> {s.description}</li>)}
                                 </ul>
                             </div>
                             <div className="space-y-1">
                                 <h4 className="font-semibold text-lg text-red-400">Weaknesses</h4>
                                 <ul className="list-disc list-inside space-y-1 text-sm text-muted-foreground">
-                                    {currentResultDetails.weaknesses.map(w => <li key={w.weakness}><span className="font-semibold text-foreground/90">{w.weakness}:</span> {w.description}</li>)}
+                                    {currentResultDetails.weaknesses.map((w, index) => <li key={`weakness-${index}`}><span className="font-semibold text-foreground/90">{w.weakness}:</span> {w.description}</li>)}
                                 </ul>
                             </div>
                         </div>
@@ -321,25 +321,22 @@ export default function MbtiQuizPage() {
                          <div className="space-y-1">
                             <h4 className="font-semibold text-lg text-foreground">Ideal Careers & Roles</h4>
                              <div className="flex flex-wrap gap-2 mt-2">
-                                {currentResultDetails.idealCareers.map(career => <Badge key={career.field} variant="secondary">{career.field}</Badge>)}
+                                {currentResultDetails.idealCareers.map((career, index) => <Badge key={`career-${index}`} variant="secondary">{career.field}</Badge>)}
                             </div>
                         </div>
 
                         <Separator />
                         
-                        {/* NEW: Conditional Rendering for Relationship Deep Dive */}
                         {currentResultDetails.relationshipDeepDive ? (
                           <div className="space-y-4">
                               <h4 className="font-semibold text-lg text-foreground flex items-center gap-2"><Heart className="w-5 h-5 text-primary"/>Relationships & Communication</h4>
                               
-                              {/* Friendship */}
                               <div className="p-3 bg-muted/30 rounded-md">
                                 <h5 className="font-semibold text-foreground/90 mb-1">{currentResultDetails.relationshipDeepDive.friendship.title}</h5>
                                 <p className="text-xs text-muted-foreground"><span className="font-medium text-foreground/80">Core Needs:</span> {currentResultDetails.relationshipDeepDive.friendship.coreNeeds}</p>
                                 <p className="text-xs text-muted-foreground mt-1"><span className="font-medium text-foreground/80">How They Show Up:</span> {currentResultDetails.relationshipDeepDive.friendship.howTheyShowUp}</p>
                               </div>
 
-                              {/* Romance */}
                               <div className="p-3 bg-muted/30 rounded-md">
                                 <h5 className="font-semibold text-foreground/90 mb-1">{currentResultDetails.relationshipDeepDive.romance.title}</h5>
                                 <p className="text-xs text-muted-foreground"><span className="font-medium text-foreground/80">Core Needs:</span> {currentResultDetails.relationshipDeepDive.romance.coreNeeds}</p>
@@ -347,25 +344,22 @@ export default function MbtiQuizPage() {
                                 <p className="text-xs text-muted-foreground mt-1"><span className="font-medium text-foreground/80">Ideal Partner:</span> {currentResultDetails.relationshipDeepDive.romance.idealPartner}</p>
                               </div>
 
-                              {/* Communication */}
                               <div className="p-3 bg-muted/30 rounded-md">
                                 <h5 className="font-semibold text-foreground/90 mb-1">{currentResultDetails.relationshipDeepDive.communication.title}</h5>
                                 <p className="text-xs text-muted-foreground"><span className="font-medium text-foreground/80">Primary Traits:</span> {currentResultDetails.relationshipDeepDive.communication.primaryTraits}</p>
                                 <p className="text-xs text-muted-foreground mt-1"><span className="font-medium text-foreground/80">How to Communicate With Them:</span> {currentResultDetails.relationshipDeepDive.communication.howToCommunicate}</p>
                               </div>
 
-                              {/* Compatibility */}
                               <div className="p-3 bg-muted/30 rounded-md">
                                   <h5 className="font-semibold text-foreground/90 mb-1">{currentResultDetails.relationshipDeepDive.compatibility.title}</h5>
                                   <p className="text-xs text-muted-foreground italic mb-2">{currentResultDetails.relationshipDeepDive.compatibility.summary}</p>
                                   <div className="space-y-1">
-                                    {currentResultDetails.relationshipDeepDive.compatibility.commonMatches.map(match => (
-                                      <p key={match.type} className="text-xs text-muted-foreground"><span className="font-medium text-green-400/80">{match.type}:</span> {match.reason}</p>
+                                    {currentResultDetails.relationshipDeepDive.compatibility.commonMatches.map((match, index) => (
+                                      <p key={`match-${index}`} className="text-xs text-muted-foreground"><span className="font-medium text-green-400/80">{match.type}:</span> {match.reason}</p>
                                     ))}
                                   </div>
                               </div>
 
-                               {/* Summary */}
                                <div className="p-3 bg-primary/10 rounded-md border border-primary/20">
                                 <h5 className="font-semibold text-primary/90 mb-1 flex items-center gap-1.5"><MessageSquare className="w-4 h-4"/>{currentResultDetails.relationshipDeepDive.summary.title}</h5>
                                 <p className="text-sm text-foreground/90 italic">&quot;{currentResultDetails.relationshipDeepDive.summary.text}&quot;</p>
@@ -373,12 +367,11 @@ export default function MbtiQuizPage() {
 
                           </div>
                         ) : (
-                          // Fallback for types without deep dive data
                           <div className="space-y-1">
                               <h4 className="font-semibold text-lg text-foreground">Relationships & Communication</h4>
                               <div className="space-y-2">
-                                  {currentResultDetails.relationships.map(rel => (
-                                      <div key={rel.area} className="text-sm">
+                                  {currentResultDetails.relationships.map((rel, index) => (
+                                      <div key={`rel-${index}`} className="text-sm">
                                           <span className="font-semibold text-foreground/90">{rel.area}: </span>
                                           <span className="text-muted-foreground">{rel.behavior}</span>
                                       </div>
@@ -400,3 +393,5 @@ export default function MbtiQuizPage() {
     </AppLayout>
   );
 }
+
+    
