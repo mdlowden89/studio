@@ -77,16 +77,22 @@ export const mbtiTypeDetails: Record<string, any> = {
       { strength: 'Innovative & Original', description: 'Natural inventors who thrive in new, undefined territory.' },
       { strength: 'Objective & Rational', description: 'Unbiased and logical — driven by truth, not emotion.' },
       { strength: 'Independent Thinkers', description: 'Prefer to solve problems their own way; self-motivated learners.' },
+      { strength: 'Theoretical Mastery', description: 'Can spend hours building mental blueprints of how the world works.' },
+      { strength: 'Flexible Minds', description: 'Open to new data and quick to adapt ideas when proven wrong.' },
     ],
     weaknesses: [
       { weakness: 'Poor with Execution', description: 'May get stuck in analysis or abandon projects when the excitement fades.' },
       { weakness: 'Socially Distant', description: 'Can seem cold or aloof, even to people they like.' },
       { weakness: 'Overthinkers', description: 'Often paralyzed by too many possibilities or fear of imperfection.' },
+      { weakness: 'Sensitive to Criticism (ironically)', description: 'Though logical, personal feedback can sting deeply.' },
+      { weakness: 'Can Appear Disengaged', description: 'Easily lost in thought, may not respond well to emotional bids.' },
     ],
     idealCareers: [
       { field: 'Researcher / Scientist', why: 'Intellectual freedom to test and discover.' },
       { field: 'Software Developer / Engineer', why: 'Logical puzzles, systems design, and innovation.' },
       { field: 'Philosopher / Academic', why: 'Deep theoretical exploration is their bread and butter.' },
+      { field: 'Data Analyst / Mathematician', why: 'Precision and conceptual clarity.' },
+      { field: 'Inventor / Startup Ideator', why: 'Perfect for building new ideas from the ground up (though best partnered with a closer).' },
     ],
     famousExamples: ['Albert Einstein', 'Marie Curie', 'Bill Gates', 'Neo (The Matrix)', 'Lisa Simpson'],
     growthPath: ['Improve Follow-Through – Learn to set deadlines, simplify, and take imperfect action.', 'Tune into Emotions – Practice emotional awareness and expression, even if it\'s awkward at first.', 'Collaborate More – Don’t isolate — partners and teammates can help realize your brilliant ideas.', 'Prioritize the Present – Don’t let endless theorizing rob you of action or joy in the now.'],
@@ -119,8 +125,8 @@ export const mbtiTypeDetails: Record<string, any> = {
         ]
       },
       summary: {
-        title: "In Crossd Terms: How INTPs Fall in Love",
-        text: "They won’t sweep you off your feet with roses and poetry. But if they’re sending you weird science memes, late-night thoughts about black holes, or building a system to help you stay organized — they’re all in."
+        title: "INTP in Crossd Compatibility Storytelling",
+        text: "“They won’t sweep you off your feet with roses and poetry. But if they’re sending you weird science memes, late-night thoughts about black holes, or building a system to help you stay organized — they’re all in.”"
       }
     },
     relationships: [], // Fallback for original structure
@@ -172,7 +178,7 @@ export const mbtiTypeDetails: Record<string, any> = {
       romance: {
         title: "Romance",
         coreNeeds: "Strength, intelligence, independence.",
-        howTheyLove: "ENTJs approach relationships strategically, with long-term goals. Deeply loyal once committed, but don’t expect flowery romance. They struggle when emotions interrupt logic and may try to 'fix' problems rather than listen.",
+        howTheyLove: "ENTJs approach relationships strategically, with long-term goals. Deeply loyal once committed, but don’t expect flowery romance. They show love through acts of service and by helping their partner grow. They struggle when emotions interrupt logic and may try to 'fix' problems rather than listen.",
         idealPartner: "Someone who challenges them, not just compliments them."
       },
       communication: {
@@ -192,7 +198,7 @@ export const mbtiTypeDetails: Record<string, any> = {
       },
        summary: {
           title: "ENTJ in Crossd Compatibility Storytelling",
-          text: "Archetype: The Mastermind Leader — commanding presence, unstoppable vision.\n\nDating Bio Prompt: “Ambitious AF. Don’t confuse confidence with arrogance — I just know what I want. Let’s build an empire, or at least crush trivia night.”\n\nIn-App Persona Card: “Meet the Commander ⚡ — bold, brilliant, and driven by purpose. They don’t just swipe — they strategize. If you’re ready to match ambition with fire, they’re your perfect counterpart.”"
+          text: "Archetype: The Mastermind Leader — commanding presence, unstoppable vision\n\nDating Bio Prompt: “Ambitious AF. Don’t confuse confidence with arrogance — I just know what I want. Let’s build an empire, or at least crush trivia night.”\n\nIn-App Persona Card: “Meet the Commander ⚡ — bold, brilliant, and driven by purpose. They don’t just swipe — they strategize. If you’re ready to match ambition with fire, they’re your perfect counterpart.”"
        }
     },
     relationships: [], // Fallback
@@ -605,23 +611,23 @@ export const mbtiTypeDetails: Record<string, any> = {
     famousExamples: ['George Washington', 'Angela Merkel', 'Natalie Portman', 'Eddard Stark (Game of Thrones)', 'Hermione Granger'],
     relationshipDeepDive: {
         friendship: {
-            title: 'Friendship',
+            title: "Friendship",
             coreNeeds: 'Loyalty, consistency, shared routines.',
             howTheyShowUp: 'ISTJs may seem emotionally distant at first, but once they consider you a friend, they’ll show up consistently, help when it counts, and protect you quietly. They prefer structured friendships — regular meetups, shared routines, loyalty over novelty. They dislike drama, unpredictability, or people who say things they don’t mean.'
         },
         romance: {
-            title: 'Romance',
+            title: "Romance",
             coreNeeds: 'Commitment, responsibility, shared values.',
             howTheyLove: 'ISTJs are reserved but deeply loyal — they may not sweep you off your feet, but they’ll build a foundation you can stand on. They value commitment, responsibility, and shared values, often showing love through practical help (like fixing your sink) and providing stability. Their challenge is opening up emotionally and expressing feelings through words, not just actions.',
             idealPartner: 'Someone who values stability and consistency.'
         },
         communication: {
-            title: 'Communication',
+            title: "Communication",
             primaryTraits: 'Straightforward, factual, and often brief.',
             howToCommunicate: 'They dislike emotional guesswork or vague statements. They may unintentionally come off as cold or blunt and express love more through actions than flowery words. Say what you mean.'
         },
         compatibility: {
-            title: 'Compatibility & Ideal Matches',
+            title: "Compatibility & Ideal Matches",
             summary: 'ISTJs pair best with partners who respect structure and consistency, are emotionally grounded, and help soften their rigidity without overwhelming them.',
             commonMatches: [
                 { type: 'ESFJ – The Provider', reason: 'Loyal, warm, and organized — creates a harmonious, supportive pairing.' },
@@ -631,8 +637,8 @@ export const mbtiTypeDetails: Record<string, any> = {
             ]
         },
         summary: {
-            title: 'ISTJ in Crossd Compatibility Storytelling',
-            text: 'Archetype: The Silent Guardian — steady, loyal, and quietly principled.\n\nDating Bio Prompt: “I’m not flashy, I’m consistent. Loyalty over games. If you’re into stability, real connection, and shared goals — let’s talk.”\n\nIn-App Persona Card: “Meet the Inspector 🧱 — grounded, consistent, and fiercely loyal. They may not say much, but they’ll do more than most. A rock-solid presence in a world full of noise.”'
+            title: "ISTJ in Crossd Compatibility Storytelling",
+            text: 'Archetype: The Silent Guardian — steady, loyal, and quietly principled\n\nDating Bio Prompt: “I’m not flashy, I’m consistent. Loyalty over games. If you’re into stability, real connection, and shared goals — let’s talk.”\n\nIn-App Persona Card: “Meet the Inspector 🧱 — grounded, consistent, and fiercely loyal. They may not say much, but they’ll do more than most. A rock-solid presence in a world full of noise.”'
         }
     },
     relationships: [], // Fallback
@@ -685,7 +691,7 @@ export const mbtiTypeDetails: Record<string, any> = {
         friendship: {
             title: "Friendship",
             coreNeeds: "Loyalty, appreciation, emotional safety.",
-            howTheyShowUp: "ISFJs are the friends who remember the little things and show up even when you didn’t ask. Often the emotional anchor of the group — nurturing, stabilizing, and consistent. They thrive in 1-on-1 friendships, especially with people who value kindness and loyalty. They are not attention-seeking; they prefer to be there, not be seen."
+            howTheyShowUp: "ISFJs are the friends who remember the little things and show up even when you didn’t ask. Often the emotional anchor of the group — nurturing, stabilizing, and consistent. They thrive in 1-on-1 friendships, especially with people who value kindness and loyalty. They are not attention-seeking; they prefer to be there, not be seen. They dislike flakiness, emotional insensitivity, or being taken for granted."
         },
         romance: {
             title: "Romance",
@@ -787,53 +793,83 @@ export const mbtiTypeDetails: Record<string, any> = {
             text: "Archetype: The Commander With a Plan — structured, reliable, and fiercely loyal.\n\nDating Bio Prompt: “If you like consistency, honesty, and a bit of tough love — I’m your person. Not here for games. I build. I lead. I commit.”\n\nIn-App Persona Card: “Meet the Executive 🧭 — sharp, loyal, and structured to the core. They’ll show up, step up, and build something real. If you’re ready for a relationship with backbone, they’re already 10 steps ahead.”"
         }
     },
-    relationships: [
-        { area: 'Friendship', behavior: 'Values reliable, direct, and purposeful friendships, often acting as a mentor or leader.' },
-        { area: 'Romance', behavior: 'Shows love through acts of service, structure, and fierce loyalty. Attracted to grounded and balanced partners.' },
-        { area: 'Communication', behavior: 'Blunt, efficient, and opinionated. Expects transparency and directness.' },
-    ],
+    relationships: [],
     growthPath: ['Learn to value rest and emotional connection', 'Practice tact and considering feelings', 'Be open to new and creative approaches'],
     archetypes: ['The Commander With a Plan', 'The reliable team lead', 'The fiercely loyal protector'],
   },
   'ESFJ': {
     title: 'The Consul / Provider',
-    nicknames: ['The Host', 'The Caregiver', 'The Social Connector'],
+    nicknames: ['The Heart of the Party', 'The Community Caretaker', 'The Reliable Host'],
     typeCode: 'Extraverted (E) – Sensing (S) – Feeling (F) – Judging (J)',
-    population: '~12% of population',
+    population: '~9–13% (more common among women)',
     coreCharacteristics: [
-        { trait: 'Socially Attuned', description: 'The ultimate "people person," naturally sensing the mood and needs of a group.' },
-        { trait: 'Warm & Nurturing', description: 'Gains energy from making others feel comfortable, included, and happy.' },
-        { trait: 'Practical', description: 'Focuses on tangible, real-world ways to help and support their community.' },
+        { trait: 'Warm & Loyal', description: 'Natural caregivers — tuned into people’s needs and emotions' },
+        { trait: 'Community-Oriented', description: 'Feel most fulfilled when supporting others and keeping things harmonious' },
+        { trait: 'Structured & Reliable', description: 'Prefer clear expectations, organized plans, and consistency in behavior' },
     ],
     cognitiveStack: [
-        { functionName: 'Dominant – Extraverted Feeling (Fe)', description: 'Drives them to connect with others, maintain social harmony, and uphold community values.' },
-        { functionName: 'Auxiliary – Introverted Sensing (Si)', description: 'Remembers important details about people and traditions, using this to care for them.' },
-        { functionName: 'Tertiary – Extraverted Intuition (Ne)', description: 'Enjoys exploring new social activities and ways to bring people together.' },
-        { functionName: 'Inferior – Introverted Thinking (Ti)', description: 'Dislikes impersonal criticism and can struggle with detached, logical analysis.' },
+        { functionName: 'Dominant – Extraverted Feeling (Fe)', description: 'Prioritizes group harmony and emotional atmosphere. Naturally in tune with others’ needs, moods, and social cues. Makes decisions based on interpersonal impact.' },
+        { functionName: 'Auxiliary – Introverted Sensing (Si)', description: 'Draws from past experiences and trusted traditions. Loves rituals, family values, and what has “worked before”. Pays close attention to practical details.' },
+        { functionName: 'Tertiary – Extraverted Intuition (Ne)', description: 'Open to possibilities, new connections, and perspectives. Enjoys bouncing ideas off others — especially when it helps a group thrive.' },
+        { functionName: 'Inferior – Introverted Thinking (Ti)', description: 'Can struggle to logically detach from emotional considerations. May internalize criticism or avoid objectivity when emotionally invested. Under stress, may over-rationalize or retreat into people-pleasing.' },
     ],
     strengths: [
-        { strength: 'Community Building', description: 'Effortlessly organizes parties, events, and groups that make everyone feel welcome.' },
-        { strength: 'Practical Caregiving', description: 'Shows love through actions: remembering birthdays, cooking meals, offering help.' },
-        { strength: 'Social Graces', description: 'Navigates social situations with ease, smoothing over conflict and fostering connection.' },
+        { strength: 'Emotionally Supportive', description: 'Often the first to notice when someone needs a hug, a snack, or a pep talk.' },
+        { strength: 'Excellent Organizers', description: 'Thrive with routines, calendars, and structured environments.' },
+        { strength: 'Loyal to People & Principles', description: 'Devoted to their family, community, or chosen cause.' },
+        { strength: 'Natural Hosts & Caregivers', description: 'Love creating spaces where others feel safe, seen, and valued.' },
+        { strength: 'High Social Awareness', description: 'Know how to “read a room” and adapt with warmth and finesse.' },
     ],
     weaknesses: [
-        { weakness: 'Sensitive to Criticism', description: 'Can be deeply hurt by disapproval or conflict within their social circle.' },
-        { weakness: 'Approval-Seeking', description: 'Their self-worth can be too dependent on the happiness and approval of others.' },
-        { weakness: 'May Be Intrusive', description: 'Their desire to help can sometimes cross boundaries into being controlling.' },
+        { weakness: 'People-Pleasing', description: 'May lose themselves trying to gain others\' approval or avoid conflict.' },
+        { weakness: 'Conflict Avoidant', description: 'Struggles with difficult conversations or standing up to strong personalities.' },
+        { weakness: 'Judgmental Under Stress', description: 'When overwhelmed, may default to social comparison or harsh internal standards.' },
+        { weakness: 'Can Be Overextended', description: 'Take on too much emotionally or practically, then burn out quietly.' },
+        { weakness: 'Need for Structure Can Limit Flexibility', description: 'Prefer predictability and may resist change.' },
     ],
     idealCareers: [
-        { field: 'Event Planning / Hospitality', why: 'Focuses on creating positive experiences and caring for guests.' },
-        { field: 'Nursing / Primary Care', why: 'Allows them to provide practical, hands-on care for others.' },
-        { field: 'Human Resources / Recruiting', why: 'Connects people and fosters a positive, harmonious work environment.' },
+        { field: 'HR / Event Planning', why: 'Excel at people-centered logistics, hospitality, and care.' },
+        { field: 'Teacher / Counselor / Youth Leader', why: 'Shine in roles that nurture others with structure and empathy.' },
+        { field: 'Customer Success / Client Relations', why: 'Social, dependable, and value-driven.' },
+        { field: 'Healthcare Admin / Hospitality Manager', why: 'Organized caretaking with a warm touch.' },
+        { field: 'Volunteer Coordinator / Fundraising Lead', why: 'Emotionally compelling and community-driven.' },
     ],
-    famousExamples: ['Taylor Swift', 'Jennifer Lopez', 'Bill Clinton', 'Monica Geller (Friends)'],
-    relationships: [
-        { area: 'Friendship', behavior: 'The heart of the social circle, the one who makes plans and keeps everyone connected.' },
-        { area: 'Romance', behavior: 'A devoted, nurturing partner who loves creating a beautiful, harmonious home life.' },
-        { area: 'Communication', behavior: 'Warm, engaging, and focused on shared feelings and experiences.' },
-    ],
-    growthPath: ['Develop a stronger sense of self independent of others\' approval', 'Learn to handle conflict directly', 'Accept that you can\'t please everyone'],
-    archetypes: ['The gracious host', 'The tireless community volunteer', 'The popular cheerleader'],
+    famousExamples: ['Taylor Swift', 'Jennifer Garner', 'Monica Geller (Friends)', 'Ned Flanders (The Simpsons)', 'Sam Wilson / The Falcon (MCU)'],
+    relationshipDeepDive: {
+        friendship: {
+            title: "Friendship",
+            coreNeeds: "Emotional reciprocity, structure, loyalty.",
+            howTheyShowUp: "ESFJs are the friend who remembers your birthday, your favorite dessert, and exactly how you like your coffee. They thrive in structured friendships with rituals — game night, dinner dates, etc. Highly dependable — they’ll show up early, stay late, and offer to help clean up. Need friends who reciprocate emotionally and respect their values. Dislike emotional coldness, inconsistency, or people who take and never give back."
+        },
+        romance: {
+            title: "Romance",
+            coreNeeds: "Emotional security, mutual care, appreciation.",
+            howTheyLove: "ESFJs love love — and they give their full heart to those they choose. They’re often drawn to partners who are emotionally grounded, morally consistent, and appreciative of their nurturing. They show love through acts of service, thoughtful reminders, and maintaining your world. Their challenge is not over-giving to those who won’t pour back into them.",
+            idealPartner: "A partner who offers emotional reciprocity, has strong inner values, and can bring calm and logic without being emotionally dismissive."
+        },
+        communication: {
+            title: "Communication Style",
+            primaryTraits: "Kind, expressive, and very tone-sensitive.",
+            howToCommunicate: "They’ll pick up on emotional shifts quickly and dislike coldness, sarcasm, or overly critical tones. May struggle to speak up about needs, especially in new or uncertain relationships. Thrive when they feel respected, validated, and emotionally safe."
+        },
+        compatibility: {
+            title: "Compatibility & Ideal Matches",
+            summary: "ESFJs do well with partners who offer emotional reciprocity, have strong inner values, and can bring calm and logic without being emotionally dismissive.",
+            commonMatches: [
+                { type: 'ISFP – The Artist', reason: 'Gentle, authentic, and emotionally tuned in — balances ESFJ’s structure.' },
+                { type: 'ISTJ – The Inspector', reason: 'Shares values of loyalty and consistency — brings grounded logic.' },
+                { type: 'ESFP – The Performer', reason: 'Social, warm, and fun-loving — matches their energy with affection.' },
+                { type: 'INFP – The Idealist', reason: 'Brings emotional insight and purpose — adds depth to their nurturing.' }
+            ]
+        },
+        summary: {
+            title: "ESFJ in Crossd Compatibility Storytelling",
+            text: "Archetype: The Heart-First Host — warm, structured, and emotionally intuitive.\n\nDating Bio Prompt: “I’ll plan the date, remember your favorite drink, and check in when you’ve had a long day. If you’re looking for something real — and mutual — I’m here for it.”\n\nIn-App Persona Card: “Meet the Consul 💐 — nurturing, community-minded, and full of heart. They’re not here for the games — just real connection, mutual care, and a little old-school romance.”"
+        }
+    },
+    relationships: [],
+    growthPath: ["Develop a strong sense of self independent of others' approval", "Learn to say 'no' and set boundaries", "Practice handling constructive conflict directly"],
+    archetypes: ['The Heart-First Host', 'The Community Caretaker', 'The Reliable Host'],
   },
   'ISTP': {
     title: 'The Virtuoso / Craftsman',
@@ -996,5 +1032,7 @@ export const mbtiTypeDetails: Record<string, any> = {
     archetypes: ['The charismatic entertainer', 'The life of the party', 'The generous friend'],
   },
 };
+
+    
 
     
