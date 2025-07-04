@@ -4,7 +4,7 @@
 import { useState, useEffect, useMemo, useCallback } from "react";
 import { AppLayout } from "@/components/layout/app-layout";
 import { Card, CardContent, CardHeader, CardTitle, CardDescription, CardFooter } from "@/components/ui/card";
-import { Sparkles, PlusCircle, ClipboardList, Users, MessageSquare, Route, MapPin, CalendarDays, Users2, TrendingUp, Activity, Map, LayoutGrid, List as ListIcon, Lightbulb, Edit3, Repeat, Star, ShoppingBag, Zap, Eye, BrainCircuit, Signal, ArrowRight, Loader2 } from "lucide-react";
+import { Sparkles, PlusCircle, ClipboardList, Users, MessageSquare, Route, MapPin, CalendarDays, Users2, TrendingUp, Activity, Map, LayoutGrid, List as ListIcon, Lightbulb, Edit3, Repeat, Star, ShoppingBag, Zap, Eye, BrainCircuit, Signal, ArrowRight, Loader2, AlertTriangle } from "lucide-react";
 import { MOCK_USERS, AVAILABLE_PROMPTS, MOCK_HOTSPOTS } from "@/lib/mock-data";
 import { Button } from "@/components/ui/button";
 import { Separator } from "@/components/ui/separator";
@@ -21,8 +21,6 @@ import { useToast } from "@/hooks/use-toast";
 import { EmotionalHotspotsUpsell } from "@/components/dashboard/emotional-hotspots-upsell";
 import { fetchMomentsForUser, fetchUserChatCount } from "@/app/actions";
 import { Skeleton } from "@/components/ui/skeleton";
-import { doc, updateDoc } from "firebase/firestore";
-import { db } from "@/lib/firebase";
 
 interface DashboardClientProps {
     currentUser: UserProfile;
@@ -206,30 +204,50 @@ export function DashboardClient({ currentUser }: DashboardClientProps) {
     );
   }, [currentUser.challenges]);
   
-  const handleActivateGlow = async () => {
-    if (!currentUser) return;
+  const handlePurchaseGlowBoost = async () => {
+    if (!currentUser) {
+      toast({ title: "Not Logged In", description: "You must be logged in to make a purchase.", variant: "destructive" });
+      router.push('/login-form');
+      return;
+    }
+
+    const priceId = process.env.NEXT_PUBLIC_STRIPE_GLOW_BOOST_PRICE_ID;
+    if (!priceId) {
+      toast({
+        title: "Temporarily Unavailable",
+        description: "This booster is not available for purchase right now. Please check back later.",
+        variant: "destructive",
+      });
+      console.error("Stripe Price ID for Glow Boost is missing.");
+      return;
+    }
+
     setIsGlowActivating(true);
     try {
-      const userDocRef = doc(db, 'users', currentUser.id);
-      const expiresAt = addHours(new Date(), 24).toISOString();
-      
-      await updateDoc(userDocRef, {
-        glowEffect: {
-          active: true,
-          expiresAt: expiresAt,
-        },
+      const response = await fetch('/api/create-checkout-session', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          priceId,
+          userId: currentUser.id,
+          mode: 'payment',
+          metadata: { purchase_item: 'glow_boost' },
+        }),
       });
 
-      toast({
-        title: "Glow Mode Activated! ✨",
-        description: "Your profile will stand out for the next 24 hours.",
-      });
-      // The profile will re-render due to the useAuth hook's listener.
+      const sessionData = await response.json();
+
+      if (!response.ok || !sessionData.sessionId) {
+        throw new Error(sessionData.error || 'Failed to create checkout session.');
+      }
+      
+      router.push(`/payment/initiate-stripe-redirect?sessionId=${sessionData.sessionId}`);
+
     } catch (error: any) {
-      console.error("Error activating Glow Mode:", error);
+      console.error("Glow Boost purchase process error:", error);
       toast({
-        title: "Activation Failed",
-        description: error.message || "Could not activate Glow Mode.",
+        title: "Purchase Failed",
+        description: error.message || "An unexpected error occurred. Please try again.",
         variant: "destructive",
       });
     } finally {
@@ -502,9 +520,16 @@ export function DashboardClient({ currentUser }: DashboardClientProps) {
                 )}
               </div>
             ) : (
-              <p className="text-muted-foreground text-center py-4">
-                No moments logged in the past week. Go out and explore!
-              </p>
+              <div className="text-center py-8 text-muted-foreground flex flex-col items-center gap-3">
+                <Route className="w-16 h-16 text-primary/60" />
+                <p className="text-lg font-semibold text-foreground">Your Weekly Trail is Clear</p>
+                <p className="max-w-md">This map shows moments from the last 7 days. Log a new one to start seeing your path!</p>
+                <Button asChild className="mt-2 bg-primary/90 hover:bg-primary text-primary-foreground">
+                  <Link href="/log-moment">
+                    <PlusCircle className="mr-2 h-4 w-4" /> Log a New Moment
+                  </Link>
+                </Button>
+              </div>
             )}
           </CardContent>
         </Card>
@@ -575,7 +600,7 @@ export function DashboardClient({ currentUser }: DashboardClientProps) {
                         size="sm"
                         onClick={
                           isGlowBooster
-                            ? handleActivateGlow
+                            ? handlePurchaseGlowBoost
                             : () => toast({ title: "Coming Soon!", description: `${booster.title} checkout is not yet implemented.` })
                         }
                         disabled={isDisabled}
@@ -584,7 +609,7 @@ export function DashboardClient({ currentUser }: DashboardClientProps) {
                           <Loader2 className="mr-2 h-4 w-4 animate-spin" />
                         ) : null}
                         {isGlowBooster
-                          ? isGlowActivating ? "Activating..." : isGlowModeActive ? "Active" : "Purchase"
+                          ? isGlowActivating ? "Processing..." : isGlowModeActive ? "Active" : "Purchase"
                           : "Purchase"}
                       </Button>
                     </CardFooter>
