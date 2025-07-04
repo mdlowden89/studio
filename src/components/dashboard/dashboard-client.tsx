@@ -8,7 +8,7 @@ import { Sparkles, PlusCircle, ClipboardList, Users, MessageSquare, Route, MapPi
 import { MOCK_USERS, AVAILABLE_PROMPTS, MOCK_HOTSPOTS } from "@/lib/mock-data";
 import { Button } from "@/components/ui/button";
 import { Separator } from "@/components/ui/separator";
-import { subDays, isAfter, format, getDay } from "date-fns";
+import { subDays, isAfter, format, getDay, addHours } from "date-fns";
 import { MomentsMap } from "@/components/dashboard/moments-map";
 import { MomentGalleryItem } from "@/components/moments/moment-gallery-item";
 import Link from "next/link";
@@ -19,8 +19,10 @@ import { FreeBoostUpsellDialog } from "@/components/pricing/free-boost-upsell-di
 import { useSearchParams, useRouter } from "next/navigation";
 import { useToast } from "@/hooks/use-toast";
 import { EmotionalHotspotsUpsell } from "@/components/dashboard/emotional-hotspots-upsell";
-import { fetchMomentsForUser, fetchUserChatCount, activateGlowMode } from "@/app/actions";
+import { fetchMomentsForUser, fetchUserChatCount } from "@/app/actions";
 import { Skeleton } from "@/components/ui/skeleton";
+import { doc, updateDoc } from "firebase/firestore";
+import { db } from "@/lib/firebase";
 
 interface DashboardClientProps {
     currentUser: UserProfile;
@@ -207,21 +209,32 @@ export function DashboardClient({ currentUser }: DashboardClientProps) {
   const handleActivateGlow = async () => {
     if (!currentUser) return;
     setIsGlowActivating(true);
-    const result = await activateGlowMode(currentUser.id);
-    if (result.success) {
+    try {
+      const userDocRef = doc(db, 'users', currentUser.id);
+      const expiresAt = addHours(new Date(), 24).toISOString();
+      
+      await updateDoc(userDocRef, {
+        glowEffect: {
+          active: true,
+          expiresAt: expiresAt,
+        },
+      });
+
       toast({
         title: "Glow Mode Activated! ✨",
         description: "Your profile will stand out for the next 24 hours.",
       });
       // The profile will re-render due to the useAuth hook's listener.
-    } else {
+    } catch (error: any) {
+      console.error("Error activating Glow Mode:", error);
       toast({
         title: "Activation Failed",
-        description: result.error || "Could not activate Glow Mode.",
+        description: error.message || "Could not activate Glow Mode.",
         variant: "destructive",
       });
+    } finally {
+      setIsGlowActivating(false);
     }
-    setIsGlowActivating(false);
   };
   
   const isGlowModeActive = useMemo(() => {

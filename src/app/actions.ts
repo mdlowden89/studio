@@ -699,26 +699,6 @@ export async function checkForNewLikes(userId: string): Promise<boolean> {
   const snapshot = await getDocs(q);
   return !snapshot.empty;
 }
-
-export async function activateGlowMode(userId: string): Promise<{ success: boolean; error?: string }> {
-  try {
-    const userDocRef = doc(db, 'users', userId);
-    const expiresAt = addHours(new Date(), 24).toISOString();
-
-    await updateDoc(userDocRef, {
-      glowEffect: {
-        active: true,
-        expiresAt: expiresAt,
-      },
-    });
-
-    console.log(`Glow Mode activated for user ${userId}, expires at ${expiresAt}`);
-    return { success: true };
-  } catch (error: any) {
-    console.error("Error activating Glow Mode:", error);
-    return { success: false, error: error.message || "Failed to activate Glow Mode." };
-  }
-}
     
 export async function updateUserMbtiType(userId: string, mbtiType: string): Promise<{ success: boolean; error?: string }> {
   if (!userId || !mbtiType || mbtiType.length !== 4) {
