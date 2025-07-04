@@ -1,7 +1,7 @@
 
 'use client';
 
-import { useState, useEffect, useRef } from 'react';
+import { useState, useEffect, useRef, useCallback } from 'react';
 import { useRouter } from 'next/navigation';
 import { AppLayout } from '@/components/layout/app-layout';
 import { Card, CardContent, CardHeader, CardTitle, CardDescription, CardFooter } from '@/components/ui/card';
@@ -38,6 +38,40 @@ export default function MbtiQuizPage() {
   const totalQuestions = mbtiQuizQuestions.length;
   const isPremium = userProfile?.subscription?.status === 'active' || userProfile?.email === 'mlowdencrossd@gmail.com';
 
+  const calculateResult = useCallback(async (finalAnswers: Record<number, string>) => {
+    if (Object.keys(finalAnswers).length < totalQuestions) return;
+
+    const counts = { E: 0, I: 0, S: 0, N: 0, T: 0, F: 0, J: 0, P: 0 };
+    Object.values(finalAnswers).forEach(answer => {
+      counts[answer as keyof typeof counts]++;
+    });
+
+    const mbtiType = [
+      counts.E >= counts.I ? 'E' : 'I',
+      counts.S >= counts.N ? 'S' : 'N',
+      counts.T >= counts.F ? 'T' : 'F',
+      counts.J >= counts.P ? 'J' : 'P'
+    ].join('');
+
+    setResult(mbtiType);
+
+    if (user) {
+      const response = await updateUserMbtiType(user.uid, mbtiType);
+      if (response.success) {
+        toast({
+          title: "Quiz Complete!",
+          description: `Your personality type is ${mbtiType}. We've automatically saved it to your profile.`,
+        });
+      } else {
+        toast({
+          title: "Auto-save failed",
+          description: "Could not automatically save your result. Please use the 'Save to Profile' button.",
+          variant: "destructive",
+        });
+      }
+    }
+  }, [totalQuestions, user, toast]);
+
   useEffect(() => {
     if (isAuthLoading || !userProfile || isInitialLoadDone.current) {
         if (!isAuthLoading && !isInitialLoadDone.current) {
@@ -64,28 +98,10 @@ export default function MbtiQuizPage() {
 
     isInitialLoadDone.current = true;
     setIsLoadingQuiz(false);
-  }, [userProfile, isAuthLoading, totalQuestions]);
+  }, [userProfile, isAuthLoading, totalQuestions, toast, calculateResult]);
 
 
-  const calculateResult = (finalAnswers: Record<number, string>) => {
-    if (Object.keys(finalAnswers).length < totalQuestions) return;
-
-    const counts = { E: 0, I: 0, S: 0, N: 0, T: 0, F: 0, J: 0, P: 0 };
-    Object.values(finalAnswers).forEach(answer => {
-      counts[answer as keyof typeof counts]++;
-    });
-
-    const mbtiType = [
-      counts.E >= counts.I ? 'E' : 'I',
-      counts.S >= counts.N ? 'S' : 'N',
-      counts.T >= counts.F ? 'T' : 'F',
-      counts.J >= counts.P ? 'J' : 'P'
-    ].join('');
-
-    setResult(mbtiType);
-  };
-
-  const handleAnswerSelect = (answerValue: string) => {
+  const handleAnswerSelect = async (answerValue: string) => {
     const newAnswers = { ...answers, [currentQuestionIndex]: answerValue };
     setAnswers(newAnswers);
 
@@ -98,7 +114,7 @@ export default function MbtiQuizPage() {
     if (currentQuestionIndex < totalQuestions - 1) {
       setCurrentQuestionIndex(currentQuestionIndex + 1);
     } else {
-      calculateResult(newAnswers);
+      await calculateResult(newAnswers);
     }
   };
   
@@ -393,5 +409,3 @@ export default function MbtiQuizPage() {
     </AppLayout>
   );
 }
-
-    
