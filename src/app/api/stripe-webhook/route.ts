@@ -5,6 +5,7 @@ import { Readable } from 'stream';
 import { db } from '@/lib/firebase';
 import { doc, updateDoc, collection, query, where, getDocs, limit } from 'firebase/firestore';
 import type { SubscriptionInfo } from '@/lib/types';
+import { addHours } from 'date-fns';
 
 // Initialize Stripe with the secret key
 const stripe = new Stripe(process.env.STRIPE_SECRET_KEY!, {
@@ -73,17 +74,55 @@ export async function POST(request: NextRequest) {
       const session = event.data.object as Stripe.Checkout.Session;
       const userId = session.client_reference_id;
       
-      if (!userId || !session.subscription) {
-        console.warn('Webhook Error: Missing client_reference_id or subscription ID in checkout.session.completed event.');
+      if (!userId) {
+        console.warn('Webhook Error: Missing client_reference_id in checkout.session.completed event.');
         break;
       }
       
-      console.log(`Checkout session completed for user ID: ${userId}, subscription ID: ${session.subscription}`);
-      
-      // Retrieve the full subscription object to get all details
-      const subscription = await stripe.subscriptions.retrieve(session.subscription as string);
-      
-      await updateSubscriptionStatus(userId, subscription);
+      // Handle subscription-based checkouts
+      if (session.mode === 'subscription') {
+          if (!session.subscription) {
+            console.warn(`Webhook Error: Missing subscription ID for user ${userId} in subscription mode checkout.`);
+            break;
+          }
+          console.log(`Checkout session completed for user ID: ${userId}, subscription ID: ${session.subscription}`);
+          const subscription = await stripe.subscriptions.retrieve(session.subscription as string);
+          await updateSubscriptionStatus(userId, subscription);
+      } 
+      // Handle one-time payment checkouts
+      else if (session.mode === 'payment') {
+          const purchaseItem = session.metadata?.purchase_item;
+          console.log(`One-time payment checkout session completed for user ID: ${userId}, item: ${purchaseItem}`);
+          
+          if (purchaseItem === 'glow_boost') {
+              const userDocRef = doc(db, 'users', userId);
+              const expiresAt = addHours(new Date(), 24).toISOString();
+              await updateDoc(userDocRef, {
+                  glowEffect: {
+                      active: true,
+                      expiresAt: expiresAt,
+                  },
+              });
+              console.log(`Successfully activated Glow Mode for user ${userId}.`);
+          }
+          // Placeholder handlers for other a la carte items
+          else if (purchaseItem === 'echo_replay') {
+              // TODO: Implement logic to grant an Echo Replay token to the user's profile
+              console.log(`TODO: Grant Echo Replay token to user ${userId}.`);
+          } else if (purchaseItem === 'moments_trail_pro') {
+              // TODO: Implement logic to grant temporary Moments Trail Pro access
+              console.log(`TODO: Grant Moments Trail Pro access to user ${userId}.`);
+          } else if (purchaseItem === 'like_reveal') {
+              // TODO: Implement logic to grant a one-time Like Reveal
+              console.log(`TODO: Grant Like Reveal to user ${userId}.`);
+          } else if (purchaseItem === 'fatesync_toolkit') {
+              // TODO: Implement logic to grant FateSync Toolkit access
+              console.log(`TODO: Grant FateSync Toolkit to user ${userId}.`);
+          }
+          else {
+            console.warn(`Unhandled purchase item '${purchaseItem}' for user ${userId}.`);
+          }
+      }
       break;
     }
     
