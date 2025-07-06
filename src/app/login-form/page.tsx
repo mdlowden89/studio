@@ -10,7 +10,7 @@ import { Label } from '@/components/ui/label';
 import { CrossdLogoIcon } from '@/components/icons/crossd-logo';
 import { useState } from 'react';
 import { Eye, EyeOff, Loader2 } from 'lucide-react';
-import { signInWithEmailAndPassword } from "firebase/auth";
+import { signInWithEmailAndPassword, setPersistence, browserSessionPersistence } from "firebase/auth";
 import { auth } from "@/lib/firebase";
 import { useToast } from "@/hooks/use-toast";
 
@@ -35,15 +35,18 @@ export default function LoginFormPage() {
     }
 
     try {
+      await setPersistence(auth, browserSessionPersistence);
       await signInWithEmailAndPassword(auth, email, password);
       // Redirection is now handled by AuthHandler.
       toast({ title: "Login Successful!", description: "Welcome back! Redirecting to your dashboard..." });
       // We no longer call router.push here.
     } catch (error: any) {
       console.error("Login error:", error);
-      let errorMessage = "Invalid credentials. Please try again.";
-      if (error.code === 'auth/user-not-found' || error.code === 'auth/wrong-password' || error.code === 'auth/invalid-credential') {
+      let errorMessage = "An unexpected error occurred. Please try again.";
+      if (error.code === 'auth/invalid-credential') {
         errorMessage = "Invalid email or password. Please check your credentials.";
+      } else if (error.code === 'auth/invalid-api-key') {
+        errorMessage = "The Firebase API Key is not valid. Please check your .env configuration.";
       }
       toast({
         title: "Login Failed",
@@ -51,7 +54,7 @@ export default function LoginFormPage() {
         variant: "destructive",
       });
       setIsLoading(false);
-    } 
+    }
   };
 
   return (

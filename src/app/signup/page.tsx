@@ -11,7 +11,7 @@ import { Label } from '@/components/ui/label';
 import { CrossdLogoIcon } from '@/components/icons/crossd-logo';
 import { useToast } from "@/hooks/use-toast";
 import { Eye, EyeOff, Loader2 } from 'lucide-react';
-import { createUserWithEmailAndPassword, updateProfile } from "firebase/auth";
+import { createUserWithEmailAndPassword, updateProfile, setPersistence, browserSessionPersistence } from "firebase/auth";
 import { auth, db } from "@/lib/firebase";
 import { doc, setDoc } from 'firebase/firestore';
 import type { UserProfile, Challenge } from '@/lib/types';
@@ -59,6 +59,7 @@ export default function SignUpPage() {
     }
 
     try {
+      await setPersistence(auth, browserSessionPersistence);
       // 1. Create user in Firebase Auth
       const userCredential = await createUserWithEmailAndPassword(auth, email, password);
       const user = userCredential.user;
@@ -111,6 +112,8 @@ export default function SignUpPage() {
         errorMessage = "This email address is already in use by another account.";
       } else if (error.code === 'auth/weak-password') {
         errorMessage = "The password is too weak. Please use at least 6 characters.";
+      } else if (error.code === 'auth/invalid-api-key') {
+        errorMessage = "The Firebase API Key is not valid. Please check your .env configuration.";
       }
       toast({
         title: "Sign Up Failed",
