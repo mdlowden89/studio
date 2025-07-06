@@ -296,8 +296,8 @@ export function ProfileDetails({ user }: ProfileDetailsProps) {
       drinking, smoking, zodiacSign, datingIntentions, religion, relationshipType,
       mbtiType, idealMbtiType,
       locationAddress, 
-      locationName: currentLocationName || (locationAddress ? locationAddress.split(',')[0] : user.locationName),
-      locationCoordinates: currentCoordinates || user.locationCoordinates,
+      locationName: currentLocationName || (locationAddress ? locationAddress.split(',')[0] : user.locationName) || null,
+      locationCoordinates: currentCoordinates || user.locationCoordinates || null,
       locationServicesEnabled,
       onboardingComplete: true,
     };
