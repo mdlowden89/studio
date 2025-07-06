@@ -1,4 +1,3 @@
-
 "use client";
 
 import Link from 'next/link';
@@ -10,6 +9,7 @@ import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { CrossdLogoIcon } from '@/components/icons/crossd-logo';
 import { useToast } from "@/hooks/use-toast";
+import { ToastAction } from "@/components/ui/toast";
 import { Eye, EyeOff, Loader2 } from 'lucide-react';
 import { createUserWithEmailAndPassword, updateProfile, setPersistence, browserSessionPersistence } from "firebase/auth";
 import { auth, db } from "@/lib/firebase";
@@ -108,18 +108,30 @@ export default function SignUpPage() {
     } catch (error: any) {
       console.error("Sign up error:", error);
       let errorMessage = "Something went wrong. Please try again.";
+
       if (error.code === 'auth/email-already-in-use') {
-        errorMessage = "This email address is already in use by another account.";
-      } else if (error.code === 'auth/weak-password') {
-        errorMessage = "The password is too weak. Please use at least 6 characters.";
-      } else if (error.code === 'auth/invalid-api-key') {
-        errorMessage = "The Firebase API Key is not valid. Please check your .env configuration.";
+        toast({
+          title: "Account Already Exists",
+          description: "An account with this email is already registered.",
+          variant: "destructive",
+          action: (
+            <ToastAction altText="Log In" asChild>
+              <Link href="/login-form">Log In</Link>
+            </ToastAction>
+          ),
+        });
+      } else {
+        if (error.code === 'auth/weak-password') {
+          errorMessage = "The password is too weak. Please use at least 6 characters.";
+        } else if (error.code === 'auth/invalid-api-key') {
+          errorMessage = "The Firebase API Key is not valid. Please check your .env configuration.";
+        }
+        toast({
+          title: "Sign Up Failed",
+          description: errorMessage,
+          variant: "destructive",
+        });
       }
-      toast({
-        title: "Sign Up Failed",
-        description: errorMessage,
-        variant: "destructive",
-      });
       setIsLoading(false);
     }
   };
