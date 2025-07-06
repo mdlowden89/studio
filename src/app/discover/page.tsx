@@ -20,7 +20,7 @@ export default function DiscoverPage() {
   const [showPremiumUpsell, setShowPremiumUpsell] = useState(false);
   const { user, userProfile } = useAuth();
 
-  const isPremium = userProfile?.subscription?.status === 'active' || userProfile?.email === 'mlowdencrossd@gmail.com';
+  const isPremium = userProfile?.subscription?.status === 'active';
 
   useEffect(() => {
     // Don't show the popup if the user is not logged in or is premium.

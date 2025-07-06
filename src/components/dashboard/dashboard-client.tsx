@@ -75,7 +75,7 @@ export function DashboardClient({ currentUser }: DashboardClientProps) {
   const router = useRouter();
   const { toast } = useToast();
 
-  const isPremium = currentUser.subscription?.status === 'active' || currentUser.email === 'mlowdencrossd@gmail.com';
+  const isPremium = currentUser.subscription?.status === 'active';
 
   const momentsLoggedCount = useMemo(() => userMoments.length, [userMoments]);
   const pendingMomentsCount = useMemo(() => userMoments.filter(m => m.status === 'pending').length, [userMoments]);

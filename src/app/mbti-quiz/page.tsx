@@ -36,7 +36,7 @@ export default function MbtiQuizPage() {
   const isInitialLoadDone = useRef(false);
 
   const totalQuestions = mbtiQuizQuestions.length;
-  const isPremium = userProfile?.subscription?.status === 'active' || userProfile?.email === 'mlowdencrossd@gmail.com';
+  const isPremium = userProfile?.subscription?.status === 'active';
 
   const calculateResult = useCallback((finalAnswers: Record<number, string>) => {
     if (Object.keys(finalAnswers).length < totalQuestions) return;

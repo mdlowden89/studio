@@ -67,7 +67,7 @@ export default function MomentsPage() {
 
   const momentsWithCoords = moments.filter(m => m.coordinates);
 
-  const isPremium = userProfile?.subscription?.status === 'active' || userProfile?.email === 'mlowdencrossd@gmail.com';
+  const isPremium = userProfile?.subscription?.status === 'active';
 
   const renderContent = () => {
     if (isLoading || isAuthLoading) {

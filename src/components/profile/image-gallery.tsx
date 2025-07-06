@@ -229,15 +229,6 @@ export function ImageGallery({ initialImages, userId }: ImageGalleryProps) {
           </Card>
         )}
       </div>
-      {userProfile && userProfile.email && userProfile.email === 'mattdavidlowden89@gmail.com' && (
-        <Alert variant="default" className="mt-6 border-primary/30">
-          <Info className="h-4 w-4 text-primary" />
-          <AlertTitle className="text-primary">Live Data Notice</AlertTitle>
-          <AlertDescription className="text-xs text-muted-foreground">
-            Image changes are now saved directly to Firebase Storage and your Firestore profile.
-          </AlertDescription>
-        </Alert>
-      )}
     </div>
   );
 }
