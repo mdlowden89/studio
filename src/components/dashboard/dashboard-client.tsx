@@ -290,7 +290,7 @@ export function DashboardClient({ currentUser }: DashboardClientProps) {
     {
       id: 'like_reveal',
       icon: Eye,
-      title: "Free Like Reveal",
+      title: "Like Reveal",
       price: "£1.49",
       priceId: process.env.NEXT_PUBLIC_STRIPE_LIKE_REVEAL_PRICE_ID,
       description: "View one of your blurred Likes without needing to match first.",
@@ -392,14 +392,14 @@ export function DashboardClient({ currentUser }: DashboardClientProps) {
                     </CardDescription>
                 </CardHeader>
                 <CardContent>
-                    <p className="text-sm text-foreground mb-3">
-                        If you don't know your MBTI type, take our quick quiz to find out!
-                    </p>
+                  <p className="text-sm text-foreground mb-3">
+                      Your personality type is currently set to: <span className="font-semibold text-primary">{currentUser.mbtiType || "Not Set"}</span>
+                  </p>
                 </CardContent>
                 <CardFooter>
                     <Link href="/mbti-quiz" passHref className="w-full">
                         <Button size="sm" className="w-full bg-primary/90 hover:bg-primary text-primary-foreground text-xs">
-                            <BrainCircuit className="mr-1.5 h-3.5 w-3.5" /> Take the Quiz
+                            <BrainCircuit className="mr-1.5 h-3.5 w-3.5" /> {currentUser.mbtiType ? 'Retake' : 'Take'} the Quiz
                         </Button>
                     </Link>
                 </CardFooter>
