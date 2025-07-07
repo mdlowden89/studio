@@ -3,9 +3,9 @@ import { NextResponse, type NextRequest } from 'next/server';
 import Stripe from 'stripe';
 import { Readable } from 'stream';
 import { db } from '@/lib/firebase';
-import { doc, updateDoc, collection, query, where, getDocs, limit } from 'firebase/firestore';
+import { doc, updateDoc, collection, query, where, getDocs, limit, increment } from 'firebase/firestore';
 import type { SubscriptionInfo } from '@/lib/types';
-import { addHours } from 'date-fns';
+import { addHours, addDays } from 'date-fns';
 
 // Initialize Stripe with the secret key
 const stripe = new Stripe(process.env.STRIPE_SECRET_KEY!, {
@@ -107,17 +107,31 @@ export async function POST(request: NextRequest) {
           }
           // Placeholder handlers for other a la carte items
           else if (purchaseItem === 'echo_replay') {
-              // TODO: Implement logic to grant an Echo Replay token to the user's profile
-              console.log(`TODO: Grant Echo Replay token to user ${userId}.`);
+              const userDocRef = doc(db, 'users', userId);
+              await updateDoc(userDocRef, {
+                  echoReplaysAvailable: increment(1),
+              });
+              console.log(`Successfully granted Echo Replay token to user ${userId}.`);
           } else if (purchaseItem === 'moments_trail_pro') {
-              // TODO: Implement logic to grant temporary Moments Trail Pro access
-              console.log(`TODO: Grant Moments Trail Pro access to user ${userId}.`);
+              const userDocRef = doc(db, 'users', userId);
+              const expiresAt = addDays(new Date(), 7).toISOString();
+              await updateDoc(userDocRef, {
+                  momentsTrailProExpiresAt: expiresAt,
+              });
+              console.log(`Successfully set Moments Trail Pro expiration for user ${userId} to ${expiresAt}.`);
           } else if (purchaseItem === 'like_reveal') {
-              // TODO: Implement logic to grant a one-time Like Reveal
-              console.log(`TODO: Grant Like Reveal to user ${userId}.`);
+              const userDocRef = doc(db, 'users', userId);
+              await updateDoc(userDocRef, {
+                  likeRevealsAvailable: increment(1),
+              });
+              console.log(`Successfully granted Like Reveal to user ${userId}.`);
           } else if (purchaseItem === 'fatesync_toolkit') {
-              // TODO: Implement logic to grant FateSync Toolkit access
-              console.log(`TODO: Grant FateSync Toolkit to user ${userId}.`);
+              const userDocRef = doc(db, 'users', userId);
+              const expiresAt = addDays(new Date(), 7).toISOString();
+              await updateDoc(userDocRef, {
+                  fateSyncToolkitExpiresAt: expiresAt,
+              });
+              console.log(`Successfully set FateSync Toolkit expiration for user ${userId} to ${expiresAt}.`);
           }
           else {
             console.warn(`Unhandled purchase item '${purchaseItem}' for user ${userId}.`);
