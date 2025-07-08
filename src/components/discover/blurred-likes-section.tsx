@@ -88,19 +88,18 @@ export function BlurredLikesSection({ isPremium }: BlurredLikesSectionProps) {
         </CardDescription>
       </CardHeader>
       <CardContent className="text-center">
-        <div className="relative h-80 w-full max-w-sm mx-auto mb-8 flex items-center justify-center">
+        <div className="relative h-80 w-full max-w-sm mx-auto mb-8">
           {mockLikers.slice(0, 3).map((user, index) => {
             const cardFanMiddleIndex = (mockLikers.slice(0, 3).length - 1) / 2;
-            const rotation = (index - cardFanMiddleIndex) * 3; // Very subtle rotation
-            const translateX = 0; // No horizontal movement ensures perfect centering
-            const translateY = index * 4; // Stack them slightly downwards
+            const rotation = (index - cardFanMiddleIndex) * 3;
+            const translateY = index * 8; // Increased for better stacking visibility
             
             return (
               <Card
                 key={user.id}
-                className="absolute w-56 h-80 bg-card/80 shadow-2xl overflow-hidden border-2 border-primary/30"
+                className="absolute w-56 h-80 bg-card/80 shadow-2xl overflow-hidden border-2 border-primary/30 left-1/2"
                 style={{
-                  transform: `rotate(${rotation}deg) translateX(${translateX}px) translateY(${translateY}px)`,
+                  transform: `translateX(-50%) rotate(${rotation}deg) translateY(${translateY}px)`,
                   zIndex: mockLikers.length - index,
                   filter: 'blur(5px)',
                 }}
