@@ -393,13 +393,18 @@ export function DashboardClient({ currentUser }: DashboardClientProps) {
                 </CardHeader>
                 <CardContent>
                   <p className="text-sm text-foreground mb-3">
-                      Your personality type is currently set to: <span className="font-semibold text-primary">{currentUser.mbtiType || "Not Set"}</span>
+                    Your personality type is currently set to: <span className="font-semibold text-primary">{currentUser.mbtiType || "Not Set"}</span>
                   </p>
+                  { !currentUser.mbtiType && (
+                    <p className="text-xs text-muted-foreground">
+                      Curious about your personality? Take our quiz to unlock deeper compatibility insights.
+                    </p>
+                  )}
                 </CardContent>
                 <CardFooter>
                     <Link href="/mbti-quiz" passHref className="w-full">
                         <Button size="sm" className="w-full bg-primary/90 hover:bg-primary text-primary-foreground text-xs">
-                            <BrainCircuit className="mr-1.5 h-3.5 w-3.5" /> {currentUser.mbtiType ? 'Retake' : 'Take'} the Quiz
+                            <BrainCircuit className="mr-1.5 h-3.5 w-3.5" /> {currentUser.mbtiType ? 'Retake the Quiz' : 'Take the Quiz'}
                         </Button>
                     </Link>
                 </CardFooter>
@@ -587,7 +592,7 @@ export function DashboardClient({ currentUser }: DashboardClientProps) {
             <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
               {boosters.slice(0, 4).map((booster) => {
                 const BoosterIcon = booster.icon;
-                const isGlowBooster = booster.id === "glow_boost";
+                const isGlowBooster = booster.title === "Glow Mode Boost";
                 const isDisabled = (isGlowBooster && isGlowModeActive) || isActivatingBooster;
 
                 return (
