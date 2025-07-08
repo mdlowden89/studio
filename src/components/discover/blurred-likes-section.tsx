@@ -1,4 +1,3 @@
-
 "use client";
 
 import Image from "next/image";
@@ -91,9 +90,9 @@ export function BlurredLikesSection({ isPremium }: BlurredLikesSectionProps) {
       <CardContent className="text-center">
         <div className="relative h-80 w-full max-w-sm mx-auto mb-8 flex items-center justify-center">
           {mockLikers.slice(0, 3).map((user, index) => {
-            const rotation = (index - cardFanMiddleIndex) * 8; // Spread of 8 degrees per card
-            const translateX = (index - cardFanMiddleIndex) * 40; // Spread of 40px per card
-            const translateY = Math.abs(index - cardFanMiddleIndex) * -8; // Arc effect
+            const rotation = (index - cardFanMiddleIndex) * 6; // Reduced rotation
+            const translateX = (index - cardFanMiddleIndex) * 24; // Tighter horizontal spread
+            const translateY = Math.abs(index - cardFanMiddleIndex) * -4; // Shallower arc
 
             return (
               <Card
