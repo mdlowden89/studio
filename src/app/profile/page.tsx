@@ -51,7 +51,7 @@ export default function ProfilePage() {
         </Card>
 
         <Tabs defaultValue="details" className="w-full">
-          <TabsList className="grid w-full grid-cols-2 sm:grid-cols-4 md:grid-cols-4 mb-6 !bg-card/60 border border-primary/50 p-1 rounded-lg">
+          <TabsList className="grid w-full grid-cols-1 sm:grid-cols-2 md:grid-cols-4 mb-6 !bg-card/60 border border-primary/50 p-1 rounded-lg">
             <TabsTrigger 
               value="details" 
               className="data-[state=active]:bg-primary data-[state=active]:text-primary-foreground data-[state=active]:shadow-md data-[state=active]:shadow-primary/50 hover:text-primary focus-visible:ring-primary"
