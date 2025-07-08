@@ -1,3 +1,4 @@
+
 "use client";
 
 import Image from "next/image";
@@ -54,7 +55,6 @@ export function BlurredLikesSection({ isPremium }: BlurredLikesSectionProps) {
     );
   }
 
-  const cardFanMiddleIndex = (mockLikers.length - 1) / 2;
 
   if (isPremium) {
     return (
@@ -90,10 +90,11 @@ export function BlurredLikesSection({ isPremium }: BlurredLikesSectionProps) {
       <CardContent className="text-center">
         <div className="relative h-80 w-full max-w-sm mx-auto mb-8 flex items-center justify-center">
           {mockLikers.slice(0, 3).map((user, index) => {
-            const rotation = (index - cardFanMiddleIndex) * 6; // Reduced rotation
-            const translateX = (index - cardFanMiddleIndex) * 24; // Tighter horizontal spread
-            const translateY = Math.abs(index - cardFanMiddleIndex) * -4; // Shallower arc
-
+            const cardFanMiddleIndex = (mockLikers.slice(0, 3).length - 1) / 2;
+            const rotation = (index - cardFanMiddleIndex) * 3; // Very subtle rotation
+            const translateX = 0; // No horizontal movement ensures perfect centering
+            const translateY = index * 4; // Stack them slightly downwards
+            
             return (
               <Card
                 key={user.id}
