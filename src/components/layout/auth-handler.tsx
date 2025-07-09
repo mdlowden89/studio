@@ -49,12 +49,13 @@ export function AuthHandler({ children }: { children: React.ReactNode }) {
 
     const isProtectedRoute = PROTECTED_ROUTES.some(route => pathname.startsWith(route));
     const isAuthRoute = AUTH_ROUTES.includes(pathname);
+    const isOnboardingRoute = pathname === '/onboarding';
 
     // This state indicates a user authenticated with Firebase Auth
     // but lacks a corresponding profile document in Firestore.
     // This can happen if the signup process is interrupted. We sign them out
     // and ask them to sign up again to create the missing profile.
-    if (user && !userProfile && !isAuthRoute) {
+    if (user && !userProfile && !isAuthRoute && !isOnboardingRoute) {
         auth.signOut();
         router.push('/signup');
         toast({
@@ -66,6 +67,14 @@ export function AuthHandler({ children }: { children: React.ReactNode }) {
         return;
     }
 
+    // New Onboarding Logic:
+    // If user has a profile but hasn't completed onboarding, and they are not already on the onboarding page,
+    // force them to the onboarding page.
+    if (user && userProfile && !userProfile.onboardingComplete && !isOnboardingRoute) {
+      router.push('/onboarding');
+      return;
+    }
+
 
     if (!user && isProtectedRoute) {
       // If the user is not logged in and tries to access a protected route,
@@ -73,8 +82,8 @@ export function AuthHandler({ children }: { children: React.ReactNode }) {
       router.push('/login-form');
     }
 
-    if (user && userProfile && isAuthRoute) {
-      // If the user is logged in and has a profile, and tries to access the login or sign-up page,
+    if (user && userProfile && userProfile.onboardingComplete && isAuthRoute) {
+      // If a fully onboarded user is logged in and tries to access the login or sign-up page,
       // redirect them to the dashboard.
       router.push('/dashboard');
     }
@@ -86,7 +95,7 @@ export function AuthHandler({ children }: { children: React.ReactNode }) {
     const isProtectedRoute = PROTECTED_ROUTES.some(route => pathname.startsWith(route));
     const isAuthRoute = AUTH_ROUTES.includes(pathname);
 
-    if (isProtectedRoute) {
+    if (isProtectedRoute || pathname === '/onboarding') {
         return <ProtectedRouteLoader>Authenticating...</ProtectedRouteLoader>
     }
     if (isAuthRoute || pathname === '/') {

@@ -6,7 +6,7 @@ import { suggestBioForUser, SuggestBioInput } from "@/ai/flows/suggest-bio-flow"
 import { getPlacePhoto, GetPlacePhotoInput, GetPlacePhotoOutput } from "@/ai/flows/get-place-photo-flow";
 import { getSparkSwipeInsights, SparkSwipeInput, SparkSwipeOutput } from "@/ai/flows/spark-swipe-flow";
 import { db } from "@/lib/firebase";
-import { doc, getDoc, updateDoc, collection, addDoc, serverTimestamp, query, where, limit, getDocs, orderBy, Timestamp, getCountFromServer, deleteField, Query, collectionGroup, startAfter, QueryConstraint } from "firebase/firestore";
+import { doc, getDoc, updateDoc, collection, addDoc, serverTimestamp, query, where, limit, getDocs, orderBy, Timestamp, getCountFromServer, deleteField, Query, collectionGroup, startAfter, QueryConstraint, writeBatch, increment } from "firebase/firestore";
 import type { UserProfile, Achievement, Challenge, Moment, MomentLog, Chat, Notification, ChatMessage, SubscriptionInfo } from "@/lib/types";
 import { addHours } from "date-fns";
 
@@ -18,6 +18,24 @@ export interface UserFilters {
   ethnicity: string;
   religion: string;
   relationshipType: string;
+}
+
+export async function completeOnboarding(userId: string, data: Partial<UserProfile>): Promise<{ success: boolean; error?: string }> {
+  if (!userId) {
+    return { success: false, error: 'User ID is missing.' };
+  }
+
+  try {
+    const userDocRef = doc(db, 'users', userId);
+    await updateDoc(userDocRef, {
+      ...data,
+      onboardingComplete: true, // Crucially mark onboarding as complete
+    });
+    return { success: true };
+  } catch (error: any) {
+    console.error('Error completing onboarding:', error);
+    return { success: false, error: 'Failed to save onboarding data.' };
+  }
 }
 
 export async function getAiSuggestedVibeTags(
@@ -151,6 +169,7 @@ export async function logMoment(momentData: MomentLog): Promise<{ success: boole
     const momentToSave: Omit<Moment, 'id'> = {
       ...momentData,
       status: 'pending',
+      replayed: false,
       loggedAt: momentData.loggedAt ? Timestamp.fromDate(new Date(momentData.loggedAt)) : serverTimestamp(),
     };
     
@@ -421,6 +440,48 @@ export async function denyMomentMatch(momentId: string): Promise<{ success: bool
     } catch (error: any) {
         console.error("Error denying moment match:", error);
         return { success: false, error: error.message };
+    }
+}
+
+export async function replayMoment(userId: string, momentId: string): Promise<{ success: boolean; error?: string }> {
+    const userRef = doc(db, 'users', userId);
+    const momentRef = doc(db, 'moments', momentId);
+
+    try {
+        const userSnap = await getDoc(userRef);
+        const momentSnap = await getDoc(momentRef);
+
+        if (!userSnap.exists() || !momentSnap.exists()) {
+            return { success: false, error: 'User or Moment not found.' };
+        }
+
+        const userProfile = userSnap.data() as UserProfile;
+        const momentData = momentSnap.data() as Moment;
+
+        if ((userProfile.echoReplaysAvailable ?? 0) < 1) {
+            return { success: false, error: 'No Echo Replays available.' };
+        }
+        if (momentData.replayed) {
+            return { success: false, error: 'This moment has already been replayed.' };
+        }
+
+        const batch = writeBatch(db);
+        
+        // Decrement user's replay count
+        batch.update(userRef, { echoReplaysAvailable: increment(-1) });
+        
+        // Reset moment status and mark as replayed
+        batch.update(momentRef, { status: 'pending', replayed: true });
+        
+        await batch.commit();
+        
+        // You might want to re-trigger the matching logic here if applicable
+        // For now, just resetting the status is the main goal.
+
+        return { success: true };
+    } catch (error: any) {
+        console.error("Error replaying moment:", error);
+        return { success: false, error: "Failed to use Echo Replay. Please try again." };
     }
 }
 
