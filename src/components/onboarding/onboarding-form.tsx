@@ -140,16 +140,17 @@ export function OnboardingForm({ user }: OnboardingFormProps) {
       locationCoordinates: currentCoordinates || null,
     };
     
-    // Sanitize object to remove undefined values, which Firestore cannot handle.
-    Object.keys(onboardingData).forEach(keyStr => {
-      const key = keyStr as keyof typeof onboardingData;
-      if (onboardingData[key] === undefined) {
-        delete onboardingData[key];
-      }
-    });
+    // Create a new sanitized object, ensuring no undefined values are sent to Firestore.
+    const sanitizedData: Partial<UserProfile> = {};
+    for (const key in onboardingData) {
+        const typedKey = key as keyof typeof onboardingData;
+        if (onboardingData[typedKey] !== undefined) {
+            sanitizedData[typedKey] = onboardingData[typedKey];
+        }
+    }
     
     try {
-      const result = await completeOnboarding(user.id, onboardingData);
+      const result = await completeOnboarding(user.id, sanitizedData);
       if (result.success) {
         toast({
           title: "Welcome to Crossd!",
