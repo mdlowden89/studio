@@ -129,7 +129,6 @@ export function OnboardingForm({ user }: OnboardingFormProps) {
       name,
       age,
       images: [finalImageURL],
-      heightInches: heightInches ?? undefined,
       height: selectedHeightOption ? selectedHeightOption.label : 'Prefer Not to Say',
       ethnicity,
       work,
@@ -139,6 +138,10 @@ export function OnboardingForm({ user }: OnboardingFormProps) {
       locationName: currentLocationName || (locationAddress ? locationAddress.split(',')[0] : null),
       locationCoordinates: currentCoordinates || null,
     };
+    
+    if (heightInches !== undefined) {
+      onboardingData.heightInches = heightInches;
+    }
     
     try {
       const result = await completeOnboarding(user.id, onboardingData);
