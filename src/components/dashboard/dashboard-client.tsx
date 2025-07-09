@@ -204,25 +204,24 @@ export function DashboardClient({ currentUser }: DashboardClientProps) {
     );
   }, [currentUser.challenges]);
   
-  const handlePurchaseGlowBoost = async () => {
+  const handlePurchaseBooster = async (priceId: string, purchaseItem: string) => {
     if (!currentUser) {
       toast({ title: "Not Logged In", description: "You must be logged in to make a purchase.", variant: "destructive" });
       router.push('/login-form');
       return;
     }
 
-    const priceId = process.env.NEXT_PUBLIC_STRIPE_GLOW_BOOST_PRICE_ID;
     if (!priceId) {
       toast({
         title: "Temporarily Unavailable",
         description: "This booster is not available for purchase right now. Please check back later.",
         variant: "destructive",
       });
-      console.error("Stripe Price ID for Glow Boost is missing.");
+      console.error(`Stripe Price ID for ${purchaseItem} is missing.`);
       return;
     }
 
-    setIsGlowActivating(true);
+    setIsGlowActivating(true); // Using a general activating state for now
     try {
       const response = await fetch('/api/create-checkout-session', {
         method: 'POST',
@@ -231,7 +230,7 @@ export function DashboardClient({ currentUser }: DashboardClientProps) {
           priceId,
           userId: currentUser.id,
           mode: 'payment',
-          metadata: { purchase_item: 'glow_boost' },
+          metadata: { purchase_item: purchaseItem },
         }),
       });
 
@@ -244,7 +243,7 @@ export function DashboardClient({ currentUser }: DashboardClientProps) {
       router.push(`/payment/initiate-stripe-redirect?sessionId=${sessionData.sessionId}`);
 
     } catch (error: any) {
-      console.error("Glow Boost purchase process error:", error);
+      console.error("Booster purchase process error:", error);
       toast({
         title: "Purchase Failed",
         description: error.message || "An unexpected error occurred. Please try again.",
@@ -263,24 +262,6 @@ export function DashboardClient({ currentUser }: DashboardClientProps) {
   return (
     <AppLayout>
       <div className="container mx-auto py-8">
-        {!currentUser.onboardingComplete && (
-            <Card className="mb-8 bg-gradient-to-r from-primary/20 via-card to-card border-2 border-primary shadow-lg">
-              <CardHeader>
-                <CardTitle className="text-2xl font-bold text-primary">Let's Get You Set Up!</CardTitle>
-                <CardDescription className="text-muted-foreground">
-                  Complete your profile to start finding connections. A great profile gets more attention!
-                </CardDescription>
-              </CardHeader>
-              <CardFooter>
-                <Link href="/profile" passHref>
-                  <Button className="bg-primary hover:bg-primary/90 text-primary-foreground">
-                    Complete Your Profile <ArrowRight className="ml-2 h-5 w-5" />
-                  </Button>
-                </Link>
-              </CardFooter>
-            </Card>
-        )}
-
         <Card className="mb-8 bg-card shadow-xl">
           <CardHeader>
             <div className="flex items-center gap-3">
@@ -558,7 +539,7 @@ export function DashboardClient({ currentUser }: DashboardClientProps) {
                       <Button
                         variant="outline"
                         size="sm"
-                        onClick={handlePurchaseGlowBoost}
+                        onClick={() => handlePurchaseBooster(process.env.NEXT_PUBLIC_STRIPE_GLOW_BOOST_PRICE_ID || '', 'glow_boost')}
                         disabled={isGlowModeActive || isGlowActivating}
                       >
                         {isGlowActivating ? (

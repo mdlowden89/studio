@@ -67,15 +67,6 @@ export function AuthHandler({ children }: { children: React.ReactNode }) {
         return;
     }
 
-    // New Onboarding Logic:
-    // If user has a profile but hasn't completed onboarding, and they are not already on the onboarding page,
-    // force them to the onboarding page.
-    if (user && userProfile && !userProfile.onboardingComplete && !isOnboardingRoute) {
-      router.push('/onboarding');
-      return;
-    }
-
-
     if (!user && isProtectedRoute) {
       // If the user is not logged in and tries to access a protected route,
       // redirect them to the login page.
