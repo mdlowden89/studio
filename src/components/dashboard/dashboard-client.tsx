@@ -528,7 +528,7 @@ export function DashboardClient({ currentUser }: DashboardClientProps) {
                 ) : (
                   <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-3">
                     {momentsThisWeek.map(moment => (
-                      <MomentGalleryItem key={moment.id} moment={moment} />
+                      <MomentGalleryItem key={moment.id} moment={moment} userProfile={currentUser}/>
                     ))}
                   </div>
                 )}
@@ -592,7 +592,7 @@ export function DashboardClient({ currentUser }: DashboardClientProps) {
             <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
               {boosters.slice(0, 4).map((booster) => {
                 const BoosterIcon = booster.icon;
-                const isGlowBooster = booster.title === "Glow Mode Boost";
+                const isGlowBooster = booster.id === "glow_boost";
                 const isDisabled = (isGlowBooster && isGlowModeActive) || isActivatingBooster;
 
                 return (
