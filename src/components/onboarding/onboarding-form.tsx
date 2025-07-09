@@ -140,14 +140,9 @@ export function OnboardingForm({ user }: OnboardingFormProps) {
       locationCoordinates: currentCoordinates || null,
     };
     
-    // Create a new sanitized object, ensuring no undefined values are sent to Firestore.
-    const sanitizedData: Partial<UserProfile> = {};
-    for (const key in onboardingData) {
-        const typedKey = key as keyof typeof onboardingData;
-        if (onboardingData[typedKey] !== undefined) {
-            sanitizedData[typedKey] = onboardingData[typedKey];
-        }
-    }
+    // Create a new sanitized object. JSON.stringify automatically omits any keys with 'undefined' values.
+    // This is a robust way to ensure no invalid data is sent to Firestore.
+    const sanitizedData = JSON.parse(JSON.stringify(onboardingData));
     
     try {
       const result = await completeOnboarding(user.id, sanitizedData);
