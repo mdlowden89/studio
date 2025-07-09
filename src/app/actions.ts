@@ -6,7 +6,7 @@ import { suggestBioForUser, SuggestBioInput } from "@/ai/flows/suggest-bio-flow"
 import { getPlacePhoto, GetPlacePhotoInput, GetPlacePhotoOutput } from "@/ai/flows/get-place-photo-flow";
 import { getSparkSwipeInsights, SparkSwipeInput, SparkSwipeOutput } from "@/ai/flows/spark-swipe-flow";
 import { db } from "@/lib/firebase";
-import { doc, getDoc, updateDoc, collection, addDoc, serverTimestamp, query, where, limit, getDocs, orderBy, Timestamp, getCountFromServer, writeBatch, Query, collectionGroup, startAfter, QueryConstraint, deleteField } from "firebase/firestore";
+import { doc, getDoc, updateDoc, collection, addDoc, serverTimestamp, query, where, limit, getDocs, orderBy, Timestamp, getCountFromServer, writeBatch, Query, collectionGroup, startAfter, QueryConstraint, deleteField, increment } from "firebase/firestore";
 import type { UserProfile, Achievement, Challenge, Moment, MomentLog, Chat, Notification, ChatMessage, SubscriptionInfo } from "@/lib/types";
 import { addHours } from "date-fns";
 
@@ -445,6 +445,100 @@ export async function fetchMomentsForUser(userId: string): Promise<Moment[]> {
         return [];
     }
 }
+
+export async function replayMoment(userId: string, momentId: string): Promise<{ success: boolean; error?: string }> {
+  const userDocRef = doc(db, 'users', userId);
+  const momentDocRef = doc(db, 'moments', momentId);
+
+  try {
+    const userSnap = await getDoc(userDocRef);
+    if (!userSnap.exists()) {
+      return { success: false, error: 'User not found.' };
+    }
+    const userData = userSnap.data() as UserProfile;
+    
+    if (!userData.echoReplaysAvailable || userData.echoReplaysAvailable < 1) {
+      return { success: false, error: 'No Echo Replays available.' };
+    }
+
+    const momentSnap = await getDoc(momentDocRef);
+    if (!momentSnap.exists()) {
+        return { success: false, error: 'Moment not found.' };
+    }
+
+    const momentData = momentSnap.data() as Moment;
+
+    const batch = writeBatch(db);
+
+    // Decrement the replay count
+    batch.update(userDocRef, {
+      echoReplaysAvailable: increment(-1),
+    });
+
+    // Reset the moment status to pending
+    batch.update(momentDocRef, {
+      status: 'pending',
+      replayed: true,
+      confirmedUserId: deleteField(), 
+      chatId: deleteField()
+    });
+    
+    await batch.commit();
+
+    // Now re-run the notification logic, similar to logMoment
+    const twoHours = 2 * 60 * 60 * 1000;
+    const loggedAtDate = (momentData.loggedAt as Timestamp).toDate();
+    const twoHoursBefore = new Date(loggedAtDate.getTime() - twoHours);
+    const twoHoursAfter = new Date(loggedAtDate.getTime() + twoHours);
+
+    const momentsRef = collection(db, "moments");
+    const matchQuery = query(
+      momentsRef,
+      where("placeName", "==", momentData.placeName),
+      where("loggedAt", ">=", twoHoursBefore),
+      where("loggedAt", "<=", twoHoursAfter),
+      limit(20) 
+    );
+    const matchSnapshot = await getDocs(matchQuery);
+    const potentialMatchMoments = matchSnapshot.docs.filter(docSnap => {
+      const data = docSnap.data();
+      return data.loggerId !== userId && (data.status === 'pending' || data.status === 'rejected');
+    });
+    
+    if (potentialMatchMoments.length > 0) {
+      const matchedMomentDoc = potentialMatchMoments[0];
+      const matchedMomentData = matchedMomentDoc.data() as Moment;
+      const matchedUserId = matchedMomentData.loggerId;
+      
+      const loggerData = userData; // Use already-fetched user data
+        
+      // Notify User 2 (the matched user) about User 1's replayed moment
+      await addDoc(collection(db, "notifications"), {
+        userId: matchedUserId,
+        senderId: loggerData.id,
+        senderName: loggerData.name,
+        senderImage: loggerData.images[0] || null,
+        type: 'MOMENT_CONFIRMATION',
+        title: `Second Chance: Cross paths with ${loggerData.name}?`,
+        message: `Someone replayed their moment at ${momentData.placeName}. Was it you?`,
+        href: `/confirm-moment/${momentId}`, // Link to User 1's replayed moment
+        read: false,
+        createdAt: serverTimestamp(),
+      });
+      console.log(`Replay notification created for user ${matchedUserId} for moment ${momentId}`);
+      
+    } else {
+        console.log(`Replay for moment ${momentId} completed, but no potential matches found to notify.`);
+    }
+
+    return { success: true };
+
+  } catch (error: any) {
+    console.error("Error replaying moment:", error);
+    return { success: false, error: error.message || "Failed to replay moment." };
+  }
+}
+
 
 export async function fetchUserChatCount(userId: string): Promise<number> {
     try {

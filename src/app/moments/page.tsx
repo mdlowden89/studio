@@ -118,7 +118,7 @@ export default function MomentsPage() {
               </Button>
             </div>
           </div>
-          <MomentList viewMode={viewMode} moments={moments} />
+          <MomentList viewMode={viewMode} moments={moments} userProfile={userProfile} />
         </div>
       </div>
     );

@@ -101,6 +101,7 @@ export interface Moment {
   status: 'pending' | 'confirmed' | 'rejected';
   confirmedUserId?: string;
   chatId?: string;
+  replayed?: boolean;
   // This field is from mock data, we keep it for components that haven't been migrated
   timestamp?: string;
   potentialMatchId?: string; 
