@@ -95,7 +95,7 @@ export default function SignUpPage() {
         achievements: [],
         challenges: initialChallenges,
         locationServicesEnabled: false,
-        onboardingComplete: true,
+        onboardingComplete: false,
       };
 
       await setDoc(doc(db, "users", user.uid), newUserProfile);
