@@ -130,6 +130,7 @@ export function OnboardingForm({ user }: OnboardingFormProps) {
       age,
       images: [finalImageURL],
       height: selectedHeightOption ? selectedHeightOption.label : 'Prefer Not to Say',
+      heightInches,
       ethnicity,
       work,
       datingIntentions,
@@ -139,9 +140,13 @@ export function OnboardingForm({ user }: OnboardingFormProps) {
       locationCoordinates: currentCoordinates || null,
     };
     
-    if (heightInches !== undefined) {
-      onboardingData.heightInches = heightInches;
-    }
+    // Sanitize object to remove undefined values, which Firestore cannot handle.
+    Object.keys(onboardingData).forEach(keyStr => {
+      const key = keyStr as keyof typeof onboardingData;
+      if (onboardingData[key] === undefined) {
+        delete onboardingData[key];
+      }
+    });
     
     try {
       const result = await completeOnboarding(user.id, onboardingData);
@@ -150,9 +155,6 @@ export function OnboardingForm({ user }: OnboardingFormProps) {
           title: "Welcome to Crossd!",
           description: "Your profile is set up. Let the connections begin! Redirecting...",
         });
-        // Using window.location.href forces a full page reload.
-        // This ensures the AuthProvider re-fetches the user profile from scratch,
-        // preventing the redirect loop caused by a stale `onboardingComplete` flag.
         window.location.href = '/dashboard';
       } else {
         throw new Error(result.error || 'The server failed to save your onboarding data.');
