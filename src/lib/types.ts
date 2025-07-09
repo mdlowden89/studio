@@ -53,10 +53,6 @@ export interface UserProfile {
   mbtiQuizProgress?: {
     answers: Record<number, string>;
   };
-  echoReplaysAvailable?: number;
-  momentsTrailProExpiresAt?: string; // ISO string
-  likeRevealsAvailable?: number;
-  fateSyncToolkitExpiresAt?: string; // ISO string
 }
 
 export interface ProfilePrompt {

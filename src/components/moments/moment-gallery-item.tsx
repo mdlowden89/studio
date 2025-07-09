@@ -7,7 +7,7 @@ import { format } from 'date-fns';
 import type { Moment as MomentType, UserProfile } from '@/lib/types';
 import { Card, CardContent, CardFooter } from '@/components/ui/card';
 import { MapPin, CalendarDays, ImageOff, Loader2, AlertTriangle, Repeat, CheckCircle, XCircle, AlertCircle } from 'lucide-react';
-import { fetchPlacePhoto, replayMoment } from '@/app/actions'; 
+import { fetchPlacePhoto } from '@/app/actions'; 
 import { Button } from '@/components/ui/button';
 import { useToast } from '@/hooks/use-toast';
 import { useRouter } from 'next/navigation';
@@ -36,9 +36,6 @@ export function MomentGalleryItem({ moment, userProfile }: MomentGalleryItemProp
   const [isLoading, setIsLoading] = useState<boolean>(true);
   const [error, setError] = useState<string | null>(null);
   const [errorCode, setErrorCode] = useState<string | null>(null);
-  const [isReplaying, setIsReplaying] = useState(false);
-  const { toast } = useToast();
-  const router = useRouter();
 
   useEffect(() => {
     async function loadPhoto() {
@@ -96,30 +93,7 @@ export function MomentGalleryItem({ moment, userProfile }: MomentGalleryItemProp
   }, [moment.placeName, moment.coordinates, moment.id]);
 
   const momentDate = new Date(moment.loggedAt as string);
-  const replaysAvailable = userProfile?.echoReplaysAvailable || 0;
-  const isReplayable = moment.status === 'rejected' && !moment.replayed;
   const StatusIcon = statusIndicator[moment.status].icon;
-
-  const handleReplay = async (e: React.MouseEvent) => {
-    e.stopPropagation();
-    if (!userProfile) return;
-    setIsReplaying(true);
-    const result = await replayMoment(userProfile.id, moment.id);
-    if (result.success) {
-      toast({
-        title: "Moment Replayed!",
-        description: "A notification has been sent, giving you a second chance.",
-      });
-      router.refresh();
-    } else {
-      toast({
-        title: "Replay Failed",
-        description: result.error || "Could not replay the moment.",
-        variant: "destructive",
-      });
-    }
-    setIsReplaying(false);
-  };
 
   return (
     <Card className="bg-card/60 hover:shadow-primary/20 transition-shadow duration-300 flex flex-col overflow-hidden">
@@ -168,31 +142,6 @@ export function MomentGalleryItem({ moment, userProfile }: MomentGalleryItemProp
         </p>
       </CardContent>
       <CardFooter className="p-2 pt-0 flex flex-col items-stretch gap-2">
-        {isReplayable && (
-          <TooltipProvider>
-            <Tooltip>
-              <TooltipTrigger asChild>
-                <Button
-                  size="sm"
-                  variant="outline"
-                  className="w-full"
-                  disabled={replaysAvailable < 1 || isReplaying}
-                  onClick={handleReplay}
-                >
-                  {isReplaying ? (
-                    <Loader2 className="mr-2 h-4 w-4 animate-spin" />
-                  ) : (
-                    <Repeat className="mr-2 h-4 w-4" />
-                  )}
-                  Replay ({replaysAvailable})
-                </Button>
-              </TooltipTrigger>
-              <TooltipContent>
-                <p>{replaysAvailable > 0 ? 'Use one of your Echo Replays' : 'You have no Echo Replays left'}</p>
-              </TooltipContent>
-            </Tooltip>
-          </TooltipProvider>
-        )}
         {attributionHtml && !error && photoUrl && (
           <div className="text-center text-[10px] text-muted-foreground/70 bg-black/20 p-1 rounded-sm" dangerouslySetInnerHTML={{ __html: attributionHtml }} />
         )}

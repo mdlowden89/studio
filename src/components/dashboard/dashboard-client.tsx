@@ -69,7 +69,7 @@ export function DashboardClient({ currentUser }: DashboardClientProps) {
 
   const [isLoadingMoments, setIsLoadingMoments] = useState(true);
   const [isLoadingChats, setIsLoadingChats] = useState(true);
-  const [isActivatingBooster, setIsActivatingBooster] = useState(false);
+  const [isGlowActivating, setIsGlowActivating] = useState(false);
 
   const searchParams = useSearchParams();
   const router = useRouter();
@@ -204,33 +204,34 @@ export function DashboardClient({ currentUser }: DashboardClientProps) {
     );
   }, [currentUser.challenges]);
   
-  const handlePurchaseBooster = async (booster: { id: string; title: string; priceId?: string; }) => {
+  const handlePurchaseGlowBoost = async () => {
     if (!currentUser) {
       toast({ title: "Not Logged In", description: "You must be logged in to make a purchase.", variant: "destructive" });
       router.push('/login-form');
       return;
     }
 
-    if (!booster.priceId) {
+    const priceId = process.env.NEXT_PUBLIC_STRIPE_GLOW_BOOST_PRICE_ID;
+    if (!priceId) {
       toast({
         title: "Temporarily Unavailable",
-        description: `"${booster.title}" booster is not available for purchase right now. Please check back later.`,
+        description: "This booster is not available for purchase right now. Please check back later.",
         variant: "destructive",
       });
-      console.error(`Stripe Price ID for ${booster.title} is missing.`);
+      console.error("Stripe Price ID for Glow Boost is missing.");
       return;
     }
 
-    setIsActivatingBooster(true);
+    setIsGlowActivating(true);
     try {
       const response = await fetch('/api/create-checkout-session', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({
-          priceId: booster.priceId,
+          priceId,
           userId: currentUser.id,
           mode: 'payment',
-          metadata: { purchase_item: booster.id },
+          metadata: { purchase_item: 'glow_boost' },
         }),
       });
 
@@ -243,14 +244,14 @@ export function DashboardClient({ currentUser }: DashboardClientProps) {
       router.push(`/payment/initiate-stripe-redirect?sessionId=${sessionData.sessionId}`);
 
     } catch (error: any) {
-      console.error(`${booster.title} purchase process error:`, error);
+      console.error("Glow Boost purchase process error:", error);
       toast({
         title: "Purchase Failed",
         description: error.message || "An unexpected error occurred. Please try again.",
         variant: "destructive",
       });
     } finally {
-      setIsActivatingBooster(false);
+      setIsGlowActivating(false);
     }
   };
   
@@ -258,55 +259,6 @@ export function DashboardClient({ currentUser }: DashboardClientProps) {
     if (!currentUser.glowEffect?.expiresAt) return false;
     return currentUser.glowEffect.active && new Date(currentUser.glowEffect.expiresAt) > new Date();
   }, [currentUser.glowEffect]);
-
-  const boosters = [
-    {
-      id: 'glow_boost',
-      icon: Zap,
-      title: "Glow Mode Boost",
-      price: "£3.49",
-      priceId: process.env.NEXT_PUBLIC_STRIPE_GLOW_BOOST_PRICE_ID,
-      description: "24-hour visibility surge, neon spark aura, and priority placement in feeds.",
-      tagline: "Your spark. Center stage.",
-    },
-    {
-      id: 'echo_replay',
-      icon: Repeat,
-      title: "Echo Replay",
-      price: "£2.49",
-      priceId: process.env.NEXT_PUBLIC_STRIPE_ECHO_REPLAY_PRICE_ID,
-      description: "Rewatch one expired or missed Moment and see when/where you crossed paths.",
-      tagline: "Time passed. But your moment didn’t have to.",
-    },
-    {
-      id: 'moments_trail_pro',
-      icon: Route,
-      title: "Moments Trail Pro",
-      price: "£7.99",
-      priceId: process.env.NEXT_PUBLIC_STRIPE_MOMENTS_TRAIL_PRO_PRICE_ID,
-      description: "Unlock your full moments map & timeline, plus reveal all Emotional Hotspots for one week.",
-      tagline: "See the full story of your journey.",
-    },
-    {
-      id: 'like_reveal',
-      icon: Eye,
-      title: "Like Reveal",
-      price: "£1.49",
-      priceId: process.env.NEXT_PUBLIC_STRIPE_LIKE_REVEAL_PRICE_ID,
-      description: "View one of your blurred Likes without needing to match first.",
-      tagline: "One reveal. One heartbeat closer.",
-    },
-    {
-      id: 'fatesync_toolkit',
-      icon: BrainCircuit,
-      title: "FateSync Toolkit",
-      price: "£7.99",
-      priceId: process.env.NEXT_PUBLIC_STRIPE_FATESYNC_TOOLKIT_PRICE_ID,
-      description: "Get a full AI-powered compatibility analysis, AI message starters, and enhanced moment visuals.",
-      tagline: "When your spark deserves more than a swipe.",
-      colSpan: 'sm:col-span-2 lg:col-span-1',
-    },
-  ];
 
   return (
     <AppLayout>
@@ -590,71 +542,32 @@ export function DashboardClient({ currentUser }: DashboardClientProps) {
           </CardHeader>
           <CardContent>
             <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
-              {boosters.slice(0, 4).map((booster) => {
-                const BoosterIcon = booster.icon;
-                const isGlowBooster = booster.id === "glow_boost";
-                const isDisabled = (isGlowBooster && isGlowModeActive) || isActivatingBooster;
-
-                return (
-                  <Card key={booster.title} className="bg-muted/30 flex flex-col">
+              <Card className="bg-muted/30 flex flex-col">
                     <CardHeader>
                       <div className="flex items-center gap-3">
-                        <BoosterIcon className="w-7 h-7 text-primary" />
-                        <CardTitle className="text-lg">{booster.title}</CardTitle>
+                        <Zap className="w-7 h-7 text-primary" />
+                        <CardTitle className="text-lg">Glow Mode Boost</CardTitle>
                       </div>
                     </CardHeader>
                     <CardContent className="flex-grow space-y-2">
-                      <p className="text-sm text-muted-foreground">{booster.description}</p>
-                      <p className="text-xs italic text-foreground/80">&quot;{booster.tagline}&quot;</p>
+                      <p className="text-sm text-muted-foreground">24-hour visibility surge, neon spark aura, and priority placement in feeds.</p>
+                      <p className="text-xs italic text-foreground/80">&quot;Your spark. Center stage.&quot;</p>
                     </CardContent>
                     <CardFooter className="flex items-center justify-between pt-4">
-                      <p className="text-lg font-bold text-primary">{booster.price}</p>
+                      <p className="text-lg font-bold text-primary">£3.49</p>
                       <Button
                         variant="outline"
                         size="sm"
-                        onClick={() => handlePurchaseBooster(booster)}
-                        disabled={isDisabled}
+                        onClick={handlePurchaseGlowBoost}
+                        disabled={isGlowModeActive || isGlowActivating}
                       >
-                        {isActivatingBooster && (
+                        {isGlowActivating ? (
                           <Loader2 className="mr-2 h-4 w-4 animate-spin" />
-                        )}
-                        {isGlowBooster
-                          ? isActivatingBooster ? "Processing..." : isGlowModeActive ? "Active" : "Purchase"
-                          : isActivatingBooster ? "Processing..." : "Purchase"}
+                        ) : null}
+                        {isGlowActivating ? "Processing..." : isGlowModeActive ? "Active" : "Purchase"}
                       </Button>
                     </CardFooter>
                   </Card>
-                );
-              })}
-              {boosters.length > 4 && (() => {
-                  const lastBooster = boosters[4];
-                  const BoosterIcon = lastBooster.icon;
-                  return (
-                    <Card key={lastBooster.title} className="sm:col-span-2 lg:col-span-3 bg-muted/40 border-primary/30 flex flex-col sm:flex-row items-start gap-4 p-4">
-                        <div className="flex items-center gap-3 w-full sm:w-auto">
-                            <BoosterIcon className="w-10 h-10 text-primary flex-shrink-0" />
-                            <div className="sm:hidden">
-                                <CardTitle className="text-lg">{lastBooster.title}</CardTitle>
-                                <p className="text-lg font-bold text-primary">{lastBooster.price}</p>
-                            </div>
-                        </div>
-                        <div className="flex-grow">
-                             <div className="hidden sm:block">
-                                <CardTitle className="text-lg">{lastBooster.title}</CardTitle>
-                            </div>
-                            <p className="text-sm text-muted-foreground mt-1">{lastBooster.description}</p>
-                            <p className="text-xs italic text-foreground/80 mt-2">&quot;{lastBooster.tagline}&quot;</p>
-                        </div>
-                        <div className="flex flex-col items-center justify-center w-full sm:w-auto mt-4 sm:mt-0">
-                           <p className="hidden sm:block text-xl font-bold text-primary mb-2">{lastBooster.price}</p>
-                           <Button className="w-full sm:w-auto" onClick={() => handlePurchaseBooster(lastBooster)} disabled={isActivatingBooster}>
-                            {isActivatingBooster ? <Loader2 className="mr-2 h-4 w-4 animate-spin" /> : null}
-                            Purchase Toolkit
-                           </Button>
-                        </div>
-                    </Card>
-                  );
-              })()}
             </div>
           </CardContent>
         </Card>

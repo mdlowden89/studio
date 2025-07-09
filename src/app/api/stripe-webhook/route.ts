@@ -104,36 +104,7 @@ export async function POST(request: NextRequest) {
                   },
               });
               console.log(`Successfully activated Glow Mode for user ${userId}.`);
-          }
-          // Placeholder handlers for other a la carte items
-          else if (purchaseItem === 'echo_replay') {
-              const userDocRef = doc(db, 'users', userId);
-              await updateDoc(userDocRef, {
-                  echoReplaysAvailable: increment(1),
-              });
-              console.log(`Successfully granted Echo Replay token to user ${userId}.`);
-          } else if (purchaseItem === 'moments_trail_pro') {
-              const userDocRef = doc(db, 'users', userId);
-              const expiresAt = addDays(new Date(), 7).toISOString();
-              await updateDoc(userDocRef, {
-                  momentsTrailProExpiresAt: expiresAt,
-              });
-              console.log(`Successfully set Moments Trail Pro expiration for user ${userId} to ${expiresAt}.`);
-          } else if (purchaseItem === 'like_reveal') {
-              const userDocRef = doc(db, 'users', userId);
-              await updateDoc(userDocRef, {
-                  likeRevealsAvailable: increment(1),
-              });
-              console.log(`Successfully granted Like Reveal to user ${userId}.`);
-          } else if (purchaseItem === 'fatesync_toolkit') {
-              const userDocRef = doc(db, 'users', userId);
-              const expiresAt = addDays(new Date(), 7).toISOString();
-              await updateDoc(userDocRef, {
-                  fateSyncToolkitExpiresAt: expiresAt,
-              });
-              console.log(`Successfully set FateSync Toolkit expiration for user ${userId} to ${expiresAt}.`);
-          }
-          else {
+          } else {
             console.warn(`Unhandled purchase item '${purchaseItem}' for user ${userId}.`);
           }
       }
