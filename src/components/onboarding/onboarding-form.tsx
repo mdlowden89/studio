@@ -141,15 +141,22 @@ export function OnboardingForm({ user }: OnboardingFormProps) {
     };
     
     try {
-      await completeOnboarding(user.id, onboardingData);
-      toast({
-        title: "Welcome to Crossd!",
-        description: "Your profile is set up. Let the connections begin!",
-      });
-      router.push('/dashboard');
-    } catch (error) {
+      const result = await completeOnboarding(user.id, onboardingData);
+      if (result.success) {
+        toast({
+          title: "Welcome to Crossd!",
+          description: "Your profile is set up. Let the connections begin! Redirecting...",
+        });
+        // Using window.location.href forces a full page reload.
+        // This ensures the AuthProvider re-fetches the user profile from scratch,
+        // preventing the redirect loop caused by a stale `onboardingComplete` flag.
+        window.location.href = '/dashboard';
+      } else {
+        throw new Error(result.error || 'The server failed to save your onboarding data.');
+      }
+    } catch (error: any) {
       console.error("Failed to complete onboarding:", error);
-      toast({ title: "Error", description: "Could not save your profile. Please try again.", variant: "destructive" });
+      toast({ title: "Error", description: error.message || "Could not save your profile. Please try again.", variant: "destructive" });
       setIsSaving(false);
     }
   };
