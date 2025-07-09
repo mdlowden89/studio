@@ -69,7 +69,7 @@ export function DashboardClient({ currentUser }: DashboardClientProps) {
 
   const [isLoadingMoments, setIsLoadingMoments] = useState(true);
   const [isLoadingChats, setIsLoadingChats] = useState(true);
-  const [isGlowActivating, setIsGlowActivating] = useState(false);
+  const [isActivatingBooster, setIsActivatingBooster] = useState(false);
 
   const searchParams = useSearchParams();
   const router = useRouter();
@@ -221,7 +221,7 @@ export function DashboardClient({ currentUser }: DashboardClientProps) {
       return;
     }
 
-    setIsGlowActivating(true); // Using a general activating state for now
+    setIsActivatingBooster(true);
     try {
       const response = await fetch('/api/create-checkout-session', {
         method: 'POST',
@@ -250,7 +250,7 @@ export function DashboardClient({ currentUser }: DashboardClientProps) {
         variant: "destructive",
       });
     } finally {
-      setIsGlowActivating(false);
+      setIsActivatingBooster(false);
     }
   };
   
@@ -540,12 +540,10 @@ export function DashboardClient({ currentUser }: DashboardClientProps) {
                         variant="outline"
                         size="sm"
                         onClick={() => handlePurchaseBooster(process.env.NEXT_PUBLIC_STRIPE_GLOW_BOOST_PRICE_ID || '', 'glow_boost')}
-                        disabled={isGlowModeActive || isGlowActivating}
+                        disabled={isGlowModeActive || isActivatingBooster}
                       >
-                        {isGlowActivating ? (
-                          <Loader2 className="mr-2 h-4 w-4 animate-spin" />
-                        ) : null}
-                        {isGlowActivating ? "Processing..." : isGlowModeActive ? "Active" : "Purchase"}
+                        {isActivatingBooster && <Loader2 className="mr-2 h-4 w-4 animate-spin" />}
+                        {isGlowModeActive ? "Active" : "Purchase"}
                       </Button>
                     </CardFooter>
                   </Card>

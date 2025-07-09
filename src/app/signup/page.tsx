@@ -87,7 +87,7 @@ export default function SignUpPage() {
         age: 18,
         gender: gender,
         interestedIn: interestedIn,
-        bio: "Welcome to Crossd! Tell us about yourself.",
+        bio: "Just joined Crossd! Looking forward to making connections.",
         images: ['https://placehold.co/400x550.png'],
         vibeTags: [],
         prompts: [],

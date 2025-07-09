@@ -20,24 +20,6 @@ export interface UserFilters {
   relationshipType: string;
 }
 
-export async function completeOnboarding(userId: string, data: Partial<UserProfile>): Promise<{ success: boolean; error?: string }> {
-  if (!userId) {
-    return { success: false, error: 'User ID is missing.' };
-  }
-
-  try {
-    const userDocRef = doc(db, 'users', userId);
-    await updateDoc(userDocRef, {
-      ...data,
-      onboardingComplete: true, // Crucially mark onboarding as complete
-    });
-    return { success: true };
-  } catch (error: any) {
-    console.error('Error completing onboarding:', error);
-    return { success: false, error: 'Failed to save onboarding data.' };
-  }
-}
-
 export async function getAiSuggestedVibeTags(
   userBio: string,
   existingTags: string[]
