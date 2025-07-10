@@ -124,7 +124,7 @@ export default function LoginFormPage() {
             </form>
           </CardContent>
           <CardFooter className="flex flex-col items-center gap-2">
-             <Link href="#" className="text-sm text-muted-foreground hover:text-primary hover:underline">
+             <Link href="/forgot-password" className="text-sm text-muted-foreground hover:text-primary hover:underline">
                 Forgot password?
               </Link>
             <p className="text-sm text-muted-foreground">
