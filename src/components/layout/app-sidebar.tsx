@@ -45,12 +45,18 @@ const navItems = [
 export function AppSidebar() {
   const pathname = usePathname();
   const router = useRouter();
-  const { state, isMobile } = useSidebar();
+  const { state, isMobile, setOpenMobile } = useSidebar();
   const { userProfile, isLoading } = useAuth();
 
   const handleLogout = async () => {
     await auth.signOut();
     router.push('/');
+  };
+
+  const handleMobileNavClick = () => {
+    if (isMobile) {
+      setOpenMobile(false);
+    }
   };
 
   if (isLoading || !userProfile) {
@@ -101,7 +107,7 @@ export function AppSidebar() {
   return (
     <Sidebar side="left" variant="sidebar" collapsible="none">
       <SidebarHeader>
-        <Link href="/dashboard" className="flex items-center gap-2 text-primary hover:text-primary/90 transition-colors self-start">
+        <Link href="/dashboard" className="flex items-center gap-2 text-primary hover:text-primary/90 transition-colors self-start" onClick={handleMobileNavClick}>
           <CrossdLogoIcon className="h-7 w-7" />
           {state === 'expanded' && <span className="text-xl font-semibold">Crossd</span>}
         </Link>
@@ -126,7 +132,9 @@ export function AppSidebar() {
 
           const linkButton = (
             <Link href={item.href} passHref legacyBehavior> 
-              {buttonContent}
+              <span onClick={handleMobileNavClick}>
+                {buttonContent}
+              </span>
             </Link>
           );
 
@@ -156,6 +164,7 @@ export function AppSidebar() {
       <SidebarFooter className="p-2 space-y-2">
         <Link 
             href="/profile" 
+            onClick={handleMobileNavClick}
             className={cn(
                 buttonVariants({ variant: 'ghost' }),
                 "w-full justify-start p-2 h-auto items-center hover:bg-sidebar-accent hover:shadow-md hover:shadow-primary/40 transition-all duration-200"
@@ -219,7 +228,10 @@ export function AppSidebar() {
         )}
 
         <SidebarMenuButton
-            onClick={handleLogout}
+            onClick={() => {
+              handleLogout();
+              handleMobileNavClick();
+            }}
             className="justify-start w-full"
         >
             <LogOut className="h-5 w-5" />
