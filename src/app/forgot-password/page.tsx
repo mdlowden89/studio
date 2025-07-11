@@ -149,7 +149,6 @@ export default function ForgotPasswordPage() {
                 <Link href="/cookies" className="hover:text-foreground transition-colors">Cookie Policy</Link>
                 <Link href="/disclaimer" className="hover:text-foreground transition-colors">Disclaimer</Link>
             </div>
-            <p className="text-xs text-muted-foreground/70 mt-2 sm:mt-0">This is a demo app for illustrative purposes only.</p>
         </div>
       </footer>
     </div>
