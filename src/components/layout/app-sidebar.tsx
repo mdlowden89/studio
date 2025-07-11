@@ -48,18 +48,16 @@ export function AppSidebar() {
   const { state, isMobile, setOpenMobile } = useSidebar();
   const { userProfile, isLoading } = useAuth();
 
-  const handleLogout = async () => {
-    await auth.signOut();
-    router.push('/');
+  const handleMobileNavClick = () => {
     if (isMobile) {
       setOpenMobile(false);
     }
   };
 
-  const handleMobileNavClick = () => {
-    if (isMobile) {
-      setOpenMobile(false);
-    }
+  const handleLogout = async () => {
+    await auth.signOut();
+    handleMobileNavClick(); // Also close sidebar on logout
+    router.push('/');
   };
 
   if (isLoading || !userProfile) {

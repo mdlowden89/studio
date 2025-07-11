@@ -5,7 +5,7 @@ import { Header } from "./header";
 
 export function AppLayout({ children }: { children: React.ReactNode }) {
   return (
-    <SidebarProvider defaultOpen={true}>
+    <SidebarProvider defaultOpen={false}>
       <AppSidebar />
       <SidebarInset className="flex flex-col min-h-screen">
         <Header />
