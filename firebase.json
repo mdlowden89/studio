@@ -1,9 +1,27 @@
 
 {
-  "firestore": {
-    "rules": "firestore.rules"
+  "hosting": {
+    "source": ".",
+    "ignore": [
+      "firebase.json",
+      "**/.*",
+      "**/node_modules/**"
+    ],
+    "frameworksBackend": {
+      "region": "us-central1"
+    }
   },
   "storage": {
-    "rules": "storage.rules"
+    "rules": "storage.rules",
+    "cors": [
+      {
+        "origin": ["https://crossd.app", "http://localhost:9002"],
+        "method": ["GET"],
+        "maxAgeSeconds": 3600
+      }
+    ]
+  },
+  "firestore": {
+    "rules": "firestore.rules"
   }
 }
