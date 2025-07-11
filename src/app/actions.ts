@@ -5,6 +5,7 @@ import { suggestVibeTagsForUser, SuggestVibeTagsInput, VibeTagSuggestion } from 
 import { suggestBioForUser, SuggestBioInput } from "@/ai/flows/suggest-bio-flow";
 import { getPlacePhoto, GetPlacePhotoInput, GetPlacePhotoOutput } from "@/ai/flows/get-place-photo-flow";
 import { getSparkSwipeInsights, SparkSwipeInput, SparkSwipeOutput } from "@/ai/flows/spark-swipe-flow";
+import { verifyUser, VerifyUserInput, VerifyUserOutput } from "@/ai/flows/verify-user-flow";
 import { db } from "@/lib/firebase";
 import { doc, getDoc, updateDoc, collection, addDoc, serverTimestamp, query, where, limit, getDocs, orderBy, Timestamp, getCountFromServer, deleteField, Query, collectionGroup, startAfter, QueryConstraint, writeBatch, increment } from "firebase/firestore";
 import type { UserProfile, Achievement, Challenge, Moment, MomentLog, Chat, Notification, ChatMessage, SubscriptionInfo } from "@/lib/types";
@@ -76,6 +77,21 @@ export async function fetchSparkSwipeInsights(
     console.error("Error in fetchSparkSwipeInsights action:", error);
     return null;
   }
+}
+
+export async function verifyUserProfile(input: VerifyUserInput): Promise<VerifyUserOutput> {
+    try {
+        const result = await verifyUser(input);
+        return result;
+    } catch (error) {
+        console.error("Error in verifyUserProfile action:", error);
+        return {
+            isVerified: false,
+            faceMatch: false,
+            gestureMatch: false,
+            reasoning: "An unexpected error occurred during the verification process."
+        };
+    }
 }
 
 export type ChallengeAction = 'LOGGED_MOMENT' | 'REPLIED_TO_MATCH' | 'LOGGED_MOMENT_NEW_DISTRICT' | 'QUICK_MATCH_AND_CHAT';
@@ -781,4 +797,20 @@ export async function saveMbtiQuizProgress(userId: string, answers: Record<numbe
     console.error("Error saving MBTI quiz progress:", error);
     return { success: false, error: "Failed to save your quiz progress." };
   }
+}
+
+export async function setUserVerified(userId: string): Promise<{success: boolean, error?: string}> {
+    if (!userId) {
+        return { success: false, error: "Invalid user ID provided."};
+    }
+    try {
+        const userDocRef = doc(db, "users", userId);
+        await updateDoc(userDocRef, {
+            isVerified: true
+        });
+        return { success: true };
+    } catch (error: any) {
+        console.error(`Error setting user ${userId} as verified:`, error);
+        return { success: false, error: "Failed to update user verification status." };
+    }
 }
