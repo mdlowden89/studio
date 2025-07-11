@@ -119,42 +119,40 @@ export function AppSidebar() {
       <Separator className="my-2 bg-sidebar-border" />
       <SidebarMenu className="flex-1 p-2">
         {navItems.map((item) => {
-          const buttonContent = (
-            <SidebarMenuButton
-              as="a"
-              isActive={pathname === item.href || (item.href !== "/dashboard" && item.href !== "/" && pathname.startsWith(item.href))}
-              className="justify-start"
-            >
+          const isActive = pathname === item.href || (item.href !== "/dashboard" && item.href !== "/" && pathname.startsWith(item.href));
+          
+          const linkContent = (
+            <>
               <item.icon className="h-5 w-5" />
               <span>{item.label}</span>
-            </SidebarMenuButton>
-          );
-
-          const linkButton = (
-            <Link href={item.href} passHref legacyBehavior> 
-              <span onClick={handleMobileNavClick}>
-                {buttonContent}
-              </span>
-            </Link>
+            </>
           );
 
           return (
             <SidebarMenuItem key={item.href}>
               {(state === "collapsed" && !isMobile) ? (
-                <Tooltip>
+                 <Tooltip>
                   <TooltipTrigger asChild>
-                    {linkButton}
+                    <Link href={item.href} className={cn(buttonVariants({variant: 'default'}), 'justify-start', isActive ? 'bg-sidebar-accent text-sidebar-accent-foreground' : 'bg-transparent text-sidebar-primary')}>
+                      {linkContent}
+                    </Link>
                   </TooltipTrigger>
-                  <TooltipContent
-                    side="right"
-                    align="center"
-                    className={item.tooltipClassName}
-                  >
+                  <TooltipContent side="right" align="center" className={item.tooltipClassName}>
                     {item.label}
                   </TooltipContent>
                 </Tooltip>
               ) : (
-                linkButton
+                <Link
+                  href={item.href}
+                  onClick={handleMobileNavClick}
+                  className={cn(
+                    buttonVariants({ variant: 'default', size: 'default' }),
+                    'w-full justify-start',
+                    isActive ? 'bg-sidebar-accent text-sidebar-accent-foreground font-medium' : 'bg-transparent text-sidebar-primary hover:bg-sidebar-accent hover:text-sidebar-accent-foreground'
+                  )}
+                >
+                  {linkContent}
+                </Link>
               )}
             </SidebarMenuItem>
           );
@@ -227,16 +225,16 @@ export function AppSidebar() {
           </div>
         )}
 
-        <SidebarMenuButton
+        <Button
             onClick={() => {
               handleLogout();
               handleMobileNavClick();
             }}
-            className="justify-start w-full"
+            className="w-full justify-start bg-transparent text-sidebar-primary hover:bg-sidebar-accent hover:text-sidebar-accent-foreground"
         >
             <LogOut className="h-5 w-5" />
-            <span>Log Out</span>
-        </SidebarMenuButton>
+            {state === 'expanded' && <span>Log Out</span>}
+        </Button>
       </SidebarFooter>
     </Sidebar>
   );
