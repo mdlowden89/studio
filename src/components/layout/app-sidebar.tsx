@@ -51,6 +51,9 @@ export function AppSidebar() {
   const handleLogout = async () => {
     await auth.signOut();
     router.push('/');
+    if (isMobile) {
+      setOpenMobile(false);
+    }
   };
 
   const handleMobileNavClick = () => {
@@ -226,10 +229,7 @@ export function AppSidebar() {
         )}
 
         <Button
-            onClick={() => {
-              handleLogout();
-              handleMobileNavClick();
-            }}
+            onClick={handleLogout}
             className="w-full justify-start bg-transparent text-sidebar-primary hover:bg-sidebar-accent hover:text-sidebar-accent-foreground"
         >
             <LogOut className="h-5 w-5" />
