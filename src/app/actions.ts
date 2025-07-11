@@ -609,9 +609,6 @@ export async function getUsersForSwiping(currentUserId: string, filters?: UserFi
             } else if (userGender === 'woman') {
                 queryConstraints.push(where('interestedIn', 'in', ['women', 'everyone']));
             }
-            // If current user is non-binary and interested in everyone, we don't add a gender/interest filter here,
-            // as we assume they want to see everyone who is open to seeing them.
-            // This could be made more granular with more preference options.
         }
     }
     
@@ -635,14 +632,10 @@ export async function getUsersForSwiping(currentUserId: string, filters?: UserFi
         }
     }
     
-    // The query is built. Note that Firestore may require you to create composite indexes
-    // for these queries to work. The error message in the Firebase console will provide a link
-    // to create the required index if one is missing.
     const q = query(usersRef, ...queryConstraints, limit(100));
     
     const querySnapshot = await getDocs(q);
 
-    // Filter out the current user and perform in-memory filtering
     const usersFromDb = querySnapshot.docs
       .map(doc => doc.data() as UserProfile)
       .filter(user => user.id !== currentUserId);
@@ -658,13 +651,29 @@ export async function getUsersForSwiping(currentUserId: string, filters?: UserFi
         });
     }
 
-    // Simple shuffle for variety
-    return finalFilteredUsers.sort(() => Math.random() - 0.5);
+    // --- Glow Mode Boost Sorting ---
+    const now = new Date();
+    const glowingUsers: UserProfile[] = [];
+    const otherUsers: UserProfile[] = [];
+
+    finalFilteredUsers.forEach(user => {
+        const isGlowing = user.glowEffect?.active && user.glowEffect.expiresAt && new Date(user.glowEffect.expiresAt) > now;
+        if (isGlowing) {
+            glowingUsers.push(user);
+        } else {
+            otherUsers.push(user);
+        }
+    });
+    
+    // Shuffle each group independently to maintain variety within the tiers
+    const shuffledGlowing = glowingUsers.sort(() => Math.random() - 0.5);
+    const shuffledOthers = otherUsers.sort(() => Math.random() - 0.5);
+
+    // Combine them, with glowing users appearing first
+    return [...shuffledGlowing, ...shuffledOthers];
 
   } catch (error) {
     console.error("Error fetching users for swiping:", error);
-    // This could be a permissions error or an error indicating a missing index.
-    // Check the server logs (where this action runs) for details.
     return [];
   }
 }
