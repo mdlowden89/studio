@@ -58,43 +58,60 @@ export function VerificationDialog({ children }: { children: React.ReactNode }) 
     setCurrentGesture(gestures[Math.floor(Math.random() * gestures.length)]);
   }, []);
 
+  const stopCameraStream = useCallback(() => {
+    if (streamRef.current) {
+      streamRef.current.getTracks().forEach(track => track.stop());
+      streamRef.current = null;
+    }
+  }, []);
+
   useEffect(() => {
     if (isOpen) {
       pickNewGesture();
       setCurrentStep('start');
     } else {
-      // Cleanup camera stream when dialog closes
-      if (streamRef.current) {
-        streamRef.current.getTracks().forEach(track => track.stop());
-        streamRef.current = null;
-      }
+      stopCameraStream();
     }
-  }, [isOpen, pickNewGesture]);
+  }, [isOpen, pickNewGesture, stopCameraStream]);
 
-  const handleStartVerification = async () => {
-    try {
-      if (navigator.mediaDevices && navigator.mediaDevices.getUserMedia) {
-        const stream = await navigator.mediaDevices.getUserMedia({ video: true });
-        streamRef.current = stream;
-        if (videoRef.current) {
-          videoRef.current.srcObject = stream;
-        }
-        setHasCameraPermission(true);
-        setCurrentStep('camera');
-      } else {
-        throw new Error('getUserMedia not supported');
-      }
-    } catch (error) {
-      console.error('Error accessing camera:', error);
-      setHasCameraPermission(false);
-      toast({
-        variant: 'destructive',
-        title: 'Camera Access Denied',
-        description: 'Please enable camera permissions in your browser settings.',
-      });
-      setCurrentStep('start');
+  // Effect to handle camera setup when the 'camera' step is active
+  useEffect(() => {
+    if (currentStep !== 'camera' || !isOpen) {
+      stopCameraStream();
+      return;
     }
-  };
+
+    const getCameraPermission = async () => {
+      try {
+        if (navigator.mediaDevices && navigator.mediaDevices.getUserMedia) {
+            const stream = await navigator.mediaDevices.getUserMedia({ video: true });
+            streamRef.current = stream;
+            if (videoRef.current) {
+                videoRef.current.srcObject = stream;
+            }
+            setHasCameraPermission(true);
+        } else {
+            throw new Error('getUserMedia not supported');
+        }
+      } catch (error) {
+        console.error('Error accessing camera:', error);
+        setHasCameraPermission(false);
+        toast({
+          variant: 'destructive',
+          title: 'Camera Access Denied',
+          description: 'Please enable camera permissions in your browser settings.',
+        });
+        setCurrentStep('start');
+      }
+    };
+
+    getCameraPermission();
+
+    // Cleanup function to stop the camera stream when the component unmounts or the step changes
+    return () => {
+      stopCameraStream();
+    };
+  }, [currentStep, isOpen, toast, stopCameraStream]);
   
   const handleCaptureAndVerify = async () => {
     if (!videoRef.current || !userProfile || !streamRef.current) return;
@@ -111,7 +128,6 @@ export function VerificationDialog({ children }: { children: React.ReactNode }) 
 
     // Convert profile picture URL to data URI (if not already one)
     let profileImageDataUri = userProfile.images[0];
-    // Check if the profile image is from an external URL that needs fetching
     if (profileImageDataUri && !profileImageDataUri.startsWith('data:')) {
         try {
             const response = await fetch(profileImageDataUri);
@@ -182,7 +198,7 @@ export function VerificationDialog({ children }: { children: React.ReactNode }) 
               </div>
             </div>
             <DialogFooter className="flex-col gap-2">
-              <Button onClick={handleStartVerification} className="w-full bg-primary text-primary-foreground hover:bg-primary/90">
+              <Button onClick={() => setCurrentStep('camera')} className="w-full bg-primary text-primary-foreground hover:bg-primary/90">
                 <Camera className="mr-2 h-4 w-4" /> I'm Ready
               </Button>
             </DialogFooter>
@@ -200,9 +216,17 @@ export function VerificationDialog({ children }: { children: React.ReactNode }) 
               </DialogHeader>
               <div className="aspect-video w-full bg-black rounded-md flex items-center justify-center text-muted-foreground overflow-hidden">
                 <video ref={videoRef} className="w-full aspect-video rounded-md" autoPlay muted playsInline />
+                {hasCameraPermission === false && (
+                    <Alert variant="destructive">
+                      <AlertTitle>Camera Access Required</AlertTitle>
+                      <AlertDescription>
+                        Please allow camera access to use this feature.
+                      </AlertDescription>
+                    </Alert>
+                )}
               </div>
               <DialogFooter>
-                  <Button onClick={handleCaptureAndVerify} className="w-full bg-primary text-primary-foreground hover:bg-primary/90">
+                  <Button onClick={handleCaptureAndVerify} className="w-full bg-primary text-primary-foreground hover:bg-primary/90" disabled={!hasCameraPermission}>
                     <Fingerprint className="mr-2 h-4 w-4" /> Verify Me
                   </Button>
               </DialogFooter>
@@ -231,9 +255,12 @@ export function VerificationDialog({ children }: { children: React.ReactNode }) 
       case 'failure':
          return (
             <div className="text-center py-8 space-y-4">
-                <AlertTriangle className="w-16 h-16 text-destructive mx-auto" />
-                <h3 className="text-2xl font-bold text-foreground">Verification Failed</h3>
-                <p className="text-muted-foreground">Reason: <span className="font-medium text-foreground/90">{failureReason}</span></p>
+                <Alert variant="destructive" className="text-left">
+                  <AlertTitle>Verification Failed</AlertTitle>
+                  <AlertDescription>
+                    {failureReason}
+                  </AlertDescription>
+                </Alert>
                 <Button onClick={resetAndTryAgain} className="w-full">
                     <RefreshCcw className="mr-2 h-4 w-4" /> Try Again
                 </Button>
