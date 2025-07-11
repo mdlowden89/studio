@@ -35,7 +35,7 @@ export default function PrivacyPolicyPage() {
               This Privacy Notice for Crossd ('we', 'us', or 'our'), describes how and why we might access, collect, store, use, and/or share ('process') your personal information when you use our services ('Services'), including when you:
             </Paragraph>
             <ul className="list-disc space-y-2 pl-5">
-                <ListItem>Visit our website at https://studio--crossd-rw236.us-central1.hosted.app or any website of ours that links to this Privacy Notice.</ListItem>
+                <ListItem>Visit our website at <a href="https://crossd.app" target="_blank" rel="noopener noreferrer" className="text-primary hover:underline">crossd.app</a> or any website of ours that links to this Privacy Notice.</ListItem>
                 <ListItem>Use Crossd. Crossd is a mobile-first social discovery app that helps people reconnect after real-life encounters. Users log shared experiences in physical locations (such as cafés, parks, or events) and can explore potential mutual connections based on overlapping paths and shared interests. The platform uses location-based memory logging, profile discovery, and moment tracking to foster meaningful reconnections in a respectful and privacy-conscious way. The app offers optional in-app purchases including visibility boosts, profile enhancements, and a premium membership that unlocks additional features like advanced filters, spark replays, and engagement insights.</ListItem>
                 <ListItem>Engage with us in other related ways, including any sales, marketing, or events.</ListItem>
             </ul>
@@ -157,3 +157,5 @@ export default function PrivacyPolicyPage() {
     </AppLayout>
   );
 }
+
+    
