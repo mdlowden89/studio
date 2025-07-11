@@ -123,6 +123,7 @@ export function MatchCard({ user, onLike, onPass, showCrossedPathInfo = false, s
             data-ai-hint="profile lifestyle"
             onClick={nextImage}
             unoptimized={cardFaceImage.startsWith('data:') || cardFaceImage.includes('placehold.co')}
+            crossOrigin="anonymous"
           />
           {user.images.length > 1 && (
             <>
@@ -220,6 +221,7 @@ export function MatchCard({ user, onLike, onPass, showCrossedPathInfo = false, s
                 objectFit="cover"
                 data-ai-hint="profile photo"
                 unoptimized={dialogTopImage.startsWith('data:') || dialogTopImage.includes('placehold.co')}
+                crossOrigin="anonymous"
               />
             </div>
           </div>
@@ -270,6 +272,7 @@ export function MatchCard({ user, onLike, onPass, showCrossedPathInfo = false, s
                       objectFit="cover"
                       data-ai-hint="profile photo lifestyle"
                       unoptimized={imgAfterBio1.startsWith('data:') || imgAfterBio1.includes('placehold.co')}
+                      crossOrigin="anonymous"
                     />
                   </div>
                 )}
@@ -282,6 +285,7 @@ export function MatchCard({ user, onLike, onPass, showCrossedPathInfo = false, s
                       objectFit="cover"
                       data-ai-hint="profile photo lifestyle"
                       unoptimized={imgAfterBio2.startsWith('data:') || imgAfterBio2.includes('placehold.co')}
+                      crossOrigin="anonymous"
                     />
                   </div>
                 )}
@@ -308,6 +312,7 @@ export function MatchCard({ user, onLike, onPass, showCrossedPathInfo = false, s
                               objectFit="cover"
                               data-ai-hint="profile photo activity"
                               unoptimized={imgForPrompt1.startsWith('data:') || imgForPrompt1.includes('placehold.co')}
+                              crossOrigin="anonymous"
                             />
                           </div>
                         )}
@@ -320,6 +325,7 @@ export function MatchCard({ user, onLike, onPass, showCrossedPathInfo = false, s
                               objectFit="cover"
                               data-ai-hint="profile photo activity"
                               unoptimized={imgForPrompt2.startsWith('data:') || imgForPrompt2.includes('placehold.co')}
+                              crossOrigin="anonymous"
                             />
                           </div>
                         )}
@@ -342,6 +348,7 @@ export function MatchCard({ user, onLike, onPass, showCrossedPathInfo = false, s
                         objectFit="cover"
                         data-ai-hint="lifestyle photo"
                         unoptimized={img.startsWith('data:') || img.includes('placehold.co')}
+                        crossOrigin="anonymous"
                       />
                     </div>
                   ))}
