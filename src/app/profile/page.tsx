@@ -7,12 +7,14 @@ import { ImageGallery } from "@/components/profile/image-gallery";
 import { PromptEditor } from "@/components/profile/prompt-editor";
 import { Card, CardHeader, CardTitle, CardDescription, CardContent } from "@/components/ui/card";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
-import { UserCircle, Image as ImageIcon, MessageSquareText, Target as TargetIcon, Loader2 } from "lucide-react";
+import { UserCircle, Image as ImageIcon, MessageSquareText, Target as TargetIcon, Loader2, ShieldCheck } from "lucide-react";
 import { AVAILABLE_PROMPTS } from "@/lib/mock-data";
 import { AchievementsSection } from "@/components/profile/achievements-section";
 import { ChallengesSection } from "@/components/challenges/challenges-section";
 import { Separator } from "@/components/ui/separator";
 import { useAuth } from '@/hooks/use-auth';
+import { VerificationDialog } from "@/components/profile/verification-dialog";
+import { Button } from "@/components/ui/button";
 
 export const dynamic = 'force-dynamic';
 
@@ -39,14 +41,27 @@ export default function ProfilePage() {
     <AppLayout>
       <div className="container mx-auto py-8">
         <Card className="bg-card shadow-xl mb-8">
-            <CardHeader className="flex flex-row items-center gap-4">
-                <UserCircle className="w-10 h-10 text-primary" />
-                <div>
+            <CardHeader className="flex flex-col sm:flex-row items-start sm:items-center gap-4">
+                <UserCircle className="w-10 h-10 text-primary flex-shrink-0" />
+                <div className="flex-grow">
                     <CardTitle className="text-3xl font-bold">Your Profile</CardTitle>
                     <CardDescription className="text-muted-foreground">
                         Manage your public information, photos, prompts, challenges, and achievements.
                     </CardDescription>
                 </div>
+                 {userProfile.isVerified ? (
+                  <div className="flex items-center gap-2 p-2 bg-green-500/10 border border-green-500/30 rounded-lg text-green-400 font-semibold text-sm">
+                    <ShieldCheck className="w-5 h-5" />
+                    <span>Verified</span>
+                  </div>
+                ) : (
+                  <VerificationDialog>
+                      <Button variant="outline" className="text-primary border-primary hover:bg-primary/10 hover:text-primary">
+                          <ShieldCheck className="mr-2 h-4 w-4" />
+                          Verify Your Profile
+                      </Button>
+                  </VerificationDialog>
+                )}
             </CardHeader>
         </Card>
 

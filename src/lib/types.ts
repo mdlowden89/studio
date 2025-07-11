@@ -45,6 +45,7 @@ export interface UserProfile {
   challenges?: Challenge[];
   locationServicesEnabled?: boolean;
   onboardingComplete: boolean;
+  isVerified?: boolean;
   subscription?: SubscriptionInfo;
   glowEffect?: {
     active: boolean;
