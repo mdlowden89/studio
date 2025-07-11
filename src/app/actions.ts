@@ -651,26 +651,32 @@ export async function getUsersForSwiping(currentUserId: string, filters?: UserFi
         });
     }
 
-    // --- Glow Mode Boost Sorting ---
+    // --- Tiered Sorting: Glow Mode -> Premium -> Regular ---
     const now = new Date();
     const glowingUsers: UserProfile[] = [];
+    const premiumUsers: UserProfile[] = [];
     const otherUsers: UserProfile[] = [];
 
     finalFilteredUsers.forEach(user => {
-        const isGlowing = user.glowEffect?.active && user.glowEffect.expiresAt && new Date(user.glowEffect.expiresAt) > now;
-        if (isGlowing) {
-            glowingUsers.push(user);
-        } else {
-            otherUsers.push(user);
-        }
+      const isGlowing = user.glowEffect?.active && user.glowEffect.expiresAt && new Date(user.glowEffect.expiresAt) > now;
+      const isPremium = user.subscription?.status === 'active';
+
+      if (isGlowing) {
+        glowingUsers.push(user);
+      } else if (isPremium) {
+        premiumUsers.push(user);
+      } else {
+        otherUsers.push(user);
+      }
     });
-    
+
     // Shuffle each group independently to maintain variety within the tiers
     const shuffledGlowing = glowingUsers.sort(() => Math.random() - 0.5);
+    const shuffledPremium = premiumUsers.sort(() => Math.random() - 0.5);
     const shuffledOthers = otherUsers.sort(() => Math.random() - 0.5);
 
-    // Combine them, with glowing users appearing first
-    return [...shuffledGlowing, ...shuffledOthers];
+    // Combine them, with glowing users first, then premium, then others
+    return [...shuffledGlowing, ...shuffledPremium, ...shuffledOthers];
 
   } catch (error) {
     console.error("Error fetching users for swiping:", error);
