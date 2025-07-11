@@ -126,15 +126,20 @@ export function VerificationDialog({ children }: { children: React.ReactNode }) 
     // Get live selfie as data URI
     const liveSelfieDataUri = canvas.toDataURL('image/jpeg');
 
-    // Convert profile picture URL to data URI (if not already one)
+    // Convert profile picture URL to data URI via our new proxy
     let profileImageDataUri = userProfile.images[0];
     if (profileImageDataUri && !profileImageDataUri.startsWith('data:')) {
         try {
-            const response = await fetch(profileImageDataUri);
+            // Use the image proxy API route
+            const response = await fetch(`/api/image-proxy?url=${encodeURIComponent(profileImageDataUri)}`);
+            if (!response.ok) {
+                const errorData = await response.json();
+                throw new Error(errorData.error || 'Failed to fetch image via proxy.');
+            }
             const blob = await response.blob();
             profileImageDataUri = await blobToDataUrl(blob);
         } catch (error) {
-            console.error("Error fetching profile image:", error);
+            console.error("Error fetching profile image via proxy:", error);
             toast({
                 title: "Verification Error",
                 description: "Could not load your profile picture for comparison. Please try again.",
