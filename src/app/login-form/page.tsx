@@ -139,13 +139,14 @@ export default function LoginFormPage() {
 
       {/* Footer */}
       <footer className="py-8 px-6 sm:px-10 md:px-16 border-t border-border text-sm text-muted-foreground">
-        <div className="container mx-auto flex flex-col sm:flex-row justify-between items-center">
-          <p>&copy; 2025 Crossd. All rights reserved.</p>
-          <div className="flex gap-4 mt-4 sm:mt-0">
-            <Link href="/terms" className="hover:text-foreground transition-colors">Terms of Service</Link>
-            <Link href="/privacy" className="hover:text-foreground transition-colors">Privacy Policy</Link>
-            <Link href="/cookies" className="hover:text-foreground transition-colors">Cookie Policy</Link>
-          </div>
+        <div className="container mx-auto flex flex-col sm:flex-row justify-between items-center text-center sm:text-left gap-4">
+            <p>&copy; 2025 Crossd. All rights reserved.</p>
+            <div className="flex flex-wrap justify-center gap-x-4 gap-y-2">
+                <Link href="/terms" className="hover:text-foreground transition-colors">Terms of Service</Link>
+                <Link href="/privacy" className="hover:text-foreground transition-colors">Privacy Policy</Link>
+                <Link href="/cookies" className="hover:text-foreground transition-colors">Cookie Policy</Link>
+            </div>
+            <p className="text-xs text-muted-foreground/70 mt-2 sm:mt-0">This is a demo app for illustrative purposes only.</p>
         </div>
       </footer>
     </div>
