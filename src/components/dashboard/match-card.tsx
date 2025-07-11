@@ -6,7 +6,7 @@ import type { UserProfile, CrossedPathUser } from "@/lib/types";
 import { Card, CardContent, CardFooter, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
-import { Heart, X, MapPin, Info, Ruler, Users, Baby, ListChecks, Wine, ChevronLeftIcon, ChevronRightIcon, Sparkles as SparklesIcon, Compass, BrainCircuit, TrendingUp, Loader2 } from "lucide-react";
+import { Heart, X, MapPin, Info, Ruler, Users, Baby, ListChecks, Wine, ChevronLeftIcon, ChevronRightIcon, Sparkles as SparklesIcon, Compass, BrainCircuit, TrendingUp, Loader2, ShieldCheck } from "lucide-react";
 import { useState } from "react";
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger } from "@/components/ui/dialog";
 import { ScrollArea } from "@/components/ui/scroll-area";
@@ -145,7 +145,10 @@ export function MatchCard({ user, onLike, onPass, showCrossedPathInfo = false, s
             </>
           )}
           <div className="absolute bottom-0 left-0 right-0 p-4 bg-gradient-to-t from-black/80 via-black/40 to-transparent">
-            <CardTitle className="text-3xl font-bold text-white">{user.name.split(' ')[0]}, {user.age}</CardTitle>
+            <CardTitle className="text-3xl font-bold text-white flex items-center gap-2">
+              {user.name.split(' ')[0]}, {user.age}
+              {user.isVerified && <ShieldCheck className="w-7 h-7 text-green-400 fill-green-500/30" />}
+            </CardTitle>
             {showCrossedPathInfo && crossedPathUser.location && (
               <div className="flex items-center text-sm text-gray-200 mt-1">
                 <MapPin className="w-4 h-4 mr-1" />
@@ -196,7 +199,10 @@ export function MatchCard({ user, onLike, onPass, showCrossedPathInfo = false, s
       <DialogContent className="sm:max-w-2xl bg-card text-card-foreground p-0">
         <ScrollArea className="h-[80vh] max-h-[700px]">
           <DialogHeader className="p-6 pb-0 sticky top-0 bg-card z-10">
-            <DialogTitle className="text-3xl font-bold text-primary">{user.name.split(' ')[0]}, {user.age}</DialogTitle>
+            <DialogTitle className="text-3xl font-bold text-primary flex items-center gap-2">
+              {user.name.split(' ')[0]}, {user.age}
+              {user.isVerified && <ShieldCheck className="w-7 h-7 text-green-400 fill-green-500/30" />}
+            </DialogTitle>
             {showCrossedPathInfo && crossedPathUser.location && (
                 <div className="flex items-center text-sm text-muted-foreground pt-1">
                   <MapPin className="w-4 h-4 mr-1.5 text-primary/70" />

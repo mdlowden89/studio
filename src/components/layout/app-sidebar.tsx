@@ -12,6 +12,7 @@ import {
   Search,
   Sparkles,
   Star,
+  ShieldCheck,
 } from "lucide-react";
 import {
   Sidebar,
@@ -189,6 +190,16 @@ export function AppSidebar() {
               <div className="ml-3 flex flex-col items-start text-left min-w-0">
                 <div className="flex items-center gap-1.5">
                   <span className="font-medium text-sm text-sidebar-primary truncate">{userProfile.name.split(' ')[0]}</span>
+                  {userProfile.isVerified && (
+                     <Tooltip>
+                        <TooltipTrigger asChild>
+                           <ShieldCheck className="h-4 w-4 text-green-400 fill-green-500/20" />
+                        </TooltipTrigger>
+                        <TooltipContent side="right" className="bg-popover text-popover-foreground border-border shadow-md">
+                           <p>Verified Profile</p>
+                        </TooltipContent>
+                     </Tooltip>
+                  )}
                   {isPremium && (
                     <Tooltip>
                       <TooltipTrigger asChild>
