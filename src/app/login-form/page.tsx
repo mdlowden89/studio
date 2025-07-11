@@ -143,7 +143,8 @@ export default function LoginFormPage() {
           <p>&copy; 2025 Crossd. All rights reserved.</p>
           <div className="flex gap-4 mt-4 sm:mt-0">
             <Link href="/terms" className="hover:text-foreground transition-colors">Terms of Service</Link>
-            <Link href="/privacy" className="hover:text-foreground transition-colors">Privacy</Link>
+            <Link href="/privacy" className="hover:text-foreground transition-colors">Privacy Policy</Link>
+            <Link href="/cookies" className="hover:text-foreground transition-colors">Cookie Policy</Link>
           </div>
         </div>
       </footer>
