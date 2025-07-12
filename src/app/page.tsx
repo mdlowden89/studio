@@ -16,8 +16,8 @@ export default function HomePage() {
     },
     {
       icon: <HeartPulse className="h-10 w-10 text-primary mb-4" />,
-      title: 'Vibe Signal Engine',
-      description: 'Our AI suggests compatible users based on shared vibe tags and location patterns, helping you find your tribe.',
+      title: 'Vibe Signals Engine',
+      description: 'Our AI suggests compatible users based on shared vibe and location patterns - connecting you with people that match your energy',
     },
     {
       icon: <MessagesSquare className="h-10 w-10 text-primary mb-4" />,
