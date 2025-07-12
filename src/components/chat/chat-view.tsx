@@ -7,7 +7,7 @@ import { getUserProfile, sendMessage } from "@/app/actions";
 import { ChatMessage } from "./chat-message";
 import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
-import { Send, ArrowLeft, Video, Mic, User as UserIcon, MessageCircle, Loader2, MapPin } from "lucide-react";
+import { Send, ArrowLeft, Video, Mic, User as UserIcon, MessageCircle, Loader2, MapPin, Phone } from "lucide-react";
 import { ScrollArea } from "@/components/ui/scroll-area";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { Separator } from "@/components/ui/separator";
@@ -18,6 +18,7 @@ import { collection, doc, onSnapshot, orderBy, query } from "firebase/firestore"
 import { db } from "@/lib/firebase";
 import { AVAILABLE_PROMPTS } from "@/lib/mock-data";
 import { Skeleton } from "@/components/ui/skeleton";
+import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from "@/components/ui/tooltip";
 
 interface ChatViewProps {
   chat: Chat;
@@ -143,12 +144,28 @@ function ChatViewComponent({ chat }: ChatViewProps) {
         </Avatar>
         <h2 className="text-lg font-semibold ml-3 text-foreground">{otherParticipant.name.split(' ')[0]}</h2>
         <div className="ml-auto flex items-center gap-1">
-            <Button variant="ghost" size="icon" aria-label="Video Call">
-                <Video className="h-5 w-5 text-primary" />
-            </Button>
-            <Button variant="ghost" size="icon" aria-label="Send Voice Note">
-                <Mic className="h-5 w-5 text-primary" />
-            </Button>
+          <TooltipProvider>
+            <Tooltip>
+                <TooltipTrigger asChild>
+                    <Button variant="ghost" size="icon" aria-label="Voice Call" disabled>
+                        <Phone className="h-5 w-5 text-primary/50" />
+                    </Button>
+                </TooltipTrigger>
+                <TooltipContent>
+                    <p>Voice Call (Coming Soon)</p>
+                </TooltipContent>
+            </Tooltip>
+            <Tooltip>
+                <TooltipTrigger asChild>
+                    <Button variant="ghost" size="icon" aria-label="Video Call" disabled>
+                        <Video className="h-5 w-5 text-primary/50" />
+                    </Button>
+                </TooltipTrigger>
+                 <TooltipContent>
+                    <p>Video Call (Coming Soon)</p>
+                </TooltipContent>
+            </Tooltip>
+            </TooltipProvider>
             <Button variant="ghost" size="icon" aria-label={showProfile ? "View Messages" : "View Profile"} onClick={() => setShowProfile(!showProfile)}>
               {showProfile ? <MessageCircle className="h-5 w-5 text-primary" /> : <UserIcon className="h-5 w-5 text-primary" />}
             </Button>
