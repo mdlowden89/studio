@@ -144,28 +144,6 @@ function ChatViewComponent({ chat }: ChatViewProps) {
         </Avatar>
         <h2 className="text-lg font-semibold ml-3 text-foreground">{otherParticipant.name.split(' ')[0]}</h2>
         <div className="ml-auto flex items-center gap-1">
-          <TooltipProvider>
-            <Tooltip>
-                <TooltipTrigger asChild>
-                    <Button variant="ghost" size="icon" aria-label="Voice Call" disabled>
-                        <Phone className="h-5 w-5 text-primary/50" />
-                    </Button>
-                </TooltipTrigger>
-                <TooltipContent>
-                    <p>Voice Call (Coming Soon)</p>
-                </TooltipContent>
-            </Tooltip>
-            <Tooltip>
-                <TooltipTrigger asChild>
-                    <Button variant="ghost" size="icon" aria-label="Video Call" disabled>
-                        <Video className="h-5 w-5 text-primary/50" />
-                    </Button>
-                </TooltipTrigger>
-                 <TooltipContent>
-                    <p>Video Call (Coming Soon)</p>
-                </TooltipContent>
-            </Tooltip>
-            </TooltipProvider>
             <Button variant="ghost" size="icon" aria-label={showProfile ? "View Messages" : "View Profile"} onClick={() => setShowProfile(!showProfile)}>
               {showProfile ? <MessageCircle className="h-5 w-5 text-primary" /> : <UserIcon className="h-5 w-5 text-primary" />}
             </Button>
