@@ -130,7 +130,8 @@ export const MOCK_USERS: UserProfile[] = [
     id: 'user-1',
     name: 'Alex',
     age: 28,
-    gender: 'male',
+    gender: 'man',
+    interestedIn: 'women',
     email: 'alex@example.com',
     bio: 'Loves hiking, coffee, and indie music. Always up for an adventure or a quiet night in with a good book.',
     images: [
@@ -168,7 +169,8 @@ export const MOCK_USERS: UserProfile[] = [
     id: 'user-2',
     name: 'Jamie',
     age: 25,
-    gender: 'female',
+    gender: 'woman',
+    interestedIn: 'men',
     email: 'jamie@example.com',
     bio: 'Artist, foodie, and travel enthusiast. Exploring new cultures and cuisines is my passion.',
     images: [
@@ -205,7 +207,8 @@ export const MOCK_USERS: UserProfile[] = [
     id: 'user-3',
     name: 'Casey',
     age: 30,
-    gender: 'other',
+    gender: 'non-binary',
+    interestedIn: 'everyone',
     email: 'casey@example.com',
     bio: 'Tech geek, gamer, and animal lover. Fluent in sarcasm and Python.',
     images: [
@@ -240,7 +243,8 @@ export const MOCK_USERS: UserProfile[] = [
     id: MOCK_USER_ID, 
     name: 'Morgan',
     age: 29,
-    gender: 'female',
+    gender: 'woman',
+    interestedIn: 'everyone',
     email: 'morgan.dev@example.com',
     bio: "Just a dev user testing things out. I enjoy a good cup of coffee, exploring new tech, and weekend hikes. Let's see if our paths cross!",
     images: [
@@ -279,7 +283,8 @@ export const MOCK_USERS: UserProfile[] = [
     id: 'user-4',
     name: 'Riley',
     age: 26,
-    gender: 'male',
+    gender: 'man',
+    interestedIn: 'women',
     email: 'riley.dev@example.com',
     bio: 'Software developer by day, nature explorer by weekend. Love strategy board games and finding hidden trails. Looking for someone to share adventures with.',
     images: [
@@ -315,7 +320,8 @@ export const MOCK_USERS: UserProfile[] = [
     id: 'user-5',
     name: 'Morgan',
     age: 29,
-    gender: 'female',
+    gender: 'woman',
+    interestedIn: 'men',
     email: 'morgan.art@example.com',
     bio: 'Painter and musician. I find beauty in everyday chaos. Often found at farmers markets or sketching in a park. My ideal date involves live music and good conversation.',
     images: [
@@ -351,7 +357,8 @@ export const MOCK_USERS: UserProfile[] = [
     id: 'user-6',
     name: 'Jordan',
     age: 31,
-    gender: 'male',
+    gender: 'man',
+    interestedIn: 'women',
     email: 'jordan.fit@example.com',
     bio: 'Fitness enthusiast and world traveler. Always planning the next trip or the next workout. Looking for a partner in crime for adventures and gym sessions.',
     images: [
@@ -387,7 +394,8 @@ export const MOCK_USERS: UserProfile[] = [
     id: 'user-7',
     name: 'Taylor',
     age: 24,
-    gender: 'female',
+    gender: 'woman',
+    interestedIn: 'men',
     email: 'taylor@example.com',
     bio: 'Musician and songwriter. Love playing guitar and discovering new coffee shops. Vinyl collector.',
     images: ['https://placehold.co/400x560.png', 'https://placehold.co/600x450.png'],
@@ -414,7 +422,8 @@ export const MOCK_USERS: UserProfile[] = [
     id: 'user-8',
     name: 'Chris',
     age: 33,
-    gender: 'male',
+    gender: 'man',
+    interestedIn: 'women',
     email: 'chris.chef@example.com',
     bio: 'Professional chef. Passionate about sustainable food and local ingredients. Likes cycling and documentaries.',
     images: ['https://placehold.co/420x570.png', 'https://placehold.co/700x500.png'],
@@ -441,7 +450,8 @@ export const MOCK_USERS: UserProfile[] = [
     id: 'user-9',
     name: 'Sam',
     age: 29,
-    gender: 'female',
+    gender: 'woman',
+    interestedIn: 'men',
     email: 'sam.reads@example.com',
     bio: 'Librarian and avid reader. Enjoys historical fiction and quiet evenings. Volunteers at an animal shelter.',
     images: ['https://placehold.co/380x520.png', 'https://placehold.co/550x450.png'],
@@ -468,7 +478,8 @@ export const MOCK_USERS: UserProfile[] = [
     id: 'user-10',
     name: 'Pat',
     age: 27,
-    gender: 'other',
+    gender: 'non-binary',
+    interestedIn: 'everyone',
     email: 'pat.codes@example.com',
     bio: 'UX Designer focused on accessibility. Loves bouldering and trying new craft beers. Weekend photographer.',
     images: ['https://placehold.co/410x550.png', 'https://placehold.co/650x480.png'],
@@ -495,7 +506,8 @@ export const MOCK_USERS: UserProfile[] = [
     id: 'user-11',
     name: 'Jess',
     age: 22,
-    gender: 'female',
+    gender: 'woman',
+    interestedIn: 'men',
     email: 'jess.studies@example.com',
     bio: 'University student studying environmental science. Passionate about conservation and enjoys hiking and camping.',
     images: ['https://placehold.co/390x530.png', 'https://placehold.co/600x500.png'],
@@ -522,7 +534,8 @@ export const MOCK_USERS: UserProfile[] = [
     id: 'user-12',
     name: 'Drew',
     age: 35,
-    gender: 'male',
+    gender: 'man',
+    interestedIn: 'women',
     email: 'drew.builds@example.com',
     bio: 'Architect with a love for minimalist design. Enjoys sketching cityscapes and visiting art galleries. Learning pottery.',
     images: ['https://placehold.co/430x580.png', 'https://placehold.co/720x520.png'],
@@ -549,7 +562,8 @@ export const MOCK_USERS: UserProfile[] = [
     id: 'user-13',
     name: 'Charlie',
     age: 28,
-    gender: 'male',
+    gender: 'man',
+    interestedIn: 'women',
     email: 'charlie.travels@example.com',
     bio: 'Travel blogger and photographer. Always on the move, looking for the next adventure. Fluent in three languages.',
     images: ['https://placehold.co/400x550.png', 'https://placehold.co/800x550.png'],
@@ -576,7 +590,8 @@ export const MOCK_USERS: UserProfile[] = [
     id: 'user-14',
     name: 'Billie',
     age: 26,
-    gender: 'female',
+    gender: 'woman',
+    interestedIn: 'men',
     email: 'billie.codes@example.com',
     bio: 'Game developer and VR enthusiast. Loves sci-fi movies and building worlds. Trying to learn Japanese.',
     images: ['https://placehold.co/420x560.png', 'https://placehold.co/680x490.png'],
@@ -720,6 +735,13 @@ export const MOCK_MOMENTS: Moment[] = [
     loggedAt: daysAgo(1, 2, 30), 
     potentialMatchId: 'user-1',
     coordinates: { lat: 51.5045, lng: -0.0865 },
+    status: 'pending',
+    momentDescription: "The view was incredible, and I noticed someone with a great sense of style near the window.",
+    descriptors: {
+      ethnicity: 'White/Caucasian',
+      hairColour: 'Blonde',
+      otherDetails: 'Wearing a cool leather jacket.'
+    }
   },
   {
     id: 'moment-recap-2',
@@ -727,6 +749,13 @@ export const MOCK_MOMENTS: Moment[] = [
     placeName: 'Tower of London',
     loggedAt: daysAgo(2, 5, 15), 
     coordinates: { lat: 51.5081, lng: -0.0759 },
+    status: 'confirmed',
+    momentDescription: "Fascinating history. Saw someone else who seemed just as captivated by the Crown Jewels.",
+    descriptors: {
+      ethnicity: 'East Asian',
+      hairColour: 'Black',
+      otherDetails: 'Had a camera and was taking really artistic shots.'
+    }
   },
   {
     id: 'moment-recap-3',
@@ -735,6 +764,13 @@ export const MOCK_MOMENTS: Moment[] = [
     loggedAt: daysAgo(3, 1, 0), 
     potentialMatchId: 'user-2',
     coordinates: { lat: 51.5194, lng: -0.1270 },
+    status: 'rejected',
+    momentDescription: "Lost in the Egyptian exhibit. There was a quiet intensity about someone sketching near the Rosetta Stone.",
+    descriptors: {
+      ethnicity: 'Hispanic/Latino',
+      hairColour: 'Brown',
+      otherDetails: 'Carrying a Moleskine sketchbook.'
+    }
   },
   {
     id: 'moment-recap-4',
@@ -742,6 +778,13 @@ export const MOCK_MOMENTS: Moment[] = [
     placeName: 'Tate Modern',
     loggedAt: daysAgo(4, 7, 0), 
     coordinates: { lat: 51.5076, lng: -0.0994 },
+    status: 'pending',
+    momentDescription: "The abstract art was moving. I shared a smile with someone who was also staring at a Rothko painting.",
+    descriptors: {
+      ethnicity: 'Black/African Descent',
+      hairColour: 'Black',
+      otherDetails: 'Wearing a very colorful headscarf.'
+    }
   },
   {
     id: 'moment-recap-5',
@@ -750,6 +793,13 @@ export const MOCK_MOMENTS: Moment[] = [
     loggedAt: daysAgo(5, -6, 0), 
     potentialMatchId: 'user-3',
     coordinates: { lat: 51.5055, lng: -0.0910 },
+    status: 'pending',
+    momentDescription: "The energy was amazing! So many great smells. Laughed with a stranger over a ridiculously large cheese wheel.",
+    descriptors: {
+      ethnicity: 'Prefer not to describe',
+      hairColour: 'Other',
+      otherDetails: 'They were wearing a band t-shirt I liked.'
+    }
   },
   {
     id: 'moment-recap-6',
@@ -757,6 +807,13 @@ export const MOCK_MOMENTS: Moment[] = [
     placeName: 'Covent Garden',
     loggedAt: daysAgo(0, 3, 0), 
     coordinates: { lat: 51.5118, lng: -0.1245 },
+    status: 'pending',
+    momentDescription: "Watching the street performers. Someone next to me had the most infectious laugh.",
+    descriptors: {
+      ethnicity: 'South Asian',
+      hairColour: 'Brown',
+      otherDetails: 'Had a really cool tote bag from an indie bookstore.'
+    }
   },
   {
     id: 'moment-recap-7',
@@ -764,6 +821,13 @@ export const MOCK_MOMENTS: Moment[] = [
     placeName: 'Buckingham Palace',
     loggedAt: daysAgo(6, 4, 0), 
     coordinates: { lat: 51.5014, lng: -0.1419 },
+    status: 'pending',
+    momentDescription: "Classic tourist moment. Saw someone else looking just as impressed by the guards.",
+    descriptors: {
+      ethnicity: 'White/Caucasian',
+      hairColour: 'Red',
+      otherDetails: 'Very smartly dressed.'
+    }
   },
   {
     id: 'moment-old-1',
@@ -771,6 +835,13 @@ export const MOCK_MOMENTS: Moment[] = [
     placeName: 'Old Cafe Not in London',
     loggedAt: daysAgo(10),
     coordinates: { lat: 40.8000, lng: -74.1900 },
+    status: 'pending',
+    momentDescription: "A past memory from a trip.",
+    descriptors: {
+      ethnicity: 'Other',
+      hairColour: 'Blonde',
+      otherDetails: ''
+    }
   },
   {
     id: 'moment-1', 
@@ -779,6 +850,13 @@ export const MOCK_MOMENTS: Moment[] = [
     loggedAt: daysAgo(8, 3, 30), 
     potentialMatchId: 'user-1',
     coordinates: { lat: 40.8137, lng: -74.2097 },
+    status: 'pending',
+    momentDescription: "The modern art wing was particularly striking today.",
+    descriptors: {
+      ethnicity: 'White/Caucasian',
+      hairColour: 'Brown',
+      otherDetails: 'Looked like a fellow creative.'
+    }
   },
 ];
 
@@ -920,5 +998,38 @@ export const MOCK_HOTSPOTS: Hotspot[] = [
     title: 'The Gherkin',
     description: 'You’ve crossed paths with multiple users here before.',
     coordinates: { lat: 51.5145, lng: -0.0803 },
+  },
+];
+
+export const MOCK_SPARK_SUGGESTIONS = [
+  {
+    id: 'spark-1',
+    placeName: 'The Quiet Reader Cafe',
+    type: 'Hidden Gem',
+    vibe: 'Cozy & Chill',
+    reason: 'Because you\'re an INFP who loves a good story, this quiet bookstore cafe is the perfect place to get lost in thought.',
+    distance: '0.8 miles',
+    imageUrl: 'https://placehold.co/600x400.png',
+    coordinates: { lat: 51.515, lng: -0.128 },
+  },
+  {
+    id: 'spark-2',
+    placeName: 'The Electric Note Jazz Bar',
+    type: 'High-Spark Spot',
+    vibe: 'Live Music & Energetic',
+    reason: 'Your ESTP energy thrives on excitement. This legendary music venue is where you\'ll find the city\'s best live acts.',
+    distance: '2.1 miles',
+    imageUrl: 'https://placehold.co/600x400.png',
+    coordinates: { lat: 51.513, lng: -0.125 },
+  },
+  {
+    id: 'spark-3',
+    placeName: 'Gallery of Whispers',
+    type: 'Creative Corner',
+    vibe: 'Artistic & Thoughtful',
+    reason: 'A perfect spot for an INTJ to appreciate complex art and find intellectual stimulation away from the crowds.',
+    distance: '1.5 miles',
+    imageUrl: 'https://placehold.co/600x400.png',
+    coordinates: { lat: 51.508, lng: -0.098 },
   },
 ];
