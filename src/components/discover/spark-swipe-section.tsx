@@ -1,7 +1,8 @@
+
 "use client";
 
 import { useState, useEffect, useCallback } from "react";
-import type { UserProfile, ProfilePromptAnswer } from "@/lib/types";
+import type { UserProfile } from "@/lib/types";
 import { MatchCard } from "@/components/dashboard/match-card";
 import { Button } from "@/components/ui/button";
 import { RefreshCw, Users, Undo2, HeartHandshake as HeartHandshakeIcon, Sparkles as SparklesIcon, Loader2 } from "lucide-react";
@@ -23,8 +24,26 @@ import type { SparkSwipeOutput, SparkSwipeInput } from "@/ai/flows/spark-swipe-f
 import { CrossdPlusUpsellDialog } from "@/components/pricing/crossd-plus-upsell-dialog";
 import { useAuth } from "@/hooks/use-auth";
 import { AVAILABLE_PROMPTS } from "@/lib/mock-data";
+import { sortUsersByMbti, type MbtiFilterType } from "@/lib/mbti-utils";
+import {
+  DropdownMenu,
+  DropdownMenuContent,
+  DropdownMenuItem,
+  DropdownMenuLabel,
+  DropdownMenuSeparator,
+  DropdownMenuTrigger,
+} from "@/components/ui/dropdown-menu"
+import { BrainCircuit, Filter } from "lucide-react";
 
 const DAILY_SPARK_LIMIT = 1;
+
+const filterOptions: { value: MbtiFilterType; label: string; description: string }[] = [
+    { value: 'all', label: 'All Personalities', description: 'Show everyone.' },
+    { value: 'best', label: 'Best Match for Me', description: 'Based on type compatibility.' },
+    { value: 'challenge', label: 'Most Likely to Challenge Me', description: 'Personalities that foster growth.' },
+    { value: 'values', label: 'Shared Core Values', description: 'Connect with similar temperaments.' },
+    { value: 'opposites', label: 'Opposites Who Attract', description: 'Explore contrasting personalities.' },
+];
 
 export function SparkSwipeSection() {
   const { userProfile: currentUser } = useAuth();
@@ -44,6 +63,8 @@ export function SparkSwipeSection() {
   const [showUpsellDialog, setShowUpsellDialog] = useState(false);
   const [sparksAnimationTrigger, setSparksAnimationTrigger] = useState(0);
 
+  const [activeFilter, setActiveFilter] = useState<MbtiFilterType>('all');
+
 
   const loadSparkUsers = useCallback(async () => {
     if (!currentUser) {
@@ -51,17 +72,12 @@ export function SparkSwipeSection() {
         return;
     }
     setIsLoading(true);
+    setSparkUsers([]);
 
     const currentUserPromptIds = new Set((currentUser.prompts || []).map(p => p.promptId));
 
     if (currentUserPromptIds.size === 0) {
-      setSparkUsers([]);
       setIsLoading(false);
-      toast({
-        title: "Answer Some Prompts!",
-        description: "To find Spark Matches, answer some profile prompts first.",
-        variant: "default",
-      });
       return;
     }
 
@@ -71,8 +87,10 @@ export function SparkSwipeSection() {
       const potentialMatches = allUsers.filter(user => {
         return (user.prompts || []).some(p => currentUserPromptIds.has(p.promptId));
       });
+      
+      const sortedUsers = sortUsersByMbti(potentialMatches, currentUser, activeFilter);
 
-      setSparkUsers([...potentialMatches].sort(() => 0.5 - Math.random()));
+      setSparkUsers(sortedUsers);
       setCurrentIndex(0);
       setPreviousIndex(null);
       
@@ -93,11 +111,11 @@ export function SparkSwipeSection() {
     } finally {
         setIsLoading(false);
     }
-  }, [currentUser, toast]);
+  }, [currentUser, toast, activeFilter]);
 
   useEffect(() => {
     loadSparkUsers();
-  }, [loadSparkUsers]);
+  }, [loadSparkUsers, activeFilter]);
   
   useEffect(() => {
     if (currentUser && sparkUsers.length > 0 && currentIndex < sparkUsers.length) {
@@ -108,7 +126,7 @@ export function SparkSwipeSection() {
         setInsights(null);
         try {
           // Helper function to map prompts to include the question text
-          const mapPrompts = (prompts: ProfilePromptAnswer[] = []) => {
+          const mapPrompts = (prompts: any[] = []) => {
             return prompts.map(p => {
                 const promptDetails = AVAILABLE_PROMPTS.find(ap => ap.id === p.promptId);
                 return {
@@ -237,14 +255,46 @@ export function SparkSwipeSection() {
     loadSparkUsers();
   };
 
-  if (isLoading || !currentUser) {
+  if (!currentUser) {
+    return (
+      <Card className="bg-card shadow-xl">
+        <CardHeader className="text-center">
+          <Loader2 className="w-12 h-12 text-primary mx-auto mb-3 animate-spin" />
+          <CardTitle className="text-2xl font-semibold">Loading User...</CardTitle>
+        </CardHeader>
+      </Card>
+    );
+  }
+  
+  if (!currentUser.mbtiType) {
+    return (
+        <Card className="bg-card shadow-xl">
+          <CardHeader className="text-center">
+            <BrainCircuit className="w-12 h-12 text-primary mx-auto mb-3" />
+            <CardTitle className="text-2xl font-semibold">Unlock Your Spark Feed</CardTitle>
+            <CardDescription className="text-muted-foreground">
+              To use personality-based matching, please take our MBTI quiz first.
+            </CardDescription>
+          </CardHeader>
+           <CardFooter>
+                <Button asChild className="w-full">
+                    <Link href="/mbti-quiz">
+                        Take the Personality Quiz
+                    </Link>
+                </Button>
+            </CardFooter>
+        </Card>
+    );
+  }
+
+  if (isLoading) {
     return (
       <Card className="bg-card shadow-xl">
         <CardHeader className="text-center">
           <SparklesIcon className="w-12 h-12 text-primary mx-auto mb-3 animate-pulse" />
           <CardTitle className="text-2xl font-semibold">Igniting Sparks...</CardTitle>
           <CardDescription className="text-muted-foreground">
-            Finding profiles based on your shared prompt interests.
+            Finding profiles based on your personality type.
           </CardDescription>
         </CardHeader>
         <CardContent className="flex flex-col items-center justify-center min-h-[300px]">
@@ -262,13 +312,13 @@ export function SparkSwipeSection() {
           <SparklesIcon className="w-12 h-12 text-primary mx-auto mb-3" />
           <CardTitle className="text-2xl font-semibold">No Spark Matches Right Now</CardTitle>
           <CardDescription className="text-muted-foreground">
-            We couldn't find anyone with similar prompt answers, or you've seen them all.
+            We couldn't find anyone who matches your filter. Try another filter or check back later!
           </CardDescription>
         </CardHeader>
         <CardContent className="text-center py-10 flex flex-col items-center">
           <Users className="w-16 h-16 text-muted-foreground mb-4" />
           <p className="text-muted-foreground mb-4 max-w-md">
-            Try answering more profile prompts, or check back later. New connections are always sparking!
+             New connections are always sparking!
           </p>
           <div className="flex gap-2 mt-4">
             <Button onClick={handleUndo} variant="outline" disabled={previousIndex === null}>
@@ -289,11 +339,31 @@ export function SparkSwipeSection() {
     <div className="flex flex-col items-center space-y-6">
       <Card className="w-full max-w-md mx-auto bg-transparent border-none shadow-none mb-2">
         <CardHeader className="text-center px-0 pt-0 pb-3">
-          <SparklesIcon className="w-8 h-8 text-primary mx-auto mb-1 animate-pulse" />
-          <CardTitle className="text-xl font-semibold">Spark Swipe</CardTitle>
+          <div className="flex items-center justify-center gap-2 mb-2">
+            <SparklesIcon className="w-8 h-8 text-primary mx-auto animate-pulse" />
+            <CardTitle className="text-xl font-semibold">Spark Swipe</CardTitle>
+          </div>
           <CardDescription className="text-muted-foreground text-sm">
-            Swipe with meaning. Match through mood, movement, and mutual energy.
+            Filter your feed by personality compatibility.
           </CardDescription>
+           <DropdownMenu>
+            <DropdownMenuTrigger asChild>
+                <Button variant="outline" className="mt-2 w-full max-w-xs mx-auto">
+                    <Filter className="mr-2 h-4 w-4" />
+                    <span>Sort by: {filterOptions.find(f => f.value === activeFilter)?.label}</span>
+                </Button>
+            </DropdownMenuTrigger>
+            <DropdownMenuContent className="w-64">
+                <DropdownMenuLabel>Personality Filters</DropdownMenuLabel>
+                <DropdownMenuSeparator />
+                {filterOptions.map(opt => (
+                     <DropdownMenuItem key={opt.value} onSelect={() => setActiveFilter(opt.value)}>
+                        <span className="font-semibold">{opt.label}</span>
+                        <span className="text-xs text-muted-foreground ml-auto pl-2">{opt.description}</span>
+                    </DropdownMenuItem>
+                ))}
+            </DropdownMenuContent>
+            </DropdownMenu>
         </CardHeader>
       </Card>
 

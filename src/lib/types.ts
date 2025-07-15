@@ -54,6 +54,7 @@ export interface UserProfile {
   mbtiQuizProgress?: {
     answers: Record<number, string>;
   };
+  showMbtiOnProfile?: boolean;
 }
 
 export interface ProfilePrompt {

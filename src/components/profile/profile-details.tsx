@@ -131,6 +131,7 @@ export function ProfileDetails({ user }: ProfileDetailsProps) {
   const [datingIntentions, setDatingIntentions] = useState(user.datingIntentions || "Prefer Not to Say");
   const [religion, setReligion] = useState(user.religion || "Prefer Not to Say");
   const [relationshipType, setRelationshipType] = useState(user.relationshipType || "Prefer Not to Say");
+  const [showMbtiOnProfile, setShowMbtiOnProfile] = useState(user.showMbtiOnProfile ?? false);
 
 
   const [locationServicesEnabled, setLocationServicesEnabled] = useState(user.locationServicesEnabled ?? false);
@@ -300,6 +301,7 @@ export function ProfileDetails({ user }: ProfileDetailsProps) {
       locationCoordinates: currentCoordinates || user.locationCoordinates || null,
       locationServicesEnabled,
       onboardingComplete: true,
+      showMbtiOnProfile,
     };
 
     try {
@@ -667,6 +669,20 @@ export function ProfileDetails({ user }: ProfileDetailsProps) {
               ))}
             </SelectContent>
           </Select>
+        </div>
+        <div className="md:col-span-2 mt-2 rounded-lg border bg-card p-4 flex items-center justify-between shadow-sm">
+            <div className="space-y-0.5">
+                <Label htmlFor="showMbti" className="font-semibold text-base">Show Personality Type on Profile</Label>
+                <p className="text-sm text-muted-foreground pr-4">
+                Allow others to see your MBTI type to spark deeper conversations.
+                </p>
+            </div>
+            <Switch
+                id="showMbti"
+                checked={showMbtiOnProfile}
+                onCheckedChange={setShowMbtiOnProfile}
+                aria-label="Toggle showing MBTI type on profile"
+            />
         </div>
       </div>
       

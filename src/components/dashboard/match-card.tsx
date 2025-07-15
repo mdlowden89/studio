@@ -16,6 +16,8 @@ import React from "react";
 import type { SparkSwipeOutput } from "@/ai/flows/spark-swipe-flow";
 import { Skeleton } from "@/components/ui/skeleton";
 import { useAuth } from "@/hooks/use-auth";
+import { getMbtiTemperament } from "@/lib/mbti-utils";
+import { cn } from "@/lib/utils";
 
 interface MatchCardProps {
   user: UserProfile | CrossedPathUser;
@@ -76,6 +78,7 @@ const SparkInsightsLoader = () => (
 export function MatchCard({ user, onLike, onPass, showCrossedPathInfo = false, sparkInsights, isInsightsLoading = false }: MatchCardProps) {
   const [currentImageIndex, setCurrentImageIndex] = useState(0);
   const { userProfile: currentUserProfile } = useAuth();
+  const temperament = getMbtiTemperament(user.mbtiType);
 
   const nextImage = (e: React.MouseEvent) => {
     e.stopPropagation();
@@ -113,7 +116,7 @@ export function MatchCard({ user, onLike, onPass, showCrossedPathInfo = false, s
   return (
     <Dialog>
       <Card className="w-full max-w-sm mx-auto overflow-hidden shadow-2xl transform transition-all duration-300 hover:scale-105 bg-card flex flex-col h-[720px]">
-        <CardHeader className="p-0 relative h-[55%]">
+        <CardHeader className={cn("p-0 relative h-[55%] border-b-4", temperament?.color || "border-transparent")}>
           <Image
             src={cardFaceImage}
             alt={user.name}
@@ -155,6 +158,12 @@ export function MatchCard({ user, onLike, onPass, showCrossedPathInfo = false, s
                 <MapPin className="w-4 h-4 mr-1" />
                 <span>Crossed paths at {crossedPathUser.location}</span>
               </div>
+            )}
+             {user.showMbtiOnProfile && user.mbtiType && (
+                <Badge variant="secondary" className="mt-2 text-md bg-black/40 text-white backdrop-blur-sm border-white/30">
+                  <BrainCircuit className="w-4 h-4 mr-1.5" />
+                  {user.mbtiType}
+                </Badge>
             )}
           </div>
         </CardHeader>
@@ -204,6 +213,12 @@ export function MatchCard({ user, onLike, onPass, showCrossedPathInfo = false, s
               {user.name.split(' ')[0]}, {user.age}
               {user.isVerified && <ShieldCheck className="w-7 h-7 text-green-400 fill-green-500/30" />}
             </DialogTitle>
+             {user.showMbtiOnProfile && user.mbtiType && (
+                <Badge variant="secondary" className="text-md bg-black/40 text-white backdrop-blur-sm border-white/30 w-fit">
+                  <BrainCircuit className="w-4 h-4 mr-1.5" />
+                  {user.mbtiType} - {temperament?.description}
+                </Badge>
+            )}
             {showCrossedPathInfo && crossedPathUser.location && (
                 <div className="flex items-center text-sm text-muted-foreground pt-1">
                   <MapPin className="w-4 h-4 mr-1.5 text-primary/70" />
@@ -213,7 +228,7 @@ export function MatchCard({ user, onLike, onPass, showCrossedPathInfo = false, s
           </DialogHeader>
           
           <div className="px-6 pt-4 pb-3">
-            <div className="relative w-full max-w-xs aspect-[4/5] rounded-lg overflow-hidden shadow-lg mx-auto">
+            <div className={cn("relative w-full max-w-xs aspect-[4/5] rounded-lg overflow-hidden shadow-lg mx-auto border-4", temperament?.color || "border-transparent")}>
               <Image
                 src={dialogTopImage}
                 alt={`${user.name.split(' ')[0]}'s main photo`}
