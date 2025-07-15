@@ -4,58 +4,52 @@ service cloud.firestore {
   match /databases/{database}/documents {
 
     // Users can read other user profiles, but only write to their own.
-    // They can also query the list of users for the discover/swipe page.
+    // list allows querying the collection for swiping.
     match /users/{userId} {
       allow read: if request.auth != null;
       allow write: if request.auth.uid == userId;
     }
-    match /users/{document=**} {
-       allow list: if request.auth != null;
-    }
 
     // Moments can be created by any authenticated user.
-    // Users can only read, update, or delete their own moments.
-    // Authenticated users can query the moments collection to find matches.
+    // Users can only read/update/delete their own moments.
+    // The collection can be queried by any authenticated user (for matching).
     match /moments/{momentId} {
+      allow list, read: if request.auth != null;
       allow create: if request.auth != null && request.resource.data.loggerId == request.auth.uid;
-      allow read, update, delete: if resource.data.loggerId == request.auth.uid;
-    }
-    match /moments/{document=**} {
-      allow list: if request.auth != null;
-    }
-    
-    // Chats can be created by authenticated users.
-    // Users can only read/write to chats they are a participant in.
-    // This includes reading the message subcollection.
-    match /chats/{chatId} {
-      allow read, write: if request.auth.uid in resource.data.participantIds;
-      
-      match /messages/{messageId} {
-        allow read, create: if request.auth.uid in get(/databases/$(database)/documents/chats/$(chatId)).data.participantIds;
-      }
-    }
-    match /chats/{document=**} {
-        allow list: if request.auth != null;
+      allow update, delete: if request.auth != null && resource.data.loggerId == request.auth.uid;
     }
 
-    // Likes can be created by any authenticated user for another user.
-    // Users can read/update likes where they are the liker or the liked user.
+    // Likes can be created by any authenticated user.
+    // Users can only read/update/delete their own likes.
+    // The collection can be queried by any authenticated user (for matching).
     match /likes/{likeId} {
+      allow list, read: if request.auth != null;
       allow create: if request.auth != null && request.resource.data.likerId == request.auth.uid;
-      allow read, update: if request.auth.uid == resource.data.likerId || request.auth.uid == resource.data.likedUserId;
+      allow update, delete: if request.auth != null && resource.data.likerId == request.auth.uid;
     }
-    match /likes/{document=**} {
-        allow list: if request.auth != null;
-    }
-    
-    // Notifications can be created server-side (or by trusted client logic).
-    // Users can only read notifications intended for them.
+
+    // Notifications are private. Only the recipient can read, update, or delete them.
+    // Any authenticated user can create a notification (e.g., for matching).
     match /notifications/{notificationId} {
+      allow list, read, update, delete: if request.auth != null && resource.data.userId == request.auth.uid;
       allow create: if request.auth != null;
-      allow read, update: if resource.data.userId == request.auth.uid;
     }
-    match /notifications/{document=**} {
-        allow list: if request.auth != null;
+
+    // Chat documents and sub-collections (messages).
+    match /chats/{chatId} {
+      // Allow read/write access only to participants of the chat.
+      allow read, write: if request.auth != null && request.auth.uid in resource.data.participantIds;
+
+      // Allow any authenticated user to query the chats collection
+      // This is needed for getOrCreateChat and fetching the chat list.
+      allow list: if request.auth != null;
+
+      // Messages can be read by participants and created by a participant.
+      match /messages/{messageId} {
+        allow read, create: if request.auth != null && request.auth.uid in get(/databases/$(database)/documents/chats/$(chatId)).data.participantIds;
+        // Generally, messages are not updated or deleted by users.
+        allow update, delete: if false;
+      }
     }
   }
 }
