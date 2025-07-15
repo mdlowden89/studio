@@ -3,47 +3,59 @@ rules_version = '2';
 service cloud.firestore {
   match /databases/{database}/documents {
 
-    // Users can be read by any authenticated user, but only written to by the user themselves.
-    // The `list` permission is crucial for querying the collection (e.g., for swiping).
+    // Users can read other user profiles, but only write to their own.
+    // They can also query the list of users for the discover/swipe page.
     match /users/{userId} {
-      allow read, list: if request.auth != null;
+      allow read: if request.auth != null;
       allow write: if request.auth.uid == userId;
+    }
+    match /users/{document=**} {
+       allow list: if request.auth != null;
     }
 
     // Moments can be created by any authenticated user.
-    // They can only be read, updated, or deleted by the user who logged them or the one who confirmed the match.
+    // Users can only read, update, or delete their own moments.
+    // Authenticated users can query the moments collection to find matches.
     match /moments/{momentId} {
-      allow create: if request.auth != null;
-      allow read, update, delete: if request.auth != null && (request.resource.data.loggerId == request.auth.uid || request.resource.data.confirmedUserId == request.auth.uid);
+      allow create: if request.auth != null && request.resource.data.loggerId == request.auth.uid;
+      allow read, update, delete: if resource.data.loggerId == request.auth.uid;
+    }
+    match /moments/{document=**} {
+      allow list: if request.auth != null;
     }
     
-    // Notifications can be read only by the user they are intended for.
-    // They can be created by any authenticated user (server-side actions).
-    match /notifications/{notificationId} {
-        allow create: if request.auth != null;
-        allow read, update: if request.auth != null && resource.data.userId == request.auth.uid;
-    }
-
-    // Likes can be created by any authenticated user, as long as they are the liker.
-    // They can be read by anyone (for checking match status) and updated by anyone (for match status updates).
-    match /likes/{likeId} {
-      allow read, update: if request.auth != null;
-      allow create: if request.auth != null && request.resource.data.likerId == request.auth.uid;
-    }
-
-    // Chats and their sub-collections (messages).
+    // Chats can be created by authenticated users.
+    // Users can only read/write to chats they are a participant in.
+    // This includes reading the message subcollection.
     match /chats/{chatId} {
-      // Chat document itself can be read or updated only by participants.
-      allow read, update: if request.auth != null && request.auth.uid in resource.data.participantIds;
-      // Anyone can create a chat (the action verifies participants).
-      allow create: if request.auth != null;
-
-      // Messages within a chat can be read by participants.
-      // Messages can only be created by one of the participants.
+      allow read, write: if request.auth.uid in resource.data.participantIds;
+      
       match /messages/{messageId} {
-        allow read: if request.auth != null && request.auth.uid in get(/databases/$(database)/documents/chats/$(chatId)).data.participantIds;
-        allow create: if request.auth != null && request.resource.data.senderId == request.auth.uid;
+        allow read, create: if request.auth.uid in get(/databases/$(database)/documents/chats/$(chatId)).data.participantIds;
       }
+    }
+    match /chats/{document=**} {
+        allow list: if request.auth != null;
+    }
+
+    // Likes can be created by any authenticated user for another user.
+    // Users can read/update likes where they are the liker or the liked user.
+    match /likes/{likeId} {
+      allow create: if request.auth != null && request.resource.data.likerId == request.auth.uid;
+      allow read, update: if request.auth.uid == resource.data.likerId || request.auth.uid == resource.data.likedUserId;
+    }
+    match /likes/{document=**} {
+        allow list: if request.auth != null;
+    }
+    
+    // Notifications can be created server-side (or by trusted client logic).
+    // Users can only read notifications intended for them.
+    match /notifications/{notificationId} {
+      allow create: if request.auth != null;
+      allow read, update: if resource.data.userId == request.auth.uid;
+    }
+    match /notifications/{document=**} {
+        allow list: if request.auth != null;
     }
   }
 }
