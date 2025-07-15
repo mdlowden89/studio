@@ -351,6 +351,29 @@ export function DashboardClient({ currentUser }: DashboardClientProps) {
           </CardFooter>
         </Card>
 
+        {isPremium && (
+          <Card className="mb-8 bg-gradient-to-tr from-primary/15 via-card to-card border border-primary/30 shadow-xl">
+            <CardHeader className="flex flex-col sm:flex-row items-start sm:items-center gap-4">
+              <div className="p-3 bg-primary/20 rounded-full">
+                <Lightbulb className="w-8 h-8 text-primary" />
+              </div>
+              <div>
+                <CardTitle className="text-2xl font-bold text-primary">Your Spark Suggestions are Ready</CardTitle>
+                <CardDescription className="text-muted-foreground mt-1">
+                  Go where your vibe thrives. We've curated a list of places and ideas just for you.
+                </CardDescription>
+              </div>
+            </CardHeader>
+            <CardFooter>
+              <Link href="/discover/suggestions" passHref>
+                <Button className="bg-primary hover:bg-primary/90 text-primary-foreground">
+                  Explore My Suggestions <ArrowRight className="ml-2 h-5 w-5" />
+                </Button>
+              </Link>
+            </CardFooter>
+          </Card>
+        )}
+
         <div className="grid grid-cols-1 lg:grid-cols-3 gap-8 mb-8">
           <div className="lg:col-span-2">
             <Card className="bg-card shadow-xl h-full">
@@ -590,7 +613,7 @@ export function DashboardClient({ currentUser }: DashboardClientProps) {
             <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
               {boosters.slice(0, 4).map((booster) => {
                 const BoosterIcon = booster.icon;
-                const isDisabled = booster.isDisabled || booster.isActivating;
+                const isDisabled = booster.isActivating;
 
                 return (
                   <Card key={booster.title} className="bg-muted/30 flex flex-col">
