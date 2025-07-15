@@ -403,8 +403,8 @@ export function DashboardClient({ currentUser }: DashboardClientProps) {
                   </p>
                 </CardContent>
                  <CardFooter>
-                  <Link href="/profile" passHref className="w-full">
-                    <Button variant="outline" size="sm" className="w-full text-primary border-primary/70 hover:bg-primary/10 hover:text-primary-foreground">
+                  <Link href="/profile?tab=progress" passHref className="w-full">
+                    <Button variant="outline" size="sm" className="w-full text-primary border-primary/70 hover:bg-primary/10 hover:text-primary">
                         View All Challenges
                     </Button>
                   </Link>

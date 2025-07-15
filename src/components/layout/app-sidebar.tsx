@@ -13,6 +13,7 @@ import {
   Sparkles,
   Star,
   ShieldCheck,
+  Target as TargetIcon,
 } from "lucide-react";
 import {
   Sidebar,
@@ -219,23 +220,33 @@ export function AppSidebar() {
               </div>
             )}
         </Link>
-
-        {state === 'expanded' && displayedAchievements.length > 0 && (
-          <div className="flex items-center gap-2 px-2 pt-1">
-            {displayedAchievements.map(ach => (
-                <Tooltip key={ach.id} delayDuration={100}>
-                  <TooltipTrigger asChild>
-                    <span className="p-1 rounded-full hover:bg-sidebar-accent/50 cursor-default">
-                      <Icon name={ach.icon} className="h-5 w-5 text-primary/80" />
-                    </span>
-                  </TooltipTrigger>
-                  <TooltipContent side="top" className="bg-popover text-popover-foreground border-border shadow-md">
-                    <p>{ach.name}</p>
-                  </TooltipContent>
-                </Tooltip>
-              ))}
+        <Link 
+            href="/profile?tab=progress" 
+            onClick={handleMobileNavClick}
+            className={cn(
+                buttonVariants({ variant: 'ghost' }),
+                "w-full justify-start p-2 h-auto items-center hover:bg-sidebar-accent"
+            )}
+        >
+          {state === 'expanded' && <TargetIcon className="h-5 w-5 mr-2" />}
+          <div className="w-full">
+            {state === 'expanded' && <p className="text-xs text-sidebar-foreground/70">Progress</p>}
+            <div className="flex items-center gap-2 mt-1">
+              {displayedAchievements.map(ach => (
+                  <Tooltip key={ach.id} delayDuration={100}>
+                    <TooltipTrigger asChild>
+                      <span className="p-1 rounded-full hover:bg-sidebar-accent/50 cursor-default">
+                        <Icon name={ach.icon} className="h-5 w-5 text-primary/80" />
+                      </span>
+                    </TooltipTrigger>
+                    <TooltipContent side="top" className="bg-popover text-popover-foreground border-border shadow-md">
+                      <p>{ach.name}</p>
+                    </TooltipContent>
+                  </Tooltip>
+                ))}
+            </div>
           </div>
-        )}
+        </Link>
 
         <Button
             onClick={handleLogout}

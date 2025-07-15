@@ -15,6 +15,8 @@ import { Separator } from "@/components/ui/separator";
 import { useAuth } from '@/hooks/use-auth';
 import { VerificationDialog } from "@/components/profile/verification-dialog";
 import { Button } from "@/components/ui/button";
+import { useSearchParams } from "next/navigation";
+import { Suspense } from "react";
 
 export const dynamic = 'force-dynamic';
 
@@ -30,8 +32,13 @@ function ProfilePageLoading() {
   );
 }
 
-export default function ProfilePage() {
+function ProfilePageComponent() {
   const { userProfile, isLoading } = useAuth();
+  const searchParams = useSearchParams();
+  const tab = searchParams.get('tab');
+  
+  const validTabs = ["details", "photos", "prompts", "progress"];
+  const defaultTab = tab && validTabs.includes(tab) ? tab : "details";
 
   if (isLoading || !userProfile) {
     return <ProfilePageLoading />;
@@ -65,7 +72,7 @@ export default function ProfilePage() {
             </CardHeader>
         </Card>
 
-        <Tabs defaultValue="details" className="w-full">
+        <Tabs defaultValue={defaultTab} className="w-full">
           <TabsList className="flex flex-wrap h-auto justify-center gap-2 mb-12 !bg-card/60 border border-primary/50 p-2 rounded-lg">
             <TabsTrigger 
               value="details" 
@@ -160,4 +167,12 @@ export default function ProfilePage() {
       </div>
     </AppLayout>
   );
+}
+
+export default function ProfilePage() {
+    return (
+        <Suspense fallback={<ProfilePageLoading />}>
+            <ProfilePageComponent />
+        </Suspense>
+    )
 }
