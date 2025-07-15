@@ -301,8 +301,8 @@ export function DashboardClient({ currentUser }: DashboardClientProps) {
       price: "£7.99",
       description: "Suggests when you're in a high-vibe area, gives match advice based on your personality, and prompts unique icebreakers for your matches.",
       tagline: "When your spark deserves more than a swipe.",
-      purchaseHandler: () => toast({ title: "Coming Soon!", description: "FateSync Toolkit checkout is not yet implemented." }),
       colSpan: 'sm:col-span-2 lg:col-span-1',
+      purchaseHandler: () => toast({ title: "Coming Soon!", description: "FateSync Toolkit checkout is not yet implemented." }),
     },
   ];
 
@@ -352,21 +352,21 @@ export function DashboardClient({ currentUser }: DashboardClientProps) {
         </Card>
 
         {isPremium && (
-          <Card className="mb-8 bg-gradient-to-tr from-primary/15 via-card to-card border border-primary/30 shadow-xl">
+          <Card className="mb-8 bg-gradient-to-tr from-yellow-500/15 via-card to-card border border-yellow-500/30 shadow-xl">
             <CardHeader className="flex flex-col sm:flex-row items-start sm:items-center gap-4">
-              <div className="p-3 bg-primary/20 rounded-full">
-                <Lightbulb className="w-8 h-8 text-primary" />
+              <div className="p-3 bg-yellow-500/20 rounded-full">
+                <Lightbulb className="w-8 h-8 text-yellow-400" />
               </div>
               <div>
-                <CardTitle className="text-2xl font-bold text-primary">Your Spark Suggestions are Ready</CardTitle>
+                <CardTitle className="text-2xl font-bold text-yellow-400">Your Spark Suggestions are Ready</CardTitle>
                 <CardDescription className="text-muted-foreground mt-1">
                   Go where your vibe thrives. We've curated a list of places and ideas just for you.
                 </CardDescription>
               </div>
             </CardHeader>
             <CardFooter>
-              <Link href="/discover/suggestions" passHref>
-                <Button className="bg-primary hover:bg-primary/90 text-primary-foreground">
+              <Link href="/moments" passHref>
+                <Button className="bg-yellow-500 hover:bg-yellow-500/90 text-black">
                   Explore My Suggestions <ArrowRight className="ml-2 h-5 w-5" />
                 </Button>
               </Link>

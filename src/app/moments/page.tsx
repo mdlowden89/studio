@@ -6,7 +6,7 @@ import { AppLayout } from "@/components/layout/app-layout";
 import { MomentList } from "@/components/moments/moment-list";
 import { Card, CardHeader, CardTitle, CardDescription, CardContent } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
-import { Route, List, LayoutGrid, AlertTriangle } from "lucide-react";
+import { Route, List, LayoutGrid, AlertTriangle, Sparkles } from "lucide-react";
 import { Separator } from "@/components/ui/separator";
 import { MomentsMap } from "@/components/dashboard/moments-map";
 import { MOCK_HOTSPOTS } from "@/lib/mock-data";
@@ -16,6 +16,8 @@ import type { Moment } from "@/lib/types";
 import { useToast } from "@/hooks/use-toast";
 import { Skeleton } from "@/components/ui/skeleton";
 import Link from "next/link";
+import { SparkSuggestionsSection } from "@/components/moments/spark-suggestions-section";
+import { SparkSuggestionsUpsell } from "@/components/moments/spark-suggestions-upsell";
 
 export type ViewMode = "list" | "gallery";
 
@@ -127,7 +129,7 @@ export default function MomentsPage() {
   return (
     <AppLayout>
       <div className="container mx-auto py-8">
-        <Card className="bg-card shadow-xl">
+        <Card className="bg-card shadow-xl mb-8">
           <CardHeader>
             <div className="flex items-center gap-3">
               <Route className="w-8 h-8 text-primary" />
@@ -142,6 +144,28 @@ export default function MomentsPage() {
           <CardContent>
             {renderContent()}
           </CardContent>
+        </Card>
+        
+        {/* Spark Suggestions Section */}
+        <Card className="bg-card shadow-xl mt-8">
+            <CardHeader>
+                <div className="flex items-center gap-3">
+                    <Sparkles className="w-8 h-8 text-yellow-400" />
+                    <div>
+                        <CardTitle className="text-3xl font-bold text-yellow-400">Spark Suggestions</CardTitle>
+                        <CardDescription className="text-muted-foreground">
+                            Go where your vibe thrives. Your personalized guide to places where you're likely to connect.
+                        </CardDescription>
+                    </div>
+                </div>
+            </CardHeader>
+            <CardContent>
+                {isPremium && userProfile ? (
+                    <SparkSuggestionsSection userProfile={userProfile} />
+                ) : (
+                    <SparkSuggestionsUpsell />
+                )}
+            </CardContent>
         </Card>
       </div>
     </AppLayout>
