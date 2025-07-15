@@ -14,7 +14,7 @@ import {
 } from "@/components/ui/dialog";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
-import { CheckCircle, InfinityIcon, Eye, Rocket, Zap, Star, Loader2, AlertTriangle } from "lucide-react";
+import { CheckCircle, InfinityIcon, Eye, Rocket, Zap, Star, Loader2, AlertTriangle, Lightbulb } from "lucide-react";
 import { useToast } from "@/hooks/use-toast";
 import { cn } from "@/lib/utils";
 import { loadStripe } from '@stripe/stripe-js';
@@ -26,10 +26,10 @@ interface CrossdPlusUpsellDialogProps {
 }
 
 const features = [
-  { icon: InfinityIcon, text: "Unlimited Likes", description: "Swipe right as much as you want." },
   { icon: Eye, text: "See Who Likes You", description: "Instantly match with people who've already shown interest." },
-  { icon: Rocket, text: "VIP Profile", description: "Get your profile seen by more people, faster." },
-  { icon: Zap, text: "Priority Likes", description: "Your likes get shown to potential matches sooner." },
+  { icon: InfinityIcon, text: "Unlimited Likes", description: "Swipe right as much as you want without daily limits." },
+  { icon: Lightbulb, text: "AI Spark Suggestions", description: "Get personalized place recommendations where your vibe thrives." },
+  { icon: Rocket, text: "VIP Profile Boost", description: "Get your profile seen by more people, faster." },
 ];
 
 const pricingTiers = [
