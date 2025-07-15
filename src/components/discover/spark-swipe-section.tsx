@@ -18,8 +18,8 @@ import {
   AlertDialogTitle,
 } from "@/components/ui/alert-dialog";
 import ReactConfetti from 'react-confetti';
-import { Card, CardHeader, CardTitle, CardDescription, CardContent } from "@/components/ui/card";
-import { fetchSparkSwipeInsights, getUsersForSwiping } from "@/app/actions";
+import { Card, CardHeader, CardTitle, CardDescription, CardContent, CardFooter } from "@/components/ui/card";
+import { fetchSparkSwipeInsights, getUsersForSwiping, recordLike } from "@/app/actions";
 import type { SparkSwipeOutput, SparkSwipeInput } from "@/ai/flows/spark-swipe-flow";
 import { CrossdPlusUpsellDialog } from "@/components/pricing/crossd-plus-upsell-dialog";
 import { useAuth } from "@/hooks/use-auth";
@@ -74,30 +74,19 @@ export function SparkSwipeSection() {
     setIsLoading(true);
     setSparkUsers([]);
 
-    const currentUserPromptIds = new Set((currentUser.prompts || []).map(p => p.promptId));
-
-    if (currentUserPromptIds.size === 0) {
-      setIsLoading(false);
-      return;
-    }
-
     try {
       const allUsers = await getUsersForSwiping(currentUser.id);
       
-      const potentialMatches = allUsers.filter(user => {
-        return (user.prompts || []).some(p => currentUserPromptIds.has(p.promptId));
-      });
-      
-      const sortedUsers = sortUsersByMbti(potentialMatches, currentUser, activeFilter);
+      const sortedUsers = sortUsersByMbti(allUsers, currentUser, activeFilter);
 
       setSparkUsers(sortedUsers);
       setCurrentIndex(0);
       setPreviousIndex(null);
       
-      if (potentialMatches.length === 0) {
+      if (sortedUsers.length === 0) {
         toast({
           title: "No Spark Matches Found",
-          description: "We couldn't find users who answered similar prompts right now. Try refreshing later or broadening your profile!",
+          description: "We couldn't find anyone matching your filter. Try another one!",
           duration: 4000,
         });
       }
@@ -190,7 +179,8 @@ export function SparkSwipeSection() {
     return () => {};
   }, []);
 
-  const handleAction = (userId: string, action: "like" | "pass") => {
+  const handleAction = async (userId: string, action: "like" | "pass") => {
+    if (!currentUser) return;
     if (sparksUsedToday >= DAILY_SPARK_LIMIT) {
       setShowUpsellDialog(true);
       return;
@@ -198,40 +188,46 @@ export function SparkSwipeSection() {
 
     const actionUser = sparkUsers.find(u => u.id === userId);
     if (!actionUser) return;
-
-    if (action === "like") {
-      const isMutualMatch = Math.random() < 0.5;
-      if (isMutualMatch) {
-        setMatchedUserName(actionUser.name.split(' ')[0]);
-        setShowMatchAnimation(true);
-      } else {
-        toast({
-          title: "Spark Sent!",
-          description: `You've shown interest in ${actionUser.name.split(' ')[0]}. Let's see if the spark is mutual!`,
-        });
-      }
-    } else {
-      toast({
-        title: "Passed",
-        description: `You've passed on ${actionUser.name.split(' ')[0]}.`,
-        variant: "default",
-      });
-    }
     
-    setSparksUsedToday(prev => prev + 1);
-    setSparksAnimationTrigger(prev => prev + 1);
-    setPreviousIndex(currentIndex);
+    try {
+        if (action === "like") {
+            const result = await recordLike(currentUser.id, actionUser.id);
+            if (result.match) {
+                setMatchedUserName(actionUser.name.split(' ')[0]);
+                setShowMatchAnimation(true);
+            } else {
+                toast({
+                    title: "Spark Sent!",
+                    description: `You've shown interest in ${actionUser.name.split(' ')[0]}. Let's see if the spark is mutual!`,
+                });
+            }
+        } else {
+            toast({
+                title: "Passed",
+                description: `You've passed on ${actionUser.name.split(' ')[0]}.`,
+                variant: "default",
+            });
+        }
 
-    if (currentIndex < sparkUsers.length - 1) {
-      setCurrentIndex(currentIndex + 1);
-    } else {
-      toast({
-        title: "That's all Spark Matches for now!",
-        description: "Check back later or refresh for new recommendations.",
-      });
-      setCurrentIndex(currentIndex + 1);
+        setSparksUsedToday(prev => prev + 1);
+        setSparksAnimationTrigger(prev => prev + 1);
+        setPreviousIndex(currentIndex);
+
+        if (currentIndex < sparkUsers.length - 1) {
+            setCurrentIndex(currentIndex + 1);
+        } else {
+            toast({
+                title: "That's all Spark Matches for now!",
+                description: "Check back later or refresh for new recommendations.",
+            });
+            setCurrentIndex(currentIndex + 1);
+        }
+    } catch (error) {
+        console.error("Error during swipe action:", error);
+        toast({ title: "Error", description: "Something went wrong. Please try again.", variant: "destructive" });
     }
   };
+
 
   const handleLike = (userId: string) => handleAction(userId, "like");
   const handlePass = (userId: string) => handleAction(userId, "pass");
@@ -287,53 +283,66 @@ export function SparkSwipeSection() {
     );
   }
 
-  if (isLoading) {
+  const renderContent = () => {
+     if (isLoading) {
+      return (
+        <Card className="bg-card shadow-xl border-none bg-transparent">
+          <CardContent className="flex flex-col items-center justify-center min-h-[300px]">
+            <Loader2 className="w-16 h-16 text-primary animate-spin mb-4" />
+            <p className="text-muted-foreground">Loading potential connections...</p>
+          </CardContent>
+        </Card>
+      );
+    }
+    
+    if (sparkUsers.length === 0 || currentIndex >= sparkUsers.length) {
+      return (
+        <Card className="bg-card shadow-xl border-none bg-transparent">
+          <CardContent className="text-center py-10 flex flex-col items-center min-h-[300px] justify-center">
+            <Users className="w-16 h-16 text-muted-foreground mb-4" />
+            <h3 className="text-xl font-semibold mb-2">No Profiles Found</h3>
+            <p className="text-muted-foreground mb-4 max-w-sm">
+              Try adjusting your filter or check back later for new people.
+            </p>
+            <div className="flex gap-2 mt-4">
+              <Button onClick={refreshUsers} variant="outline">
+                <RefreshCw className="mr-2 h-4 w-4" /> Refresh
+              </Button>
+            </div>
+          </CardContent>
+        </Card>
+      );
+    }
+
+    const currentUserToDisplay = sparkUsers[currentIndex];
+    
     return (
-      <Card className="bg-card shadow-xl">
-        <CardHeader className="text-center">
-          <SparklesIcon className="w-12 h-12 text-primary mx-auto mb-3 animate-pulse" />
-          <CardTitle className="text-2xl font-semibold">Igniting Sparks...</CardTitle>
-          <CardDescription className="text-muted-foreground">
-            Finding profiles based on your personality type.
-          </CardDescription>
-        </CardHeader>
-        <CardContent className="flex flex-col items-center justify-center min-h-[300px]">
-          <Loader2 className="w-16 h-16 text-primary animate-spin mb-4" />
-          <p className="text-muted-foreground">Loading potential connections...</p>
-        </CardContent>
-      </Card>
+      <div className="flex flex-col items-center space-y-6">
+        <MatchCard
+          key={currentUserToDisplay.id}
+          user={currentUserToDisplay}
+          onLike={handleLike}
+          onPass={handlePass}
+          sparkInsights={insights}
+          isInsightsLoading={isInsightsLoading}
+        />
+        <div className="flex gap-2 mt-4">
+          <Button onClick={handleUndo} variant="outline" disabled={previousIndex === null || isInsightsLoading}>
+            <Undo2 className="mr-2 h-4 w-4" /> Undo
+          </Button>
+        </div>
+        <p className="text-sm text-muted-foreground mt-2">
+          Free Spark Swipes remaining today:{" "}
+          <span
+            key={sparksAnimationTrigger}
+            className="font-semibold text-foreground animate-flash-attention"
+          >
+            {Math.max(0, DAILY_SPARK_LIMIT - sparksUsedToday)}
+          </span>
+        </p>
+      </div>
     );
   }
-
-  if (sparkUsers.length === 0 || currentIndex >= sparkUsers.length) {
-    return (
-      <Card className="bg-card shadow-xl">
-        <CardHeader className="text-center">
-          <SparklesIcon className="w-12 h-12 text-primary mx-auto mb-3" />
-          <CardTitle className="text-2xl font-semibold">No Spark Matches Right Now</CardTitle>
-          <CardDescription className="text-muted-foreground">
-            We couldn't find anyone who matches your filter. Try another filter or check back later!
-          </CardDescription>
-        </CardHeader>
-        <CardContent className="text-center py-10 flex flex-col items-center">
-          <Users className="w-16 h-16 text-muted-foreground mb-4" />
-          <p className="text-muted-foreground mb-4 max-w-md">
-             New connections are always sparking!
-          </p>
-          <div className="flex gap-2 mt-4">
-            <Button onClick={handleUndo} variant="outline" disabled={previousIndex === null}>
-              <Undo2 className="mr-2 h-4 w-4" /> Undo
-            </Button>
-            <Button onClick={refreshUsers} variant="outline">
-              <RefreshCw className="mr-2 h-4 w-4" /> Refresh Sparks
-            </Button>
-          </div>
-        </CardContent>
-      </Card>
-    );
-  }
-
-  const currentUserToDisplay = sparkUsers[currentIndex];
 
   return (
     <div className="flex flex-col items-center space-y-6">
@@ -366,34 +375,8 @@ export function SparkSwipeSection() {
             </DropdownMenu>
         </CardHeader>
       </Card>
-
-      <MatchCard
-        key={currentUserToDisplay.id}
-        user={currentUserToDisplay}
-        onLike={handleLike}
-        onPass={handlePass}
-        sparkInsights={insights}
-        isInsightsLoading={isInsightsLoading}
-      />
-      <div className="flex gap-2 mt-4">
-        <Button onClick={handleUndo} variant="outline" disabled={previousIndex === null || isInsightsLoading}>
-          <Undo2 className="mr-2 h-4 w-4" /> Undo
-        </Button>
-        <Button onClick={refreshUsers} variant="outline" disabled={isInsightsLoading}>
-          <RefreshCw className="mr-2 h-4 w-4" /> Refresh Sparks
-        </Button>
-      </div>
-
-       <p className="text-sm text-muted-foreground mt-2">
-        Free Spark Swipes remaining today:{" "}
-        <span
-          key={sparksAnimationTrigger}
-          className="font-semibold text-foreground animate-flash-attention"
-        >
-          {Math.max(0, DAILY_SPARK_LIMIT - sparksUsedToday)}
-        </span>
-      </p>
-
+      
+      {renderContent()}
 
       <AlertDialog open={showMatchAnimation} onOpenChange={setShowMatchAnimation}>
         <AlertDialogContent className="bg-card text-card-foreground border-primary shadow-lg rounded-xl">
