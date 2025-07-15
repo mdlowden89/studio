@@ -1,43 +1,44 @@
+
 rules_version = '2';
 
 service cloud.firestore {
   match /databases/{database}/documents {
-    
-    // Users can read any profile, but only write to their own.
+
+    // Users can read anyone's profile, but only write to their own.
     match /users/{userId} {
       allow read: if request.auth != null;
-      allow create, update: if request.auth.uid == userId;
-      allow delete: if false;
+      allow write: if request.auth.uid == userId;
     }
 
-    // Moments can be created by any authenticated user.
-    // More complex read/update logic is handled in server actions.
+    // Authenticated users can create moments. They can read any moment,
+    // but only update or delete their own.
     match /moments/{momentId} {
-      allow read, write: if request.auth != null;
+        allow read: if request.auth != null;
+        allow create: if request.auth.uid == request.resource.data.loggerId;
+        allow update, delete: if request.auth.uid == resource.data.loggerId;
     }
 
-    // Users can only read/write to chats they are a part of.
+    // Authenticated users can create likes.
+    match /likes/{likeId} {
+        allow create: if request.auth != null;
+        allow read, update: if request.auth.uid == resource.data.likerId || request.auth.uid == resource.data.likedUserId;
+    }
+
+    // Users can only read/write chats they are a part of.
     match /chats/{chatId} {
       allow read, write: if request.auth.uid in resource.data.participantIds;
+
+      // Messages can be read by chat participants and created by the sender.
+      match /messages/{messageId} {
+        allow read: if get(/databases/$(database)/documents/chats/$(chatId)).data.participantIds.hasAny([request.auth.uid]);
+        allow create: if request.auth.uid == request.resource.data.senderId;
+      }
     }
 
-    // Messages can only be read/created by participants of the chat.
-    match /chats/{chatId}/messages/{messageId} {
-       allow read, create: if request.auth.uid in get(/databases/$(database)/documents/chats/$(chatId)).data.participantIds;
-       allow update, delete: if false;
-    }
-    
-    // Notifications can only be read by the intended user.
-    // They are created by server-side actions.
+    // Users can only read notifications intended for them.
     match /notifications/{notificationId} {
-      allow read: if resource.data.userId == request.auth.uid;
-      allow create: if request.auth != null;
-      allow update, delete: if false;
-    }
-    
-    // Likes can be created/updated by any authenticated user.
-    match /likes/{likeId} {
-      allow read, write: if request.auth != null;
+        allow read: if request.auth.uid == resource.data.userId;
+        allow create: if request.auth != null;
     }
   }
 }
