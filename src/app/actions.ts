@@ -10,6 +10,7 @@ import { db } from "@/lib/firebase";
 import { doc, getDoc, updateDoc, collection, addDoc, serverTimestamp, query, where, limit, getDocs, orderBy, Timestamp, getCountFromServer, deleteField, Query, collectionGroup, startAfter, QueryConstraint, writeBatch, increment } from "firebase/firestore";
 import type { UserProfile, Achievement, Challenge, Moment, MomentLog, Chat, Notification, ChatMessage, SubscriptionInfo } from "@/lib/types";
 import { addHours } from "date-fns";
+import { MOCK_USERS } from "@/lib/mock-data";
 
 // This type should align with the filter component's state
 export interface UserFilters {
@@ -582,106 +583,8 @@ export async function sendMessage(chatId: string, senderId: string, receiverId: 
 }
 
 export async function getUsersForSwiping(currentUserId: string, filters?: UserFilters): Promise<UserProfile[]> {
-  try {
-    const currentUserProfile = await getUserProfile(currentUserId);
-    if (!currentUserProfile) {
-      console.warn("getUsersForSwiping: Could not find current user profile.");
-      return [];
-    }
-
-    const usersRef = collection(db, "users");
-    const queryConstraints: QueryConstraint[] = [];
-
-    // --- Gender/Interest Filtering ---
-    if (currentUserProfile.interestedIn && currentUserProfile.gender) {
-        const interestedIn = currentUserProfile.interestedIn;
-        const userGender = currentUserProfile.gender;
-
-        if (interestedIn === 'men') {
-            queryConstraints.push(where('gender', '==', 'man'));
-            queryConstraints.push(where('interestedIn', 'in', [userGender, 'everyone']));
-        } else if (interestedIn === 'women') {
-            queryConstraints.push(where('gender', '==', 'woman'));
-            queryConstraints.push(where('interestedIn', 'in', [userGender, 'everyone']));
-        } else if (interestedIn === 'everyone') {
-             if (userGender === 'man') {
-                queryConstraints.push(where('interestedIn', 'in', ['men', 'everyone']));
-            } else if (userGender === 'woman') {
-                queryConstraints.push(where('interestedIn', 'in', ['women', 'everyone']));
-            }
-        }
-    }
-    
-    // --- Attribute Filtering (if filters are provided) ---
-    if (filters) {
-        const [minAge, maxAge] = filters.ageRange;
-        queryConstraints.push(where("age", ">=", minAge));
-        queryConstraints.push(where("age", "<=", maxAge));
-
-        if (filters.datingIntentions !== 'any') {
-          queryConstraints.push(where("datingIntentions", "==", filters.datingIntentions));
-        }
-        if (filters.ethnicity !== 'any') {
-          queryConstraints.push(where("ethnicity", "==", filters.ethnicity));
-        }
-        if (filters.religion !== 'any') {
-          queryConstraints.push(where("religion", "==", filters.religion));
-        }
-        if (filters.relationshipType !== 'any') {
-          queryConstraints.push(where("relationshipType", "==", filters.relationshipType));
-        }
-    }
-    
-    const q = query(usersRef, ...queryConstraints, limit(100));
-    
-    const querySnapshot = await getDocs(q);
-
-    const usersFromDb = querySnapshot.docs
-      .map(doc => doc.data() as UserProfile)
-      .filter(user => user.id !== currentUserId);
-
-    let finalFilteredUsers = usersFromDb;
-
-    // In-Memory Filtering (for things Firestore can't do in one query)
-    if (filters) {
-        const [minHeight, maxHeight] = filters.heightRange;
-        finalFilteredUsers = usersFromDb.filter(user => {
-            if (!user.heightInches) return true; // Don't filter out users who haven't set height
-            return user.heightInches >= minHeight && user.heightInches <= maxHeight;
-        });
-    }
-
-    // --- Tiered Sorting: Glow Mode -> Premium -> Regular ---
-    const now = new Date();
-    const glowingUsers: UserProfile[] = [];
-    const premiumUsers: UserProfile[] = [];
-    const otherUsers: UserProfile[] = [];
-
-    finalFilteredUsers.forEach(user => {
-      const isGlowing = user.glowEffect?.active && user.glowEffect.expiresAt && new Date(user.glowEffect.expiresAt) > now;
-      const isPremium = user.subscription?.status === 'active';
-
-      if (isGlowing) {
-        glowingUsers.push(user);
-      } else if (isPremium) {
-        premiumUsers.push(user);
-      } else {
-        otherUsers.push(user);
-      }
-    });
-
-    // Shuffle each group independently to maintain variety within the tiers
-    const shuffledGlowing = glowingUsers.sort(() => Math.random() - 0.5);
-    const shuffledPremium = premiumUsers.sort(() => Math.random() - 0.5);
-    const shuffledOthers = otherUsers.sort(() => Math.random() - 0.5);
-
-    // Combine them, with glowing users first, then premium, then others
-    return [...shuffledGlowing, ...shuffledPremium, ...shuffledOthers];
-
-  } catch (error) {
-    console.error("Error fetching users for swiping:", error);
-    return [];
-  }
+  // Return mock data for development
+  return Promise.resolve(MOCK_USERS.filter(u => u.id !== currentUserId));
 }
 
 
