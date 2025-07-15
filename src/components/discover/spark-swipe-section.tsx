@@ -366,9 +366,9 @@ export function SparkSwipeSection() {
                 <DropdownMenuLabel>Personality Filters</DropdownMenuLabel>
                 <DropdownMenuSeparator />
                 {filterOptions.map(opt => (
-                     <DropdownMenuItem key={opt.value} onSelect={() => setActiveFilter(opt.value)}>
+                     <DropdownMenuItem key={opt.value} onSelect={() => setActiveFilter(opt.value)} className="flex flex-col items-start gap-0.5">
                         <span className="font-semibold">{opt.label}</span>
-                        <span className="text-xs text-muted-foreground ml-auto pl-2">{opt.description}</span>
+                        <span className="text-xs text-muted-foreground">{opt.description}</span>
                     </DropdownMenuItem>
                 ))}
             </DropdownMenuContent>
