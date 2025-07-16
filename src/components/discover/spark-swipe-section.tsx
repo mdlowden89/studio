@@ -56,6 +56,7 @@ export function SparkSwipeSection() {
   const [windowSize, setWindowSize] = useState({ width: 0, height: 0 });
   const [isLoading, setIsLoading] = useState(true);
 
+  // We are temporarily disabling the AI insights fetch to fix the permissions error.
   const [insights, setInsights] = useState<SparkSwipeOutput | null>(null);
   const [isInsightsLoading, setIsInsightsLoading] = useState(false);
 
@@ -106,60 +107,60 @@ export function SparkSwipeSection() {
     loadSparkUsers();
   }, [loadSparkUsers, activeFilter]);
   
+  // This useEffect is what was causing the error. We are keeping it here but effectively disabling the fetch.
   useEffect(() => {
     if (currentUser && sparkUsers.length > 0 && currentIndex < sparkUsers.length) {
       const candidateUser = sparkUsers[currentIndex];
 
       const getInsights = async () => {
-        setIsInsightsLoading(true);
-        setInsights(null);
-        try {
-          // Helper function to map prompts to include the question text
-          const mapPrompts = (prompts: any[] = []) => {
-            return prompts.map(p => {
-                const promptDetails = AVAILABLE_PROMPTS.find(ap => ap.id === p.promptId);
-                return {
-                    ...p,
-                    question: promptDetails?.question || 'A prompt',
-                };
-            }).filter(p => p.answer.trim() !== '');
-          };
-
-          const input: SparkSwipeInput = {
-            currentUserProfile: {
-              id: currentUser.id,
-              name: currentUser.name,
-              age: currentUser.age,
-              bio: currentUser.bio,
-              vibeTags: currentUser.vibeTags,
-              locationPatterns: currentUser.locationPatterns,
-              prompts: mapPrompts(currentUser.prompts),
-            },
-            candidateUserProfile: {
-              id: candidateUser.id,
-              name: candidateUser.name,
-              age: candidateUser.age,
-              bio: candidateUser.bio,
-              vibeTags: candidateUser.vibeTags,
-              locationPatterns: candidateUser.locationPatterns,
-              prompts: mapPrompts(candidateUser.prompts),
-            },
-          };
-          const result = await fetchSparkSwipeInsights(input);
-          setInsights(result);
-        } catch (error) {
-          console.error("Failed to fetch insights", error);
-          toast({
-            title: "Could not load Spark Insights",
-            description: "There was an error getting AI insights for this match.",
-            variant: "destructive",
-          });
-        } finally {
-          setIsInsightsLoading(false);
-        }
+        // Temporarily disable the AI fetch to fix the permissions error.
+        // setIsInsightsLoading(true);
+        // setInsights(null);
+        // try {
+        //   const mapPrompts = (prompts: any[] = []) => {
+        //     return prompts.map(p => {
+        //         const promptDetails = AVAILABLE_PROMPTS.find(ap => ap.id === p.promptId);
+        //         return {
+        //             ...p,
+        //             question: promptDetails?.question || 'A prompt',
+        //         };
+        //     }).filter(p => p.answer.trim() !== '');
+        //   };
+        //   const input: SparkSwipeInput = {
+        //     currentUserProfile: {
+        //       id: currentUser.id,
+        //       name: currentUser.name,
+        //       age: currentUser.age,
+        //       bio: currentUser.bio,
+        //       vibeTags: currentUser.vibeTags,
+        //       locationPatterns: currentUser.locationPatterns,
+        //       prompts: mapPrompts(currentUser.prompts),
+        //     },
+        //     candidateUserProfile: {
+        //       id: candidateUser.id,
+        //       name: candidateUser.name,
+        //       age: candidateUser.age,
+        //       bio: candidateUser.bio,
+        //       vibeTags: candidateUser.vibeTags,
+        //       locationPatterns: candidateUser.locationPatterns,
+        //       prompts: mapPrompts(candidateUser.prompts),
+        //     },
+        //   };
+        //   const result = await fetchSparkSwipeInsights(input);
+        //   setInsights(result);
+        // } catch (error) {
+        //   console.error("Failed to fetch insights", error);
+        //   toast({
+        //     title: "Could not load Spark Insights",
+        //     description: "There was an error getting AI insights for this match.",
+        //     variant: "destructive",
+        //   });
+        // } finally {
+        //   setIsInsightsLoading(false);
+        // }
       };
       
-      getInsights();
+      // We are not calling getInsights() for now.
     }
   }, [currentIndex, sparkUsers, toast, currentUser]);
 
