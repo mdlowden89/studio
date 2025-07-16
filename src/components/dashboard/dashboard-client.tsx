@@ -4,8 +4,8 @@
 import { useState, useEffect, useMemo, useCallback } from "react";
 import { AppLayout } from "@/components/layout/app-layout";
 import { Card, CardContent, CardHeader, CardTitle, CardDescription, CardFooter } from "@/components/ui/card";
-import { Sparkles, PlusCircle, ClipboardList, Users, MessageSquare, Route, MapPin, CalendarDays, Users2, TrendingUp, Activity, Map, LayoutGrid, List as ListIcon, Lightbulb, Edit3, Repeat, Star, ShoppingBag, Zap, Eye, BrainCircuit, Signal, ArrowRight, Loader2 } from "lucide-react";
-import { AVAILABLE_PROMPTS, MOCK_HOTSPOTS } from "@/lib/mock-data";
+import { Sparkles, PlusCircle, ClipboardList, Users, MessageSquare, Route, MapPin, CalendarDays, Users2, TrendingUp, Activity, Map, LayoutGrid, List as ListIcon, BrainCircuit, Signal, ArrowRight, Loader2, Star, ShoppingBag, Zap, Eye, Repeat } from "lucide-react";
+import { MOCK_HOTSPOTS } from "@/lib/mock-data";
 import { Button } from "@/components/ui/button";
 import { Separator } from "@/components/ui/separator";
 import { subDays, isAfter, format, getDay, addHours } from "date-fns";
@@ -60,7 +60,6 @@ export function DashboardClient({ currentUser }: DashboardClientProps) {
   const [recentPlacesViewMode, setRecentPlacesViewMode] = useState<'list' | 'imageGrid'>('list');
   const [clientFormattedTimes, setClientFormattedTimes] = useState<Record<string, string>>({});
   const [windowSize, setWindowSize] = useState({ width: 0, height: 0 });
-  const [promptOfTheDay, setPromptOfTheDay] = useState<ProfilePrompt | null>(null);
   const [showUpsellDialog, setShowUpsellDialog] = useState(false);
   const [showFreeBoostDialog, setShowFreeBoostDialog] = useState(false);
   
@@ -154,17 +153,6 @@ export function DashboardClient({ currentUser }: DashboardClientProps) {
     }
     return () => {};
   }, []);
-
-  const selectNewPrompt = useCallback(() => {
-    if (AVAILABLE_PROMPTS.length > 0) {
-      const randomIndex = Math.floor(Math.random() * AVAILABLE_PROMPTS.length);
-      setPromptOfTheDay(AVAILABLE_PROMPTS[randomIndex]);
-    }
-  }, []); 
-
-  useEffect(() => {
-    selectNewPrompt();
-  }, [selectNewPrompt]);
 
   useEffect(() => {
     if (searchParams.get('showBoostUpsell') === 'true') {
@@ -355,7 +343,7 @@ export function DashboardClient({ currentUser }: DashboardClientProps) {
           <Card className="mb-8 bg-gradient-to-tr from-yellow-500/15 via-card to-card border border-yellow-500/30 shadow-xl">
             <CardHeader className="flex flex-col sm:flex-row items-start sm:items-center gap-4">
               <div className="p-3 bg-yellow-500/20 rounded-full">
-                <Lightbulb className="w-8 h-8 text-yellow-400" />
+                <Sparkles className="w-8 h-8 text-yellow-400" />
               </div>
               <div>
                 <CardTitle className="text-2xl font-bold text-yellow-400">Your Spark Suggestions are Ready</CardTitle>
@@ -430,31 +418,6 @@ export function DashboardClient({ currentUser }: DashboardClientProps) {
                     </Link>
                 </CardFooter>
              </Card>
-
-             {promptOfTheDay && (
-              <Card className="bg-card shadow-xl">
-                <CardHeader>
-                  <div className="flex items-center gap-2">
-                    <Lightbulb className="w-6 h-6 text-primary" />
-                    <CardTitle className="text-lg font-semibold">Prompt of the Day</CardTitle>
-                  </div>
-                   <CardDescription className="text-xs text-muted-foreground mt-1">Spark a new conversation or update your profile!</CardDescription>
-                </CardHeader>
-                <CardContent>
-                  <p className="text-sm text-foreground italic mb-3">&quot;{promptOfTheDay.question}&quot;</p>
-                </CardContent>
-                <CardFooter className="flex justify-between items-center">
-                  <Button variant="ghost" size="sm" onClick={selectNewPrompt} className="text-muted-foreground hover:text-primary">
-                    <Repeat className="mr-1.5 h-3.5 w-3.5" /> Another
-                  </Button>
-                  <Link href="/profile" passHref>
-                    <Button size="sm" className="bg-primary/90 hover:bg-primary text-primary-foreground text-xs">
-                      <Edit3 className="mr-1.5 h-3.5 w-3.5" /> Answer
-                    </Button>
-                  </Link>
-                </CardFooter>
-              </Card>
-            )}
 
             {activeStreakChallenge && activeStreakChallenge.progress && (
               <Card className="bg-card shadow-xl">
