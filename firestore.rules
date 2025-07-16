@@ -1,36 +1,13 @@
+
 rules_version = '2';
+
 service cloud.firestore {
   match /databases/{database}/documents {
-    // Default deny all access to prevent accidental exposure.
+    // Allow read/write access to all documents for authenticated users
+    // This is a permissive rule for development, and should be refined
+    // for production with more specific access control.
     match /{document=**} {
-      allow read, write: if false;
-    }
-
-    // For development, allow any authenticated user to read/write all main collections.
-    // This will unblock the app from permission errors.
-    match /users/{userId} {
       allow read, write: if request.auth != null;
-    }
-
-    match /moments/{momentId} {
-      allow read, write: if request.auth != null;
-    }
-
-    match /likes/{likeId} {
-      allow read, write: if request.auth != null;
-    }
-
-    match /notifications/{notificationId} {
-      allow read, write: if request.auth != null;
-    }
-
-    match /chats/{chatId} {
-      allow read, write: if request.auth != null;
-
-      // Also allow access to messages within chats for authenticated users.
-      match /messages/{messageId} {
-        allow read, write: if request.auth != null;
-      }
     }
   }
 }
