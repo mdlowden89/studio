@@ -4,7 +4,7 @@
 import { useState, useEffect, useMemo } from "react";
 import { AppLayout } from "@/components/layout/app-layout";
 import { Card, CardContent, CardHeader, CardTitle, CardDescription, CardFooter } from "@/components/ui/card";
-import { Sparkles, PlusCircle, ClipboardList, Users, MessageSquare, Route, MapPin, CalendarDays, TrendingUp, LayoutGrid, List as ListIcon, Star, ShoppingBag, Zap, ArrowRight, Loader2, BrainCircuit } from "lucide-react";
+import { Sparkles, PlusCircle, ClipboardList, Users, MessageSquare, Route, MapPin, CalendarDays, LayoutGrid, List as ListIcon, Star, ArrowRight } from "lucide-react";
 import { MOCK_HOTSPOTS } from "@/lib/mock-data";
 import { Button } from "@/components/ui/button";
 import { Separator } from "@/components/ui/separator";
@@ -13,7 +13,6 @@ import { MomentsMap } from "@/components/dashboard/moments-map";
 import { MomentGalleryItem } from "@/components/moments/moment-gallery-item";
 import Link from "next/link";
 import type { UserProfile, Moment } from "@/lib/types";
-import { Progress } from "@/components/ui/progress";
 import { CrossdPlusUpsellDialog } from "@/components/pricing/crossd-plus-upsell-dialog";
 import { FreeBoostUpsellDialog } from "@/components/pricing/free-boost-upsell-dialog";
 import { useSearchParams, useRouter } from "next/navigation";
@@ -66,7 +65,6 @@ export function DashboardClient({ currentUser }: DashboardClientProps) {
 
   const [isLoadingMoments, setIsLoadingMoments] = useState(true);
   const [isLoadingChats, setIsLoadingChats] = useState(true);
-  const [isActivatingBooster, setIsActivatingBooster] = useState(false);
 
   const searchParams = useSearchParams();
   const router = useRouter();
@@ -136,84 +134,6 @@ export function DashboardClient({ currentUser }: DashboardClientProps) {
     }
   }, [searchParams, router]);
 
-  const activeStreakChallenge = useMemo(() => {
-    if (!currentUser.challenges) {
-      return null;
-    }
-    return currentUser.challenges.find(
-      (challenge) => challenge.type === "Streak" && challenge.status === "active"
-    );
-  }, [currentUser.challenges]);
-  
-  const handlePurchaseBooster = async (priceId: string, purchaseItem: string) => {
-    if (!currentUser) {
-      toast({ title: "Not Logged In", description: "You must be logged in to make a purchase.", variant: "destructive" });
-      router.push('/login-form');
-      return;
-    }
-
-    if (!priceId) {
-      toast({
-        title: "Temporarily Unavailable",
-        description: "This booster is not available for purchase right now. Please check back later.",
-        variant: "destructive",
-      });
-      console.error(`Stripe Price ID for ${purchaseItem} is missing.`);
-      return;
-    }
-
-    setIsActivatingBooster(true);
-    try {
-      const response = await fetch('/api/create-checkout-session', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({
-          priceId,
-          userId: currentUser.id,
-          mode: 'payment',
-          metadata: { purchase_item: purchaseItem },
-        }),
-      });
-
-      const sessionData = await response.json();
-
-      if (!response.ok || !sessionData.sessionId) {
-        throw new Error(sessionData.error || 'Failed to create checkout session.');
-      }
-      
-      router.push(`/payment/initiate-stripe-redirect?sessionId=${sessionData.sessionId}`);
-
-    } catch (error: any) {
-      console.error("Booster purchase process error:", error);
-      toast({
-        title: "Purchase Failed",
-        description: error.message || "An unexpected error occurred. Please try again.",
-        variant: "destructive",
-      });
-    } finally {
-      setIsActivatingBooster(false);
-    }
-  };
-  
-  const isGlowModeActive = useMemo(() => {
-    if (!currentUser.glowEffect?.expiresAt) return false;
-    return currentUser.glowEffect.active && new Date(currentUser.glowEffect.expiresAt) > new Date();
-  }, [currentUser.glowEffect]);
-
-  const boosters = [
-    {
-      icon: Zap,
-      title: "Glow Mode Boost",
-      price: "£3.49",
-      description: "24-hour visibility surge, neon spark aura, and priority placement in feeds.",
-      tagline: "Your spark. Center stage.",
-      purchaseHandler: () => handlePurchaseBooster(process.env.NEXT_PUBLIC_STRIPE_GLOW_BOOST_PRICE_ID || '', 'glow_boost'),
-      isActivating: isActivatingBooster,
-      isDisabled: isGlowModeActive,
-      statusText: "Active",
-    },
-  ];
-
   return (
     <AppLayout>
       <div className="container mx-auto py-8">
@@ -282,8 +202,7 @@ export function DashboardClient({ currentUser }: DashboardClientProps) {
           </Card>
         )}
 
-        <div className="grid grid-cols-1 lg:grid-cols-3 gap-8 mb-8">
-          <div className="lg:col-span-2">
+        <div className="grid grid-cols-1 gap-8 mb-8">
             <Card className="bg-card shadow-xl h-full">
               <CardHeader>
                 <CardTitle className="text-xl font-semibold">Your Activity At a Glance</CardTitle>
@@ -307,64 +226,6 @@ export function DashboardClient({ currentUser }: DashboardClientProps) {
                 )}
               </CardContent>
             </Card>
-          </div>
-
-          <div className="lg:col-span-1 space-y-8">
-             <Card className="bg-card shadow-xl">
-                <CardHeader>
-                    <div className="flex items-center gap-2">
-                        <Sparkles className="w-6 h-6 text-primary" />
-                        <CardTitle className="text-lg font-semibold">Spark Swipe</CardTitle>
-                    </div>
-                    <CardDescription className="text-xs text-muted-foreground mt-1">
-                        Find connections based on personality and vibes.
-                    </CardDescription>
-                </CardHeader>
-                <CardContent>
-                  <p className="text-sm text-foreground mb-3">
-                    Your personality type is currently set to: <span className="font-semibold text-primary">{currentUser.mbtiType || "Not Set"}</span>
-                  </p>
-                  { !currentUser.mbtiType && (
-                    <p className="text-xs text-muted-foreground">
-                      Take our quick quiz to find your type and unlock Spark Swipes.
-                    </p>
-                  )}
-                </CardContent>
-                <CardFooter>
-                    <Link href="/discover?tab=spark-swipe" passHref className="w-full">
-                        <Button size="sm" className="w-full bg-primary/90 hover:bg-primary text-primary-foreground text-xs">
-                             {currentUser.mbtiType ? 'Go to Spark Swipe' : 'Take the Quiz'}
-                        </Button>
-                    </Link>
-                </CardFooter>
-             </Card>
-
-            {activeStreakChallenge && activeStreakChallenge.progress && (
-              <Card className="bg-card shadow-xl">
-                <CardHeader>
-                  <div className="flex items-center gap-2">
-                    <TrendingUp className="w-6 h-6 text-primary" />
-                    <CardTitle className="text-lg font-semibold">Active Streak</CardTitle>
-                  </div>
-                  <CardDescription className="text-xs text-muted-foreground mt-1">{activeStreakChallenge.name}</CardDescription>
-                </CardHeader>
-                <CardContent>
-                  <p className="text-sm text-foreground mb-2">{activeStreakChallenge.description}</p>
-                  <Progress value={(activeStreakChallenge.progress.current / activeStreakChallenge.progress.target) * 100} className="h-2 [&>div]:bg-primary" />
-                  <p className="text-xs text-muted-foreground mt-1 text-right">
-                    {activeStreakChallenge.progress.current} / {activeStreakChallenge.progress.target} {activeStreakChallenge.progress.unit}
-                  </p>
-                </CardContent>
-                 <CardFooter>
-                  <Link href="/profile?tab=progress" passHref className="w-full">
-                    <Button variant="outline" size="sm" className="w-full text-primary border-primary/70 hover:bg-primary/10 hover:text-primary">
-                        View All Challenges
-                    </Button>
-                  </Link>
-                </CardFooter>
-              </Card>
-            )}
-          </div>
         </div>
 
 
@@ -478,57 +339,6 @@ export function DashboardClient({ currentUser }: DashboardClientProps) {
                 </div>
             )}
         </div>
-
-
-        <Card className="mb-8 bg-card shadow-xl">
-          <CardHeader>
-            <div className="flex items-center gap-3">
-              <ShoppingBag className="w-8 h-8 text-primary" />
-              <div>
-                <CardTitle className="text-2xl font-bold">A La Carte Boosters</CardTitle>
-                <CardDescription className="text-muted-foreground">
-                  Enhance your experience with powerful one-time purchases.
-                </CardDescription>
-              </div>
-            </div>
-          </CardHeader>
-          <CardContent>
-            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
-              {boosters.map((booster) => {
-                const BoosterIcon = booster.icon;
-                
-                return (
-                  <Card key={booster.title} className="bg-muted/30 flex flex-col">
-                    <CardHeader>
-                      <div className="flex items-center gap-3">
-                        <BoosterIcon className="w-7 h-7 text-primary" />
-                        <CardTitle className="text-lg">{booster.title}</CardTitle>
-                      </div>
-                    </CardHeader>
-                    <CardContent className="flex-grow space-y-2">
-                      <p className="text-sm text-muted-foreground">{booster.description}</p>
-                      <p className="text-xs italic text-foreground/80">&quot;{booster.tagline}&quot;</p>
-                    </CardContent>
-                    <CardFooter className="flex items-center justify-between pt-4">
-                      <p className="text-lg font-bold text-primary">{booster.price}</p>
-                      <Button
-                        variant="outline"
-                        size="sm"
-                        onClick={booster.purchaseHandler}
-                        disabled={booster.isDisabled || booster.isActivating}
-                      >
-                        {booster.isActivating ? (
-                          <Loader2 className="mr-2 h-4 w-4 animate-spin" />
-                        ) : null}
-                        {booster.isActivating ? "Processing..." : booster.isDisabled ? booster.statusText : "Purchase"}
-                      </Button>
-                    </CardFooter>
-                  </Card>
-                );
-              })}
-            </div>
-          </CardContent>
-        </Card>
 
 
         <CrossdPlusUpsellDialog
