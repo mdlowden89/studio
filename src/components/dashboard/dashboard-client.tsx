@@ -4,7 +4,7 @@
 import { useState, useEffect, useMemo, useCallback } from "react";
 import { AppLayout } from "@/components/layout/app-layout";
 import { Card, CardContent, CardHeader, CardTitle, CardDescription, CardFooter } from "@/components/ui/card";
-import { Sparkles, PlusCircle, ClipboardList, Users, MessageSquare, Route, MapPin, CalendarDays, TrendingUp, LayoutGrid, List as ListIcon, BrainCircuit, Signal, ArrowRight, Loader2, Star, ShoppingBag, Zap } from "lucide-react";
+import { Sparkles, PlusCircle, ClipboardList, Users, MessageSquare, Route, MapPin, CalendarDays, TrendingUp, LayoutGrid, List as ListIcon, Star, ShoppingBag, Zap, ArrowRight, Loader2 } from "lucide-react";
 import { MOCK_HOTSPOTS } from "@/lib/mock-data";
 import { Button } from "@/components/ui/button";
 import { Separator } from "@/components/ui/separator";
@@ -313,11 +313,11 @@ export function DashboardClient({ currentUser }: DashboardClientProps) {
              <Card className="bg-card shadow-xl">
                 <CardHeader>
                     <div className="flex items-center gap-2">
-                        <BrainCircuit className="w-6 h-6 text-primary" />
-                        <CardTitle className="text-lg font-semibold">Know Your Type?</CardTitle>
+                        <Sparkles className="w-6 h-6 text-primary" />
+                        <CardTitle className="text-lg font-semibold">Spark Swipe</CardTitle>
                     </div>
                     <CardDescription className="text-xs text-muted-foreground mt-1">
-                        Adding your personality type can lead to better matches.
+                        Find connections based on personality and vibes.
                     </CardDescription>
                 </CardHeader>
                 <CardContent>
@@ -326,14 +326,14 @@ export function DashboardClient({ currentUser }: DashboardClientProps) {
                   </p>
                   { !currentUser.mbtiType && (
                     <p className="text-xs text-muted-foreground">
-                      Curious about your personality? Take our quiz to unlock deeper compatibility insights.
+                      Take our quick quiz to find your type and unlock Spark Swipes.
                     </p>
                   )}
                 </CardContent>
                 <CardFooter>
-                    <Link href="/mbti-quiz" passHref className="w-full">
+                    <Link href="/discover?tab=spark-swipe" passHref className="w-full">
                         <Button size="sm" className="w-full bg-primary/90 hover:bg-primary text-primary-foreground text-xs">
-                            <BrainCircuit className="mr-1.5 h-3.5 w-3.5" /> {currentUser.mbtiType ? 'Retake the Quiz' : 'Take the Quiz'}
+                             {currentUser.mbtiType ? 'Go to Spark Swipe' : 'Take the Quiz'}
                         </Button>
                     </Link>
                 </CardFooter>
