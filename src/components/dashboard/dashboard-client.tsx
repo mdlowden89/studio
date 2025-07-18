@@ -19,7 +19,6 @@ import { FreeBoostUpsellDialog } from "@/components/pricing/free-boost-upsell-di
 import { useSearchParams, useRouter } from "next/navigation";
 import { useToast } from "@/hooks/use-toast";
 import { EmotionalHotspotsUpsell } from "@/components/dashboard/emotional-hotspots-upsell";
-import { fetchMomentsForUser, fetchUserChatCount } from "@/app/actions";
 import { Skeleton } from "@/components/ui/skeleton";
 
 interface DashboardClientProps {
@@ -88,38 +87,10 @@ export function DashboardClient({ currentUser }: DashboardClientProps) {
   const oneWeekAgo = useMemo(() => subDays(new Date(), 7), []);
 
   useEffect(() => {
-    if (currentUser.id) {
-      setIsLoadingMoments(true);
-      fetchMomentsForUser(currentUser.id)
-        .then(data => {
-          setUserMoments(data as Moment[]);
-        })
-        .catch(err => {
-          console.error("Failed to fetch user moments:", err);
-          toast({ title: "Error", description: "Could not load your moments.", variant: "destructive" });
-        })
-        .finally(() => {
-          setIsLoadingMoments(false);
-        });
-    }
-  }, [currentUser.id, toast]);
-
-  useEffect(() => {
-    if (currentUser.id) {
-      setIsLoadingChats(true);
-      fetchUserChatCount(currentUser.id)
-        .then(count => {
-          setActiveChatsCount(count);
-        })
-        .catch(err => {
-          console.error("Failed to fetch chat count:", err);
-          toast({ title: "Error", description: "Could not load your chat count.", variant: "destructive" });
-        })
-        .finally(() => {
-          setIsLoadingChats(false);
-        });
-    }
-  }, [currentUser.id, toast]);
+    // TODO: Implement actual data fetching for moments and chat count on the server
+    setIsLoadingMoments(false); // Placeholder
+    setIsLoadingChats(false); // Placeholder
+  }, []); // Empty dependency array to run once on mount
 
   const momentsThisWeek = useMemo(() => {
     return userMoments
@@ -599,4 +570,5 @@ export function DashboardClient({ currentUser }: DashboardClientProps) {
       </div>
     </AppLayout>
   );
-}
+
+    
