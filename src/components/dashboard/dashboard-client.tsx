@@ -4,21 +4,20 @@
 import { useState, useEffect, useMemo, useCallback } from "react";
 import { AppLayout } from "@/components/layout/app-layout";
 import { Card, CardContent, CardHeader, CardTitle, CardDescription, CardFooter } from "@/components/ui/card";
-import { Sparkles, PlusCircle, ClipboardList, Users, MessageSquare, Route, MapPin, CalendarDays, Users2, TrendingUp, Activity, Map, LayoutGrid, List as ListIcon, BrainCircuit, Signal, ArrowRight, Loader2, Star, ShoppingBag, Zap, Eye, Repeat } from "lucide-react";
+import { Sparkles, PlusCircle, ClipboardList, Users, MessageSquare, Route, MapPin, CalendarDays, TrendingUp, LayoutGrid, List as ListIcon, BrainCircuit, Signal, ArrowRight, Loader2, Star, ShoppingBag, Zap } from "lucide-react";
 import { MOCK_HOTSPOTS } from "@/lib/mock-data";
 import { Button } from "@/components/ui/button";
 import { Separator } from "@/components/ui/separator";
-import { subDays, isAfter, format, getDay, addHours } from "date-fns";
+import { subDays, isAfter, format } from "date-fns";
 import { MomentsMap } from "@/components/dashboard/moments-map";
 import { MomentGalleryItem } from "@/components/moments/moment-gallery-item";
 import Link from "next/link";
-import type { ProfilePrompt, Challenge, UserProfile, Moment } from "@/lib/types";
+import type { Challenge, UserProfile, Moment } from "@/lib/types";
 import { Progress } from "@/components/ui/progress";
 import { CrossdPlusUpsellDialog } from "@/components/pricing/crossd-plus-upsell-dialog";
 import { FreeBoostUpsellDialog } from "@/components/pricing/free-boost-upsell-dialog";
 import { useSearchParams, useRouter } from "next/navigation";
 import { useToast } from "@/hooks/use-toast";
-import { EmotionalHotspotsUpsell } from "@/components/dashboard/emotional-hotspots-upsell";
 import { fetchMomentsForUser, fetchUserChatCount } from "@/app/actions";
 import { Skeleton } from "@/components/ui/skeleton";
 
@@ -59,7 +58,6 @@ const StatsLoadingSkeleton = () => (
 export function DashboardClient({ currentUser }: DashboardClientProps) {
   const [recentPlacesViewMode, setRecentPlacesViewMode] = useState<'list' | 'imageGrid'>('list');
   const [clientFormattedTimes, setClientFormattedTimes] = useState<Record<string, string>>({});
-  const [windowSize, setWindowSize] = useState({ width: 0, height: 0 });
   const [showUpsellDialog, setShowUpsellDialog] = useState(false);
   const [showFreeBoostDialog, setShowFreeBoostDialog] = useState(false);
   
@@ -132,49 +130,12 @@ export function DashboardClient({ currentUser }: DashboardClientProps) {
   }, [momentsTimestampsKey, momentsThisWeek]); 
 
   useEffect(() => {
-    const handleResize = () => {
-      setWindowSize({
-        width: window.innerWidth,
-        height: window.innerHeight,
-      });
-    };
-    if (typeof window !== 'undefined') {
-      handleResize();
-      window.addEventListener('resize', handleResize);
-      return () => window.removeEventListener('resize', handleResize);
-    }
-    return () => {};
-  }, []);
-
-  useEffect(() => {
     if (searchParams.get('showBoostUpsell') === 'true') {
       setShowFreeBoostDialog(true);
       router.replace('/dashboard', { scroll: false });
     }
   }, [searchParams, router]);
 
-
-  const distinctPlacesVisitedCount = useMemo(() => new Set(momentsThisWeek.map(m => m.placeName)).size, [momentsThisWeek]);
-
-  const { mostActiveDay } = useMemo(() => {
-    const dayCounts = momentsThisWeek.reduce((acc, moment) => {
-      const day = getDay(new Date(moment.loggedAt as string));
-      acc[day] = (acc[day] || 0) + 1;
-      return acc;
-    }, {} as Record<number, number>);
-
-    let mostActiveDayIndex = -1;
-    let maxMomentsOnDay = 0;
-    for (const day in dayCounts) {
-      if (dayCounts[day] > maxMomentsOnDay) {
-        maxMomentsOnDay = dayCounts[day];
-        mostActiveDayIndex = parseInt(day);
-      }
-    }
-    const dayNames = ["Sunday", "Monday", "Tuesday", "Wednesday", "Thursday", "Friday", "Saturday"];
-    return { mostActiveDay: mostActiveDayIndex !== -1 ? dayNames[mostActiveDayIndex] : "N/A" };
-  }, [momentsThisWeek]);
-  
   const activeStreakChallenge = useMemo(() => {
     if (!currentUser.challenges) {
       return null;
@@ -535,8 +496,7 @@ export function DashboardClient({ currentUser }: DashboardClientProps) {
             <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
               {boosters.map((booster) => {
                 const BoosterIcon = booster.icon;
-                const isDisabled = booster.isDisabled || false;
-
+                
                 return (
                   <Card key={booster.title} className="bg-muted/30 flex flex-col">
                     <CardHeader>
@@ -555,12 +515,12 @@ export function DashboardClient({ currentUser }: DashboardClientProps) {
                         variant="outline"
                         size="sm"
                         onClick={booster.purchaseHandler}
-                        disabled={isDisabled}
+                        disabled={booster.isDisabled || booster.isActivating}
                       >
                         {booster.isActivating ? (
                           <Loader2 className="mr-2 h-4 w-4 animate-spin" />
                         ) : null}
-                        {booster.isActivating ? "Processing..." : isDisabled ? booster.statusText : "Purchase"}
+                        {booster.isActivating ? "Processing..." : booster.isDisabled ? booster.statusText : "Purchase"}
                       </Button>
                     </CardFooter>
                   </Card>
