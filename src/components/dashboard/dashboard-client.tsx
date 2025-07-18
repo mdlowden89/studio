@@ -19,6 +19,7 @@ import { FreeBoostUpsellDialog } from "@/components/pricing/free-boost-upsell-di
 import { useSearchParams, useRouter } from "next/navigation";
 import { useToast } from "@/hooks/use-toast";
 import { EmotionalHotspotsUpsell } from "@/components/dashboard/emotional-hotspots-upsell";
+import { fetchMomentsForUser, fetchUserChatCount } from "@/app/actions";
 import { Skeleton } from "@/components/ui/skeleton";
 
 interface DashboardClientProps {
@@ -87,10 +88,30 @@ export function DashboardClient({ currentUser }: DashboardClientProps) {
   const oneWeekAgo = useMemo(() => subDays(new Date(), 7), []);
 
   useEffect(() => {
-    // TODO: Implement actual data fetching for moments and chat count on the server
-    setIsLoadingMoments(false); // Placeholder
-    setIsLoadingChats(false); // Placeholder
-  }, []); // Empty dependency array to run once on mount
+    if (currentUser.id) {
+        setIsLoadingMoments(true);
+        fetchMomentsForUser(currentUser.id)
+            .then(data => setUserMoments(data))
+            .catch(err => {
+                console.error("Failed to fetch user moments:", err);
+                toast({ title: "Error", description: "Could not load your moments.", variant: "destructive" });
+            })
+            .finally(() => setIsLoadingMoments(false));
+    }
+  }, [currentUser.id, toast]);
+
+  useEffect(() => {
+    if (currentUser.id) {
+        setIsLoadingChats(true);
+        fetchUserChatCount(currentUser.id)
+            .then(setActiveChatsCount)
+            .catch(err => {
+                console.error("Failed to fetch chat count:", err);
+                toast({ title: "Error", description: "Could not load your chat stats.", variant: "destructive" });
+            })
+            .finally(() => setIsLoadingChats(false));
+    }
+  }, [currentUser.id, toast]);
 
   const momentsThisWeek = useMemo(() => {
     return userMoments
@@ -514,8 +535,7 @@ export function DashboardClient({ currentUser }: DashboardClientProps) {
             <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
               {boosters.map((booster) => {
                 const BoosterIcon = booster.icon;
-                const isGlowBooster = booster.title === "Glow Mode Boost";
-                const isDisabled = isGlowBooster && (isGlowModeActive || isActivatingBooster);
+                const isDisabled = booster.isDisabled || false;
 
                 return (
                   <Card key={booster.title} className="bg-muted/30 flex flex-col">
@@ -534,19 +554,13 @@ export function DashboardClient({ currentUser }: DashboardClientProps) {
                       <Button
                         variant="outline"
                         size="sm"
-                        onClick={
-                          isGlowBooster
-                            ? () => handlePurchaseBooster(process.env.NEXT_PUBLIC_STRIPE_GLOW_BOOST_PRICE_ID || '', 'glow_boost')
-                            : () => toast({ title: "Coming Soon!", description: `${booster.title} checkout is not yet implemented.` })
-                        }
+                        onClick={booster.purchaseHandler}
                         disabled={isDisabled}
                       >
-                        {isGlowBooster && isActivatingBooster ? (
+                        {booster.isActivating ? (
                           <Loader2 className="mr-2 h-4 w-4 animate-spin" />
                         ) : null}
-                        {isGlowBooster
-                          ? isActivatingBooster ? "Processing..." : isGlowModeActive ? "Active" : "Purchase"
-                          : "Purchase"}
+                        {booster.isActivating ? "Processing..." : isDisabled ? booster.statusText : "Purchase"}
                       </Button>
                     </CardFooter>
                   </Card>
@@ -570,5 +584,4 @@ export function DashboardClient({ currentUser }: DashboardClientProps) {
       </div>
     </AppLayout>
   );
-
-    
+}
