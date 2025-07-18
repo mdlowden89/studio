@@ -598,5 +598,5 @@ export function DashboardClient({ currentUser }: DashboardClientProps) {
 
       </div>
     </AppLayout>
-
-    
+  );
+}
