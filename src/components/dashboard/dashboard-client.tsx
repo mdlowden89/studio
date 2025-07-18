@@ -565,7 +565,7 @@ export function DashboardClient({ currentUser }: DashboardClientProps) {
                         size="sm"
                         onClick={
                           isGlowBooster
-                            ? booster.purchaseHandler
+                            ? () => handlePurchaseBooster(process.env.NEXT_PUBLIC_STRIPE_GLOW_BOOST_PRICE_ID || '', 'glow_boost')
                             : () => toast({ title: "Coming Soon!", description: `${booster.title} checkout is not yet implemented.` })
                         }
                         disabled={isDisabled}
@@ -598,5 +598,5 @@ export function DashboardClient({ currentUser }: DashboardClientProps) {
 
       </div>
     </AppLayout>
-  );
-}
+
+    
