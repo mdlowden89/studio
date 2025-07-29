@@ -1,13 +1,41 @@
-
 rules_version = '2';
 
 service cloud.firestore {
   match /databases/{database}/documents {
-    // Allow read/write access to all documents for any authenticated user.
-    // This is a common rule for development but should be made more
-    // restrictive for production applications.
-    match /{document=**} {
-      allow read, write: if request.auth != null;
+    
+    // Users can read all profiles, but only write to their own.
+    match /users/{userId} {
+      allow read: if request.auth != null;
+      allow write: if request.auth.uid == userId;
+    }
+
+    // Authenticated users can create moments.
+    // Users can read/update their own moments or moments they are a part of.
+    match /moments/{momentId} {
+      allow create: if request.auth != null && request.auth.uid == request.resource.data.loggerId;
+      allow read, update: if request.auth != null && (request.auth.uid == resource.data.loggerId || request.auth.uid == resource.data.confirmedUserId);
+    }
+
+    // Authenticated users can create likes. 
+    // They can only read/update their own likes or likes directed at them.
+    match /likes/{likeId} {
+      allow read, update: if request.auth != null && (request.auth.uid == resource.data.likerId || request.auth.uid == resource.data.likedUserId);
+      allow create: if request.auth != null && request.auth.uid == request.resource.data.likerId;
+    }
+    
+    // Authenticated users can read/write their own notifications and create notifications for others.
+    match /notifications/{notificationId} {
+        allow read, write: if request.auth != null && request.auth.uid == resource.data.userId;
+        allow create: if request.auth != null;
+    }
+
+    // Chat participants can read/write to the chat document and its messages subcollection.
+    match /chats/{chatId} {
+      allow read, write: if request.auth != null && request.auth.uid in resource.data.participantIds;
+
+      match /messages/{messageId} {
+        allow read, create: if request.auth != null && request.auth.uid in get(/databases/$(database)/documents/chats/$(chatId)).data.participantIds;
+      }
     }
   }
 }
