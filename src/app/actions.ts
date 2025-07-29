@@ -187,8 +187,7 @@ export async function logMoment(momentData: MomentLog): Promise<{ success: boole
     const matchQuery = query(
       momentsRef,
       where("placeName", "==", momentData.placeName),
-      where("loggedAt", ">=", twoHoursBefore),
-      where("loggedAt", "<=", twoHoursAfter),
+      where("loggedAt", "==", momentData.loggedAt),
       limit(20) // Limit to a reasonable number to check to avoid excessive reads
     );
 
@@ -371,8 +370,7 @@ export async function confirmMomentMatch(momentId: string, confirmeeId: string):
             momentsRef,
             where("placeName", "==", momentData.placeName),
             where("loggerId", "==", confirmeeId), // The other user
-            where("loggedAt", ">=", twoHoursBefore),
-            where("loggedAt", "<=", twoHoursAfter),
+            where("loggedAt", "==", momentData.loggedAt),
             limit(1)
         );
         const otherMomentSnapshot = await getDocs(otherMomentQuery);
@@ -606,6 +604,16 @@ export async function recordLike(likerId: string, likedUserId: string): Promise<
     
     // Update the existing like to 'matched' status.
     batch.update(reverseLikeDoc.ref, { status: 'matched' });
+
+    // Create a NEW like document for the current user (liker) with 'matched' status
+    // to ensure the action is recorded for them as well.
+    const newLikeRef = doc(likesRef);
+    batch.set(newLikeRef, {
+        likerId,
+        likedUserId,
+        timestamp: serverTimestamp(),
+        status: 'matched',
+    });
     
     const chatId = await getOrCreateChat(likerId, likedUserId);
 
@@ -732,3 +740,5 @@ export async function setUserVerified(userId: string): Promise<{success: boolean
         return { success: false, error: "Failed to update user verification status." };
     }
 }
+
+    
