@@ -2,40 +2,75 @@ rules_version = '2';
 
 service cloud.firestore {
   match /databases/{database}/documents {
+
+    // Helper functions
+    function isSignedIn() {
+      return request.auth != null;
+    }
+
+    function isOwner(userId) {
+      return request.auth.uid == userId;
+    }
     
-    // Users can read all profiles, but only write to their own.
+    function isParticipant(chatId) {
+      return request.auth.uid in get(/databases/$(database)/documents/chats/$(chatId)).data.participantIds;
+    }
+
+    // Users collection
     match /users/{userId} {
-      allow read: if request.auth != null;
-      allow write: if request.auth.uid == userId;
+      // Anyone can read a user's profile
+      allow read: if isSignedIn();
+      // Only the owner can create or update their own profile
+      allow create, update: if isOwner(userId);
     }
 
-    // Authenticated users can create moments.
-    // Users can read/update their own moments or moments they are a part of.
+    // Moments collection
     match /moments/{momentId} {
-      allow create: if request.auth != null && request.auth.uid == request.resource.data.loggerId;
-      allow read, update: if request.auth != null && (request.auth.uid == resource.data.loggerId || request.auth.uid == resource.data.confirmedUserId);
-    }
-
-    // Authenticated users can create likes. 
-    // They can only read/update their own likes or likes directed at them.
-    match /likes/{likeId} {
-      allow read, update: if request.auth != null && (request.auth.uid == resource.data.likerId || request.auth.uid == resource.data.likedUserId);
-      allow create: if request.auth != null && request.auth.uid == request.resource.data.likerId;
+        // Only the logger or the confirmed user can read a moment
+        allow read: if isSignedIn() && (isOwner(resource.data.loggerId) || (resource.data.confirmedUserId != null && isOwner(resource.data.confirmedUserId)));
+        // Only signed-in users can create moments
+        allow create: if isSignedIn();
+        // Only the owner can update their own moment (e.g. to replay it)
+        // or a confirmed user can update it (to confirm the match)
+        allow update: if isSignedIn() && (isOwner(resource.data.loggerId) || (request.resource.data.confirmedUserId != null && isOwner(request.resource.data.confirmedUserId)));
     }
     
-    // Authenticated users can read/write their own notifications and create notifications for others.
-    match /notifications/{notificationId} {
-        allow read, write: if request.auth != null && request.auth.uid == resource.data.userId;
-        allow create: if request.auth != null;
+    // Likes collection
+    match /likes/{likeId} {
+        // Anyone can read likes to check for matches (could be tightened later)
+        allow read: if isSignedIn();
+        // Users can only create likes where they are the liker
+        allow create: if isSignedIn() && isOwner(request.resource.data.likerId);
+        // A user can update a like if they are the original liker OR if they are the one being liked (to complete the match)
+        allow update: if isSignedIn() && (isOwner(resource.data.likerId) || isOwner(resource.data.likedUserId));
     }
 
-    // Chat participants can read/write to the chat document and its messages subcollection.
+    // Chats collection
     match /chats/{chatId} {
-      allow read, write: if request.auth != null && request.auth.uid in resource.data.participantIds;
+      // Only participants can read a chat document
+      allow read: if isParticipant(chatId);
+      // Participants can be created by the system (server-side action)
+      allow create: if isSignedIn(); // Let's allow any signed in user to create a chat for now
+      // Only participants can update chat (e.g. lastMessage)
+      allow update: if isParticipant(chatId);
 
+      // Messages subcollection
       match /messages/{messageId} {
-        allow read, create: if request.auth != null && request.auth.uid in get(/databases/$(database)/documents/chats/$(chatId)).data.participantIds;
+        // Only participants can read messages
+        allow list, read: if isParticipant(chatId);
+        // Only participants can send messages
+        allow create: if isParticipant(chatId) && isOwner(request.resource.data.senderId);
       }
+    }
+    
+    // Notifications collection
+    match /notifications/{notificationId} {
+        // Users can only read their own notifications
+        allow read, list: if isOwner(resource.data.userId);
+        // Notifications are created by server actions, but for simplicity we'll allow any signed-in user to create them for now
+        allow create: if isSignedIn();
+        // Users can mark their own notifications as read
+        allow update: if isOwner(resource.data.userId);
     }
   }
 }
