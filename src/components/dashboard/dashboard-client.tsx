@@ -1,10 +1,11 @@
+
 "use client";
 
 import { useState, useEffect, useMemo } from "react";
 import { AppLayout } from "@/components/layout/app-layout";
 import { Card, CardContent, CardHeader, CardTitle, CardDescription, CardFooter } from "@/components/ui/card";
 import { Sparkles, PlusCircle, ClipboardList, Users, MessageSquare, Route, MapPin, CalendarDays, TrendingUp, LayoutGrid, List as ListIcon, Star, ShoppingBag, Zap, ArrowRight, Loader2, BrainCircuit } from "lucide-react";
-import { MOCK_HOTSPOTS } from "@/lib/mock-data";
+import { MOCK_HOTSPOTS, MOCK_MOMENTS } from "@/lib/mock-data";
 import { Button } from "@/components/ui/button";
 import { Separator } from "@/components/ui/separator";
 import { subDays, isAfter, format } from "date-fns";
@@ -17,7 +18,7 @@ import { CrossdPlusUpsellDialog } from "@/components/pricing/crossd-plus-upsell-
 import { FreeBoostUpsellDialog } from "@/components/pricing/free-boost-upsell-dialog";
 import { useSearchParams, useRouter } from "next/navigation";
 import { useToast } from "@/hooks/use-toast";
-import { fetchMomentsForUser, fetchUserChatCount } from "@/app/actions";
+import { fetchUserChatCount } from "@/app/actions";
 import { Skeleton } from "@/components/ui/skeleton";
 import { PlacesTrailItem } from "@/components/dashboard/places-trail-item";
 import { ScrollArea, ScrollBar } from "@/components/ui/scroll-area";
@@ -87,17 +88,10 @@ export function DashboardClient({ currentUser }: DashboardClientProps) {
   const oneWeekAgo = useMemo(() => subDays(new Date(), 7), []);
 
   useEffect(() => {
-    if (currentUser.id) {
-        setIsLoadingMoments(true);
-        fetchMomentsForUser(currentUser.id)
-            .then(data => setUserMoments(data))
-            .catch(err => {
-                console.error("Failed to fetch user moments:", err);
-                toast({ title: "Error", description: "Could not load your moments.", variant: "destructive" });
-            })
-            .finally(() => setIsLoadingMoments(false));
-    }
-  }, [currentUser.id, toast]);
+    // DEV ONLY: Use mock data to visualize the trail
+    setUserMoments(MOCK_MOMENTS as Moment[]);
+    setIsLoadingMoments(false);
+  }, []);
 
   useEffect(() => {
     if (currentUser.id) {
@@ -580,3 +574,5 @@ export function DashboardClient({ currentUser }: DashboardClientProps) {
     </AppLayout>
   );
 }
+
+    
