@@ -122,9 +122,11 @@ export function DashboardClient({ currentUser }: DashboardClientProps) {
     }, {} as Record<number, number>);
     
     const locationCounts = momentsThisWeek.reduce((acc, moment) => {
-        const locationKey = moment.locationAddress?.split(',')[1]?.trim() || 'Unknown Area';
-        acc[locationKey] = (acc[locationKey] || 0) + 1;
-        return acc;
+      const locationKey = moment.locationAddress?.split(',')[0]?.trim() || 'Unknown Area';
+      if (locationKey !== 'Unknown Area') {
+          acc[locationKey] = (acc[locationKey] || 0) + 1;
+      }
+      return acc;
     }, {} as Record<string, number>);
 
     let mostActiveDayIndex = -1;
@@ -138,8 +140,8 @@ export function DashboardClient({ currentUser }: DashboardClientProps) {
     
     let frequentLocation = 'N/A';
     let maxLocationCount = 0;
-    for(const loc in locationCounts) {
-        if(locationCounts[loc] > maxLocationCount) {
+    for (const loc in locationCounts) {
+        if (locationCounts[loc] > maxLocationCount) {
             maxLocationCount = locationCounts[loc];
             frequentLocation = loc;
         }
@@ -615,7 +617,5 @@ export function DashboardClient({ currentUser }: DashboardClientProps) {
 
       </div>
     </AppLayout>
-  );
-}
-
+  
     
