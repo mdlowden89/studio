@@ -19,6 +19,8 @@ import { useSearchParams, useRouter } from "next/navigation";
 import { useToast } from "@/hooks/use-toast";
 import { fetchMomentsForUser, fetchUserChatCount } from "@/app/actions";
 import { Skeleton } from "@/components/ui/skeleton";
+import { PlacesTrailItem } from "@/components/dashboard/places-trail-item";
+import { ScrollArea, ScrollBar } from "@/components/ui/scroll-area";
 
 interface DashboardClientProps {
     currentUser: UserProfile;
@@ -366,13 +368,47 @@ export function DashboardClient({ currentUser }: DashboardClientProps) {
           </div>
         </div>
 
+        <Card className="mb-8 bg-card shadow-xl">
+          <CardHeader>
+             <div className="flex items-center gap-3">
+              <MapPin className="w-7 h-7 text-primary" />
+              <div>
+                <CardTitle className="text-xl font-semibold">Places Trail</CardTitle>
+                <CardDescription className="text-muted-foreground">
+                  A visual journey of your most recently logged moments.
+                </CardDescription>
+              </div>
+            </div>
+          </CardHeader>
+          <CardContent>
+            {isLoadingMoments ? (
+              <div className="flex items-center justify-center p-8">
+                <Loader2 className="h-8 w-8 animate-spin text-primary" />
+              </div>
+            ) : userMoments.length > 0 ? (
+              <ScrollArea className="w-full whitespace-nowrap rounded-lg">
+                <div className="flex w-max space-x-4 p-4">
+                  {userMoments.map((moment) => (
+                    <PlacesTrailItem key={moment.id} moment={moment} />
+                  ))}
+                </div>
+                <ScrollBar orientation="horizontal" />
+              </ScrollArea>
+            ) : (
+               <div className="text-center py-8 text-muted-foreground">
+                <p>No places logged yet. Your trail will appear here!</p>
+              </div>
+            )}
+          </CardContent>
+        </Card>
+
 
         <Card className="mb-8 bg-card shadow-xl">
           <CardHeader>
             <div className="flex items-center gap-3">
               <Route className="w-7 h-7 text-primary" />
               <div>
-                <CardTitle className="text-xl font-semibold">Moments Trail</CardTitle>
+                <CardTitle className="text-xl font-semibold">Moments Trail Map</CardTitle>
                 <CardDescription className="text-muted-foreground">
                   A map of places you've visited in the last 7 days.
                   {isPremium && " Premium users see Emotional Hotspots."}
