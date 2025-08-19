@@ -4,7 +4,7 @@
 import { useState, useEffect, useMemo, useCallback } from "react";
 import { AppLayout } from "@/components/layout/app-layout";
 import { Card, CardContent, CardHeader, CardTitle, CardDescription, CardFooter } from "@/components/ui/card";
-import { Sparkles, PlusCircle, ClipboardList, Users, MessageSquare, Route, MapPin, CalendarDays, TrendingUp, LayoutGrid, List as ListIcon, Star, ShoppingBag, Zap, ArrowRight, Loader2, BrainCircuit, Activity, Users2 } from "lucide-react";
+import { Sparkles, PlusCircle, ClipboardList, Users, MessageSquare, Route, MapPin, CalendarDays, TrendingUp, LayoutGrid, List as ListIcon, Star, ShoppingBag, Zap, ArrowRight, Loader2, BrainCircuit, Activity, Users2, Map as MapIcon } from "lucide-react";
 import { MOCK_MOMENTS, MOCK_HOTSPOTS } from "@/lib/mock-data";
 import { Button } from "@/components/ui/button";
 import { Separator } from "@/components/ui/separator";
@@ -252,7 +252,7 @@ export function DashboardClient({ currentUser }: DashboardClientProps) {
   const weeklyInsights = [
       {icon: Users2, label: 'Distinct Places Visited', value: distinctPlacesVisitedCount},
       {icon: Activity, label: 'Most Active Day', value: mostActiveDay},
-      {icon: Map, label: 'Frequent Area', value: mostFrequentLocation},
+      {icon: MapIcon, label: 'Frequent Area', value: mostFrequentLocation},
   ]
 
   return (
@@ -363,13 +363,16 @@ export function DashboardClient({ currentUser }: DashboardClientProps) {
                 </CardHeader>
                 <CardContent>
                   <ul className="space-y-3">
-                    {weeklyInsights.map((item, index) => (
-                      <li key={index} className="flex items-center gap-3 text-sm">
-                        <item.icon className="w-5 h-5 text-primary/80" />
-                        <span className="text-muted-foreground">{item.label}:</span>
-                        <span className="font-bold text-foreground ml-auto">{item.value}</span>
-                      </li>
-                    ))}
+                    {weeklyInsights.map((item, index) => {
+                      const Icon = item.icon;
+                      return (
+                        <li key={index} className="flex items-center gap-3 text-sm">
+                          <Icon className="w-5 h-5 text-primary/80" />
+                          <span className="text-muted-foreground">{item.label}:</span>
+                          <span className="font-bold text-foreground ml-auto">{item.value}</span>
+                        </li>
+                      );
+                    })}
                   </ul>
                 </CardContent>
              </Card>
