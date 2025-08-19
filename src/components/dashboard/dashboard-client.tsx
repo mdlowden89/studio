@@ -1,14 +1,14 @@
 
 "use client";
 
-import { useState, useEffect, useMemo } from "react";
+import { useState, useEffect, useMemo, useCallback } from "react";
 import { AppLayout } from "@/components/layout/app-layout";
 import { Card, CardContent, CardHeader, CardTitle, CardDescription, CardFooter } from "@/components/ui/card";
-import { Sparkles, PlusCircle, ClipboardList, Users, MessageSquare, Route, MapPin, CalendarDays, TrendingUp, LayoutGrid, List as ListIcon, Star, ShoppingBag, Zap, ArrowRight, Loader2, BrainCircuit } from "lucide-react";
-import { MOCK_HOTSPOTS, MOCK_MOMENTS } from "@/lib/mock-data";
+import { Sparkles, PlusCircle, ClipboardList, Users, MessageSquare, Route, MapPin, CalendarDays, TrendingUp, LayoutGrid, List as ListIcon, Star, ShoppingBag, Zap, ArrowRight, Loader2, BrainCircuit, Activity, Users2 } from "lucide-react";
+import { MOCK_MOMENTS, MOCK_HOTSPOTS } from "@/lib/mock-data";
 import { Button } from "@/components/ui/button";
 import { Separator } from "@/components/ui/separator";
-import { subDays, isAfter, format } from "date-fns";
+import { subDays, isAfter, format, getDay } from "date-fns";
 import { MomentsMap } from "@/components/dashboard/moments-map";
 import { MomentGalleryItem } from "@/components/moments/moment-gallery-item";
 import Link from "next/link";
@@ -111,6 +111,46 @@ export function DashboardClient({ currentUser }: DashboardClientProps) {
       .filter(moment => isAfter(new Date(moment.loggedAt as string), oneWeekAgo))
       .sort((a, b) => new Date(b.loggedAt as string).getTime() - new Date(a.loggedAt as string).getTime());
   }, [userMoments, oneWeekAgo]);
+  
+  const distinctPlacesVisitedCount = useMemo(() => new Set(momentsThisWeek.map(m => m.placeName)).size, [momentsThisWeek]);
+
+  const { mostActiveDay, mostFrequentLocation } = useMemo(() => {
+    const dayCounts = momentsThisWeek.reduce((acc, moment) => {
+      const day = getDay(new Date(moment.loggedAt as string));
+      acc[day] = (acc[day] || 0) + 1;
+      return acc;
+    }, {} as Record<number, number>);
+    
+    const locationCounts = momentsThisWeek.reduce((acc, moment) => {
+        const locationKey = moment.locationAddress?.split(',')[1]?.trim() || 'Unknown Area';
+        acc[locationKey] = (acc[locationKey] || 0) + 1;
+        return acc;
+    }, {} as Record<string, number>);
+
+    let mostActiveDayIndex = -1;
+    let maxMomentsOnDay = 0;
+    for (const day in dayCounts) {
+      if (dayCounts[day] > maxMomentsOnDay) {
+        maxMomentsOnDay = dayCounts[day];
+        mostActiveDayIndex = parseInt(day);
+      }
+    }
+    
+    let frequentLocation = 'N/A';
+    let maxLocationCount = 0;
+    for(const loc in locationCounts) {
+        if(locationCounts[loc] > maxLocationCount) {
+            maxLocationCount = locationCounts[loc];
+            frequentLocation = loc;
+        }
+    }
+
+    const dayNames = ["Sunday", "Monday", "Tuesday", "Wednesday", "Thursday", "Friday", "Saturday"];
+    return { 
+        mostActiveDay: mostActiveDayIndex !== -1 ? dayNames[mostActiveDayIndex] : "N/A",
+        mostFrequentLocation: frequentLocation,
+    };
+  }, [momentsThisWeek]);
 
   const momentsTimestampsKey = useMemo(() => {
     return momentsThisWeek.map(m => `${m.id}-${m.loggedAt}`).join(',');
@@ -208,6 +248,12 @@ export function DashboardClient({ currentUser }: DashboardClientProps) {
       statusText: "Active",
     },
   ];
+  
+  const weeklyInsights = [
+      {icon: Users2, label: 'Distinct Places Visited', value: distinctPlacesVisitedCount},
+      {icon: Activity, label: 'Most Active Day', value: mostActiveDay},
+      {icon: Map, label: 'Frequent Area', value: mostFrequentLocation},
+  ]
 
   return (
     <AppLayout>
@@ -309,29 +355,23 @@ export function DashboardClient({ currentUser }: DashboardClientProps) {
                 <CardHeader>
                     <div className="flex items-center gap-2">
                         <Sparkles className="w-6 h-6 text-primary" />
-                        <CardTitle className="text-lg font-semibold">Spark Swipe</CardTitle>
+                        <CardTitle className="text-lg font-semibold">Weekly Recap</CardTitle>
                     </div>
                     <CardDescription className="text-xs text-muted-foreground mt-1">
-                        Find connections based on personality and vibes.
+                        Your activity insights from the last 7 days.
                     </CardDescription>
                 </CardHeader>
                 <CardContent>
-                  <p className="text-sm text-foreground mb-3">
-                    Your personality type is currently set to: <span className="font-semibold text-primary">{currentUser.mbtiType || "Not Set"}</span>
-                  </p>
-                  { !currentUser.mbtiType && (
-                    <p className="text-xs text-muted-foreground">
-                      Take our quick quiz to find your type and unlock Spark Swipes.
-                    </p>
-                  )}
+                  <ul className="space-y-3">
+                    {weeklyInsights.map((item, index) => (
+                      <li key={index} className="flex items-center gap-3 text-sm">
+                        <item.icon className="w-5 h-5 text-primary/80" />
+                        <span className="text-muted-foreground">{item.label}:</span>
+                        <span className="font-bold text-foreground ml-auto">{item.value}</span>
+                      </li>
+                    ))}
+                  </ul>
                 </CardContent>
-                <CardFooter>
-                    <Link href="/discover?tab=spark-swipe" passHref className="w-full">
-                        <Button size="sm" className="w-full bg-primary/90 hover:bg-primary text-primary-foreground text-xs">
-                             {currentUser.mbtiType ? 'Go to Spark Swipe' : 'Take the Quiz'}
-                        </Button>
-                    </Link>
-                </CardFooter>
              </Card>
 
             {activeStreakChallenge && activeStreakChallenge.progress && (
@@ -574,5 +614,3 @@ export function DashboardClient({ currentUser }: DashboardClientProps) {
     </AppLayout>
   );
 }
-
-    
