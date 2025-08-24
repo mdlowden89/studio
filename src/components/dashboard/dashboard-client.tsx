@@ -4,7 +4,7 @@
 import { useState, useEffect, useMemo, useCallback } from "react";
 import { AppLayout } from "@/components/layout/app-layout";
 import { Card, CardContent, CardHeader, CardTitle, CardDescription, CardFooter } from "@/components/ui/card";
-import { Sparkles, PlusCircle, ClipboardList, Users, MessageSquare, Route, MapPin, CalendarDays, TrendingUp, LayoutGrid, List as ListIcon, Star, ShoppingBag, Zap, ArrowRight, Loader2, BrainCircuit, Activity, Users2, Map as MapIcon } from "lucide-react";
+import { Sparkles, PlusCircle, ClipboardList, Users, MessageSquare, Route, MapPin, CalendarDays, TrendingUp, LayoutGrid, List as ListIcon, Star, ShoppingBag, Zap, ArrowRight, Loader2, BrainCircuit, Activity, Users2, Map as MapIcon, Edit3, Repeat } from "lucide-react";
 import { MOCK_MOMENTS, MOCK_HOTSPOTS } from "@/lib/mock-data";
 import { Button } from "@/components/ui/button";
 import { Separator } from "@/components/ui/separator";
@@ -12,7 +12,7 @@ import { subDays, isAfter, format, getDay } from "date-fns";
 import { MomentsMap } from "@/components/dashboard/moments-map";
 import { MomentGalleryItem } from "@/components/moments/moment-gallery-item";
 import Link from "next/link";
-import type { UserProfile, Moment } from "@/lib/types";
+import type { UserProfile, Moment, ProfilePrompt } from "@/lib/types";
 import { Progress } from "@/components/ui/progress";
 import { CrossdPlusUpsellDialog } from "@/components/pricing/crossd-plus-upsell-dialog";
 import { FreeBoostUpsellDialog } from "@/components/pricing/free-boost-upsell-dialog";
@@ -22,6 +22,7 @@ import { fetchUserChatCount } from "@/app/actions";
 import { Skeleton } from "@/components/ui/skeleton";
 import { PlacesTrailItem } from "@/components/dashboard/places-trail-item";
 import { ScrollArea, ScrollBar } from "@/components/ui/scroll-area";
+import { AVAILABLE_PROMPTS } from "@/lib/mock-data";
 
 interface DashboardClientProps {
     currentUser: UserProfile;
@@ -69,6 +70,7 @@ export function DashboardClient({ currentUser }: DashboardClientProps) {
   const [isLoadingMoments, setIsLoadingMoments] = useState(true);
   const [isLoadingChats, setIsLoadingChats] = useState(true);
   const [isActivatingBooster, setIsActivatingBooster] = useState(false);
+  const [promptOfTheDay, setPromptOfTheDay] = useState<ProfilePrompt | null>(null);
 
   const searchParams = useSearchParams();
   const router = useRouter();
@@ -165,6 +167,17 @@ export function DashboardClient({ currentUser }: DashboardClientProps) {
     });
     setClientFormattedTimes(newFormattedTimes);
   }, [momentsTimestampsKey, momentsThisWeek]); 
+
+  const selectNewPrompt = useCallback(() => {
+    if (AVAILABLE_PROMPTS.length > 0) {
+      const randomIndex = Math.floor(Math.random() * AVAILABLE_PROMPTS.length);
+      setPromptOfTheDay(AVAILABLE_PROMPTS[randomIndex]);
+    }
+  }, []); 
+
+  useEffect(() => {
+    selectNewPrompt();
+  }, [selectNewPrompt]);
 
   useEffect(() => {
     if (searchParams.get('showBoostUpsell') === 'true') {
@@ -378,32 +391,37 @@ export function DashboardClient({ currentUser }: DashboardClientProps) {
                   </ul>
                 </CardContent>
              </Card>
-
-            {!currentUser.mbtiType && (
-              <Card className="bg-card shadow-xl">
-                  <CardHeader>
-                      <div className="flex items-center gap-2">
-                          <BrainCircuit className="w-6 h-6 text-primary" />
-                          <CardTitle className="text-lg font-semibold">Know Your Type?</CardTitle>
-                      </div>
-                      <CardDescription className="text-xs text-muted-foreground mt-1">
-                          Adding your personality type can lead to better matches.
-                      </CardDescription>
-                  </CardHeader>
-                  <CardContent>
-                      <p className="text-sm text-foreground mb-3">
-                          If you don't know your MBTI type, take our quick quiz to find out!
-                      </p>
-                  </CardContent>
-                  <CardFooter>
-                      <Link href="/mbti-quiz" passHref className="w-full">
-                          <Button size="sm" className="w-full bg-primary/90 hover:bg-primary text-primary-foreground text-xs">
-                              <BrainCircuit className="mr-1.5 h-3.5 w-3.5" /> Take the Quiz
-                          </Button>
-                      </Link>
-                  </CardFooter>
-              </Card>
-            )}
+             
+            <Card className="bg-card shadow-xl">
+                <CardHeader>
+                    <div className="flex items-center gap-2">
+                        <BrainCircuit className="w-6 h-6 text-primary" />
+                        <CardTitle className="text-lg font-semibold">Personality</CardTitle>
+                    </div>
+                    <CardDescription className="text-xs text-muted-foreground mt-1">
+                        Understanding yourself is the first step to connection.
+                    </CardDescription>
+                </CardHeader>
+                <CardContent>
+                    {currentUser.mbtiType ? (
+                        <p className="text-sm text-foreground">
+                            Your Type: <span className="font-bold text-primary">{currentUser.mbtiType}</span>. You can retake the quiz anytime.
+                        </p>
+                    ) : (
+                        <p className="text-sm text-foreground">
+                            You haven't taken the personality quiz yet. Discover your type!
+                        </p>
+                    )}
+                </CardContent>
+                <CardFooter>
+                    <Link href="/mbti-quiz" passHref className="w-full">
+                        <Button size="sm" className="w-full bg-primary/90 hover:bg-primary text-primary-foreground text-xs">
+                            <BrainCircuit className="mr-1.5 h-3.5 w-3.5" />
+                            {currentUser.mbtiType ? 'View/Retake Quiz' : 'Take the Quiz'}
+                        </Button>
+                    </Link>
+                </CardFooter>
+            </Card>
 
             {activeStreakChallenge && activeStreakChallenge.progress && (
               <Card className="bg-card shadow-xl">
