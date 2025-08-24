@@ -369,37 +369,11 @@ export function DashboardClient({ currentUser }: DashboardClientProps) {
              <Card className="bg-card shadow-xl">
                 <CardHeader>
                     <div className="flex items-center gap-2">
-                        <Sparkles className="w-6 h-6 text-primary" />
-                        <CardTitle className="text-lg font-semibold">Weekly Recap</CardTitle>
-                    </div>
-                    <CardDescription className="text-xs text-muted-foreground mt-1">
-                        Your activity insights from the last 7 days.
-                    </CardDescription>
-                </CardHeader>
-                <CardContent>
-                  <ul className="space-y-3">
-                    {weeklyInsights.map((item, index) => {
-                      const Icon = item.icon;
-                      return (
-                        <li key={index} className="flex items-center gap-3 text-sm">
-                          <Icon className="w-5 h-5 text-primary/80" />
-                          <span className="text-muted-foreground">{item.label}:</span>
-                          <span className="font-bold text-foreground ml-auto">{item.value}</span>
-                        </li>
-                      );
-                    })}
-                  </ul>
-                </CardContent>
-             </Card>
-             
-            <Card className="bg-card shadow-xl">
-                <CardHeader>
-                    <div className="flex items-center gap-2">
                         <BrainCircuit className="w-6 h-6 text-primary" />
                         <CardTitle className="text-lg font-semibold">Personality</CardTitle>
                     </div>
                     <CardDescription className="text-xs text-muted-foreground mt-1">
-                        Understanding yourself is the first step to connection.
+                        Adding your personality type leads to more compatible Spark Swipes.
                     </CardDescription>
                 </CardHeader>
                 <CardContent>
@@ -409,7 +383,7 @@ export function DashboardClient({ currentUser }: DashboardClientProps) {
                         </p>
                     ) : (
                         <p className="text-sm text-foreground">
-                            You haven't taken the personality quiz yet. Discover your type!
+                            Discover your personality type to unlock more compatible profiles in Spark Swipes.
                         </p>
                     )}
                 </CardContent>
@@ -421,7 +395,7 @@ export function DashboardClient({ currentUser }: DashboardClientProps) {
                         </Button>
                     </Link>
                 </CardFooter>
-            </Card>
+             </Card>
 
             {activeStreakChallenge && activeStreakChallenge.progress && (
               <Card className="bg-card shadow-xl">
