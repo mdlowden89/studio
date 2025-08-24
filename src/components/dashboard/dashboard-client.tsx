@@ -379,6 +379,32 @@ export function DashboardClient({ currentUser }: DashboardClientProps) {
                 </CardContent>
              </Card>
 
+            {!currentUser.mbtiType && (
+              <Card className="bg-card shadow-xl">
+                  <CardHeader>
+                      <div className="flex items-center gap-2">
+                          <BrainCircuit className="w-6 h-6 text-primary" />
+                          <CardTitle className="text-lg font-semibold">Know Your Type?</CardTitle>
+                      </div>
+                      <CardDescription className="text-xs text-muted-foreground mt-1">
+                          Adding your personality type can lead to better matches.
+                      </CardDescription>
+                  </CardHeader>
+                  <CardContent>
+                      <p className="text-sm text-foreground mb-3">
+                          If you don't know your MBTI type, take our quick quiz to find out!
+                      </p>
+                  </CardContent>
+                  <CardFooter>
+                      <Link href="/mbti-quiz" passHref className="w-full">
+                          <Button size="sm" className="w-full bg-primary/90 hover:bg-primary text-primary-foreground text-xs">
+                              <BrainCircuit className="mr-1.5 h-3.5 w-3.5" /> Take the Quiz
+                          </Button>
+                      </Link>
+                  </CardFooter>
+              </Card>
+            )}
+
             {activeStreakChallenge && activeStreakChallenge.progress && (
               <Card className="bg-card shadow-xl">
                 <CardHeader>
