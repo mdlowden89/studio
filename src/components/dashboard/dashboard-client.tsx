@@ -21,6 +21,7 @@ import { useToast } from "@/hooks/use-toast";
 import { fetchMomentsForUser, fetchUserChatCount } from "@/app/actions";
 import { Skeleton } from "@/components/ui/skeleton";
 import { SparkEnergyMeter } from "@/components/dashboard/spark-energy-meter";
+import { SparkNudgeDialog } from "@/components/dashboard/spark-nudge-dialog";
 
 interface DashboardClientProps {
     currentUser: UserProfile;
@@ -62,6 +63,7 @@ export function DashboardClient({ currentUser }: DashboardClientProps) {
   const [promptOfTheDay, setPromptOfTheDay] = useState<ProfilePrompt | null>(null);
   const [showUpsellDialog, setShowUpsellDialog] = useState(false);
   const [showFreeBoostDialog, setShowFreeBoostDialog] = useState(false);
+  const [showNudgeDialog, setShowNudgeDialog] = useState(false);
   const [sparkNudge, setSparkNudge] = useState<string>("");
   
   const [userMoments, setUserMoments] = useState<Moment[]>([]);
@@ -160,6 +162,18 @@ export function DashboardClient({ currentUser }: DashboardClientProps) {
     setSparkNudge(potentialNudges[Math.floor(Math.random() * potentialNudges.length)]);
 
   }, [userMoments, momentsThisWeek, promptOfTheDay, isLoadingMoments]);
+
+  // Effect to show the nudge dialog once per session
+  useEffect(() => {
+    const hasSeenNudge = sessionStorage.getItem('hasSeenNudge');
+    if (!hasSeenNudge && !isLoadingMoments && sparkNudge) {
+      const timer = setTimeout(() => {
+        setShowNudgeDialog(true);
+        sessionStorage.setItem('hasSeenNudge', 'true');
+      }, 1000); // Small delay to allow the page to settle
+      return () => clearTimeout(timer);
+    }
+  }, [isLoadingMoments, sparkNudge]);
 
 
   const momentsTimestampsKey = useMemo(() => {
@@ -328,7 +342,7 @@ export function DashboardClient({ currentUser }: DashboardClientProps) {
                   Welcome back, {currentUser.name.split(' ')[0]}!
                 </CardTitle>
                 <CardDescription className="text-muted-foreground mt-1 min-h-[20px]">
-                  {sparkNudge || "Here's what's new on Crossd."}
+                  Here's what's new on Crossd.
                 </CardDescription>
               </div>
             </div>
@@ -626,6 +640,12 @@ export function DashboardClient({ currentUser }: DashboardClientProps) {
           </CardContent>
         </Card>
 
+        <SparkNudgeDialog 
+          isOpen={showNudgeDialog}
+          onOpenChange={setShowNudgeDialog}
+          nudgeText={sparkNudge}
+          userName={currentUser.name.split(' ')[0]}
+        />
 
         <CrossdPlusUpsellDialog
           isOpen={showUpsellDialog}
