@@ -87,13 +87,10 @@ export function DashboardClient({ currentUser }: DashboardClientProps) {
   const oneWeekAgo = useMemo(() => subDays(new Date(), 7), []);
 
   useEffect(() => {
-    // This component now uses mock data for demonstration purposes.
-    if (currentUser.id) {
-      setIsLoadingMoments(true);
-      setUserMoments(MOCK_MOMENTS as Moment[]);
-      setIsLoadingMoments(false);
-    }
-  }, [currentUser.id]);
+    // Using mock data directly for the demo
+    setUserMoments(MOCK_MOMENTS as Moment[]);
+    setIsLoadingMoments(false);
+  }, []);
 
   useEffect(() => {
     if (currentUser.id) {
@@ -115,9 +112,9 @@ export function DashboardClient({ currentUser }: DashboardClientProps) {
   const momentsThisWeek = useMemo(() => {
     // To ensure the carousel is populated for the demo, we will use all mock moments.
     // The original logic filtered for the last 7 days.
-    return userMoments
-      .sort((a, b) => new Date(b.loggedAt as string).getTime() - new Date(a.loggedAt as string).getTime());
-  }, [userMoments]);
+    return MOCK_MOMENTS
+      .sort((a, b) => new Date(b.loggedAt as string).getTime() - new Date(a.loggedAt as string).getTime()) as Moment[];
+  }, []);
 
   // Generate a new spark nudge when moments data or the prompt of the day changes
   useEffect(() => {
@@ -605,3 +602,5 @@ export function DashboardClient({ currentUser }: DashboardClientProps) {
     </AppLayout>
   );
 }
+
+    
