@@ -8,7 +8,7 @@ import { Sparkles, PlusCircle, ClipboardList, Users, MessageSquare, Route, MapPi
 import { AVAILABLE_PROMPTS, MOCK_HOTSPOTS } from "@/lib/mock-data";
 import { Button } from "@/components/ui/button";
 import { Separator } from "@/components/ui/separator";
-import { subDays, isAfter, format, getDay } from "date-fns";
+import { subDays, isAfter, format, getDay, differenceInDays } from "date-fns";
 import { MomentsMap } from "@/components/dashboard/moments-map";
 import { MomentGalleryItem } from "@/components/moments/moment-gallery-item";
 import Link from "next/link";
@@ -62,6 +62,7 @@ export function DashboardClient({ currentUser }: DashboardClientProps) {
   const [promptOfTheDay, setPromptOfTheDay] = useState<ProfilePrompt | null>(null);
   const [showUpsellDialog, setShowUpsellDialog] = useState(false);
   const [showFreeBoostDialog, setShowFreeBoostDialog] = useState(false);
+  const [sparkNudge, setSparkNudge] = useState<string>("");
   
   const [userMoments, setUserMoments] = useState<Moment[]>([]);
   const [activeChatsCount, setActiveChatsCount] = useState(0);
@@ -126,6 +127,40 @@ export function DashboardClient({ currentUser }: DashboardClientProps) {
       .filter(moment => isAfter(new Date(moment.loggedAt as string), oneWeekAgo))
       .sort((a, b) => new Date(b.loggedAt as string).getTime() - new Date(a.loggedAt as string).getTime());
   }, [userMoments, oneWeekAgo]);
+
+  // Generate a new spark nudge when moments data or the prompt of the day changes
+  useEffect(() => {
+    if (isLoadingMoments) return;
+
+    const potentialNudges: string[] = [];
+
+    // Nudge 1: Weekly crossings
+    if (momentsThisWeek.length > 0) {
+      potentialNudges.push(`You’ve logged ${momentsThisWeek.length} moment${momentsThisWeek.length > 1 ? 's' : ''} this week. Keep the streak going! 👀`);
+    }
+
+    // Nudge 2: Expiring moments
+    const now = new Date();
+    const expiringMoment = userMoments.find(m => 
+        m.status === 'pending' && differenceInDays(now, new Date(m.loggedAt as string)) >= 2
+    );
+    if (expiringMoment) {
+        potentialNudges.push(`Your ${expiringMoment.placeName} moment is expiring soon — don’t lose the potential connection.`);
+    }
+    
+    // Nudge 3: Prompt of the Day
+    if (promptOfTheDay) {
+        potentialNudges.push(`Prompt of the day: "${promptOfTheDay.question}" Why not add an answer?`);
+    }
+    
+    // Nudge 4: A generic fallback
+    potentialNudges.push("Did you cross paths with anyone interesting today?");
+
+    // Select a random nudge
+    setSparkNudge(potentialNudges[Math.floor(Math.random() * potentialNudges.length)]);
+
+  }, [userMoments, momentsThisWeek, promptOfTheDay, isLoadingMoments]);
+
 
   const momentsTimestampsKey = useMemo(() => {
     return momentsThisWeek.map(m => `${m.id}-${m.loggedAt}`).join(',');
@@ -292,8 +327,8 @@ export function DashboardClient({ currentUser }: DashboardClientProps) {
                 <CardTitle className="text-2xl font-bold">
                   Welcome back, {currentUser.name.split(' ')[0]}!
                 </CardTitle>
-                <CardDescription className="text-muted-foreground mt-1">
-                  Here's what's new on Crossd. Did you see anyone interesting today?
+                <CardDescription className="text-muted-foreground mt-1 min-h-[20px]">
+                  {sparkNudge || "Here's what's new on Crossd."}
                 </CardDescription>
               </div>
             </div>
@@ -344,15 +379,15 @@ export function DashboardClient({ currentUser }: DashboardClientProps) {
                     </div>
                 </CardHeader>
                 <CardContent>
-                    {currentUser.mbtiType ? (
-                       <div className="space-y-1">
-                         <p className="text-sm text-muted-foreground">Your personality type is:</p>
-                         <p className="font-bold text-lg text-primary">{currentUser.mbtiType}</p>
-                       </div>
-                    ) : (
-                       <p className="text-sm text-muted-foreground">Discover your personality type to unlock more compatible profiles in Spark Swipes.</p>
-                    )}
-                     <p className="text-xs text-muted-foreground mt-2">Adding your personality type leads to more compatible Spark Swipes.</p>
+                  {currentUser.mbtiType ? (
+                    <div className="space-y-1">
+                      <p className="text-sm text-muted-foreground">Your personality type is:</p>
+                      <p className="font-bold text-lg text-primary">{currentUser.mbtiType}</p>
+                      <p className="text-xs text-muted-foreground pt-2">Adding your personality type leads to more compatible Spark Swipes.</p>
+                    </div>
+                  ) : (
+                    <p className="text-sm text-muted-foreground">Discover your personality type to unlock more compatible profiles in Spark Swipes.</p>
+                  )}
                 </CardContent>
                 <CardFooter>
                     <Link href="/mbti-quiz" passHref className="w-full">
