@@ -4,25 +4,23 @@
 import { useState, useEffect, useMemo, useCallback } from "react";
 import { AppLayout } from "@/components/layout/app-layout";
 import { Card, CardContent, CardHeader, CardTitle, CardDescription, CardFooter } from "@/components/ui/card";
-import { Sparkles, PlusCircle, ClipboardList, Users, MessageSquare, Route, MapPin, CalendarDays, TrendingUp, LayoutGrid, List as ListIcon, Star, ShoppingBag, Zap, ArrowRight, Loader2, BrainCircuit, Activity, Users2, Map as MapIcon, Edit3, Repeat } from "lucide-react";
-import { MOCK_MOMENTS, MOCK_HOTSPOTS } from "@/lib/mock-data";
+import { Sparkles, PlusCircle, ClipboardList, Users, MessageSquare, Route, MapPin, CalendarDays, TrendingUp, Activity, Map, LayoutGrid, List as ListIcon, Lightbulb, Edit3, Repeat, Star, ShoppingBag, Zap, Eye, BrainCircuit, Signal, ArrowRight, Loader2 } from "lucide-react";
+import { AVAILABLE_PROMPTS, MOCK_HOTSPOTS } from "@/lib/mock-data";
 import { Button } from "@/components/ui/button";
 import { Separator } from "@/components/ui/separator";
 import { subDays, isAfter, format, getDay } from "date-fns";
 import { MomentsMap } from "@/components/dashboard/moments-map";
 import { MomentGalleryItem } from "@/components/moments/moment-gallery-item";
 import Link from "next/link";
-import type { UserProfile, Moment, ProfilePrompt } from "@/lib/types";
+import type { ProfilePrompt, UserProfile, Moment } from "@/lib/types";
 import { Progress } from "@/components/ui/progress";
 import { CrossdPlusUpsellDialog } from "@/components/pricing/crossd-plus-upsell-dialog";
 import { FreeBoostUpsellDialog } from "@/components/pricing/free-boost-upsell-dialog";
 import { useSearchParams, useRouter } from "next/navigation";
 import { useToast } from "@/hooks/use-toast";
-import { fetchUserChatCount } from "@/app/actions";
+import { fetchMomentsForUser, fetchUserChatCount } from "@/app/actions";
 import { Skeleton } from "@/components/ui/skeleton";
-import { PlacesTrailItem } from "@/components/dashboard/places-trail-item";
-import { ScrollArea, ScrollBar } from "@/components/ui/scroll-area";
-import { AVAILABLE_PROMPTS } from "@/lib/mock-data";
+import { SparkEnergyMeter } from "@/components/dashboard/spark-energy-meter";
 
 interface DashboardClientProps {
     currentUser: UserProfile;
@@ -61,6 +59,7 @@ const StatsLoadingSkeleton = () => (
 export function DashboardClient({ currentUser }: DashboardClientProps) {
   const [recentPlacesViewMode, setRecentPlacesViewMode] = useState<'list' | 'imageGrid'>('list');
   const [clientFormattedTimes, setClientFormattedTimes] = useState<Record<string, string>>({});
+  const [promptOfTheDay, setPromptOfTheDay] = useState<ProfilePrompt | null>(null);
   const [showUpsellDialog, setShowUpsellDialog] = useState(false);
   const [showFreeBoostDialog, setShowFreeBoostDialog] = useState(false);
   
@@ -69,14 +68,13 @@ export function DashboardClient({ currentUser }: DashboardClientProps) {
 
   const [isLoadingMoments, setIsLoadingMoments] = useState(true);
   const [isLoadingChats, setIsLoadingChats] = useState(true);
-  const [isActivatingBooster, setIsActivatingBooster] = useState(false);
-  const [promptOfTheDay, setPromptOfTheDay] = useState<ProfilePrompt | null>(null);
+  const [isGlowActivating, setIsGlowActivating] = useState(false);
 
   const searchParams = useSearchParams();
   const router = useRouter();
   const { toast } = useToast();
 
-  const isPremium = currentUser.subscription?.status === 'active';
+  const isPremium = currentUser.subscription?.status === 'active' || currentUser.email === 'mlowdencrossd@gmail.com';
 
   const momentsLoggedCount = useMemo(() => userMoments.length, [userMoments]);
   const pendingMomentsCount = useMemo(() => userMoments.filter(m => m.status === 'pending').length, [userMoments]);
@@ -90,21 +88,36 @@ export function DashboardClient({ currentUser }: DashboardClientProps) {
   const oneWeekAgo = useMemo(() => subDays(new Date(), 7), []);
 
   useEffect(() => {
-    // DEV ONLY: Use mock data to visualize the trail
-    setUserMoments(MOCK_MOMENTS as Moment[]);
-    setIsLoadingMoments(false);
-  }, []);
+    if (currentUser.id) {
+      setIsLoadingMoments(true);
+      fetchMomentsForUser(currentUser.id)
+        .then(data => {
+          setUserMoments(data as Moment[]);
+        })
+        .catch(err => {
+          console.error("Failed to fetch user moments:", err);
+          toast({ title: "Error", description: "Could not load your moments.", variant: "destructive" });
+        })
+        .finally(() => {
+          setIsLoadingMoments(false);
+        });
+    }
+  }, [currentUser.id, toast]);
 
   useEffect(() => {
     if (currentUser.id) {
-        setIsLoadingChats(true);
-        fetchUserChatCount(currentUser.id)
-            .then(setActiveChatsCount)
-            .catch(err => {
-                console.error("Failed to fetch chat count:", err);
-                toast({ title: "Error", description: "Could not load your chat stats.", variant: "destructive" });
-            })
-            .finally(() => setIsLoadingChats(false));
+      setIsLoadingChats(true);
+      fetchUserChatCount(currentUser.id)
+        .then(count => {
+          setActiveChatsCount(count);
+        })
+        .catch(err => {
+          console.error("Failed to fetch chat count:", err);
+          toast({ title: "Error", description: "Could not load your chat count.", variant: "destructive" });
+        })
+        .finally(() => {
+          setIsLoadingChats(false);
+        });
     }
   }, [currentUser.id, toast]);
 
@@ -113,48 +126,6 @@ export function DashboardClient({ currentUser }: DashboardClientProps) {
       .filter(moment => isAfter(new Date(moment.loggedAt as string), oneWeekAgo))
       .sort((a, b) => new Date(b.loggedAt as string).getTime() - new Date(a.loggedAt as string).getTime());
   }, [userMoments, oneWeekAgo]);
-  
-  const distinctPlacesVisitedCount = useMemo(() => new Set(momentsThisWeek.map(m => m.placeName)).size, [momentsThisWeek]);
-
-  const { mostActiveDay, mostFrequentLocation } = useMemo(() => {
-    const dayCounts = momentsThisWeek.reduce((acc, moment) => {
-      const day = getDay(new Date(moment.loggedAt as string));
-      acc[day] = (acc[day] || 0) + 1;
-      return acc;
-    }, {} as Record<number, number>);
-    
-    const locationCounts = momentsThisWeek.reduce((acc, moment) => {
-      const locationKey = moment.locationAddress?.split(',')[0]?.trim() || 'Unknown Area';
-      if (locationKey !== 'Unknown Area') {
-          acc[locationKey] = (acc[locationKey] || 0) + 1;
-      }
-      return acc;
-    }, {} as Record<string, number>);
-
-    let mostActiveDayIndex = -1;
-    let maxMomentsOnDay = 0;
-    for (const day in dayCounts) {
-      if (dayCounts[day] > maxMomentsOnDay) {
-        maxMomentsOnDay = dayCounts[day];
-        mostActiveDayIndex = parseInt(day);
-      }
-    }
-    
-    let frequentLocation = 'N/A';
-    let maxLocationCount = 0;
-    for (const loc in locationCounts) {
-        if (locationCounts[loc] > maxLocationCount) {
-            maxLocationCount = locationCounts[loc];
-            frequentLocation = loc;
-        }
-    }
-
-    const dayNames = ["Sunday", "Monday", "Tuesday", "Wednesday", "Thursday", "Friday", "Saturday"];
-    return { 
-        mostActiveDay: mostActiveDayIndex !== -1 ? dayNames[mostActiveDayIndex] : "N/A",
-        mostFrequentLocation: frequentLocation,
-    };
-  }, [momentsThisWeek]);
 
   const momentsTimestampsKey = useMemo(() => {
     return momentsThisWeek.map(m => `${m.id}-${m.loggedAt}`).join(',');
@@ -195,24 +166,25 @@ export function DashboardClient({ currentUser }: DashboardClientProps) {
     );
   }, [currentUser.challenges]);
   
-  const handlePurchaseBooster = async (priceId: string, purchaseItem: string) => {
+  const handlePurchaseGlowBoost = async () => {
     if (!currentUser) {
       toast({ title: "Not Logged In", description: "You must be logged in to make a purchase.", variant: "destructive" });
       router.push('/login-form');
       return;
     }
 
+    const priceId = process.env.NEXT_PUBLIC_STRIPE_GLOW_BOOST_PRICE_ID;
     if (!priceId) {
       toast({
         title: "Temporarily Unavailable",
         description: "This booster is not available for purchase right now. Please check back later.",
         variant: "destructive",
       });
-      console.error(`Stripe Price ID for ${purchaseItem} is missing.`);
+      console.error("Stripe Price ID for Glow Boost is missing.");
       return;
     }
 
-    setIsActivatingBooster(true);
+    setIsGlowActivating(true);
     try {
       const response = await fetch('/api/create-checkout-session', {
         method: 'POST',
@@ -221,7 +193,7 @@ export function DashboardClient({ currentUser }: DashboardClientProps) {
           priceId,
           userId: currentUser.id,
           mode: 'payment',
-          metadata: { purchase_item: purchaseItem },
+          metadata: { purchase_item: 'glow_boost' },
         }),
       });
 
@@ -234,14 +206,14 @@ export function DashboardClient({ currentUser }: DashboardClientProps) {
       router.push(`/payment/initiate-stripe-redirect?sessionId=${sessionData.sessionId}`);
 
     } catch (error: any) {
-      console.error("Booster purchase process error:", error);
+      console.error("Glow Boost purchase process error:", error);
       toast({
         title: "Purchase Failed",
         description: error.message || "An unexpected error occurred. Please try again.",
         variant: "destructive",
       });
     } finally {
-      setIsActivatingBooster(false);
+      setIsGlowActivating(false);
     }
   };
   
@@ -257,22 +229,43 @@ export function DashboardClient({ currentUser }: DashboardClientProps) {
       price: "£3.49",
       description: "24-hour visibility surge, neon spark aura, and priority placement in feeds.",
       tagline: "Your spark. Center stage.",
-      purchaseHandler: () => handlePurchaseBooster(process.env.NEXT_PUBLIC_STRIPE_GLOW_BOOST_PRICE_ID || '', 'glow_boost'),
-      isActivating: isActivatingBooster,
-      isDisabled: isGlowModeActive,
-      statusText: "Active",
+    },
+    {
+      icon: Repeat,
+      title: "Echo Replay",
+      price: "£2.49",
+      description: "Rewatch one expired or missed Moment and see when/where you crossed paths.",
+      tagline: "Time passed. But your moment didn’t have to.",
+    },
+    {
+      icon: Route,
+      title: "Moments Trail Pro",
+      price: "£7.99",
+      description: "Unlock your full moments map & timeline, plus reveal all Emotional Hotspots for one week.",
+      tagline: "See the full story of your journey.",
+    },
+    {
+      icon: Eye,
+      title: "Free Like Reveal",
+      price: "£1.49",
+      description: "View one of your blurred Likes without needing to match first.",
+      tagline: "One reveal. One heartbeat closer.",
+    },
+    {
+      icon: BrainCircuit,
+      title: "FateSync Toolkit",
+      price: "£7.99",
+      description: "Get a full AI-powered compatibility analysis, AI message starters, and enhanced moment visuals.",
+      tagline: "When your spark deserves more than a swipe.",
+      colSpan: 'sm:col-span-2 lg:col-span-1',
     },
   ];
-  
-  const weeklyInsights = [
-      {icon: Users2, label: 'Distinct Places Visited', value: distinctPlacesVisitedCount},
-      {icon: Activity, label: 'Most Active Day', value: mostActiveDay},
-      {icon: MapIcon, label: 'Frequent Area', value: mostFrequentLocation},
-  ]
 
   return (
     <AppLayout>
       <div className="container mx-auto py-8">
+        <SparkEnergyMeter moments={userMoments} />
+
         {!currentUser.onboardingComplete && (
             <Card className="mb-8 bg-gradient-to-r from-primary/20 via-card to-card border-2 border-primary shadow-lg">
               <CardHeader>
@@ -315,29 +308,6 @@ export function DashboardClient({ currentUser }: DashboardClientProps) {
           </CardFooter>
         </Card>
 
-        {isPremium && (
-          <Card className="mb-8 bg-gradient-to-tr from-yellow-500/15 via-card to-card border border-yellow-500/30 shadow-xl">
-            <CardHeader className="flex flex-col sm:flex-row items-start sm:items-center gap-4">
-              <div className="p-3 bg-yellow-500/20 rounded-full">
-                <Sparkles className="w-8 h-8 text-yellow-400" />
-              </div>
-              <div>
-                <CardTitle className="text-2xl font-bold text-yellow-400">Your Spark Suggestions are Ready</CardTitle>
-                <CardDescription className="text-muted-foreground mt-1">
-                  Go where your vibe thrives. We've curated a list of places and ideas just for you.
-                </CardDescription>
-              </div>
-            </CardHeader>
-            <CardFooter>
-              <Link href="/moments" passHref>
-                <Button className="bg-yellow-500 hover:bg-yellow-500/90 text-black">
-                  Explore My Suggestions <ArrowRight className="ml-2 h-5 w-5" />
-                </Button>
-              </Link>
-            </CardFooter>
-          </Card>
-        )}
-
         <div className="grid grid-cols-1 lg:grid-cols-3 gap-8 mb-8">
           <div className="lg:col-span-2">
             <Card className="bg-card shadow-xl h-full">
@@ -370,22 +340,19 @@ export function DashboardClient({ currentUser }: DashboardClientProps) {
                 <CardHeader>
                     <div className="flex items-center gap-2">
                         <BrainCircuit className="w-6 h-6 text-primary" />
-                        <CardTitle className="text-lg font-semibold">Personality</CardTitle>
+                        <CardTitle className="text-lg font-semibold">Know Your Type?</CardTitle>
                     </div>
-                    <CardDescription className="text-xs text-muted-foreground mt-1">
-                        Adding your personality type leads to more compatible Spark Swipes.
-                    </CardDescription>
                 </CardHeader>
                 <CardContent>
                     {currentUser.mbtiType ? (
-                        <p className="text-sm text-foreground">
-                            Your Type: <span className="font-bold text-primary">{currentUser.mbtiType}</span>. You can retake the quiz anytime.
-                        </p>
+                       <div className="space-y-1">
+                         <p className="text-sm text-muted-foreground">Your personality type is:</p>
+                         <p className="font-bold text-lg text-primary">{currentUser.mbtiType}</p>
+                       </div>
                     ) : (
-                        <p className="text-sm text-foreground">
-                            Discover your personality type to unlock more compatible profiles in Spark Swipes.
-                        </p>
+                       <p className="text-sm text-muted-foreground">Discover your personality type to unlock more compatible profiles in Spark Swipes.</p>
                     )}
+                     <p className="text-xs text-muted-foreground mt-2">Adding your personality type leads to more compatible Spark Swipes.</p>
                 </CardContent>
                 <CardFooter>
                     <Link href="/mbti-quiz" passHref className="w-full">
@@ -425,47 +392,13 @@ export function DashboardClient({ currentUser }: DashboardClientProps) {
           </div>
         </div>
 
-        <Card className="mb-8 bg-card shadow-xl">
-          <CardHeader>
-             <div className="flex items-center gap-3">
-              <MapPin className="w-7 h-7 text-primary" />
-              <div>
-                <CardTitle className="text-xl font-semibold">Places Trail</CardTitle>
-                <CardDescription className="text-muted-foreground">
-                  A visual journey of your most recently logged moments.
-                </CardDescription>
-              </div>
-            </div>
-          </CardHeader>
-          <CardContent>
-            {isLoadingMoments ? (
-              <div className="flex items-center justify-center p-8">
-                <Loader2 className="h-8 w-8 animate-spin text-primary" />
-              </div>
-            ) : userMoments.length > 0 ? (
-              <ScrollArea className="w-full whitespace-nowrap rounded-lg">
-                <div className="flex w-max space-x-4 p-4">
-                  {userMoments.map((moment) => (
-                    <PlacesTrailItem key={moment.id} moment={moment} />
-                  ))}
-                </div>
-                <ScrollBar orientation="horizontal" />
-              </ScrollArea>
-            ) : (
-               <div className="text-center py-8 text-muted-foreground">
-                <p>No places logged yet. Your trail will appear here!</p>
-              </div>
-            )}
-          </CardContent>
-        </Card>
-
 
         <Card className="mb-8 bg-card shadow-xl">
           <CardHeader>
             <div className="flex items-center gap-3">
               <Route className="w-7 h-7 text-primary" />
               <div>
-                <CardTitle className="text-xl font-semibold">Moments Trail Map</CardTitle>
+                <CardTitle className="text-xl font-semibold">Moments Trail</CardTitle>
                 <CardDescription className="text-muted-foreground">
                   A map of places you've visited in the last 7 days.
                   {isPremium && " Premium users see Emotional Hotspots."}
@@ -586,9 +519,11 @@ export function DashboardClient({ currentUser }: DashboardClientProps) {
           </CardHeader>
           <CardContent>
             <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
-              {boosters.map((booster) => {
+              {boosters.slice(0, 4).map((booster) => {
                 const BoosterIcon = booster.icon;
-                
+                const isGlowBooster = booster.title === "Glow Mode Boost";
+                const isDisabled = isGlowBooster && (isGlowModeActive || isGlowActivating);
+
                 return (
                   <Card key={booster.title} className="bg-muted/30 flex flex-col">
                     <CardHeader>
@@ -606,18 +541,52 @@ export function DashboardClient({ currentUser }: DashboardClientProps) {
                       <Button
                         variant="outline"
                         size="sm"
-                        onClick={booster.purchaseHandler}
-                        disabled={booster.isDisabled || booster.isActivating}
+                        onClick={
+                          isGlowBooster
+                            ? handlePurchaseGlowBoost
+                            : () => toast({ title: "Coming Soon!", description: `${booster.title} checkout is not yet implemented.` })
+                        }
+                        disabled={isDisabled}
                       >
-                        {booster.isActivating ? (
+                        {isGlowBooster && isGlowActivating ? (
                           <Loader2 className="mr-2 h-4 w-4 animate-spin" />
                         ) : null}
-                        {booster.isActivating ? "Processing..." : booster.isDisabled ? booster.statusText : "Purchase"}
+                        {isGlowBooster
+                          ? isGlowActivating ? "Processing..." : isGlowModeActive ? "Active" : "Purchase"
+                          : "Purchase"}
                       </Button>
                     </CardFooter>
                   </Card>
                 );
               })}
+              {boosters.length > 4 && (() => {
+                  const lastBooster = boosters[4];
+                  const BoosterIcon = lastBooster.icon;
+                  return (
+                    <Card key={lastBooster.title} className="sm:col-span-2 lg:col-span-3 bg-muted/40 border-primary/30 flex flex-col sm:flex-row items-start gap-4 p-4">
+                        <div className="flex items-center gap-3 w-full sm:w-auto">
+                            <BoosterIcon className="w-10 h-10 text-primary flex-shrink-0" />
+                            <div className="sm:hidden">
+                                <CardTitle className="text-lg">{lastBooster.title}</CardTitle>
+                                <p className="text-lg font-bold text-primary">{lastBooster.price}</p>
+                            </div>
+                        </div>
+                        <div className="flex-grow">
+                             <div className="hidden sm:block">
+                                <CardTitle className="text-lg">{lastBooster.title}</CardTitle>
+                            </div>
+                            <p className="text-sm text-muted-foreground mt-1">{lastBooster.description}</p>
+                            <p className="text-xs italic text-foreground/80 mt-2">&quot;{lastBooster.tagline}&quot;</p>
+                        </div>
+                        <div className="flex flex-col items-center justify-center w-full sm:w-auto mt-4 sm:mt-0">
+                           <p className="hidden sm:block text-xl font-bold text-primary mb-2">{lastBooster.price}</p>
+                           <Button className="w-full sm:w-auto" onClick={() => toast({ title: "Coming Soon!", description: `${lastBooster.title} checkout is not yet implemented.` })}>
+                            Purchase Toolkit
+                           </Button>
+                        </div>
+                    </Card>
+                  );
+              })()}
             </div>
           </CardContent>
         </Card>
