@@ -26,6 +26,9 @@ interface MatchCardProps {
   showCrossedPathInfo?: boolean;
   sparkInsights?: SparkSwipeOutput | null;
   isInsightsLoading?: boolean;
+  isStacked?: boolean;
+  isBack?: boolean;
+  className?: string;
 }
 
 const SparkInsightsPanel = ({ insights }: { insights: SparkSwipeOutput }) => (
@@ -75,7 +78,17 @@ const SparkInsightsLoader = () => (
 );
 
 
-export function MatchCard({ user, onLike, onPass, showCrossedPathInfo = false, sparkInsights, isInsightsLoading = false }: MatchCardProps) {
+export function MatchCard({
+  user,
+  onLike,
+  onPass,
+  showCrossedPathInfo = false,
+  sparkInsights,
+  isInsightsLoading = false,
+  isStacked = false,
+  isBack = false,
+  className,
+}: MatchCardProps) {
   const [currentImageIndex, setCurrentImageIndex] = useState(0);
   const { userProfile: currentUserProfile } = useAuth();
   const temperament = getMbtiTemperament(user.mbtiType);
@@ -110,12 +123,20 @@ export function MatchCard({ user, onLike, onPass, showCrossedPathInfo = false, s
   const imgForPrompt2 = imagesForSpecificPlacement[3];
   const remainingDialogImages = imagesForSpecificPlacement.slice(4);
   
-  const commonVibeTags = currentUserProfile ? currentUserProfile.vibeTags.filter(tag => user.vibeTags.includes(tag)) : [];
+  const commonVibeTags = currentUserProfile ? user.vibeTags.filter(tag => currentUserProfile.vibeTags.includes(tag)) : [];
+
+  const cardClasses = cn(
+    "w-full max-w-sm mx-auto overflow-hidden shadow-2xl bg-card flex flex-col h-[720px] transition-transform duration-300",
+    isStacked && "absolute top-0 left-0 right-0",
+    isBack ? "scale-90 -z-10" : "scale-100",
+    temperament?.aura,
+    className
+  );
 
 
   return (
     <Dialog>
-      <Card className="w-full max-w-sm mx-auto overflow-hidden shadow-2xl transform transition-all duration-300 hover:scale-105 bg-card flex flex-col h-[720px]">
+      <Card className={cardClasses}>
         <CardHeader className={cn("p-0 relative h-[55%] border-b-4", temperament?.color || "border-transparent")}>
           <Image
             src={cardFaceImage}

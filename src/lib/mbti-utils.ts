@@ -1,34 +1,43 @@
 
 import type { UserProfile } from './types';
 
-export const mbtiTemperaments: Record<string, { types: string[]; description: string; color: string }> = {
+export const mbtiTemperaments: Record<string, { types: string[]; description: string; color: string; aura: string; }> = {
   SJ: {
     types: ['ISTJ', 'ISFJ', 'ESTJ', 'ESFJ'],
     description: 'Guardians - Order, Service, Community',
     color: 'border-blue-500',
+    aura: 'shadow-lg shadow-blue-500/20 hover:shadow-blue-500/40'
   },
   SP: {
     types: ['ISTP', 'ISFP', 'ESTP', 'ESFP'],
     description: 'Artisans - Aesthetics, Action, Skill',
     color: 'border-yellow-500',
+    aura: 'shadow-lg shadow-yellow-500/20 hover:shadow-yellow-500/40'
   },
   NF: {
     types: ['INFJ', 'INFP', 'ENFJ', 'ENFP'],
     description: 'Idealists - Empathy, Authenticity, Growth',
     color: 'border-green-500',
+    aura: 'shadow-lg shadow-green-500/20 hover:shadow-green-500/40'
   },
   NT: {
     types: ['INTJ', 'INTP', 'ENTJ', 'ENTP'],
     description: 'Rationals - Competence, Logic, Strategy',
     color: 'border-purple-500',
+    aura: 'shadow-lg shadow-purple-500/20 hover:shadow-purple-500/40'
   },
 };
 
-export const getMbtiTemperament = (type?: string): { name: string; color: string } | null => {
+export const getMbtiTemperament = (type?: string): { name: string; color: string, aura: string, description: string } | null => {
   if (!type) return null;
   for (const temperament in mbtiTemperaments) {
     if (mbtiTemperaments[temperament].types.includes(type)) {
-      return { name: temperament, color: mbtiTemperaments[temperament].color };
+      return { 
+        name: temperament, 
+        color: mbtiTemperaments[temperament].color,
+        aura: mbtiTemperaments[temperament].aura,
+        description: mbtiTemperaments[temperament].description
+      };
     }
   }
   return null;

@@ -22,6 +22,7 @@ import { CrossdPlusUpsellDialog } from "@/components/pricing/crossd-plus-upsell-
 import { useAuth } from "@/hooks/use-auth";
 import { getUsersForSwiping, recordLike } from "@/app/actions";
 import { DiscoverFilters, type AppliedFilters } from "@/components/discover/discover-filters";
+import { AnimatePresence, motion } from "framer-motion";
 
 const DAILY_LIKE_LIMIT = 8;
 
@@ -214,18 +215,36 @@ export function SwipeMatchSection() {
       </div>
     );
   }
-
-  const currentUserToDisplay = users[currentIndex];
-
+  
   return (
-    <div className="flex flex-col items-center space-y-6">
-      <MatchCard
-        key={currentUserToDisplay.id} 
-        user={currentUserToDisplay}
-        onLike={handleLike}
-        onPass={handlePass}
-      />
-      <div className="flex gap-2 mt-4">
+    <div className="flex flex-col items-center space-y-4">
+      <div className="relative w-full max-w-sm h-[720px] animate-fade-in-up">
+        <AnimatePresence>
+            {users.slice(currentIndex, currentIndex + 2).reverse().map((user, index) => (
+                <motion.div
+                    key={user.id}
+                    className="absolute w-full h-full"
+                    initial={{ scale: 0.95, y: 20, opacity: 0 }}
+                    animate={{ scale: 1, y: 0, opacity: 1 }}
+                    exit={{ x: 300, opacity: 0, transition: { duration: 0.3 } }}
+                    transition={{ duration: 0.4, ease: "easeOut" }}
+                    style={{
+                        zIndex: users.length - currentIndex - index,
+                        transform: `scale(${1 - index * 0.05}) translateY(${index * -15}px)`,
+                    }}
+                >
+                    <MatchCard
+                        user={user}
+                        onLike={index === 1 ? handleLike : undefined}
+                        onPass={index === 1 ? handlePass : undefined}
+                        isBack={index < 1}
+                    />
+                </motion.div>
+            ))}
+        </AnimatePresence>
+      </div>
+
+      <div className="flex gap-2 mt-2">
         <Button onClick={handleUndo} variant="outline" disabled={previousIndex === null}>
           <Undo2 className="mr-2 h-4 w-4" /> Undo
         </Button>

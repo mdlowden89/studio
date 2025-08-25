@@ -23,7 +23,7 @@ import { fetchSparkSwipeInsights, getUsersForSwiping, recordLike } from "@/app/a
 import type { SparkSwipeOutput, SparkSwipeInput } from "@/ai/flows/spark-swipe-flow";
 import { CrossdPlusUpsellDialog } from "@/components/pricing/crossd-plus-upsell-dialog";
 import { useAuth } from "@/hooks/use-auth";
-import { AVAILABLE_PROMPTS } from "@/lib/mock-data";
+import { AnimatePresence, motion } from "framer-motion";
 import { sortUsersByMbti, type MbtiFilterType } from "@/lib/mbti-utils";
 import {
   DropdownMenu,
@@ -224,9 +224,9 @@ export function SparkSwipeSection() {
           </CardHeader>
            <CardFooter>
                 <Button asChild className="w-full">
-                    <Link href="/mbti-quiz">
+                    <a href="/mbti-quiz">
                         Take the Personality Quiz
-                    </Link>
+                    </a>
                 </Button>
             </CardFooter>
         </Card>
@@ -264,19 +264,37 @@ export function SparkSwipeSection() {
       );
     }
 
-    const currentUserToDisplay = sparkUsers[currentIndex];
-    
     return (
-      <div className="flex flex-col items-center space-y-6">
-        <MatchCard
-          key={currentUserToDisplay.id}
-          user={currentUserToDisplay}
-          onLike={handleLike}
-          onPass={handlePass}
-          sparkInsights={insights}
-          isInsightsLoading={isInsightsLoading}
-        />
-        <div className="flex gap-2 mt-4">
+      <div className="flex flex-col items-center space-y-4">
+         <div className="relative w-full max-w-sm h-[720px] animate-fade-in-up">
+            <AnimatePresence>
+                {sparkUsers.slice(currentIndex, currentIndex + 2).reverse().map((user, index) => (
+                    <motion.div
+                        key={user.id}
+                        className="absolute w-full h-full"
+                        initial={{ scale: 0.95, y: 20, opacity: 0 }}
+                        animate={{ scale: 1, y: 0, opacity: 1 }}
+                        exit={{ x: 300, opacity: 0, transition: { duration: 0.3 } }}
+                        transition={{ duration: 0.4, ease: "easeOut" }}
+                        style={{
+                            zIndex: sparkUsers.length - currentIndex - index,
+                            transform: `scale(${1 - index * 0.05}) translateY(${index * -15}px)`,
+                        }}
+                    >
+                        <MatchCard
+                            user={user}
+                            onLike={index === 1 ? handleLike : undefined}
+                            onPass={index === 1 ? handlePass : undefined}
+                            isBack={index < 1}
+                            sparkInsights={index === 1 ? insights : null}
+                            isInsightsLoading={index === 1 ? isInsightsLoading : false}
+                        />
+                    </motion.div>
+                ))}
+            </AnimatePresence>
+         </div>
+
+        <div className="flex gap-2 mt-2">
           <Button onClick={handleUndo} variant="outline" disabled={previousIndex === null || isInsightsLoading}>
             <Undo2 className="mr-2 h-4 w-4" /> Undo
           </Button>
