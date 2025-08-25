@@ -87,9 +87,10 @@ export function DashboardClient({ currentUser }: DashboardClientProps) {
   const oneWeekAgo = useMemo(() => subDays(new Date(), 7), []);
 
   useEffect(() => {
+    // This component now uses mock data for demonstration purposes.
+    // In a production scenario, you would fetch this data from your backend.
     if (currentUser.id) {
       setIsLoadingMoments(true);
-      // Using mock data for demonstration purposes as requested.
       setUserMoments(MOCK_MOMENTS as Moment[]);
       setIsLoadingMoments(false);
     }
