@@ -5,7 +5,7 @@ import { useState, useEffect, useMemo, useCallback } from "react";
 import { AppLayout } from "@/components/layout/app-layout";
 import { Card, CardContent, CardHeader, CardTitle, CardDescription, CardFooter } from "@/components/ui/card";
 import { Sparkles, PlusCircle, ClipboardList, Users, MessageSquare, Route, MapPin, CalendarDays, TrendingUp, Activity, Map, LayoutGrid, List as ListIcon, Lightbulb, Edit3, Repeat, Star, ShoppingBag, Zap, Eye, BrainCircuit, Signal, ArrowRight, Loader2 } from "lucide-react";
-import { AVAILABLE_PROMPTS, MOCK_HOTSPOTS } from "@/lib/mock-data";
+import { AVAILABLE_PROMPTS, MOCK_HOTSPOTS, MOCK_MOMENTS } from "@/lib/mock-data";
 import { Button } from "@/components/ui/button";
 import { Separator } from "@/components/ui/separator";
 import { subDays, isAfter, format, getDay, differenceInDays } from "date-fns";
@@ -89,19 +89,11 @@ export function DashboardClient({ currentUser }: DashboardClientProps) {
   useEffect(() => {
     if (currentUser.id) {
       setIsLoadingMoments(true);
-      fetchMomentsForUser(currentUser.id)
-        .then(data => {
-          setUserMoments(data as Moment[]);
-        })
-        .catch(err => {
-          console.error("Failed to fetch user moments:", err);
-          toast({ title: "Error", description: "Could not load your moments.", variant: "destructive" });
-        })
-        .finally(() => {
-          setIsLoadingMoments(false);
-        });
+      // Using mock data for demonstration purposes as requested.
+      setUserMoments(MOCK_MOMENTS as Moment[]);
+      setIsLoadingMoments(false);
     }
-  }, [currentUser.id, toast]);
+  }, [currentUser.id]);
 
   useEffect(() => {
     if (currentUser.id) {
