@@ -9,9 +9,8 @@ import { Button } from "@/components/ui/button";
 import { Route, List, LayoutGrid, AlertTriangle, Sparkles } from "lucide-react";
 import { Separator } from "@/components/ui/separator";
 import { MomentsMap } from "@/components/dashboard/moments-map";
-import { MOCK_HOTSPOTS } from "@/lib/mock-data";
+import { MOCK_HOTSPOTS, MOCK_MOMENTS } from "@/lib/mock-data";
 import { useAuth } from "@/hooks/use-auth";
-import { fetchMomentsForUser } from "@/app/actions";
 import type { Moment } from "@/lib/types";
 import { useToast } from "@/hooks/use-toast";
 import { Skeleton } from "@/components/ui/skeleton";
@@ -48,19 +47,13 @@ export default function MomentsPage() {
   const { toast } = useToast();
   
   useEffect(() => {
+    // This page will now use mock data for demonstration purposes.
+    // In a production scenario, you would fetch this data from your backend.
     if (userProfile?.id) {
       setIsLoading(true);
-      fetchMomentsForUser(userProfile.id)
-        .then(data => {
-          setMoments(data as Moment[]);
-        })
-        .catch(err => {
-          console.error("Failed to fetch user moments:", err);
-          toast({ title: "Error", description: "Could not load your moments.", variant: "destructive" });
-        })
-        .finally(() => {
-          setIsLoading(false);
-        });
+      // Using mock data directly
+      setMoments(MOCK_MOMENTS as Moment[]);
+      setIsLoading(false);
     } else if (!isAuthLoading) {
       // Handle case where user is not logged in but auth is no longer loading
       setIsLoading(false);
