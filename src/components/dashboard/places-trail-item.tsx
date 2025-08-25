@@ -1,3 +1,4 @@
+
 "use client";
 
 import { useState, useEffect } from 'react';
@@ -54,6 +55,8 @@ export function PlacesTrailItem({ moment }: PlacesTrailItemProps) {
   }, [moment.placeName, moment.coordinates]);
 
   const momentDate = new Date(moment.loggedAt as string);
+  const statusEmoji = moment.status === 'confirmed' ? '🤝' : moment.status === 'rejected' ? '❌' : '⏳';
+
 
   return (
     <Card className="w-64 h-full flex-shrink-0 snap-center overflow-hidden bg-card/60 hover:shadow-primary/20 transition-shadow duration-300">
@@ -74,7 +77,10 @@ export function PlacesTrailItem({ moment }: PlacesTrailItemProps) {
             <p className="text-xs">No photo available</p>
           </div>
         )}
-        <div className="absolute bottom-0 left-0 right-0 p-2 bg-gradient-to-t from-black/70 to-transparent">
+        <div className="absolute top-2 right-2 text-xl bg-black/40 rounded-full w-8 h-8 flex items-center justify-center backdrop-blur-sm" title={`Status: ${moment.status}`}>
+          {statusEmoji}
+        </div>
+        <div className="absolute bottom-0 left-0 right-0 p-2 bg-gradient-to-t from-black/80 to-transparent">
             <h3 className="font-bold text-white text-md truncate">{moment.placeName}</h3>
         </div>
       </div>

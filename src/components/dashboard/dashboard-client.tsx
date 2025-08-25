@@ -22,6 +22,8 @@ import { fetchMomentsForUser, fetchUserChatCount } from "@/app/actions";
 import { Skeleton } from "@/components/ui/skeleton";
 import { SparkEnergyMeter } from "@/components/dashboard/spark-energy-meter";
 import { SparkNudgeDialog } from "@/components/dashboard/spark-nudge-dialog";
+import { ScrollArea, ScrollBar } from "@/components/ui/scroll-area";
+import { PlacesTrailItem } from "./places-trail-item";
 
 interface DashboardClientProps {
     currentUser: UserProfile;
@@ -29,20 +31,15 @@ interface DashboardClientProps {
 
 const MomentsLoadingSkeleton = () => (
   <div className="space-y-4">
-    <div className="flex items-center justify-between">
-      <Skeleton className="h-6 w-1/2" />
-      <div className="flex items-center gap-2">
-        <Skeleton className="h-8 w-8" />
-        <Skeleton className="h-8 w-8" />
-      </div>
-    </div>
-    <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-3">
-      <Skeleton className="h-24 w-full" />
-      <Skeleton className="h-24 w-full" />
-      <Skeleton className="h-24 w-full" />
+    <Skeleton className="h-6 w-1/2" />
+    <div className="flex space-x-3">
+        <Skeleton className="h-40 w-64" />
+        <Skeleton className="h-40 w-64" />
+        <Skeleton className="h-40 w-64" />
     </div>
   </div>
 );
+
 
 const StatsLoadingSkeleton = () => (
     <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
@@ -58,7 +55,6 @@ const StatsLoadingSkeleton = () => (
 
 
 export function DashboardClient({ currentUser }: DashboardClientProps) {
-  const [recentPlacesViewMode, setRecentPlacesViewMode] = useState<'list' | 'imageGrid'>('list');
   const [clientFormattedTimes, setClientFormattedTimes] = useState<Record<string, string>>({});
   const [promptOfTheDay, setPromptOfTheDay] = useState<ProfilePrompt | null>(null);
   const [showUpsellDialog, setShowUpsellDialog] = useState(false);
@@ -447,70 +443,25 @@ export function DashboardClient({ currentUser }: DashboardClientProps) {
             <div className="flex items-center gap-3">
               <Route className="w-7 h-7 text-primary" />
               <div>
-                <CardTitle className="text-xl font-semibold">Moments Trail</CardTitle>
+                <CardTitle className="text-xl font-semibold">Recent Sparks Trail</CardTitle>
                 <CardDescription className="text-muted-foreground">
-                  A map of places you've visited in the last 7 days.
-                  {isPremium && " Premium users see Emotional Hotspots."}
+                  A highlight reel of your memorable moments from the last 7 days.
                 </CardDescription>
               </div>
             </div>
           </CardHeader>
           <CardContent>
-            <div className="aspect-[2/1] w-full bg-muted rounded-lg overflow-hidden mb-4 shadow-inner">
-              <MomentsMap moments={momentsThisWeek.filter(m => m.coordinates)} hotspots={isPremium ? MOCK_HOTSPOTS : undefined} />
-            </div>
             {isLoadingMoments ? (
               <MomentsLoadingSkeleton />
             ) : momentsThisWeek.length > 0 ? (
-              <div>
-                <div className="flex items-center justify-between mb-3">
-                  <h4 className="text-md font-semibold text-foreground">Recent Places This Week:</h4>
-                  <div className="flex items-center gap-2 border border-border p-1 rounded-md">
-                    <Button
-                      variant={recentPlacesViewMode === 'list' ? 'default' : 'ghost'}
-                      size="icon"
-                      onClick={() => setRecentPlacesViewMode('list')}
-                      aria-label="List view"
-                      className={recentPlacesViewMode === 'list' ? 'bg-primary text-primary-foreground hover:bg-primary/90' : 'hover:bg-accent'}
-                    >
-                      <ListIcon className="h-5 w-5" />
-                    </Button>
-                    <Separator orientation="vertical" className="h-6 bg-border" />
-                    <Button
-                      variant={recentPlacesViewMode === 'imageGrid' ? 'default' : 'ghost'}
-                      size="icon"
-                      onClick={() => setRecentPlacesViewMode('imageGrid')}
-                      aria-label="Image Grid view"
-                      className={recentPlacesViewMode === 'imageGrid' ? 'bg-primary text-primary-foreground hover:bg-primary/90' : 'hover:bg-accent'}
-                    >
-                      <LayoutGrid className="h-5 w-5" />
-                    </Button>
-                  </div>
+               <ScrollArea className="w-full whitespace-nowrap rounded-md">
+                <div className="flex w-max space-x-4 p-4">
+                  {momentsThisWeek.map(moment => (
+                    <PlacesTrailItem key={moment.id} moment={moment} />
+                  ))}
                 </div>
-                {recentPlacesViewMode === 'list' ? (
-                  <ul className="space-y-2">
-                    {momentsThisWeek.map(moment => {
-                      const datePart = format(new Date(moment.loggedAt as string), "MMM d");
-                      const timePart = clientFormattedTimes[moment.id]; 
-                      return (
-                        <li key={moment.id} className="flex items-center gap-2 p-2 bg-muted/30 rounded-md text-sm">
-                          <MapPin className="w-4 h-4 text-primary/80" />
-                          <span className="flex-grow font-medium text-foreground/90">{moment.placeName}</span>
-                          <span className="text-xs text-muted-foreground">
-                            {datePart}{timePart ? `, ${timePart}` : ""}
-                          </span>
-                        </li>
-                      );
-                    })}
-                  </ul>
-                ) : (
-                  <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-3">
-                    {momentsThisWeek.map(moment => (
-                      <MomentGalleryItem key={moment.id} moment={moment} userProfile={currentUser}/>
-                    ))}
-                  </div>
-                )}
-              </div>
+                <ScrollBar orientation="horizontal" />
+              </ScrollArea>
             ) : (
               <div className="text-center py-8 text-muted-foreground flex flex-col items-center gap-3">
                 <Route className="w-16 h-16 text-primary/60" />
