@@ -4,7 +4,7 @@
 import { useState, useEffect, useMemo, useCallback } from "react";
 import { AppLayout } from "@/components/layout/app-layout";
 import { Card, CardContent, CardHeader, CardTitle, CardDescription, CardFooter } from "@/components/ui/card";
-import { Sparkles, PlusCircle, ClipboardList, Users, MessageSquare, Route, MapPin, CalendarDays, TrendingUp, Activity, Map, LayoutGrid, List as ListIcon, Lightbulb, Edit3, Repeat, Star, ShoppingBag, Zap, Eye, BrainCircuit, Signal, ArrowRight, Loader2 } from "lucide-react";
+import { Sparkles, PlusCircle, ClipboardList, Users, MessageSquare, Route, MapPin, CalendarDays, TrendingUp, Activity, Map, LayoutGrid, List as ListIcon, Lightbulb, Edit3, Repeat, Star, ShoppingBag, Zap, Eye, BrainCircuit, Signal, ArrowRight, Loader2, Flame } from "lucide-react";
 import { AVAILABLE_PROMPTS, MOCK_HOTSPOTS, MOCK_MOMENTS } from "@/lib/mock-data";
 import { Button } from "@/components/ui/button";
 import { Separator } from "@/components/ui/separator";
@@ -407,14 +407,13 @@ export function DashboardClient({ currentUser }: DashboardClientProps) {
               <Card className="bg-card shadow-xl">
                 <CardHeader>
                   <div className="flex items-center gap-2">
-                    <TrendingUp className="w-6 h-6 text-primary" />
+                    <Flame className="w-7 h-7 text-amber-500 animate-pulse" />
                     <CardTitle className="text-lg font-semibold">Active Streak</CardTitle>
                   </div>
-                  <CardDescription className="text-xs text-muted-foreground mt-1">{activeStreakChallenge.name}</CardDescription>
                 </CardHeader>
                 <CardContent>
                   <p className="text-sm text-foreground mb-2">{activeStreakChallenge.description}</p>
-                  <Progress value={(activeStreakChallenge.progress.current / activeStreakChallenge.progress.target) * 100} className="h-2 [&>div]:bg-primary" />
+                  <Progress value={(activeStreakChallenge.progress.current / activeStreakChallenge.progress.target) * 100} className="h-3 [&>div]:bg-gradient-to-r [&>div]:from-amber-500 [&>div]:to-primary" />
                   <p className="text-xs text-muted-foreground mt-1 text-right">
                     {activeStreakChallenge.progress.current} / {activeStreakChallenge.progress.target} {activeStreakChallenge.progress.unit}
                   </p>
