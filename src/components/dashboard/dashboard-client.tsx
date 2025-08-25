@@ -88,7 +88,6 @@ export function DashboardClient({ currentUser }: DashboardClientProps) {
 
   useEffect(() => {
     // This component now uses mock data for demonstration purposes.
-    // In a production scenario, you would fetch this data from your backend.
     if (currentUser.id) {
       setIsLoadingMoments(true);
       setUserMoments(MOCK_MOMENTS as Moment[]);
@@ -114,10 +113,11 @@ export function DashboardClient({ currentUser }: DashboardClientProps) {
   }, [currentUser.id, toast]);
 
   const momentsThisWeek = useMemo(() => {
+    // To ensure the carousel is populated for the demo, we will use all mock moments.
+    // The original logic filtered for the last 7 days.
     return userMoments
-      .filter(moment => isAfter(new Date(moment.loggedAt as string), oneWeekAgo))
       .sort((a, b) => new Date(b.loggedAt as string).getTime() - new Date(a.loggedAt as string).getTime());
-  }, [userMoments, oneWeekAgo]);
+  }, [userMoments]);
 
   // Generate a new spark nudge when moments data or the prompt of the day changes
   useEffect(() => {
@@ -126,8 +126,9 @@ export function DashboardClient({ currentUser }: DashboardClientProps) {
     const potentialNudges: string[] = [];
 
     // Nudge 1: Weekly crossings
-    if (momentsThisWeek.length > 0) {
-      potentialNudges.push(`You’ve logged ${momentsThisWeek.length} moment${momentsThisWeek.length > 1 ? 's' : ''} this week. Keep the streak going! 👀`);
+    const recentMoments = userMoments.filter(moment => isAfter(new Date(moment.loggedAt as string), oneWeekAgo));
+    if (recentMoments.length > 0) {
+      potentialNudges.push(`You’ve logged ${recentMoments.length} moment${recentMoments.length > 1 ? 's' : ''} this week. Keep the streak going! 👀`);
     }
 
     // Nudge 2: Expiring moments
@@ -150,7 +151,7 @@ export function DashboardClient({ currentUser }: DashboardClientProps) {
     // Select a random nudge
     setSparkNudge(potentialNudges[Math.floor(Math.random() * potentialNudges.length)]);
 
-  }, [userMoments, momentsThisWeek, promptOfTheDay, isLoadingMoments]);
+  }, [userMoments, promptOfTheDay, isLoadingMoments, oneWeekAgo]);
 
   // Effect to show the nudge dialog once per session
   useEffect(() => {
@@ -438,7 +439,7 @@ export function DashboardClient({ currentUser }: DashboardClientProps) {
               <div>
                 <CardTitle className="text-xl font-semibold">Recent Sparks Trail</CardTitle>
                 <CardDescription className="text-muted-foreground">
-                  A highlight reel of your memorable moments from the last 7 days.
+                  A highlight reel of your memorable moments.
                 </CardDescription>
               </div>
             </div>
@@ -458,8 +459,8 @@ export function DashboardClient({ currentUser }: DashboardClientProps) {
             ) : (
               <div className="text-center py-8 text-muted-foreground flex flex-col items-center gap-3">
                 <Route className="w-16 h-16 text-primary/60" />
-                <p className="text-lg font-semibold text-foreground">Your Weekly Trail is Clear</p>
-                <p className="max-w-md">This map shows moments from the last 7 days. Log a new one to start seeing your path!</p>
+                <p className="text-lg font-semibold text-foreground">Your Trail is Clear</p>
+                <p className="max-w-md">Log a new moment to start seeing your path!</p>
                 <Button asChild className="mt-2 bg-primary/90 hover:bg-primary text-primary-foreground">
                   <Link href="/log-moment">
                     <PlusCircle className="mr-2 h-4 w-4" /> Log a New Moment
