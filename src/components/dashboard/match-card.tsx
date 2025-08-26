@@ -118,18 +118,15 @@ export function MatchCard({
 
   return (
     <Dialog>
-      <Card className="w-full max-w-sm mx-auto overflow-hidden shadow-2xl bg-card flex flex-col h-[720px]">
-        <CardHeader className="p-0 relative h-[55%]">
+      <Card className="w-full max-w-sm mx-auto overflow-hidden shadow-2xl bg-card border-2 border-border">
+        <CardHeader className="p-0 relative">
           <Image
             src={cardFaceImage}
             alt={user.name}
             width={600}
             height={800}
-            className="object-cover w-full h-full cursor-pointer"
+            className="w-full h-auto aspect-[3/4] object-cover"
             data-ai-hint="profile lifestyle"
-            onClick={nextImage}
-            unoptimized={cardFaceImage.startsWith('data:') || cardFaceImage.includes('placehold.co')}
-            crossOrigin="anonymous"
           />
           {user.images.length > 1 && (
             <>
@@ -170,7 +167,7 @@ export function MatchCard({
             )}
           </div>
         </CardHeader>
-        <CardContent className="p-4 flex-grow overflow-y-auto">
+        <CardContent className="p-4">
             {isInsightsLoading && <SparkInsightsLoader />}
             {sparkInsights && !isInsightsLoading && <SparkInsightsPanel insights={sparkInsights} />}
             {!isInsightsLoading && !sparkInsights && (
