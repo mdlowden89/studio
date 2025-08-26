@@ -6,7 +6,7 @@ import type { UserProfile, CrossedPathUser } from "@/lib/types";
 import { Card, CardContent, CardFooter, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
-import { Heart, X, MapPin, Info, Ruler, Users, Baby, ListChecks, Wine, ChevronLeftIcon, ChevronRightIcon, Sparkles as SparklesIcon, Compass, BrainCircuit, TrendingUp, Loader2, ShieldCheck } from "lucide-react";
+import { Heart, X, MapPin, Info, Ruler, Users, Baby, ListChecks, Wine, ChevronLeftIcon, ChevronRightIcon, Sparkles as SparklesIcon, Compass, BrainCircuit, TrendingUp, Loader2, ShieldCheck, Lightbulb } from "lucide-react";
 import { useState } from "react";
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger } from "@/components/ui/dialog";
 import { ScrollArea } from "@/components/ui/scroll-area";
@@ -16,6 +16,7 @@ import React from "react";
 import type { SparkSwipeOutput } from "@/ai/flows/spark-swipe-flow";
 import { Skeleton } from "@/components/ui/skeleton";
 import { useAuth } from "@/hooks/use-auth";
+import { cn } from "@/lib/utils";
 
 interface MatchCardProps {
   user: UserProfile | CrossedPathUser;
@@ -53,6 +54,12 @@ const SparkInsightsPanel = ({ insights }: { insights: SparkSwipeOutput }) => (
             <TrendingUp className="w-4 h-4 text-foreground/70 mt-0.5 shrink-0" />
             <span><span className="font-medium">Spark Flow Score:</span> {insights.sparkFlowScore}% momentum prediction.</span>
         </li>
+         {insights.sparkPrompt && (
+           <li className="flex items-start gap-2 pt-1 border-t border-border/50 mt-2">
+              <Lightbulb className="w-4 h-4 text-yellow-400 mt-0.5 shrink-0" />
+              <span><span className="font-medium">Spark Prompt:</span> {insights.sparkPrompt}</span>
+           </li>
+        )}
     </ul>
   </div>
 );
@@ -174,7 +181,17 @@ export function MatchCard({
                  <>
                     <div className="flex flex-wrap gap-2 mb-3">
                         {user.vibeTags.slice(0, 3).map((tag) => (
-                        <Badge key={tag} variant="secondary" className="text-xs capitalize">{tag}</Badge>
+                          <Badge 
+                            key={tag} 
+                            variant="secondary" 
+                            className={cn(
+                              "text-xs capitalize",
+                              commonVibeTags.includes(tag) && "bg-primary/20 border border-primary/50 text-primary-foreground"
+                            )}
+                          >
+                            {commonVibeTags.includes(tag) && <SparklesIcon className="w-3 h-3 mr-1 text-primary" />}
+                            {tag}
+                          </Badge>
                         ))}
                     </div>
                     {user.prompts.slice(0,1).map(p => {
@@ -235,8 +252,6 @@ export function MatchCard({
                 layout="fill"
                 objectFit="cover"
                 data-ai-hint="profile photo"
-                unoptimized={dialogTopImage.startsWith('data:') || dialogTopImage.includes('placehold.co')}
-                crossOrigin="anonymous"
               />
             </div>
           </div>
@@ -286,8 +301,6 @@ export function MatchCard({
                       layout="fill"
                       objectFit="cover"
                       data-ai-hint="profile photo lifestyle"
-                      unoptimized={imgAfterBio1.startsWith('data:') || imgAfterBio1.includes('placehold.co')}
-                      crossOrigin="anonymous"
                     />
                   </div>
                 )}
@@ -299,8 +312,6 @@ export function MatchCard({
                       layout="fill"
                       objectFit="cover"
                       data-ai-hint="profile photo lifestyle"
-                      unoptimized={imgAfterBio2.startsWith('data:') || imgAfterBio2.includes('placehold.co')}
-                      crossOrigin="anonymous"
                     />
                   </div>
                 )}
@@ -326,8 +337,6 @@ export function MatchCard({
                               layout="fill"
                               objectFit="cover"
                               data-ai-hint="profile photo activity"
-                              unoptimized={imgForPrompt1.startsWith('data:') || imgForPrompt1.includes('placehold.co')}
-                              crossOrigin="anonymous"
                             />
                           </div>
                         )}
@@ -339,8 +348,6 @@ export function MatchCard({
                               layout="fill"
                               objectFit="cover"
                               data-ai-hint="profile photo activity"
-                              unoptimized={imgForPrompt2.startsWith('data:') || imgForPrompt2.includes('placehold.co')}
-                              crossOrigin="anonymous"
                             />
                           </div>
                         )}
@@ -362,8 +369,6 @@ export function MatchCard({
                         layout="fill"
                         objectFit="cover"
                         data-ai-hint="lifestyle photo"
-                        unoptimized={img.startsWith('data:') || img.includes('placehold.co')}
-                        crossOrigin="anonymous"
                       />
                     </div>
                   ))}

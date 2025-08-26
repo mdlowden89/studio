@@ -1,3 +1,4 @@
+
 'use server';
 /**
  * @fileOverview AI flow to generate compatibility insights for Spark Swipe.
@@ -50,6 +51,7 @@ const SparkSwipeOutputSchema = z.object({
     recommendationReasoning: z.string().describe("A Netflix-style recommendation. Example: 'Users like you who matched with thoughtful introverts also matched with this person.'"),
   }),
   sparkFlowScore: z.number().min(0).max(100).describe("A compatibility score from 0 to 100, representing a high momentum prediction."),
+  sparkPrompt: z.string().optional().describe("An actionable conversation starter or first date idea based on shared interests or location patterns. Example: 'You both love late-night coffee shops — could this be your first date spot?'"),
 });
 export type SparkSwipeOutput = z.infer<typeof SparkSwipeOutputSchema>;
 
@@ -106,6 +108,7 @@ Generate a JSON object that adheres to the output schema. Follow these instructi
 4.  **collaborativeFilteringAnalysis**:
     -   'recommendationReasoning': Invent a plausible-sounding collaborative filtering insight. Use the format "Users like you who matched with [some user type] also matched with this person." Do not use the candidate's actual name in the output. For example: "Users like you who vibe with thoughtful introverts also tend to spark with artsy adventurers."
 5.  **sparkFlowScore**: Provide a compatibility score between 60 and 95. Be realistic.
+6.  **sparkPrompt**: Based on their shared interests (from vibe tags, location patterns, or prompts), generate a creative and actionable conversation starter or a first date idea. Make it specific. Example: "You're both into live music. Maybe you could check out the new band playing at The Roxy this Friday?" or "Since you both love hiking, have you ever explored the trails at Redwood Park?"
 
 Your entire response must be a single, valid JSON object matching the requested schema.
 `,
