@@ -29,3 +29,5 @@ import '@/ai/flows/suggest-bio-flow.ts';
 import '@/ai/flows/get-place-photo-flow.ts';
 import '@/ai/flows/spark-swipe-flow.ts';
 import '@/ai/flows/get-spark-suggestions-flow.ts';
+import '@/ai/flows/generate-spark-meter-flow.ts';
+

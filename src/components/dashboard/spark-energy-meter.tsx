@@ -117,4 +117,3 @@ export function SparkEnergyMeter({ moments }: SparkEnergyMeterProps) {
     </Card>
   );
 }
-
