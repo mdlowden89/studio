@@ -52,6 +52,7 @@ const SparkSwipeOutputSchema = z.object({
   }),
   sparkFlowScore: z.number().min(0).max(100).describe("A compatibility score from 0 to 100, representing a high momentum prediction."),
   sparkPrompt: z.string().optional().describe("An actionable conversation starter or first date idea based on shared interests or location patterns. Example: 'You both love late-night coffee shops — could this be your first date spot?'"),
+  compatibilityTagline: z.string().optional().describe("A dynamic, gamified tagline summarizing the match. Example: '95% match on Night Owl energy 🌙' or '88% match on Adventurous Spirit 🏔️'. Must include the score, a key reason, and an emoji."),
 });
 export type SparkSwipeOutput = z.infer<typeof SparkSwipeOutputSchema>;
 
@@ -109,6 +110,7 @@ Generate a JSON object that adheres to the output schema. Follow these instructi
     -   'recommendationReasoning': Invent a plausible-sounding collaborative filtering insight. Use the format "Users like you who matched with [some user type] also matched with this person." Do not use the candidate's actual name in the output. For example: "Users like you who vibe with thoughtful introverts also tend to spark with artsy adventurers."
 5.  **sparkFlowScore**: Provide a compatibility score between 60 and 95. Be realistic.
 6.  **sparkPrompt**: Based on their shared interests (from vibe tags, location patterns, or prompts), generate a creative and actionable conversation starter or a first date idea. Make it specific. Example: "You're both into live music. Maybe you could check out the new band playing at The Roxy this Friday?" or "Since you both love hiking, have you ever explored the trails at Redwood Park?"
+7.  **compatibilityTagline**: This is crucial. Create a short, gamified tagline that includes the sparkFlowScore, a key matching reason, and a relevant emoji. Examples: "92% match on Creative Energy ✨", "88% match on Adventurous Spirit 🏔️", "95% match on Night Owl energy 🌙". This should be different from the other reasoning fields and feel like a punchy summary.
 
 Your entire response must be a single, valid JSON object matching the requested schema.
 `,

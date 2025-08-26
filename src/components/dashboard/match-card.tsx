@@ -17,6 +17,7 @@ import type { SparkSwipeOutput } from "@/ai/flows/spark-swipe-flow";
 import { Skeleton } from "@/components/ui/skeleton";
 import { useAuth } from "@/hooks/use-auth";
 import { cn } from "@/lib/utils";
+import { CircularProgress } from "@/components/ui/circular-progress";
 
 interface MatchCardProps {
   user: UserProfile | CrossedPathUser;
@@ -127,6 +128,17 @@ export function MatchCard({
     <Dialog>
       <Card className="w-full max-w-sm mx-auto overflow-hidden shadow-2xl bg-card border-2 border-border">
         <CardHeader className="p-0 relative">
+          <div className="absolute top-2 left-2 z-10">
+            {sparkInsights && sparkInsights.sparkFlowScore && (
+              <CircularProgress 
+                progress={sparkInsights.sparkFlowScore} 
+                className="h-14 w-14"
+                strokeWidth={5}
+                labelClassName="text-sm"
+              />
+            )}
+          </div>
+
           <Image
             src={cardFaceImage}
             alt={user.name}
@@ -160,13 +172,18 @@ export function MatchCard({
               {user.name.split(' ')[0]}, {user.age}
               {user.isVerified && <ShieldCheck className="w-7 h-7 text-green-400 fill-green-500/30" />}
             </CardTitle>
-            {showCrossedPathInfo && crossedPathUser.location && (
+            {sparkInsights?.compatibilityTagline && (
+                 <Badge variant="secondary" className="mt-2 text-sm bg-black/40 text-white backdrop-blur-sm border-white/30">
+                  {sparkInsights.compatibilityTagline}
+                </Badge>
+            )}
+            {showCrossedPathInfo && crossedPathUser.location && !sparkInsights?.compatibilityTagline && (
               <div className="flex items-center text-sm text-gray-200 mt-1">
                 <MapPin className="w-4 h-4 mr-1" />
                 <span>Crossed paths at {crossedPathUser.location}</span>
               </div>
             )}
-             {user.showMbtiOnProfile && user.mbtiType && (
+             {user.showMbtiOnProfile && user.mbtiType && !sparkInsights?.compatibilityTagline && (
                 <Badge variant="secondary" className="mt-2 text-md bg-black/40 text-white backdrop-blur-sm border-white/30">
                   <BrainCircuit className="w-4 h-4 mr-1.5" />
                   {user.mbtiType}
