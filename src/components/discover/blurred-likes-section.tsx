@@ -79,12 +79,12 @@ export function BlurredLikesSection({ isPremium }: BlurredLikesSectionProps) {
   return (
     <Card className="mt-12 bg-card shadow-xl">
       <CardHeader className="text-center pb-8">
-        <div className="mx-auto flex h-16 w-16 items-center justify-center rounded-full bg-primary/80 mb-3 shadow-lg">
+        <div className="mx-auto flex h-16 w-16 items-center justify-center rounded-full bg-primary/80 mb-3 shadow-lg animate-pulse">
             <Eye className="h-8 w-8 text-primary-foreground" />
         </div>
         <CardTitle className="text-2xl font-bold text-primary">Who Noticed You?</CardTitle>
         <CardDescription className="text-muted-foreground max-w-md mx-auto">
-          You've Been Noticed! Unlock Crossd+ to see who's interested and instantly match.
+          <span className="font-semibold text-foreground">12 people</span> noticed you in the last 48 hours. Don’t miss your spark. Unlock Crossd+ to see them instantly.
         </CardDescription>
       </CardHeader>
       <CardContent className="text-center">
