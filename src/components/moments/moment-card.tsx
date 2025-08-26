@@ -3,14 +3,9 @@
 
 import { useState, useEffect } from 'react';
 import type { Moment as MomentType, UserProfile } from "@/lib/types";
-import { Card, CardHeader, CardTitle, CardDescription, CardContent, CardFooter } from "@/components/ui/card";
-import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
-import { MapPin, Users, CalendarDays, Repeat, Loader2 } from "lucide-react";
-import Image from "next/image";
+import { Card, CardHeader, CardTitle, CardContent } from "@/components/ui/card";
+import { MapPin, Sparkles } from "lucide-react";
 import { format } from "date-fns";
-import { Button } from '@/components/ui/button';
-import { useToast } from '@/hooks/use-toast';
-import { useRouter } from 'next/navigation';
 
 interface MomentCardProps {
   moment: MomentType;
@@ -30,28 +25,39 @@ export function MomentCard({ moment, potentialMatchUser, userProfile }: MomentCa
     }
   }, [moment.loggedAt]);
 
+  const statusInfo = {
+    pending: { label: 'Waiting for a response...', color: 'text-amber-400' },
+    confirmed: { label: `You matched with someone!`, color: 'text-green-400' },
+    rejected: { label: 'This moment wasn\'t a match.', color: 'text-destructive' }
+  };
+  
+  const currentStatus = statusInfo[moment.status] || statusInfo.pending;
 
   return (
-    <Card className="bg-card/50 hover:shadow-lg transition-shadow duration-300">
-      <CardHeader>
-        <div className="flex items-center justify-between">
-          <CardTitle className="text-xl flex items-center gap-2">
-            <MapPin className="w-5 h-5 text-primary" />
-            {moment.placeName}
-          </CardTitle>
-          <div className="text-xs text-muted-foreground flex items-center gap-1">
-            <CalendarDays className="w-3 h-3"/>
-            {momentDate ? `${format(momentDate, "MMM d, yyyy")} - ${formattedTime}` : '...'}
-          </div>
+    <div className="pl-8 relative before:absolute before:inset-0 before:left-3 before:w-px before:bg-border/70">
+        <div className="flex items-center gap-4 mb-1">
+            <div className="h-7 w-7 rounded-full bg-primary/20 flex items-center justify-center ring-4 ring-background shadow-md z-10">
+                <Sparkles className="h-4 w-4 text-primary animate-pulse" />
+            </div>
+            {momentDate && (
+                <div className="text-sm text-muted-foreground">
+                    {format(momentDate, "MMM d, yyyy")} - <span className="font-medium text-foreground">{formattedTime}</span>
+                </div>
+            )}
         </div>
-         <div className="text-xs text-muted-foreground pt-1">
-          Status: <span className={`font-medium ${moment.status === 'confirmed' ? 'text-green-400' : moment.status === 'rejected' ? 'text-destructive' : 'text-amber-400'}`}>{moment.status}</span>
-        </div>
-      </CardHeader>
-      
-      <CardContent>
-        <p className="text-sm text-foreground italic">Your reflection: &quot;{moment.momentDescription}&quot;</p>
-      </CardContent>
-    </Card>
+        <Card className="bg-gradient-to-br from-card via-card to-primary/5 hover:shadow-primary/20 transition-shadow duration-300 ml-3">
+          <CardHeader>
+            <CardTitle className="text-xl flex items-center gap-2">
+              <MapPin className="w-5 h-5 text-primary" />
+              {moment.placeName}
+            </CardTitle>
+          </CardHeader>
+          
+          <CardContent>
+            <p className="text-sm text-foreground italic mb-3">&quot;{moment.momentDescription}&quot;</p>
+            <p className={`text-xs font-semibold ${currentStatus.color}`}>{currentStatus.label}</p>
+          </CardContent>
+        </Card>
+    </div>
   );
 }

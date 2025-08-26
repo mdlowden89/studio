@@ -36,17 +36,15 @@ export function MomentList({ viewMode, moments, userProfile }: MomentListProps) 
 
   if (viewMode === 'list') {
     return (
-      <ScrollArea className="h-[calc(100vh-22rem)] pr-4"> {/* Adjust height as needed */}
-        <div className="space-y-6">
+      <ScrollArea className="h-[calc(100vh-22rem)] pr-4">
+        <div className="space-y-8">
           {sortedMoments.map((moment, index) => (
-            <div key={moment.id}>
-              <MomentCard 
-                moment={moment} 
-                potentialMatchUser={moment.potentialMatchId ? MOCK_USERS.find(u => u.id === moment.potentialMatchId) : undefined}
-                userProfile={userProfile}
-              />
-              {index < sortedMoments.length - 1 && <Separator className="my-6 bg-border/50" />}
-            </div>
+            <MomentCard 
+              key={moment.id}
+              moment={moment} 
+              potentialMatchUser={moment.potentialMatchId ? MOCK_USERS.find(u => u.id === moment.potentialMatchId) : undefined}
+              userProfile={userProfile}
+            />
           ))}
         </div>
       </ScrollArea>
