@@ -16,8 +16,6 @@ import React from "react";
 import type { SparkSwipeOutput } from "@/ai/flows/spark-swipe-flow";
 import { Skeleton } from "@/components/ui/skeleton";
 import { useAuth } from "@/hooks/use-auth";
-import { getMbtiTemperament } from "@/lib/mbti-utils";
-import { cn } from "@/lib/utils";
 
 interface MatchCardProps {
   user: UserProfile | CrossedPathUser;
@@ -26,9 +24,6 @@ interface MatchCardProps {
   showCrossedPathInfo?: boolean;
   sparkInsights?: SparkSwipeOutput | null;
   isInsightsLoading?: boolean;
-  isStacked?: boolean;
-  isBack?: boolean;
-  className?: string;
 }
 
 const SparkInsightsPanel = ({ insights }: { insights: SparkSwipeOutput }) => (
@@ -84,14 +79,10 @@ export function MatchCard({
   onPass,
   showCrossedPathInfo = false,
   sparkInsights,
-  isInsightsLoading = false,
-  isStacked = false,
-  isBack = false,
-  className,
+  isInsightsLoading = false
 }: MatchCardProps) {
   const [currentImageIndex, setCurrentImageIndex] = useState(0);
   const { userProfile: currentUserProfile } = useAuth();
-  const temperament = getMbtiTemperament(user.mbtiType);
 
   const nextImage = (e: React.MouseEvent) => {
     e.stopPropagation();
@@ -125,19 +116,10 @@ export function MatchCard({
   
   const commonVibeTags = currentUserProfile ? user.vibeTags.filter(tag => currentUserProfile.vibeTags.includes(tag)) : [];
 
-  const cardClasses = cn(
-    "w-full max-w-sm mx-auto overflow-hidden shadow-2xl bg-card flex flex-col h-[720px] transition-transform duration-300",
-    isStacked && "absolute top-0 left-0 right-0",
-    isBack ? "scale-90 -z-10" : "scale-100",
-    temperament?.aura,
-    className
-  );
-
-
   return (
     <Dialog>
-      <Card className={cardClasses}>
-        <CardHeader className={cn("p-0 relative h-[55%] border-b-4", temperament?.color || "border-transparent")}>
+      <Card className="w-full max-w-sm mx-auto overflow-hidden shadow-2xl bg-card flex flex-col h-[720px]">
+        <CardHeader className="p-0 relative h-[55%]">
           <Image
             src={cardFaceImage}
             alt={user.name}
@@ -237,7 +219,7 @@ export function MatchCard({
              {user.showMbtiOnProfile && user.mbtiType && (
                 <Badge variant="secondary" className="text-md bg-black/40 text-white backdrop-blur-sm border-white/30 w-fit">
                   <BrainCircuit className="w-4 h-4 mr-1.5" />
-                  {user.mbtiType} - {temperament?.description}
+                  {user.mbtiType}
                 </Badge>
             )}
             {showCrossedPathInfo && crossedPathUser.location && (
@@ -249,7 +231,7 @@ export function MatchCard({
           </DialogHeader>
           
           <div className="px-6 pt-4 pb-3">
-            <div className={cn("relative w-full max-w-xs aspect-[4/5] rounded-lg overflow-hidden shadow-lg mx-auto border-4", temperament?.color || "border-transparent")}>
+            <div className="relative w-full max-w-xs aspect-[4/5] rounded-lg overflow-hidden shadow-lg mx-auto">
               <Image
                 src={dialogTopImage}
                 alt={`${user.name.split(' ')[0]}'s main photo`}
