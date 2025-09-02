@@ -137,18 +137,13 @@ export function DashboardClient({ currentUser }: DashboardClientProps) {
         potentialNudges.push(`Your ${expiringMoment.placeName} moment is expiring soon — don’t lose the potential connection.`);
     }
     
-    // Nudge 3: Prompt of the Day
-    if (promptOfTheDay) {
-        potentialNudges.push(`Prompt of the day: "${promptOfTheDay.question}" Why not add an answer?`);
-    }
-    
     // Nudge 4: A generic fallback
     potentialNudges.push("Did you cross paths with anyone interesting today?");
 
     // Select a random nudge
     setSparkNudge(potentialNudges[Math.floor(Math.random() * potentialNudges.length)]);
 
-  }, [userMoments, promptOfTheDay, isLoadingMoments, oneWeekAgo]);
+  }, [userMoments, isLoadingMoments, oneWeekAgo]);
 
   // Effect to show the nudge dialog once per session
   useEffect(() => {
@@ -602,5 +597,3 @@ export function DashboardClient({ currentUser }: DashboardClientProps) {
     </AppLayout>
   );
 }
-
-    
