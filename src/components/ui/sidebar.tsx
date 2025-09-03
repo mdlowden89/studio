@@ -64,7 +64,7 @@ const SidebarProvider = React.forwardRef<
     if (isMobile) {
       setState(openMobile ? "expanded" : "closed")
     } else {
-      setState((prevState) => (prevState === "closed" ? "expanded" : prevState))
+      setState((prevState) => (prevState === "closed" ? "expanded" : "expanded"))
     }
   }, [isMobile, openMobile])
 
