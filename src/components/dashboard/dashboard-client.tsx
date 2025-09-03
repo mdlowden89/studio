@@ -21,7 +21,6 @@ import { useToast } from "@/hooks/use-toast";
 import { fetchMomentsForUser, fetchUserChatCount, updateUserMbtiType } from "@/app/actions";
 import { Skeleton } from "@/components/ui/skeleton";
 import { SparkEnergyMeter } from "@/components/dashboard/spark-energy-meter";
-import { SparkNudgeDialog } from "@/components/dashboard/spark-nudge-dialog";
 import { ScrollArea, ScrollBar } from "@/components/ui/scroll-area";
 import { PlacesTrailItem } from "./places-trail-item";
 import { mbtiQuizQuestions } from "@/lib/mbti-quiz-data";
@@ -60,8 +59,6 @@ export function DashboardClient({ currentUser }: DashboardClientProps) {
   const [promptOfTheDay, setPromptOfTheDay] = useState<ProfilePrompt | null>(null);
   const [showUpsellDialog, setShowUpsellDialog] = useState(false);
   const [showFreeBoostDialog, setShowFreeBoostDialog] = useState(false);
-  const [showNudgeDialog, setShowNudgeDialog] = useState(false);
-  const [sparkNudge, setSparkNudge] = useState<string>("");
   
   const [userMoments, setUserMoments] = useState<Moment[]>([]);
   const [activeChatsCount, setActiveChatsCount] = useState(0);
@@ -167,48 +164,6 @@ export function DashboardClient({ currentUser }: DashboardClientProps) {
       .filter(moment => isAfter(new Date(moment.loggedAt as string), oneWeekAgo))
       .sort((a, b) => new Date(b.loggedAt as string).getTime() - new Date(a.loggedAt as string).getTime());
   }, [userMoments, oneWeekAgo]);
-
-  // Generate a new spark nudge when moments data or the prompt of the day changes
-  useEffect(() => {
-    if (isLoadingMoments) return;
-
-    const potentialNudges: string[] = [];
-
-    // Nudge 1: Weekly crossings
-    const recentMoments = userMoments.filter(moment => isAfter(new Date(moment.loggedAt as string), oneWeekAgo));
-    if (recentMoments.length > 0) {
-      potentialNudges.push(`You’ve logged ${recentMoments.length} moment${recentMoments.length > 1 ? 's' : ''} this week. Keep the streak going! 👀`);
-    }
-
-    // Nudge 2: Expiring moments
-    const now = new Date();
-    const expiringMoment = userMoments.find(m => 
-        m.status === 'pending' && differenceInDays(now, new Date(m.loggedAt as string)) >= 2
-    );
-    if (expiringMoment) {
-        potentialNudges.push(`Your ${expiringMoment.placeName} moment is expiring soon — don’t lose the potential connection.`);
-    }
-    
-    // Nudge 4: A generic fallback
-    potentialNudges.push("Did you cross paths with anyone interesting today?");
-
-    // Select a random nudge
-    setSparkNudge(potentialNudges[Math.floor(Math.random() * potentialNudges.length)]);
-
-  }, [userMoments, isLoadingMoments, oneWeekAgo]);
-
-  // Effect to show the nudge dialog once per session
-  useEffect(() => {
-    const hasSeenNudge = sessionStorage.getItem('hasSeenNudge');
-    if (!hasSeenNudge && !isLoadingMoments && sparkNudge) {
-      const timer = setTimeout(() => {
-        setShowNudgeDialog(true);
-        sessionStorage.setItem('hasSeenNudge', 'true');
-      }, 1000); // Small delay to allow the page to settle
-      return () => clearTimeout(timer);
-    }
-  }, [isLoadingMoments, sparkNudge]);
-
 
   const momentsTimestampsKey = useMemo(() => {
     return momentsThisWeek.map(m => `${m.id}-${m.loggedAt}`).join(',');
@@ -649,13 +604,6 @@ export function DashboardClient({ currentUser }: DashboardClientProps) {
             </div>
           </CardContent>
         </Card>
-
-        <SparkNudgeDialog 
-          isOpen={showNudgeDialog}
-          onOpenChange={setShowNudgeDialog}
-          nudgeText={sparkNudge}
-          userName={currentUser.name.split(' ')[0]}
-        />
 
         <CrossdPlusUpsellDialog
           isOpen={showUpsellDialog}
