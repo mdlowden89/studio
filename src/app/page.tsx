@@ -28,7 +28,7 @@ export default function LandingPage() {
   return (
     <div className="flex flex-col min-h-screen bg-background text-foreground premium-background">
       <Sparks />
-      <header className="container mx-auto px-4 md:px-6 h-20 flex items-center justify-between">
+      <header className="px-4 md:px-6 h-20 flex items-center justify-between">
         <Link href="/" className="flex items-center gap-2 p-2 rounded-lg transition-colors text-foreground hover:text-foreground/80">
           <CrossdLogoIcon className="w-8 h-8 text-primary" />
           <span className="text-xl font-semibold">Crossd</span>
