@@ -135,7 +135,30 @@ const Sidebar = React.forwardRef<
     ref
   ) => {
     const { isMobile, state, openMobile, setOpenMobile } = useSidebar()
+    const [isMounted, setIsMounted] = React.useState(false);
 
+    React.useEffect(() => {
+        setIsMounted(true);
+    }, []);
+
+    if (!isMounted) {
+        // On the server or during hydration, render a placeholder or nothing to avoid mismatch
+        // For the desktop view, rendering the structure but keeping it compatible is key.
+        // We can render the desktop structure initially and let the client correct if it's mobile.
+         return (
+            <div
+                ref={ref}
+                className="group peer hidden md:block text-sidebar-foreground"
+                data-state={"expanded"}
+                data-collapsible={collapsible}
+                data-variant={variant}
+                data-side={side}
+            >
+             <div className="h-svh w-[var(--sidebar-width)]" />
+           </div>
+        );
+    }
+    
     if (isMobile) {
       return (
         <Sheet open={openMobile} onOpenChange={setOpenMobile} defaultOpen={defaultOpen} {...restProps}>
