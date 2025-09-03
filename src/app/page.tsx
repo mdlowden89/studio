@@ -66,8 +66,8 @@ export default function LandingPage() {
             </div>
         </section>
 
-        <section className="container mx-auto px-4 md:px-6 py-12 md:py-20">
-          <div className="relative aspect-video max-w-5xl mx-auto">
+        <section className="px-4 md:px-6 py-12 md:py-20">
+          <div className="relative aspect-video mx-auto">
             <Image
               src="/Crossd Landing Page.png"
               alt="App screenshot showing user profiles on a map interface"
