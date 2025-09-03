@@ -64,7 +64,7 @@ export function AppSidebar() {
 
   if (isLoading || !userProfile) {
     return (
-      <Sidebar side="left" variant="sidebar" collapsible="none">
+      <Sidebar side="left" variant="sidebar">
         <SidebarHeader>
           <Link href="/dashboard" className="flex items-center gap-2 text-primary hover:text-primary/90 transition-colors self-start">
             <CrossdLogoIcon className="h-7 w-7" />
@@ -108,7 +108,7 @@ export function AppSidebar() {
   const isPremium = userProfile.subscription?.status === 'active' || userProfile.email === 'mlowdencrossd@gmail.com';
 
   return (
-    <Sidebar side="left" variant="sidebar" collapsible="none">
+    <Sidebar side="left" variant="sidebar">
       <SidebarHeader>
         <Link href="/dashboard" className="flex items-center gap-2 text-primary hover:text-primary/90 transition-colors self-start" onClick={handleMobileNavClick}>
           <CrossdLogoIcon className="h-7 w-7" />
