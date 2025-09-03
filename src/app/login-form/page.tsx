@@ -81,6 +81,7 @@ export default function LoginFormPage() {
       <main className="flex-1 flex flex-col items-center justify-center py-12 px-4 sm:px-6 lg:px-8">
         <Card className="w-full max-w-md shadow-xl bg-card">
           <CardHeader className="text-center">
+            <CrossdLogoIcon className="mx-auto h-12 w-12 text-primary mb-4" />
             <CardTitle className="text-3xl font-bold">Welcome Back</CardTitle>
             <CardDescription>Log in to continue to Crossd.</CardDescription>
           </CardHeader>
