@@ -38,8 +38,10 @@ export default function MbtiQuizPage() {
   const totalQuestions = mbtiQuizQuestions.length;
   const isPremium = userProfile?.subscription?.status === 'active';
 
-  const calculateResult = useCallback((finalAnswers: Record<number, string>) => {
-    if (Object.keys(finalAnswers).length < totalQuestions) return;
+  const calculateResult = useCallback(async (finalAnswers: Record<number, string>) => {
+    if (Object.keys(finalAnswers).length < totalQuestions || !user) return;
+
+    setIsSaving(true);
 
     const counts = { E: 0, I: 0, S: 0, N: 0, T: 0, F: 0, J: 0, P: 0 };
     Object.values(finalAnswers).forEach(answer => {
@@ -53,13 +55,32 @@ export default function MbtiQuizPage() {
       counts.J >= counts.P ? 'J' : 'P'
     ].join('');
 
-    setResult(mbtiType);
-
-    toast({
-        title: "Quiz Complete!",
-        description: `Your personality type is ${mbtiType}. Go to your dashboard to save it to your profile.`,
-    });
-  }, [totalQuestions, toast]);
+    try {
+        const response = await updateUserMbtiType(user.uid, mbtiType);
+        if (response.success) {
+            setResult(mbtiType);
+            toast({
+                title: "Quiz Complete!",
+                description: `Your personality type is ${mbtiType}. It has been saved to your profile.`,
+            });
+        } else {
+             toast({
+                title: "Error Saving Result",
+                description: response.error || "Could not save your personality type. Please try again.",
+                variant: "destructive"
+             });
+        }
+    } catch (error) {
+        console.error("Failed to save MBTI result:", error);
+        toast({
+            title: "Error",
+            description: "An unexpected error occurred while saving your result.",
+            variant: "destructive"
+        });
+    } finally {
+        setIsSaving(false);
+    }
+  }, [totalQuestions, toast, user]);
 
   useEffect(() => {
     if (isAuthLoading || !userProfile || isInitialLoadDone.current) {
@@ -69,12 +90,21 @@ export default function MbtiQuizPage() {
         return;
     }
 
+    // If user already has a type, show their result immediately.
+    if (userProfile.mbtiType) {
+        setResult(userProfile.mbtiType);
+        setIsLoadingQuiz(false);
+        isInitialLoadDone.current = true;
+        return;
+    }
+
     const savedAnswers = userProfile.mbtiQuizProgress?.answers || {};
     const savedAnswersCount = Object.keys(savedAnswers).length;
 
     if (savedAnswersCount > 0) {
       setAnswers(savedAnswers);
       if (savedAnswersCount >= totalQuestions) {
+        // This case is unlikely if they don't have a final type, but handles it.
         calculateResult(savedAnswers);
       } else {
         setCurrentQuestionIndex(savedAnswersCount);
@@ -103,7 +133,7 @@ export default function MbtiQuizPage() {
     if (currentQuestionIndex < totalQuestions - 1) {
       setCurrentQuestionIndex(currentQuestionIndex + 1);
     } else {
-      calculateResult(newAnswers);
+      await calculateResult(newAnswers);
     }
   };
   
@@ -115,7 +145,9 @@ export default function MbtiQuizPage() {
 
   const handleRestartQuiz = async () => {
     if (user) {
+      // Clear both progress and the final result from their profile
       await saveMbtiQuizProgress(user.uid, {});
+      await updateUserMbtiType(user.uid, ''); // Use an empty string or null to clear it
     }
     setCurrentQuestionIndex(0);
     setAnswers({});
@@ -186,7 +218,7 @@ export default function MbtiQuizPage() {
                   </div>
                 </button>
                  <p className="text-xs text-center text-muted-foreground mt-4 max-w-md mx-auto">
-                    Your result is saved. Go to your dashboard to add this to your main profile and improve your matches.
+                    Your result has been saved to your profile and will now help improve your matches.
                  </p>
               </CardContent>
               <CardFooter className="flex-col sm:flex-row justify-center gap-3 border-t pt-6">
@@ -379,3 +411,5 @@ export default function MbtiQuizPage() {
     </AppLayout>
   );
 }
+
+    
