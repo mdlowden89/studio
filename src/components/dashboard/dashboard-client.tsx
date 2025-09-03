@@ -4,7 +4,7 @@
 import { useState, useEffect, useMemo, useCallback } from "react";
 import { AppLayout } from "@/components/layout/app-layout";
 import { Card, CardContent, CardHeader, CardTitle, CardDescription, CardFooter } from "@/components/ui/card";
-import { Sparkles, PlusCircle, ClipboardList, Users, MessageSquare, Route, MapPin, CalendarDays, TrendingUp, Activity, Map, LayoutGrid, List as ListIcon, Lightbulb, Edit3, Repeat, Star, ShoppingBag, Zap, Eye, BrainCircuit, Signal, ArrowRight, Loader2, Flame } from "lucide-react";
+import { Sparkles, PlusCircle, ClipboardList, Users, MessageSquare, Route, MapPin, CalendarDays, TrendingUp, Activity, Map, LayoutGrid, List as ListIcon, Lightbulb, Edit3, Repeat, Star, ShoppingBag, Zap, Eye, BrainCircuit, Signal, ArrowRight, Loader2, Flame, Save } from "lucide-react";
 import { AVAILABLE_PROMPTS, MOCK_HOTSPOTS } from "@/lib/mock-data";
 import { Button } from "@/components/ui/button";
 import { Separator } from "@/components/ui/separator";
@@ -18,12 +18,13 @@ import { CrossdPlusUpsellDialog } from "@/components/pricing/crossd-plus-upsell-
 import { FreeBoostUpsellDialog } from "@/components/pricing/free-boost-upsell-dialog";
 import { useSearchParams, useRouter } from "next/navigation";
 import { useToast } from "@/hooks/use-toast";
-import { fetchMomentsForUser, fetchUserChatCount } from "@/app/actions";
+import { fetchMomentsForUser, fetchUserChatCount, updateUserMbtiType } from "@/app/actions";
 import { Skeleton } from "@/components/ui/skeleton";
 import { SparkEnergyMeter } from "@/components/dashboard/spark-energy-meter";
 import { SparkNudgeDialog } from "@/components/dashboard/spark-nudge-dialog";
 import { ScrollArea, ScrollBar } from "@/components/ui/scroll-area";
 import { PlacesTrailItem } from "./places-trail-item";
+import { mbtiQuizQuestions } from "@/lib/mbti-quiz-data";
 
 interface DashboardClientProps {
     currentUser: UserProfile;
@@ -68,6 +69,7 @@ export function DashboardClient({ currentUser }: DashboardClientProps) {
   const [isLoadingMoments, setIsLoadingMoments] = useState(true);
   const [isLoadingChats, setIsLoadingChats] = useState(true);
   const [isGlowActivating, setIsGlowActivating] = useState(false);
+  const [isSavingMbti, setIsSavingMbti] = useState(false);
 
   const searchParams = useSearchParams();
   const router = useRouter();
@@ -85,6 +87,44 @@ export function DashboardClient({ currentUser }: DashboardClientProps) {
   ];
 
   const oneWeekAgo = useMemo(() => subDays(new Date(), 7), []);
+
+  const quizResult = useMemo(() => {
+    if (currentUser.mbtiType) return null; // Already saved
+    const answers = currentUser.mbtiQuizProgress?.answers;
+    if (!answers || Object.keys(answers).length < mbtiQuizQuestions.length) return null;
+
+    const counts = { E: 0, I: 0, S: 0, N: 0, T: 0, F: 0, J: 0, P: 0 };
+    Object.values(answers).forEach(answer => {
+      counts[answer as keyof typeof counts]++;
+    });
+    return [
+      counts.E >= counts.I ? 'E' : 'I',
+      counts.S >= counts.N ? 'S' : 'N',
+      counts.T >= counts.F ? 'T' : 'F',
+      counts.J >= counts.P ? 'J' : 'P'
+    ].join('');
+  }, [currentUser]);
+
+  const handleSaveMbti = async () => {
+    if (!quizResult || !currentUser.id) return;
+    setIsSavingMbti(true);
+    const response = await updateUserMbtiType(currentUser.id, quizResult);
+    if (response.success) {
+      toast({
+        title: "Personality Type Saved!",
+        description: `Your MBTI type has been set to ${quizResult} on your profile.`,
+      });
+      // The profile will auto-update via the useAuth hook listener
+    } else {
+      toast({
+        title: "Error Saving",
+        description: response.error || "Could not save your result. Please try again.",
+        variant: "destructive",
+      });
+    }
+    setIsSavingMbti(false);
+  };
+
 
   useEffect(() => {
     if (currentUser.id) {
@@ -323,6 +363,28 @@ export function DashboardClient({ currentUser }: DashboardClientProps) {
                     Complete Your Profile <ArrowRight className="ml-2 h-5 w-5" />
                   </Button>
                 </Link>
+              </CardFooter>
+            </Card>
+        )}
+        
+        {quizResult && (
+           <Card className="mb-8 bg-gradient-to-r from-blue-500/10 via-card to-card border-2 border-blue-400/50 shadow-lg">
+              <CardHeader>
+                <div className="flex items-center gap-3">
+                  <BrainCircuit className="w-8 h-8 text-blue-400" />
+                  <div>
+                    <CardTitle className="text-2xl font-bold text-blue-400">Quiz Complete!</CardTitle>
+                    <CardDescription className="text-muted-foreground">
+                      Your personality type is <span className="font-bold text-foreground">{quizResult}</span>. Add it to your profile to enhance your matches.
+                    </CardDescription>
+                  </div>
+                </div>
+              </CardHeader>
+              <CardFooter>
+                  <Button onClick={handleSaveMbti} disabled={isSavingMbti} className="bg-blue-500 hover:bg-blue-500/90 text-white">
+                    {isSavingMbti ? <Loader2 className="mr-2 h-4 w-4 animate-spin" /> : <Save className="mr-2 h-4 w-4" />}
+                    {isSavingMbti ? 'Saving...' : 'Save to Profile'}
+                  </Button>
               </CardFooter>
             </Card>
         )}
@@ -608,5 +670,4 @@ export function DashboardClient({ currentUser }: DashboardClientProps) {
       </div>
     </AppLayout>
   );
-
-    
+}

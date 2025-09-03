@@ -1,3 +1,4 @@
+
 'use client';
 
 import { useState, useEffect, useRef, useCallback } from 'react';
@@ -11,7 +12,7 @@ import { mbtiTypeDetails } from '@/lib/mbti-results-data';
 import { useAuth } from '@/hooks/use-auth';
 import { updateUserMbtiType, saveMbtiQuizProgress } from '@/app/actions';
 import { useToast } from '@/hooks/use-toast';
-import { Loader2, BrainCircuit, Save, Send, ArrowLeft, RotateCw, Sparkles, Star, Heart, MessageSquare } from 'lucide-react';
+import { Loader2, BrainCircuit, Save, Send, ArrowLeft, RotateCw, Sparkles, Star, Heart, MessageSquare, Home } from 'lucide-react';
 import Link from 'next/link';
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogDescription } from '@/components/ui/dialog';
 import { ScrollArea } from '@/components/ui/scroll-area';
@@ -56,7 +57,7 @@ export default function MbtiQuizPage() {
 
     toast({
         title: "Quiz Complete!",
-        description: `Your personality type is ${mbtiType}. Save it to your profile to improve your matches!`,
+        description: `Your personality type is ${mbtiType}. Go to your dashboard to save it to your profile.`,
     });
   }, [totalQuestions, toast]);
 
@@ -112,26 +113,6 @@ export default function MbtiQuizPage() {
     }
   };
 
-  const handleSaveResult = async () => {
-    if (!result || !user) return;
-    setIsSaving(true);
-    const response = await updateUserMbtiType(user.uid, result);
-    if (response.success) {
-      toast({
-        title: "Personality Type Saved!",
-        description: `Your MBTI type has been set to ${result} on your profile.`,
-      });
-      router.push('/profile');
-    } else {
-      toast({
-        title: "Error Saving",
-        description: response.error || "Could not save your result. Please try again.",
-        variant: "destructive",
-      });
-    }
-    setIsSaving(false);
-  };
-  
   const handleRestartQuiz = async () => {
     if (user) {
       await saveMbtiQuizProgress(user.uid, {});
@@ -205,16 +186,17 @@ export default function MbtiQuizPage() {
                   </div>
                 </button>
                  <p className="text-xs text-center text-muted-foreground mt-4 max-w-md mx-auto">
-                    Save your personality type to your profile to make it visible to others and help us find you more compatible matches.
+                    Your result is saved. Go to your dashboard to add this to your main profile and improve your matches.
                  </p>
               </CardContent>
               <CardFooter className="flex-col sm:flex-row justify-center gap-3 border-t pt-6">
                 <Button onClick={handleRestartQuiz} variant="outline" disabled={isSaving}>
                     <RotateCw className="mr-2 h-4 w-4" /> Retake Quiz
                 </Button>
-                <Button onClick={handleSaveResult} disabled={isSaving} className="bg-primary hover:bg-primary/90 text-primary-foreground">
-                  {isSaving ? <Loader2 className="mr-2 h-4 w-4 animate-spin" /> : <Save className="mr-2 h-4 w-4" />}
-                  {isSaving ? 'Saving...' : 'Save to Profile'}
+                <Button asChild className="bg-primary hover:bg-primary/90 text-primary-foreground">
+                    <Link href="/dashboard">
+                        <Home className="mr-2 h-4 w-4" /> Go to Dashboard
+                    </Link>
                 </Button>
               </CardFooter>
             </>
