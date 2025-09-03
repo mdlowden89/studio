@@ -35,7 +35,7 @@ export default function LandingPage() {
         </Link>
         <nav className="flex items-center gap-4">
           <Button variant="outline-white" asChild>
-            <Link href="/login">Login</Link>
+            <Link href="/login-form">Login</Link>
           </Button>
           <Button asChild>
             <Link href="/signup">Sign Up</Link>
@@ -108,7 +108,7 @@ export default function LandingPage() {
           <div className="flex gap-4 mt-4 sm:mt-0">
             <Link href="/terms" className="text-sm text-muted-foreground hover:text-primary">Terms of Service</Link>
             <Link href="/privacy" className="text-sm text-muted-foreground hover:text-primary">Privacy Policy</Link>
-            <Link href="/cookie" className="text-sm text-muted-foreground hover:text-primary">Cookie Policy</Link>
+            <Link href="/cookies" className="text-sm text-muted-foreground hover:text-primary">Cookie Policy</Link>
             <Link href="/disclaimer" className="text-sm text-muted-foreground hover:text-primary">Disclaimer</Link>
           </div>
         </div>
