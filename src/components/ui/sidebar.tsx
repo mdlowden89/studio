@@ -135,7 +135,17 @@ const Sidebar = React.forwardRef<
     ref
   ) => {
     const { isMobile, state, openMobile, setOpenMobile } = useSidebar()
-
+    
+    if (isMobile === null) {
+      return (
+        <div
+          data-testid="sidebar-server-placeholder"
+          className="flex h-full w-[--sidebar-width] flex-col bg-sidebar text-sidebar-foreground"
+          style={{ "--sidebar-width": SIDEBAR_WIDTH } as React.CSSProperties}
+        />
+      );
+    }
+    
     if (isMobile) {
       return (
         <Sheet open={openMobile} onOpenChange={setOpenMobile} defaultOpen={defaultOpen} {...restProps}>
