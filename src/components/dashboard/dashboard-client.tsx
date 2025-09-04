@@ -5,7 +5,7 @@ import { useState, useEffect, useMemo, useCallback } from "react";
 import { AppLayout } from "@/components/layout/app-layout";
 import { Card, CardContent, CardHeader, CardTitle, CardDescription, CardFooter } from "@/components/ui/card";
 import { Sparkles, PlusCircle, ClipboardList, Users, MessageSquare, Route, MapPin, CalendarDays, TrendingUp, Activity, Map, LayoutGrid, List as ListIcon, Lightbulb, Edit3, Repeat, Star, ShoppingBag, Zap, Eye, BrainCircuit, Signal, ArrowRight, Loader2, Flame, Save } from "lucide-react";
-import { AVAILABLE_PROMPTS, MOCK_HOTSPOTS } from "@/lib/mock-data";
+import { MOCK_HOTSPOTS } from "@/lib/mock-data";
 import { Button } from "@/components/ui/button";
 import { Separator } from "@/components/ui/separator";
 import { subDays, isAfter, format, getDay, differenceInDays } from "date-fns";
@@ -56,7 +56,6 @@ const StatsLoadingSkeleton = () => (
 
 export function DashboardClient({ currentUser }: DashboardClientProps) {
   const [clientFormattedTimes, setClientFormattedTimes] = useState<Record<string, string>>({});
-  const [promptOfTheDay, setPromptOfTheDay] = useState<ProfilePrompt | null>(null);
   const [showUpsellDialog, setShowUpsellDialog] = useState(false);
   const [showFreeBoostDialog, setShowFreeBoostDialog] = useState(false);
   
@@ -176,17 +175,6 @@ export function DashboardClient({ currentUser }: DashboardClientProps) {
     });
     setClientFormattedTimes(newFormattedTimes);
   }, [momentsTimestampsKey, momentsThisWeek]); 
-
-  const selectNewPrompt = useCallback(() => {
-    if (AVAILABLE_PROMPTS.length > 0) {
-      const randomIndex = Math.floor(Math.random() * AVAILABLE_PROMPTS.length);
-      setPromptOfTheDay(AVAILABLE_PROMPTS[randomIndex]);
-    }
-  }, []); 
-
-  useEffect(() => {
-    selectNewPrompt();
-  }, [selectNewPrompt]);
 
   useEffect(() => {
     if (searchParams.get('showBoostUpsell') === 'true') {
@@ -451,73 +439,27 @@ export function DashboardClient({ currentUser }: DashboardClientProps) {
           </div>
         </div>
 
-
-        <Card className="mb-8 bg-card shadow-xl">
-          <CardHeader>
-            <div className="flex items-center gap-3">
-              <Route className="w-7 h-7 text-primary" />
-              <div>
-                <CardTitle className="text-xl font-semibold">Recent Sparks Trail</CardTitle>
-                <CardDescription className="text-muted-foreground">
-                  A highlight reel of your memorable moments.
-                </CardDescription>
+        {!isPremium && (
+          <div className="mb-8">
+            <Card className="relative p-8 flex flex-col items-center text-center bg-gradient-to-br from-black to-pink-900/50 border border-primary/30 shadow-[0_0_45px_-10px] shadow-primary/30">
+              <div className="absolute top-0 left-0 w-full h-full bg-gradient-to-tr from-primary/10 to-transparent -z-10" />
+              <div className="bg-primary rounded-full p-4 mb-4 inline-block animate-flash">
+                  <Star className="w-8 h-8 text-primary-foreground" />
               </div>
-            </div>
-          </CardHeader>
-          <CardContent>
-            {isLoadingMoments ? (
-              <MomentsLoadingSkeleton />
-            ) : momentsThisWeek.length > 0 ? (
-               <ScrollArea className="w-full whitespace-nowrap rounded-md">
-                <div className="flex w-max space-x-4 p-4">
-                  {momentsThisWeek.map(moment => (
-                    <PlacesTrailItem key={moment.id} moment={moment} />
-                  ))}
-                </div>
-                <ScrollBar orientation="horizontal" />
-              </ScrollArea>
-            ) : (
-              <div className="text-center py-8 text-muted-foreground flex flex-col items-center gap-3">
-                <Route className="w-16 h-16 text-primary/60" />
-                <p className="text-lg font-semibold text-foreground">Your Trail is Clear</p>
-                <p className="max-w-md">Log a new moment to start seeing your path!</p>
-                <Button asChild className="mt-2 bg-primary/90 hover:bg-primary text-primary-foreground">
-                  <Link href="/log-moment">
-                    <PlusCircle className="mr-2 h-4 w-4" /> Log a New Moment
-                  </Link>
-                </Button>
-              </div>
-            )}
-          </CardContent>
-        </Card>
-
-        <div className="grid grid-cols-1 lg:grid-cols-2 gap-8 mb-8">
-            {!isPremium && (
-                <div className="lg:col-span-2">
-                    <Card className="bg-gradient-to-br from-primary/10 via-card to-card shadow-xl border-primary/30">
-                        <CardHeader className="text-center">
-                            <div className="mx-auto flex h-16 w-16 items-center justify-center rounded-full bg-primary/80 mb-3 shadow-lg animate-pulse">
-                                <Star className="h-8 w-8 text-primary-foreground" />
-                            </div>
-                            <CardTitle className="text-2xl font-bold text-primary">Unlock Crossd+</CardTitle>
-                            <CardDescription className="text-muted-foreground max-w-md mx-auto">
-                            Supercharge your experience with unlimited likes, see who likes you, and more exclusive perks!
-                            </CardDescription>
-                        </CardHeader>
-                        <CardFooter className="flex justify-center p-6">
-                            <Button 
-                            onClick={() => setShowUpsellDialog(true)} 
-                            size="lg" 
-                            className="bg-gradient-to-r from-primary via-pink-500 to-orange-400 hover:from-primary/90 hover:via-pink-500/90 hover:to-orange-400/90 text-primary-foreground shadow-lg transform hover:scale-105 transition-transform"
-                            >
-                            <Sparkles className="mr-2 h-5 w-5" /> Explore Premium Features
-                            </Button>
-                        </CardFooter>
-                    </Card>
-                </div>
-            )}
-        </div>
-
+              <h3 className="text-2xl font-semibold text-primary mb-2 tracking-tight">Unlock Crossd+</h3>
+              <p className="text-muted-foreground max-w-sm mx-auto mb-6">
+                  Supercharge your experience with unlimited likes, see who likes you, and more exclusive perks!
+              </p>
+              <Button 
+                className="bg-gradient-to-r from-primary via-pink-500 to-orange-400 text-primary-foreground border-0 hover:shadow-lg hover:shadow-primary/40 transition-shadow"
+                onClick={() => setShowUpsellDialog(true)}
+              >
+                  <Sparkles className="mr-2 h-4 w-4" />
+                  Explore Premium Features
+              </Button>
+            </Card>
+          </div>
+        )}
 
         <Card className="mb-8 bg-card shadow-xl">
           <CardHeader>
