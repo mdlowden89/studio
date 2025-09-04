@@ -104,7 +104,7 @@ export function AppSidebar() {
       <SidebarHeader>
         <Link href="/dashboard" className="flex items-center gap-2 text-primary hover:text-primary/90 transition-colors self-start" onClick={handleMobileNavClick}>
           <CrossdLogoIcon className="h-7 w-7 text-primary" />
-          {state === 'expanded' && <span className="text-xl font-semibold text-sidebar-foreground">Crossd</span>}
+          {state === 'expanded' && <span className="text-xl font-semibold text-sidebar-primary-foreground">Crossd</span>}
         </Link>
         
         <div className="w-full flex justify-end md:hidden">
@@ -129,7 +129,7 @@ export function AppSidebar() {
                  <TooltipProvider>
                     <Tooltip>
                       <TooltipTrigger asChild>
-                        <Link href={item.href} className={cn(buttonVariants({variant: 'default'}), 'justify-start', isActive ? 'bg-sidebar-accent text-sidebar-accent-foreground' : 'bg-transparent text-sidebar-primary-foreground')}>
+                        <Link href={item.href} className={cn(buttonVariants({variant: 'default'}), 'justify-start', isActive ? 'bg-sidebar-accent text-sidebar-accent-foreground' : 'bg-transparent text-sidebar-primary')}>
                           {linkContent}
                         </Link>
                       </TooltipTrigger>
@@ -145,7 +145,7 @@ export function AppSidebar() {
                   className={cn(
                     buttonVariants({ variant: 'default', size: 'default' }),
                     'w-full justify-start',
-                    isActive ? 'bg-sidebar-accent text-sidebar-accent-foreground font-semibold' : 'bg-transparent text-sidebar-primary-foreground hover:bg-sidebar-accent hover:text-sidebar-accent-foreground'
+                    isActive ? 'bg-sidebar-accent text-sidebar-accent-foreground font-semibold' : 'bg-transparent text-sidebar-primary hover:bg-sidebar-accent hover:text-sidebar-accent-foreground'
                   )}
                 >
                   {linkContent}
@@ -164,7 +164,7 @@ export function AppSidebar() {
                   onClick={handleMobileNavClick}
                   className={cn(
                     buttonVariants({ variant: 'default', size: 'default' }),
-                    'w-full justify-start bg-transparent text-sidebar-primary-foreground hover:bg-sidebar-accent hover:text-sidebar-accent-foreground'
+                    'w-full justify-start bg-transparent text-sidebar-primary hover:bg-sidebar-accent hover:text-sidebar-accent-foreground'
                   )}
                 >
                     <item.icon className="h-5 w-5" />
@@ -174,12 +174,11 @@ export function AppSidebar() {
         ))}
         <Button
             onClick={handleLogout}
-            className="w-full justify-start bg-transparent text-sidebar-primary-foreground hover:bg-sidebar-accent hover:text-sidebar-accent-foreground"
+            className="w-full justify-start bg-transparent text-sidebar-primary hover:bg-sidebar-accent hover:text-sidebar-accent-foreground"
         >
             <LogOut className="h-5 w-5" />
             {state === 'expanded' && <span>Log Out</span>}
         </Button>
-         <Separator className="my-2 bg-sidebar-border" />
          <Link 
             href="/profile" 
             onClick={handleMobileNavClick}
