@@ -136,13 +136,13 @@ const Sidebar = React.forwardRef<
   ) => {
     const { isMobile, state, openMobile, setOpenMobile } = useSidebar()
     
-    if (isMobile === null) {
+     if (isMobile === null) {
       return (
-        <div
-          data-testid="sidebar-server-placeholder"
-          className="flex h-full w-[--sidebar-width] flex-col bg-sidebar text-sidebar-foreground"
-          style={{ "--sidebar-width": SIDEBAR_WIDTH } as React.CSSProperties}
-        />
+          <div
+            data-testid="sidebar-server-placeholder"
+            className="flex h-full w-0 flex-col bg-sidebar text-sidebar-foreground md:w-[--sidebar-width]"
+            style={{ "--sidebar-width": SIDEBAR_WIDTH } as React.CSSProperties}
+          />
       );
     }
     
