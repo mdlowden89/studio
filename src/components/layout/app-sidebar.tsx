@@ -25,9 +25,9 @@ import {
   SidebarFooter,
   SidebarTrigger,
   useSidebar,
+  SidebarSeparator,
 } from "@/components/ui/sidebar";
 import { Button, buttonVariants } from "@/components/ui/button";
-import { Separator } from "@/components/ui/separator";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { CrossdLogoIcon } from "@/components/icons/crossd-logo";
 import { Tooltip, TooltipContent, TooltipTrigger, TooltipProvider } from "@/components/ui/tooltip";
@@ -76,13 +76,13 @@ export function AppSidebar() {
             <span className="text-xl font-semibold text-sidebar-foreground">Crossd</span>
           </Link>
         </SidebarHeader>
-        <SidebarMenu>
+        <SidebarMenu className="flex-1 p-2">
           <Skeleton className="h-8 w-full" />
           <Skeleton className="h-8 w-full" />
           <Skeleton className="h-8 w-full" />
         </SidebarMenu>
         <SidebarFooter>
-          <Skeleton className="h-10 w-10 rounded-full" />
+            <Skeleton className="h-10 w-10 rounded-full" />
         </SidebarFooter>
       </Sidebar>
     );
