@@ -76,7 +76,7 @@ export function AppSidebar() {
             <span className="text-xl font-semibold text-sidebar-foreground">Crossd</span>
           </Link>
         </SidebarHeader>
-        <SidebarMenu className="flex-1 p-2 space-y-2">
+        <SidebarMenu>
           <Skeleton className="h-8 w-full" />
           <Skeleton className="h-8 w-full" />
           <Skeleton className="h-8 w-full" />
