@@ -82,7 +82,7 @@ export function AppSidebar() {
           <Skeleton className="h-8 w-full" />
         </SidebarMenu>
         <SidebarFooter>
-          <Skeleton className="h-10 w-full" />
+          <Skeleton className="h-10 w-10 rounded-full" />
         </SidebarFooter>
       </Sidebar>
     );
