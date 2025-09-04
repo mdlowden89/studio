@@ -13,6 +13,7 @@ const icons: Record<string, LucideIcon> = {
   Zap,
   Compass,
   Sparkles,
+  Explore: Sparkles,
   UserCheck,
   CalendarCheck2,
   MessageCircleReply,
