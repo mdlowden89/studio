@@ -82,7 +82,7 @@ export function AppSidebar() {
           <Skeleton className="h-8 w-full" />
           <Skeleton className="h-8 w-full" />
         </SidebarMenu>
-        <Separator className="my-2 bg-sidebar-border" />
+        
         <SidebarFooter>
           <div className="flex items-center p-2 gap-3">
             <Skeleton className="h-10 w-10 rounded-full" />
