@@ -73,21 +73,16 @@ export function AppSidebar() {
         <SidebarHeader>
           <Link href="/dashboard" className="flex items-center gap-2 text-primary hover:text-primary/90 transition-colors self-start">
             <CrossdLogoIcon className="h-7 w-7" />
-            {state === 'expanded' && <span className="text-xl font-semibold text-sidebar-foreground">Crossd</span>}
+            <span className="text-xl font-semibold text-sidebar-foreground">Crossd</span>
           </Link>
         </SidebarHeader>
-        <Separator className="my-2 bg-sidebar-border" />
         <SidebarMenu className="flex-1 p-2 space-y-2">
           <Skeleton className="h-8 w-full" />
           <Skeleton className="h-8 w-full" />
           <Skeleton className="h-8 w-full" />
         </SidebarMenu>
-        
         <SidebarFooter>
-          <div className="flex items-center p-2 gap-3">
-            <Skeleton className="h-10 w-10 rounded-full" />
-            {state === 'expanded' && <div className="space-y-1"><Skeleton className="h-4 w-24" /><Skeleton className="h-3 w-32" /></div>}
-          </div>
+          <Skeleton className="h-10 w-full" />
         </SidebarFooter>
       </Sidebar>
     );
