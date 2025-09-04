@@ -24,6 +24,8 @@ import { SparkEnergyMeter } from "@/components/dashboard/spark-energy-meter";
 import { ScrollArea, ScrollBar } from "@/components/ui/scroll-area";
 import { PlacesTrailItem } from "./places-trail-item";
 import { mbtiQuizQuestions } from "@/lib/mbti-quiz-data";
+import type { ViewMode } from '@/app/moments/page';
+import { MomentCard } from "../moments/moment-card";
 
 interface DashboardClientProps {
     currentUser: UserProfile;
@@ -66,6 +68,8 @@ export function DashboardClient({ currentUser }: DashboardClientProps) {
   const [isLoadingChats, setIsLoadingChats] = useState(true);
   const [isGlowActivating, setIsGlowActivating] = useState(false);
   const [isSavingMbti, setIsSavingMbti] = useState(false);
+
+  const [viewMode, setViewMode] = useState<ViewMode>("list");
 
   const searchParams = useSearchParams();
   const router = useRouter();
@@ -292,46 +296,6 @@ export function DashboardClient({ currentUser }: DashboardClientProps) {
       <div className="container mx-auto py-8">
         <SparkEnergyMeter moments={userMoments} />
 
-        {!currentUser.onboardingComplete && (
-            <Card className="mb-8 bg-gradient-to-r from-primary/20 via-card to-card border-2 border-primary shadow-lg">
-              <CardHeader>
-                <CardTitle className="text-2xl font-bold text-primary">Let's Get You Set Up!</CardTitle>
-                <CardDescription className="text-muted-foreground">
-                  Complete your profile to start finding connections. A great profile gets more attention!
-                </CardDescription>
-              </CardHeader>
-              <CardFooter>
-                <Link href="/profile" passHref>
-                  <Button className="bg-primary hover:bg-primary/90 text-primary-foreground">
-                    Complete Your Profile <ArrowRight className="ml-2 h-5 w-5" />
-                  </Button>
-                </Link>
-              </CardFooter>
-            </Card>
-        )}
-        
-        {quizResult && (
-           <Card className="mb-8 bg-gradient-to-r from-blue-500/10 via-card to-card border-2 border-blue-400/50 shadow-lg">
-              <CardHeader>
-                <div className="flex items-center gap-3">
-                  <BrainCircuit className="w-8 h-8 text-blue-400" />
-                  <div>
-                    <CardTitle className="text-2xl font-bold text-blue-400">Quiz Complete!</CardTitle>
-                    <CardDescription className="text-muted-foreground">
-                      Your personality type is <span className="font-bold text-foreground">{quizResult}</span>. Add it to your profile to enhance your matches.
-                    </CardDescription>
-                  </div>
-                </div>
-              </CardHeader>
-              <CardFooter>
-                  <Button onClick={handleSaveMbti} disabled={isSavingMbti} className="bg-blue-500 hover:bg-blue-500/90 text-white">
-                    {isSavingMbti ? <Loader2 className="mr-2 h-4 w-4 animate-spin" /> : <Save className="mr-2 h-4 w-4" />}
-                    {isSavingMbti ? 'Saving...' : 'Save to Profile'}
-                  </Button>
-              </CardFooter>
-            </Card>
-        )}
-
         <Card className="mb-8 bg-card shadow-xl">
           <CardHeader>
             <div className="flex items-center gap-3">
@@ -355,6 +319,26 @@ export function DashboardClient({ currentUser }: DashboardClientProps) {
             </Link>
           </CardFooter>
         </Card>
+        
+        {!isPremium && (
+          <Card className="relative p-8 flex flex-col items-center text-center bg-gradient-to-br from-black to-pink-900/50 border border-primary/30 shadow-[0_0_45px_-10px] shadow-primary/30 mb-8">
+              <div className="absolute top-0 left-0 w-full h-full bg-gradient-to-tr from-primary/10 to-transparent -z-10" />
+              <div className="bg-primary rounded-full p-4 mb-4 inline-block animate-flash">
+                  <Star className="w-8 h-8 text-primary-foreground" />
+              </div>
+              <h3 className="text-2xl font-semibold text-primary mb-2 tracking-tight">Unlock Crossd+</h3>
+              <p className="text-muted-foreground max-w-sm mx-auto mb-6">
+                  Supercharge your experience with unlimited likes, see who likes you, and more exclusive perks!
+              </p>
+              <Button 
+                className="bg-gradient-to-r from-primary via-pink-500 to-orange-400 text-primary-foreground border-0 hover:shadow-lg hover:shadow-primary/40 transition-shadow"
+                onClick={() => setShowUpsellDialog(true)}
+              >
+                  <Sparkles className="mr-2 h-4 w-4" />
+                  Explore Premium Features
+              </Button>
+          </Card>
+        )}
 
         <div className="grid grid-cols-1 lg:grid-cols-3 gap-8 mb-8">
           <div className="lg:col-span-2">
@@ -439,27 +423,65 @@ export function DashboardClient({ currentUser }: DashboardClientProps) {
           </div>
         </div>
 
-        {!isPremium && (
-          <div className="mb-8">
-            <Card className="relative p-8 flex flex-col items-center text-center bg-gradient-to-br from-black to-pink-900/50 border border-primary/30 shadow-[0_0_45px_-10px] shadow-primary/30">
-              <div className="absolute top-0 left-0 w-full h-full bg-gradient-to-tr from-primary/10 to-transparent -z-10" />
-              <div className="bg-primary rounded-full p-4 mb-4 inline-block animate-flash">
-                  <Star className="w-8 h-8 text-primary-foreground" />
-              </div>
-              <h3 className="text-2xl font-semibold text-primary mb-2 tracking-tight">Unlock Crossd+</h3>
-              <p className="text-muted-foreground max-w-sm mx-auto mb-6">
-                  Supercharge your experience with unlimited likes, see who likes you, and more exclusive perks!
-              </p>
-              <Button 
-                className="bg-gradient-to-r from-primary via-pink-500 to-orange-400 text-primary-foreground border-0 hover:shadow-lg hover:shadow-primary/40 transition-shadow"
-                onClick={() => setShowUpsellDialog(true)}
-              >
-                  <Sparkles className="mr-2 h-4 w-4" />
-                  Explore Premium Features
-              </Button>
-            </Card>
-          </div>
-        )}
+        {/* RECENT MOMENTS */}
+        <Card className="bg-card shadow-xl mb-8">
+            <CardHeader>
+                 <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4">
+                    <div>
+                        <CardTitle className="text-2xl font-bold flex items-center gap-3">
+                           <Map className="w-7 h-7 text-primary" />
+                            Your Recent Trail
+                        </CardTitle>
+                        <CardDescription className="text-muted-foreground mt-1">
+                            A log of your recently visited places and moments.
+                        </CardDescription>
+                    </div>
+                    <div className="flex items-center gap-2 border border-border p-1 rounded-md self-end sm:self-center">
+                        <Button
+                            variant={viewMode === "list" ? "default" : "ghost"}
+                            size="icon"
+                            onClick={() => setViewMode("list")}
+                            aria-label="List view"
+                        >
+                            <ListIcon className="h-5 w-5" />
+                        </Button>
+                        <Separator orientation="vertical" className="h-6" />
+                        <Button
+                            variant={viewMode === "gallery" ? "default" : "ghost"}
+                            size="icon"
+                            onClick={() => setViewMode("gallery")}
+                            aria-label="Gallery view"
+                        >
+                            <LayoutGrid className="h-5 w-5" />
+                        </Button>
+                    </div>
+                </div>
+            </CardHeader>
+            <CardContent>
+                 {isLoadingMoments ? (
+                    <MomentsLoadingSkeleton />
+                ) : momentsThisWeek.length > 0 ? (
+                    viewMode === 'gallery' ? (
+                       <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-4">
+                            {momentsThisWeek.map(moment => (
+                                <MomentGalleryItem key={moment.id} moment={moment} userProfile={currentUser} />
+                            ))}
+                        </div>
+                    ) : (
+                       <div className="space-y-6">
+                            {momentsThisWeek.map(moment => (
+                                <MomentCard key={moment.id} moment={moment} userProfile={currentUser} />
+                            ))}
+                        </div>
+                    )
+                ) : (
+                    <div className="text-center py-6 text-muted-foreground">
+                        <p>No moments logged in the past week.</p>
+                        <Button variant="link" asChild><Link href="/log-moment">Log your first moment</Link></Button>
+                    </div>
+                )}
+            </CardContent>
+        </Card>
 
         <Card className="mb-8 bg-card shadow-xl">
           <CardHeader>
