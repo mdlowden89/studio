@@ -297,7 +297,7 @@ export function DashboardClient({ currentUser }: DashboardClientProps) {
       <div className="container mx-auto py-8">
         <SparkEnergyMeter moments={userMoments} />
 
-        <Card className="mb-8 bg-card shadow-xl">
+        <Card className="mb-8 bg-card shadow-xl border border-primary/30">
           <CardHeader>
             <div className="flex items-center gap-3">
               <Sparkles className="w-8 h-8 text-primary animate-pulse" />
@@ -343,7 +343,7 @@ export function DashboardClient({ currentUser }: DashboardClientProps) {
 
         <div className="grid grid-cols-1 lg:grid-cols-3 gap-8 mb-8">
           <div className="lg:col-span-2">
-            <Card className="bg-card shadow-xl h-full">
+            <Card className="bg-card shadow-xl h-full border border-primary/30">
               <CardHeader>
                 <CardTitle className="text-xl font-semibold">Your Activity At a Glance</CardTitle>
                 <CardDescription className="text-muted-foreground">
@@ -356,7 +356,7 @@ export function DashboardClient({ currentUser }: DashboardClientProps) {
                 ) : (
                   <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
                     {stats.map((stat, index) => (
-                      <div key={index} className="bg-primary/10 p-6 rounded-lg flex flex-col items-center text-center shadow-md">
+                      <div key={index} className="bg-muted/50 p-6 rounded-lg flex flex-col items-center text-center shadow-md">
                         <stat.icon className={`w-10 h-10 mb-3 ${stat.color}`} />
                         <p className="text-3xl font-bold text-foreground">{stat.value}</p>
                         <p className="text-sm text-muted-foreground mt-1">{stat.title}</p>
@@ -369,7 +369,7 @@ export function DashboardClient({ currentUser }: DashboardClientProps) {
           </div>
 
           <div className="lg:col-span-1 space-y-8">
-             <Card className="bg-card shadow-xl">
+             <Card className="bg-card shadow-xl border border-primary/30">
                 <CardHeader>
                     <div className="flex items-center gap-2">
                         <BrainCircuit className="w-6 h-6 text-primary" />
@@ -398,7 +398,7 @@ export function DashboardClient({ currentUser }: DashboardClientProps) {
              </Card>
 
             {activeStreakChallenge && activeStreakChallenge.progress && (
-              <Card className="bg-card shadow-xl">
+              <Card className="bg-card shadow-xl border border-primary/30">
                 <CardHeader>
                   <div className="flex items-center gap-2">
                     <Flame className="w-7 h-7 text-amber-500 animate-pulse" />
@@ -425,7 +425,7 @@ export function DashboardClient({ currentUser }: DashboardClientProps) {
         </div>
 
         {/* YOUR ACTIVITY MAP */}
-        <Card className="bg-card shadow-xl mb-8">
+        <Card className="bg-card shadow-xl mb-8 border border-primary/30">
             <CardHeader className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4">
                 <div className="flex items-center gap-3">
                     <Route className="w-8 h-8 text-primary" />
@@ -499,7 +499,7 @@ export function DashboardClient({ currentUser }: DashboardClientProps) {
         </Card>
 
 
-        <Card className="mb-8 bg-card shadow-xl">
+        <Card className="mb-8 bg-card shadow-xl border border-primary/30">
           <CardHeader>
             <div className="flex items-center gap-3">
               <ShoppingBag className="w-8 h-8 text-primary" />
