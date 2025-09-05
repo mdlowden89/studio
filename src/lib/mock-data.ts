@@ -274,7 +274,7 @@ export const MOCK_USERS: UserProfile[] = [
     drinking: 'Sometimes',
     smoking: 'No',
     zodiacSign: 'Aquarius',
-    mbtiType: 'INFJ',
+    mbtiType: 'INTP',
     idealMbtiType: 'ENTP',
     achievements: MOCK_ACHIEVEMENTS_FOR_CURRENT_USER,
     onboardingComplete: true,
