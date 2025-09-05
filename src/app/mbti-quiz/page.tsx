@@ -125,7 +125,7 @@ export default function MbtiQuizPage() {
     setAnswers(newAnswers);
 
     if (user) {
-      saveMbtiQuizProgress(user.uid, newAnswers).catch(err => {
+      await saveMbtiQuizProgress(user.uid, newAnswers).catch(err => {
         console.warn("Failed to save quiz progress in background:", err);
       });
     }
@@ -147,7 +147,7 @@ export default function MbtiQuizPage() {
     if (user) {
       // Clear both progress and the final result from their profile
       await saveMbtiQuizProgress(user.uid, {});
-      await updateUserMbtiType(user.uid, ''); // Use an empty string or null to clear it
+      await updateUserMbtiType(user.uid, null); // Pass null to clear the type
     }
     setCurrentQuestionIndex(0);
     setAnswers({});

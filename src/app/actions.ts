@@ -685,16 +685,24 @@ export async function checkForNewLikes(userId: string): Promise<boolean> {
   return !snapshot.empty;
 }
     
-export async function updateUserMbtiType(userId: string, mbtiType: string): Promise<{ success: boolean; error?: string }> {
-  if (!userId || !mbtiType || mbtiType.length !== 4) {
-    return { success: false, error: "Invalid user ID or MBTI type provided." };
+export async function updateUserMbtiType(userId: string, mbtiType: string | null): Promise<{ success: boolean; error?: string }> {
+  if (!userId) {
+    return { success: false, error: "Invalid user ID provided." };
   }
   try {
     const userDocRef = doc(db, "users", userId);
-    await updateDoc(userDocRef, { 
-      mbtiType,
-      mbtiQuizProgress: deleteField() 
-    });
+    // If mbtiType is a valid string, update it. If it's null or empty, delete the field.
+    const updateData: { mbtiType?: string | FieldValue, mbtiQuizProgress?: FieldValue } = {
+        mbtiQuizProgress: deleteField()
+    };
+
+    if (mbtiType && mbtiType.length === 4) {
+        updateData.mbtiType = mbtiType;
+    } else {
+        updateData.mbtiType = deleteField();
+    }
+
+    await updateDoc(userDocRef, updateData);
     return { success: true };
   } catch (error: any) {
     console.error("Error updating MBTI type:", error);
