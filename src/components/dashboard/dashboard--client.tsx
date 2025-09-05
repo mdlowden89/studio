@@ -1,0 +1,603 @@
+
+
+"use client";
+
+import { useState, useEffect, useMemo, useCallback } from "react";
+import { AppLayout } from "@/components/layout/app-layout";
+import { Card, CardContent, CardHeader, CardTitle, CardDescription, CardFooter } from "@/components/ui/card";
+import { Sparkles, PlusCircle, Users, MessageSquare, Route, MapPin, CalendarDays, TrendingUp, Activity, Map, LayoutGrid, List as ListIcon, Lightbulb, Edit3, Repeat, Star, ShoppingBag, Zap, Eye, BrainCircuit, Signal, ArrowRight, Loader2, Flame, Save, ClipboardList } from "lucide-react";
+import { MOCK_HOTSPOTS } from "@/lib/mock-data";
+import { Button } from "@/components/ui/button";
+import { Separator } from "@/components/ui/separator";
+import { subDays, isAfter, format, getDay, differenceInDays } from "date-fns";
+import { MomentsMap } from "@/components/dashboard/moments-map";
+import { MomentGalleryItem } from "@/components/moments/moment-gallery-item";
+import Link from "next/link";
+import type { ProfilePrompt, UserProfile, Moment } from "@/lib/types";
+import { Progress } from "@/components/ui/progress";
+import { CrossdPlusUpsellDialog } from "@/components/pricing/crossd-plus-upsell-dialog";
+import { FreeBoostUpsellDialog } from "@/components/pricing/free-boost-upsell-dialog";
+import { useSearchParams, useRouter } from "next/navigation";
+import { useToast } from "@/hooks/use-toast";
+import { fetchMomentsForUser, fetchUserChatCount, updateUserMbtiType } from "@/app/actions";
+import { Skeleton } from "@/components/ui/skeleton";
+import { SparkEnergyMeter } from "@/components/dashboard/spark-energy-meter";
+import { ScrollArea, ScrollBar } from "@/components/ui/scroll-area";
+import { mbtiQuizQuestions } from "@/lib/mbti-quiz-data";
+import type { ViewMode } from '@/app/moments/page';
+import { MomentListItem } from "../moments/moment-list-item";
+import { cn } from "@/lib/utils";
+
+
+interface DashboardClientProps {
+    currentUser: UserProfile;
+}
+
+const MomentsLoadingSkeleton = () => (
+  <div className="space-y-4">
+    <div className="flex items-center justify-between">
+      <Skeleton className="h-8 w-1/3" />
+       <div className="flex items-center gap-2">
+        <Skeleton className="h-10 w-24" />
+        <Skeleton className="h-10 w-24" />
+      </div>
+    </div>
+     <Skeleton className="h-48 w-full" />
+    <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
+        <Skeleton className="h-32 w-full" />
+        <Skeleton className="h-32 w-full" />
+        <Skeleton className="h-32 w-full" />
+        <Skeleton className="h-32 w-full" />
+    </div>
+  </div>
+);
+
+
+const StatsLoadingSkeleton = () => (
+    <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+        {[...Array(3)].map((_, i) => (
+            <div key={i} className="bg-muted/50 p-6 rounded-lg flex flex-col items-center text-center shadow-md">
+                <Skeleton className="w-10 h-10 mb-3 rounded-full" />
+                <Skeleton className="w-20 h-8 mb-1" />
+                <Skeleton className="w-24 h-4" />
+            </div>
+        ))}
+    </div>
+);
+
+
+export function DashboardClient({ currentUser }: DashboardClientProps) {
+  const [clientFormattedTimes, setClientFormattedTimes] = useState<Record<string, string>>({});
+  const [showUpsellDialog, setShowUpsellDialog] = useState(false);
+  const [showFreeBoostDialog, setShowFreeBoostDialog] = useState(false);
+  
+  const [userMoments, setUserMoments] = useState<Moment[]>([]);
+  const [activeChatsCount, setActiveChatsCount] = useState(0);
+
+  const [isLoadingMoments, setIsLoadingMoments] = useState(true);
+  const [isLoadingChats, setIsLoadingChats] = useState(true);
+  const [isGlowActivating, setIsGlowActivating] = useState(false);
+  const [isSavingMbti, setIsSavingMbti] = useState(false);
+
+  const [viewMode, setViewMode] = useState<ViewMode>("list");
+
+  const searchParams = useSearchParams();
+  const router = useRouter();
+  const { toast } = useToast();
+
+  const isPremium = currentUser.subscription?.status === 'active' || currentUser.email === 'mlowdencrossd@gmail.com';
+
+  const momentsLoggedCount = useMemo(() => userMoments.length, [userMoments]);
+  const pendingMomentsCount = useMemo(() => userMoments.filter(m => m.status === 'pending').length, [userMoments]);
+
+  const stats = [
+    { title: "Moments Logged", value: momentsLoggedCount, icon: ClipboardList, color: "text-blue-500" },
+    { title: "Pending Moments", value: pendingMomentsCount, icon: Users, color: "text-amber-500" },
+    { title: "Active Chats", value: activeChatsCount, icon: MessageSquare, color: "text-purple-500" },
+  ];
+
+  const oneWeekAgo = useMemo(() => subDays(new Date(), 7), []);
+
+  const quizResult = useMemo(() => {
+    if (currentUser.mbtiType) return null; // Already saved
+    const answers = currentUser.mbtiQuizProgress?.answers;
+    if (!answers || Object.keys(answers).length < mbtiQuizQuestions.length) return null;
+
+    const counts = { E: 0, I: 0, S: 0, N: 0, T: 0, F: 0, J: 0, P: 0 };
+    Object.values(answers).forEach(answer => {
+      counts[answer as keyof typeof counts]++;
+    });
+    return [
+      counts.E >= counts.I ? 'E' : 'I',
+      counts.S >= counts.N ? 'S' : 'N',
+      counts.T >= counts.F ? 'T' : 'F',
+      counts.J >= counts.P ? 'J' : 'P'
+    ].join('');
+  }, [currentUser]);
+
+  const handleSaveMbti = async () => {
+    if (!quizResult || !currentUser.id) return;
+    setIsSavingMbti(true);
+    const response = await updateUserMbtiType(currentUser.id, quizResult);
+    if (response.success) {
+      toast({
+        title: "Personality Type Saved!",
+        description: `Your MBTI type has been set to ${quizResult} on your profile.`,
+      });
+      // The profile will auto-update via the useAuth hook listener
+    } else {
+      toast({
+        title: "Error Saving",
+        description: response.error || "Could not save your result. Please try again.",
+        variant: "destructive",
+      });
+    }
+    setIsSavingMbti(false);
+  };
+
+
+  useEffect(() => {
+    if (currentUser.id) {
+        setIsLoadingMoments(true);
+        fetchMomentsForUser(currentUser.id)
+            .then(data => {
+                setUserMoments(data);
+            })
+            .catch(err => {
+                console.error("Failed to fetch user moments:", err);
+                toast({ title: "Error", description: "Could not load your moments.", variant: "destructive" });
+            })
+            .finally(() => {
+                setIsLoadingMoments(false);
+            });
+    } else {
+        setIsLoadingMoments(false);
+    }
+  }, [currentUser.id, toast]);
+
+  useEffect(() => {
+    if (currentUser.id) {
+      setIsLoadingChats(true);
+      fetchUserChatCount(currentUser.id)
+        .then(count => {
+          setActiveChatsCount(count);
+        })
+        .catch(err => {
+          console.error("Failed to fetch chat count:", err);
+          toast({ title: "Error", description: "Could not load your chat count.", variant: "destructive" });
+        })
+        .finally(() => {
+          setIsLoadingChats(false);
+        });
+    }
+  }, [currentUser.id, toast]);
+
+  const momentsThisWeek = useMemo(() => {
+    return userMoments
+      .filter(moment => isAfter(new Date(moment.loggedAt as string), oneWeekAgo))
+      .sort((a, b) => new Date(b.loggedAt as string).getTime() - new Date(a.loggedAt as string).getTime());
+  }, [userMoments, oneWeekAgo]);
+  
+  const momentsWithCoords = useMemo(() => {
+      return momentsThisWeek.filter(m => m.coordinates);
+  }, [momentsThisWeek]);
+
+  useEffect(() => {
+    if (searchParams.get('showBoostUpsell') === 'true') {
+      setShowFreeBoostDialog(true);
+      router.replace('/dashboard', { scroll: false });
+    }
+  }, [searchParams, router]);
+
+  const activeStreakChallenge = useMemo(() => {
+    if (!currentUser.challenges) {
+      return null;
+    }
+    return currentUser.challenges.find(
+      (challenge) => challenge.type === "Streak" && challenge.status === "active"
+    );
+  }, [currentUser.challenges]);
+  
+  const handlePurchaseGlowBoost = async () => {
+    if (!currentUser) {
+      toast({ title: "Not Logged In", description: "You must be logged in to make a purchase.", variant: "destructive" });
+      router.push('/login-form');
+      return;
+    }
+
+    const priceId = process.env.NEXT_PUBLIC_STRIPE_GLOW_BOOST_PRICE_ID;
+    if (!priceId) {
+      toast({
+        title: "Temporarily Unavailable",
+        description: "This booster is not available for purchase right now. Please check back later.",
+        variant: "destructive",
+      });
+      console.error("Stripe Price ID for Glow Boost is missing.");
+      return;
+    }
+
+    setIsGlowActivating(true);
+    try {
+      const response = await fetch('/api/create-checkout-session', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          priceId,
+          userId: currentUser.id,
+          mode: 'payment',
+          metadata: { purchase_item: 'glow_boost' },
+        }),
+      });
+
+      const sessionData = await response.json();
+
+      if (!response.ok || !sessionData.sessionId) {
+        throw new Error(sessionData.error || 'Failed to create checkout session.');
+      }
+      
+      router.push(`/payment/initiate-stripe-redirect?sessionId=${sessionData.sessionId}`);
+
+    } catch (error: any) {
+      console.error("Glow Boost purchase process error:", error);
+      toast({
+        title: "Purchase Failed",
+        description: error.message || "An unexpected error occurred. Please try again.",
+        variant: "destructive",
+      });
+    } finally {
+      setIsGlowActivating(false);
+    }
+  };
+  
+  const isGlowModeActive = useMemo(() => {
+    if (!currentUser.glowEffect?.expiresAt) return false;
+    return currentUser.glowEffect.active && new Date(currentUser.glowEffect.expiresAt) > new Date();
+  }, [currentUser.glowEffect]);
+
+  const boosters = [
+    {
+      icon: Zap,
+      title: "Glow Mode Boost",
+      price: "£3.49",
+      description: "24-hour visibility surge, neon spark aura, and priority placement in feeds.",
+      tagline: "Your spark. Center stage.",
+    },
+    {
+      icon: Repeat,
+      title: "Echo Replay",
+      price: "£2.49",
+      description: "Rewatch one expired or missed Moment and see when/where you crossed paths.",
+      tagline: "Time passed. But your moment didn’t have to.",
+    },
+    {
+      icon: Route,
+      title: "Moments Trail Pro",
+      price: "£7.99",
+      description: "Unlock your full moments map & timeline, plus reveal all Emotional Hotspots for one week.",
+      tagline: "See the full story of your journey.",
+    },
+    {
+      icon: Eye,
+      title: "Free Like Reveal",
+      price: "£1.49",
+      description: "View one of your blurred Likes without needing to match first.",
+      tagline: "One reveal. One heartbeat closer.",
+    },
+    {
+      icon: BrainCircuit,
+      title: "FateSync Toolkit",
+      price: "£7.99",
+      description: "Get a full AI-powered compatibility analysis, AI message starters, and enhanced moment visuals.",
+      tagline: "When your spark deserves more than a swipe.",
+      colSpan: 'sm:col-span-2 lg:col-span-1',
+    },
+  ];
+
+  return (
+    <AppLayout>
+      <div className="container mx-auto py-8">
+        <SparkEnergyMeter moments={userMoments} />
+
+        <Card className="mb-8 bg-card shadow-xl border border-primary/30">
+          <CardHeader>
+            <div className="flex items-center gap-3">
+              <Sparkles className="w-8 h-8 text-primary animate-pulse" />
+              <div>
+                <CardTitle className="text-2xl font-bold">
+                  Welcome back, {currentUser.name.split(' ')[0]}!
+                </CardTitle>
+                <CardDescription className="text-muted-foreground mt-1 min-h-[20px]">
+                  Here's what's new on Crossd.
+                </CardDescription>
+              </div>
+            </div>
+          </CardHeader>
+          <CardFooter className="flex justify-end p-6">
+            <Link href="/log-moment" passHref>
+              <Button className="bg-primary hover:bg-primary/90 text-primary-foreground">
+                <PlusCircle className="mr-2 h-5 w-5" />
+                Log a Crossing/Moment
+              </Button>
+            </Link>
+          </CardFooter>
+        </Card>
+        
+        {!isPremium && (
+          <Card className="relative p-8 flex flex-col items-center text-center bg-gradient-to-br from-black to-pink-900/50 border border-primary/30 shadow-[0_0_45px_-10px] shadow-primary/30 mb-8">
+              <div className="absolute top-0 left-0 w-full h-full bg-gradient-to-tr from-primary/10 to-transparent -z-10" />
+              <div className="bg-primary rounded-full p-4 mb-4 inline-block animate-flash">
+                  <Star className="w-8 h-8 text-primary-foreground" />
+              </div>
+              <h3 className="text-2xl font-semibold text-primary mb-2 tracking-tight">Unlock Crossd+</h3>
+              <p className="text-muted-foreground max-w-sm mx-auto mb-6">
+                  Supercharge your experience with unlimited likes, see who likes you, and more exclusive perks!
+              </p>
+              <Button 
+                className="bg-gradient-to-r from-primary via-pink-500 to-orange-400 text-primary-foreground border-0 hover:shadow-lg hover:shadow-primary/40 transition-shadow"
+                onClick={() => setShowUpsellDialog(true)}
+              >
+                  <Sparkles className="mr-2 h-4 w-4" />
+                  Explore Premium Features
+              </Button>
+          </Card>
+        )}
+
+        <div className="grid grid-cols-1 lg:grid-cols-3 gap-8 mb-8">
+          <div className="lg:col-span-2">
+            <Card className="bg-card shadow-xl h-full border border-primary/30">
+              <CardHeader>
+                <CardTitle className="text-xl font-semibold">Your Activity At a Glance</CardTitle>
+                <CardDescription className="text-muted-foreground">
+                  A quick look at your Crossd engagement.
+                </CardDescription>
+              </CardHeader>
+              <CardContent>
+                {isLoadingMoments || isLoadingChats ? (
+                  <StatsLoadingSkeleton />
+                ) : (
+                  <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+                    {stats.map((stat, index) => (
+                      <div key={index} className="bg-muted/50 p-6 rounded-lg flex flex-col items-center text-center shadow-md">
+                        <stat.icon className={`w-10 h-10 mb-3 ${stat.color}`} />
+                        <p className="text-3xl font-bold text-foreground">{stat.value}</p>
+                        <p className="text-sm text-muted-foreground mt-1">{stat.title}</p>
+                      </div>
+                    ))}
+                  </div>
+                )}
+              </CardContent>
+            </Card>
+          </div>
+
+          <div className="lg:col-span-1 space-y-8">
+             <Card className="bg-card shadow-xl border border-primary/30">
+                <CardHeader>
+                    <div className="flex items-center gap-2">
+                        <Sparkles className="w-6 h-6 text-primary" />
+                        <CardTitle className="text-lg font-semibold">Spark Swipe</CardTitle>
+                    </div>
+                    <CardDescription className="text-xs text-muted-foreground mt-1">
+                        Find connections based on personality and vibes.
+                    </CardDescription>
+                </CardHeader>
+                <CardContent>
+                  <p className="text-sm text-foreground mb-3">
+                    Your personality type is currently set to: <span className="font-semibold text-primary">{currentUser.mbtiType || "Not Set"}</span>
+                  </p>
+                  { !currentUser.mbtiType && (
+                    <p className="text-xs text-muted-foreground">
+                      Take our quick quiz to find your type and unlock Spark Swipes.
+                    </p>
+                  )}
+                </CardContent>
+                <CardFooter>
+                    <Link href={currentUser.mbtiType ? "/discover?tab=spark-swipe" : "/mbti-quiz"} passHref className="w-full">
+                        <Button size="sm" className="w-full bg-primary/90 hover:bg-primary text-primary-foreground text-xs">
+                             {currentUser.mbtiType ? 'Go to Spark Swipe' : 'Take the Quiz'}
+                        </Button>
+                    </Link>
+                </CardFooter>
+             </Card>
+
+            {activeStreakChallenge && activeStreakChallenge.progress && (
+              <Card className="bg-card shadow-xl border border-primary/30">
+                <CardHeader>
+                  <div className="flex items-center gap-2">
+                    <Flame className="w-7 h-7 text-amber-500 animate-pulse" />
+                    <CardTitle className="text-lg font-semibold">Active Streak</CardTitle>
+                  </div>
+                </CardHeader>
+                <CardContent>
+                  <p className="text-sm text-foreground mb-2">{activeStreakChallenge.description}</p>
+                  <Progress value={(activeStreakChallenge.progress.current / activeStreakChallenge.progress.target) * 100} className="h-3 [&>div]:bg-gradient-to-r [&>div]:from-amber-500 [&>div]:to-primary" />
+                  <p className="text-xs text-muted-foreground mt-1 text-right">
+                    {activeStreakChallenge.progress.current} / {activeStreakChallenge.progress.target} {activeStreakChallenge.progress.unit}
+                  </p>
+                </CardContent>
+                 <CardFooter>
+                  <Link href="/profile?tab=progress" passHref className="w-full">
+                    <Button variant="outline" size="sm" className="w-full text-primary border-primary/70 hover:bg-primary/10 hover:text-primary">
+                        View All Challenges
+                    </Button>
+                  </Link>
+                </CardFooter>
+              </Card>
+            )}
+          </div>
+        </div>
+
+        {/* YOUR ACTIVITY MAP */}
+        <Card className="bg-card shadow-xl mb-8 border border-primary/30">
+            <CardHeader className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4">
+                <div className="flex items-center gap-3">
+                    <Route className="w-8 h-8 text-primary" />
+                    <div>
+                        <CardTitle className="text-2xl font-bold">Your Activity Map</CardTitle>
+                        <CardDescription className="text-muted-foreground mt-1">
+                            A visual journey of your logged encounters and potential connections.
+                        </CardDescription>
+                    </div>
+                </div>
+                <div className="flex items-center gap-2 border border-border p-1 rounded-md self-end sm:self-center">
+                    <Button
+                        variant={viewMode === "list" ? "default" : "ghost"}
+                        size="sm"
+                        onClick={() => setViewMode("list")}
+                        className={cn(viewMode === 'list' && 'bg-primary/10 text-primary')}
+                    >
+                        <ListIcon className="mr-2 h-4 w-4" />
+                        List
+                    </Button>
+                    <Separator orientation="vertical" className="h-6" />
+                    <Button
+                        variant={viewMode === "gallery" ? "default" : "ghost"}
+                        size="sm"
+                        onClick={() => setViewMode("gallery")}
+                        className={cn(viewMode === 'gallery' && 'bg-primary/10 text-primary')}
+                    >
+                        <LayoutGrid className="mr-2 h-4 w-4" />
+                        Grid
+                    </Button>
+                </div>
+            </CardHeader>
+            <CardContent>
+                 {isLoadingMoments ? (
+                    <MomentsLoadingSkeleton />
+                ) : (
+                  <div className="space-y-6">
+                    <div className="aspect-[2/1] w-full bg-muted rounded-lg overflow-hidden shadow-inner">
+                        <MomentsMap moments={momentsWithCoords} hotspots={isPremium ? MOCK_HOTSPOTS : undefined} />
+                    </div>
+                    
+                    {momentsThisWeek.length > 0 ? (
+                      <div>
+                        <Separator className="my-6" />
+                        <h3 className="text-lg font-semibold mb-4">Recent Places This Week</h3>
+                        {viewMode === 'gallery' ? (
+                           <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-4 xl:grid-cols-5 gap-4">
+                                {momentsThisWeek.map(moment => (
+                                    <MomentGalleryItem key={moment.id} moment={moment} userProfile={currentUser} />
+                                ))}
+                            </div>
+                        ) : (
+                           <ul className="space-y-4">
+                                {momentsThisWeek.map(moment => (
+                                    <li key={moment.id}>
+                                        <MomentListItem moment={moment} />
+                                    </li>
+                                ))}
+                           </ul>
+                        )}
+                      </div>
+                    ) : (
+                      <div className="text-center py-6 text-muted-foreground">
+                          <p>No moments logged in the past week.</p>
+                          <Button variant="link" asChild><Link href="/log-moment">Log your first moment</Link></Button>
+                      </div>
+                    )}
+                  </div>
+                )}
+            </CardContent>
+        </Card>
+
+
+        <Card className="mb-8 bg-card shadow-xl border border-primary/30">
+          <CardHeader>
+            <div className="flex items-center gap-3">
+              <ShoppingBag className="w-8 h-8 text-primary" />
+              <div>
+                <CardTitle className="text-2xl font-bold">A La Carte Boosters</CardTitle>
+                <CardDescription className="text-muted-foreground">
+                  Enhance your experience with powerful one-time purchases.
+                </CardDescription>
+              </div>
+            </div>
+          </CardHeader>
+          <CardContent>
+            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
+              {boosters.slice(0, 4).map((booster) => {
+                const BoosterIcon = booster.icon;
+                const isGlowBooster = booster.title === "Glow Mode Boost";
+                const isDisabled = isGlowBooster && (isGlowModeActive || isGlowActivating);
+
+                return (
+                  <Card key={booster.title} className="bg-primary/10 flex flex-col">
+                    <CardHeader>
+                      <div className="flex items-center gap-3">
+                        <BoosterIcon className="w-7 h-7 text-primary" />
+                        <CardTitle className="text-lg">{booster.title}</CardTitle>
+                      </div>
+                    </CardHeader>
+                    <CardContent className="flex-grow space-y-2">
+                      <p className="text-sm text-muted-foreground">{booster.description}</p>
+                      <p className="text-xs italic text-foreground/80">&quot;{booster.tagline}&quot;</p>
+                    </CardContent>
+                    <CardFooter className="flex items-center justify-between pt-4">
+                      <p className="text-lg font-bold text-primary">{booster.price}</p>
+                      <Button
+                        variant="outline"
+                        size="sm"
+                        onClick={
+                          isGlowBooster
+                            ? handlePurchaseGlowBoost
+                            : () => toast({ title: "Coming Soon!", description: `${booster.title} checkout is not yet implemented.` })
+                        }
+                        disabled={isDisabled}
+                      >
+                        {isGlowBooster && isGlowActivating ? (
+                          <Loader2 className="mr-2 h-4 w-4 animate-spin" />
+                        ) : null}
+                        {isGlowBooster
+                          ? isGlowActivating ? "Processing..." : isGlowModeActive ? "Active" : "Purchase"
+                          : "Purchase"}
+                      </Button>
+                    </CardFooter>
+                  </Card>
+                );
+              })}
+              {boosters.length > 4 && (() => {
+                  const lastBooster = boosters[4];
+                  const BoosterIcon = lastBooster.icon;
+                  return (
+                    <Card key={lastBooster.title} className="sm:col-span-2 lg:col-span-3 bg-primary/20 border-primary/30 flex flex-col sm:flex-row items-start gap-4 p-4">
+                        <div className="flex items-center gap-3 w-full sm:w-auto">
+                            <BoosterIcon className="w-10 h-10 text-primary flex-shrink-0" />
+                            <div className="sm:hidden">
+                                <CardTitle className="text-lg">{lastBooster.title}</CardTitle>
+                                <p className="text-lg font-bold text-primary">{lastBooster.price}</p>
+                            </div>
+                        </div>
+                        <div className="flex-grow">
+                             <div className="hidden sm:block">
+                                <CardTitle className="text-lg">{lastBooster.title}</CardTitle>
+                            </div>
+                            <p className="text-sm text-muted-foreground mt-1">{lastBooster.description}</p>
+                            <p className="text-xs italic text-foreground/80 mt-2">&quot;{lastBooster.tagline}&quot;</p>
+                        </div>
+                        <div className="flex flex-col items-center justify-center w-full sm:w-auto mt-4 sm:mt-0">
+                           <p className="hidden sm:block text-xl font-bold text-primary mb-2">{lastBooster.price}</p>
+                           <Button className="w-full sm:w-auto" onClick={() => toast({ title: "Coming Soon!", description: `${lastBooster.title} checkout is not yet implemented.` })}>
+                            Purchase Toolkit
+                           </Button>
+                        </div>
+                    </Card>
+                  );
+              })()}
+            </div>
+          </CardContent>
+        </Card>
+
+        <CrossdPlusUpsellDialog
+          isOpen={showUpsellDialog}
+          onOpenChange={setShowUpsellDialog}
+        />
+
+        <FreeBoostUpsellDialog
+          isOpen={showFreeBoostDialog}
+          onOpenChange={setShowFreeBoostDialog}
+        />
+
+      </div>
+    </AppLayout>
+  );
+}
