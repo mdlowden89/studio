@@ -4,7 +4,7 @@
 import { useState, useEffect, useMemo, useCallback } from "react";
 import { AppLayout } from "@/components/layout/app-layout";
 import { Card, CardContent, CardHeader, CardTitle, CardDescription, CardFooter } from "@/components/ui/card";
-import { Sparkles, PlusCircle, ClipboardList, Users, MessageSquare, Route, MapPin, CalendarDays, TrendingUp, Activity, Map, LayoutGrid, List as ListIcon, Lightbulb, Edit3, Repeat, Star, ShoppingBag, Zap, Eye, BrainCircuit, Signal, ArrowRight, Loader2, Flame, Save } from "lucide-react";
+import { Sparkles, PlusCircle, Users, MessageSquare, Route, MapPin, CalendarDays, TrendingUp, Activity, Map, LayoutGrid, List as ListIcon, Lightbulb, Edit3, Repeat, Star, ShoppingBag, Zap, Eye, BrainCircuit, Signal, ArrowRight, Loader2, Flame, Save, ClipboardList } from "lucide-react";
 import { MOCK_HOTSPOTS } from "@/lib/mock-data";
 import { Button } from "@/components/ui/button";
 import { Separator } from "@/components/ui/separator";
@@ -356,7 +356,7 @@ export function DashboardClient({ currentUser }: DashboardClientProps) {
                 ) : (
                   <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
                     {stats.map((stat, index) => (
-                      <div key={index} className="bg-muted/50 p-6 rounded-lg flex flex-col items-center text-center shadow-md">
+                      <div key={index} className="bg-primary/10 p-6 rounded-lg flex flex-col items-center text-center shadow-md">
                         <stat.icon className={`w-10 h-10 mb-3 ${stat.color}`} />
                         <p className="text-3xl font-bold text-foreground">{stat.value}</p>
                         <p className="text-sm text-muted-foreground mt-1">{stat.title}</p>
@@ -519,7 +519,7 @@ export function DashboardClient({ currentUser }: DashboardClientProps) {
                 const isDisabled = isGlowBooster && (isGlowModeActive || isGlowActivating);
 
                 return (
-                  <Card key={booster.title} className="bg-muted/30 flex flex-col">
+                  <Card key={booster.title} className="bg-primary/10 flex flex-col">
                     <CardHeader>
                       <div className="flex items-center gap-3">
                         <BoosterIcon className="w-7 h-7 text-primary" />
@@ -557,7 +557,7 @@ export function DashboardClient({ currentUser }: DashboardClientProps) {
                   const lastBooster = boosters[4];
                   const BoosterIcon = lastBooster.icon;
                   return (
-                    <Card key={lastBooster.title} className="sm:col-span-2 lg:col-span-3 bg-muted/40 border-primary/30 flex flex-col sm:flex-row items-start gap-4 p-4">
+                    <Card key={lastBooster.title} className="sm:col-span-2 lg:col-span-3 bg-primary/20 border-primary/30 flex flex-col sm:flex-row items-start gap-4 p-4">
                         <div className="flex items-center gap-3 w-full sm:w-auto">
                             <BoosterIcon className="w-10 h-10 text-primary flex-shrink-0" />
                             <div className="sm:hidden">
