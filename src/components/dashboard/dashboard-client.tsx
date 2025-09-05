@@ -22,10 +22,11 @@ import { fetchMomentsForUser, fetchUserChatCount, updateUserMbtiType } from "@/a
 import { Skeleton } from "@/components/ui/skeleton";
 import { SparkEnergyMeter } from "@/components/dashboard/spark-energy-meter";
 import { ScrollArea, ScrollBar } from "@/components/ui/scroll-area";
-import { PlacesTrailItem } from "./places-trail-item";
 import { mbtiQuizQuestions } from "@/lib/mbti-quiz-data";
 import type { ViewMode } from '@/app/moments/page';
-import { MomentCard } from "../moments/moment-card";
+import { MomentListItem } from "../moments/moment-list-item";
+import { cn } from "@/lib/utils";
+
 
 interface DashboardClientProps {
     currentUser: UserProfile;
@@ -33,11 +34,19 @@ interface DashboardClientProps {
 
 const MomentsLoadingSkeleton = () => (
   <div className="space-y-4">
-    <Skeleton className="h-6 w-1/2" />
-    <div className="flex space-x-3">
-        <Skeleton className="h-40 w-64" />
-        <Skeleton className="h-40 w-64" />
-        <Skeleton className="h-40 w-64" />
+    <div className="flex items-center justify-between">
+      <Skeleton className="h-8 w-1/3" />
+       <div className="flex items-center gap-2">
+        <Skeleton className="h-10 w-24" />
+        <Skeleton className="h-10 w-24" />
+      </div>
+    </div>
+     <Skeleton className="h-48 w-full" />
+    <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
+        <Skeleton className="h-32 w-full" />
+        <Skeleton className="h-32 w-full" />
+        <Skeleton className="h-32 w-full" />
+        <Skeleton className="h-32 w-full" />
     </div>
   </div>
 );
@@ -167,18 +176,10 @@ export function DashboardClient({ currentUser }: DashboardClientProps) {
       .filter(moment => isAfter(new Date(moment.loggedAt as string), oneWeekAgo))
       .sort((a, b) => new Date(b.loggedAt as string).getTime() - new Date(a.loggedAt as string).getTime());
   }, [userMoments, oneWeekAgo]);
-
-  const momentsTimestampsKey = useMemo(() => {
-    return momentsThisWeek.map(m => `${m.id}-${m.loggedAt}`).join(',');
+  
+  const momentsWithCoords = useMemo(() => {
+      return momentsThisWeek.filter(m => m.coordinates);
   }, [momentsThisWeek]);
-
-  useEffect(() => {
-    const newFormattedTimes: Record<string, string> = {};
-    momentsThisWeek.forEach(moment => {
-      newFormattedTimes[moment.id] = format(new Date(moment.loggedAt as string), "p");
-    });
-    setClientFormattedTimes(newFormattedTimes);
-  }, [momentsTimestampsKey, momentsThisWeek]); 
 
   useEffect(() => {
     if (searchParams.get('showBoostUpsell') === 'true') {
@@ -423,65 +424,80 @@ export function DashboardClient({ currentUser }: DashboardClientProps) {
           </div>
         </div>
 
-        {/* RECENT MOMENTS */}
+        {/* YOUR ACTIVITY MAP */}
         <Card className="bg-card shadow-xl mb-8">
-            <CardHeader>
-                 <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4">
+            <CardHeader className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4">
+                <div className="flex items-center gap-3">
+                    <Route className="w-8 h-8 text-primary" />
                     <div>
-                        <CardTitle className="text-2xl font-bold flex items-center gap-3">
-                           <Map className="w-7 h-7 text-primary" />
-                            Your Recent Trail
-                        </CardTitle>
+                        <CardTitle className="text-2xl font-bold">Your Activity Map</CardTitle>
                         <CardDescription className="text-muted-foreground mt-1">
-                            A log of your recently visited places and moments.
+                            A visual journey of your logged encounters and potential connections.
                         </CardDescription>
                     </div>
-                    <div className="flex items-center gap-2 border border-border p-1 rounded-md self-end sm:self-center">
-                        <Button
-                            variant={viewMode === "list" ? "default" : "ghost"}
-                            size="icon"
-                            onClick={() => setViewMode("list")}
-                            aria-label="List view"
-                        >
-                            <ListIcon className="h-5 w-5" />
-                        </Button>
-                        <Separator orientation="vertical" className="h-6" />
-                        <Button
-                            variant={viewMode === "gallery" ? "default" : "ghost"}
-                            size="icon"
-                            onClick={() => setViewMode("gallery")}
-                            aria-label="Gallery view"
-                        >
-                            <LayoutGrid className="h-5 w-5" />
-                        </Button>
-                    </div>
+                </div>
+                <div className="flex items-center gap-2 border border-border p-1 rounded-md self-end sm:self-center">
+                    <Button
+                        variant={viewMode === "list" ? "default" : "ghost"}
+                        size="sm"
+                        onClick={() => setViewMode("list")}
+                        className={cn(viewMode === 'list' && 'bg-primary/10 text-primary')}
+                    >
+                        <ListIcon className="mr-2 h-4 w-4" />
+                        List
+                    </Button>
+                    <Separator orientation="vertical" className="h-6" />
+                    <Button
+                        variant={viewMode === "gallery" ? "default" : "ghost"}
+                        size="sm"
+                        onClick={() => setViewMode("gallery")}
+                        className={cn(viewMode === 'gallery' && 'bg-primary/10 text-primary')}
+                    >
+                        <LayoutGrid className="mr-2 h-4 w-4" />
+                        Grid
+                    </Button>
                 </div>
             </CardHeader>
             <CardContent>
                  {isLoadingMoments ? (
                     <MomentsLoadingSkeleton />
-                ) : momentsThisWeek.length > 0 ? (
-                    viewMode === 'gallery' ? (
-                       <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-4">
-                            {momentsThisWeek.map(moment => (
-                                <MomentGalleryItem key={moment.id} moment={moment} userProfile={currentUser} />
-                            ))}
-                        </div>
-                    ) : (
-                       <div className="space-y-6">
-                            {momentsThisWeek.map(moment => (
-                                <MomentCard key={moment.id} moment={moment} userProfile={currentUser} />
-                            ))}
-                        </div>
-                    )
                 ) : (
-                    <div className="text-center py-6 text-muted-foreground">
-                        <p>No moments logged in the past week.</p>
-                        <Button variant="link" asChild><Link href="/log-moment">Log your first moment</Link></Button>
+                  <div className="space-y-6">
+                    <div className="aspect-[2/1] w-full bg-muted rounded-lg overflow-hidden shadow-inner">
+                        <MomentsMap moments={momentsWithCoords} hotspots={isPremium ? MOCK_HOTSPOTS : undefined} />
                     </div>
+                    
+                    {momentsThisWeek.length > 0 ? (
+                      <div>
+                        <Separator className="my-6" />
+                        <h3 className="text-lg font-semibold mb-4">Recent Places This Week</h3>
+                        {viewMode === 'gallery' ? (
+                           <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-4 xl:grid-cols-5 gap-4">
+                                {momentsThisWeek.map(moment => (
+                                    <MomentGalleryItem key={moment.id} moment={moment} userProfile={currentUser} />
+                                ))}
+                            </div>
+                        ) : (
+                           <ul className="space-y-4">
+                                {momentsThisWeek.map(moment => (
+                                    <li key={moment.id}>
+                                        <MomentListItem moment={moment} />
+                                    </li>
+                                ))}
+                           </ul>
+                        )}
+                      </div>
+                    ) : (
+                      <div className="text-center py-6 text-muted-foreground">
+                          <p>No moments logged in the past week.</p>
+                          <Button variant="link" asChild><Link href="/log-moment">Log your first moment</Link></Button>
+                      </div>
+                    )}
+                  </div>
                 )}
             </CardContent>
         </Card>
+
 
         <Card className="mb-8 bg-card shadow-xl">
           <CardHeader>
