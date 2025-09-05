@@ -7,7 +7,7 @@ import { getPlacePhoto, GetPlacePhotoInput, GetPlacePhotoOutput } from "@/ai/flo
 import { getSparkSwipeInsights, SparkSwipeInput, SparkSwipeOutput } from "@/ai/flows/spark-swipe-flow";
 import { verifyUser, VerifyUserInput, VerifyUserOutput } from "@/ai/flows/verify-user-flow";
 import { db } from "@/lib/firebase";
-import { doc, getDoc, updateDoc, collection, addDoc, serverTimestamp, query, where, limit, getDocs, orderBy, Timestamp, getCountFromServer, deleteField, Query, collectionGroup, startAfter, QueryConstraint, writeBatch, increment } from "firebase/firestore";
+import { doc, getDoc, updateDoc, collection, addDoc, serverTimestamp, query, where, limit, getDocs, orderBy, Timestamp, getCountFromServer, deleteField, writeBatch, increment, type FieldValue } from "firebase/firestore";
 import type { UserProfile, Achievement, Challenge, Moment, MomentLog, Chat, Notification, ChatMessage, SubscriptionInfo } from "@/lib/types";
 import { addHours } from "date-fns";
 import { MOCK_USERS } from "@/lib/mock-data";
@@ -750,3 +750,4 @@ export async function setUserVerified(userId: string): Promise<{success: boolean
 }
 
     
+

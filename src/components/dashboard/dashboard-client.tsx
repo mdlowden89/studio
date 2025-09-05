@@ -340,6 +340,29 @@ export function DashboardClient({ currentUser }: DashboardClientProps) {
               </Button>
           </Card>
         )}
+        
+        {quizResult && (
+          <Card className="mb-8 bg-card shadow-xl border border-blue-500/30">
+            <CardHeader>
+              <CardTitle className="flex items-center gap-2 text-blue-400">
+                <Save className="w-6 h-6"/>
+                Save Your Quiz Result!
+              </CardTitle>
+              <CardDescription className="text-muted-foreground">
+                You've completed the personality quiz. Save your result to unlock better matches.
+              </CardDescription>
+            </CardHeader>
+            <CardContent>
+              <p className="text-lg">Your calculated personality type is: <span className="font-bold text-primary">{quizResult}</span></p>
+            </CardContent>
+            <CardFooter>
+              <Button onClick={handleSaveMbti} disabled={isSavingMbti}>
+                {isSavingMbti ? <Loader2 className="mr-2 h-4 w-4 animate-spin" /> : <Save className="mr-2 h-4 w-4" />}
+                {isSavingMbti ? 'Saving...' : 'Save to Profile'}
+              </Button>
+            </CardFooter>
+          </Card>
+        )}
 
         <div className="grid grid-cols-1 lg:grid-cols-3 gap-8 mb-8">
           <div className="lg:col-span-2">
@@ -356,7 +379,7 @@ export function DashboardClient({ currentUser }: DashboardClientProps) {
                 ) : (
                   <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
                     {stats.map((stat, index) => (
-                      <div key={index} className="bg-muted/50 p-6 rounded-lg flex flex-col items-center text-center shadow-md">
+                      <div key={index} className="bg-primary/10 p-6 rounded-lg flex flex-col items-center text-center shadow-md border border-primary/20">
                         <stat.icon className={`w-10 h-10 mb-3 ${stat.color}`} />
                         <p className="text-3xl font-bold text-foreground">{stat.value}</p>
                         <p className="text-sm text-muted-foreground mt-1">{stat.title}</p>
@@ -372,26 +395,27 @@ export function DashboardClient({ currentUser }: DashboardClientProps) {
              <Card className="bg-card shadow-xl border border-primary/30">
                 <CardHeader>
                     <div className="flex items-center gap-2">
-                        <BrainCircuit className="w-6 h-6 text-primary" />
-                        <CardTitle className="text-lg font-semibold">Know Your Type?</CardTitle>
+                        <Sparkles className="w-6 h-6 text-primary" />
+                        <CardTitle className="text-lg font-semibold">Spark Swipe</CardTitle>
                     </div>
+                    <CardDescription className="text-xs text-muted-foreground mt-1">
+                        Find connections based on personality and vibes.
+                    </CardDescription>
                 </CardHeader>
                 <CardContent>
-                  {currentUser.mbtiType ? (
-                    <div className="space-y-1">
-                      <p className="text-sm text-muted-foreground">Your personality type is:</p>
-                      <p className="font-bold text-lg text-primary">{currentUser.mbtiType}</p>
-                      <p className="text-xs text-muted-foreground pt-2">Adding your personality type leads to more compatible Spark Swipes.</p>
-                    </div>
-                  ) : (
-                    <p className="text-sm text-muted-foreground">Discover your personality type to unlock more compatible profiles in Spark Swipes.</p>
+                  <p className="text-sm text-foreground mb-3">
+                    Your personality type is currently set to: <span className="font-semibold text-primary">{currentUser.mbtiType || "Not Set"}</span>
+                  </p>
+                  { !currentUser.mbtiType && (
+                    <p className="text-xs text-muted-foreground">
+                      Take our quick quiz to find your type and unlock Spark Swipes.
+                    </p>
                   )}
                 </CardContent>
                 <CardFooter>
-                    <Link href="/mbti-quiz" passHref className="w-full">
+                    <Link href={currentUser.mbtiType ? "/discover?tab=spark-swipe" : "/mbti-quiz"} passHref className="w-full">
                         <Button size="sm" className="w-full bg-primary/90 hover:bg-primary text-primary-foreground text-xs">
-                            <BrainCircuit className="mr-1.5 h-3.5 w-3.5" />
-                            {currentUser.mbtiType ? 'View/Retake Quiz' : 'Take the Quiz'}
+                             {currentUser.mbtiType ? 'Go to Spark Swipe' : 'Take the Quiz'}
                         </Button>
                     </Link>
                 </CardFooter>
@@ -599,3 +623,4 @@ export function DashboardClient({ currentUser }: DashboardClientProps) {
     </AppLayout>
   );
 }
+
